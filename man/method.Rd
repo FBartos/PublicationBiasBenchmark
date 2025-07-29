@@ -4,7 +4,7 @@
 \alias{method}
 \title{Generic method function for publication bias correction}
 \usage{
-method(method_name, data, settings = list(), ...)
+method(method_name, data, settings = list())
 }
 \arguments{
 \item{method_name}{Character string specifying the method type}
@@ -12,8 +12,6 @@ method(method_name, data, settings = list(), ...)
 \item{data}{Data frame containing yi (effect sizes) and sei (standard errors)}
 
 \item{settings}{List containing method-specific settings}
-
-\item{...}{Additional arguments passed to specific methods}
 }
 \value{
 A data frame with standardized method results
@@ -31,5 +29,5 @@ data <- data.frame(
 result <- method("PET", data)
 
 # Example usage with PETPEESE method
-result <- method("PETPEESE", data)
+# result <- method("PETPEESE", data)
 }

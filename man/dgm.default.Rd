@@ -6,6 +6,12 @@
 \usage{
 \method{dgm}{default}(dgm_name, settings)
 }
+\arguments{
+\item{dgm_name}{Character string specifying the DGM type}
+
+\item{settings}{List containing the required parameters for the DGM or
+numeric settings_id}
+}
 \description{
 Default DGM handler
 }

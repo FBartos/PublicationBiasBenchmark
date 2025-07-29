@@ -243,9 +243,49 @@ validate_dgm_settings.Carter2019 <- function(dgm_name, settings) {
 # (see folder "Empirical sample size distributions")
 # min = minimum sample size, max = maximum sample size
 # max = 1905 corresponds to the largest observed per-group sample size in Marszalek et al.
-getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.04622745) {
-  require(invgamma)
-  ns <- round(truncdist::rtrunc(n=k, spec="invgamma", a=min.n, b=max.n, shape=shape, scale=scale))
+.HongAndReed2021_Carter2019_getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.04622745) {
+  ns <- round(.HongAndReed2021_Carter2019_rtruncInvGamma(n=k, a=min.n, b=max.n, shape=shape, scale=scale))
+}
+
+# creating own truncgamma functions because of the importing and namespace issues with rtrunc and invgamma
+.HongAndReed2021_Carter2019_qtruncInvGamma <- function (p, spec, a = -Inf, b = Inf, ...) {
+  # based on truncdist::qtrunc
+  if (a >= b)
+    stop("argument a is greater than or equal to b")
+  tt  <- p
+
+  G <- function(q, shape, rate = 1, scale = 1/rate, lower.tail = TRUE, log.p = FALSE) {
+    if (missing(rate) && !missing(scale))
+      rate <- 1/scale
+    stats::pgamma(1/q, shape, rate, lower.tail = !lower.tail, log.p = log.p)
+  }
+  Gin <- function(p, shape, rate = 1, scale = 1/rate, lower.tail = TRUE, log.p = FALSE) {
+    if (missing(rate) && !missing(scale))
+      rate <- 1/scale
+    if (log.p) {
+      stats::qgamma(p, shape, rate, lower.tail = !lower.tail, log.p = TRUE)^(-1)
+    }
+    else {
+      stats::qgamma(1 - p, shape, rate, lower.tail = lower.tail, log.p = FALSE)^(-1)
+    }
+  }
+
+  G.a <- G(a, ...)
+  G.b <- G(b, ...)
+  if (G.a == G.b) {
+    stop("Trunction interval is not inside the domain of the quantile function")
+  }
+  result <- pmin(pmax(a, Gin(G(a, ...) + p * (G(b, ...) - G(a, ...)), ...)), b)
+  return(result)
+}
+.HongAndReed2021_Carter2019_rtruncInvGamma <- function(n, a, b, ...) {
+  # based on truncdist::rtrunc
+  if (a >= b)
+    stop("argument a is greater than or equal to b")
+  u <- stats::runif(n, min = 0, max = 1)
+  x <- .HongAndReed2021_Carter2019_qtruncInvGamma(u, a = a, b = b, ...)
+
+  return(x)
 }
 
 #==============
@@ -280,24 +320,24 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
   if (!is.null(fixed.n)) {
     n <- fixed.n
   } else {
-    n <- getN(k=1)
+    n <- .HongAndReed2021_Carter2019_getN(k=1)
   }
 
   #calculate the treatement effect as a function of the
   #true effect, delta, and tau
-  delta_i = delta + rnorm(1, 0, tau)
+  delta_i = delta + stats::rnorm(1, 0, tau)
 
   #generate two independent vectors of raw data
   #the mean is zero and error is randomly distributed
   #and equal between groups
-  Ye = rnorm(n, delta_i, 1)
-  Yc = rnorm(n, 0, 1)
+  Ye = stats::rnorm(n, delta_i, 1)
+  Yc = stats::rnorm(n, 0, 1)
 
   #get the summary stats
   m1 = mean(Ye)
-  v1 = var(Ye)
+  v1 = stats::var(Ye)
   m2 = mean(Yc)
-  v2 = var(Yc)
+  v2 = stats::var(Yc)
   n1 = n
   n2 = n
   df = 2*n-2
@@ -306,7 +346,7 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
   S = sqrt( ((n1 - 1)*v1 + (n2 - 1)*v2) / df )
 
   #compare the two distributions
-  test = t.test(Ye, Yc)
+  test = stats::t.test(Ye, Yc)
 
   #calculate d, the variance of d, the p-value, the t-stat, and n.
   d = (m1 - m2)/S
@@ -342,7 +382,7 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
 
   # sample the treatment effect as a function of the
   # true effect, delta, and heterogeneity (defined as tau)
-  delta_i = delta + rnorm(1, 0, tau)
+  delta_i = delta + stats::rnorm(1, 0, tau)
 
   # store the true effect for the study
   D = matrix(delta_i, 2, maxN)
@@ -422,11 +462,11 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
   }
 
   #the output based on the above conditions
-  test = t.test(Y~X,var.equal=T)
+  test = stats::t.test(Y~X,var.equal=T)
   n1 = length(subset(Y,X==1))
   n2 = length(subset(Y,X==2))
-  v1 = var(subset(Y,X==1))
-  v2 = var(subset(Y,X==2))
+  v1 = stats::var(subset(Y,X==1))
+  v2 = stats::var(subset(Y,X==2))
   N  = n1+n2
   t  = as.numeric(test[1])
   p  = test$p.value
@@ -479,10 +519,10 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
   M2.1=c(m2.1,m4.1);M2.2=c(m2.2,m4.2)
 
   #Create .HongAndReed2021_Carter2019_outlier codes
-  o1.1=mapply(.HongAndReed2021_Carter2019_outlier,G1[,1],mean(G1[,1]),sd(G1[,1]))
-  o1.2=mapply(.HongAndReed2021_Carter2019_outlier,G1[,2],mean(G1[,2]),sd(G1[,2]))
-  o2.1=mapply(.HongAndReed2021_Carter2019_outlier,G2[,1],mean(G2[,1]),sd(G2[,1]))
-  o2.2=mapply(.HongAndReed2021_Carter2019_outlier,G2[,2],mean(G2[,2]),sd(G2[,2]))
+  o1.1=mapply(.HongAndReed2021_Carter2019_outlier,G1[,1],mean(G1[,1]),stats::sd(G1[,1]))
+  o1.2=mapply(.HongAndReed2021_Carter2019_outlier,G1[,2],mean(G1[,2]),stats::sd(G1[,2]))
+  o2.1=mapply(.HongAndReed2021_Carter2019_outlier,G2[,1],mean(G2[,1]),stats::sd(G2[,1]))
+  o2.2=mapply(.HongAndReed2021_Carter2019_outlier,G2[,2],mean(G2[,2]),stats::sd(G2[,2]))
 
   #combine codes with outcome values
   c1=cbind(G1[,1],X1.1,M1.1,o1.1); c2=cbind(G1[,2],X1.2,M1.2,o1.2)
@@ -493,10 +533,10 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
   DV2=rbind(c2,c4)
 
   #Save p values for interaction effects
-  A1=aov(DV1[,1]~DV1[,2]*DV1[,3])
-  A2=aov(DV2[,1]~DV2[,2]*DV2[,3])
-  A1.o=aov(DV1[,1]~DV1[,2]*DV1[,3],subset=DV1[,4]<1)
-  A2.o=aov(DV2[,1]~DV2[,2]*DV2[,3],subset=DV2[,4]<1)
+  A1=stats::aov(DV1[,1]~DV1[,2]*DV1[,3])
+  A2=stats::aov(DV2[,1]~DV2[,2]*DV2[,3])
+  A1.o=stats::aov(DV1[,1]~DV1[,2]*DV1[,3],subset=DV1[,4]<1)
+  A2.o=stats::aov(DV2[,1]~DV2[,2]*DV2[,3],subset=DV2[,4]<1)
   intA1P=summary(A1)[[1]][["Pr(>F)"]][3]
   intA2P=summary(A2)[[1]][["Pr(>F)"]][3]
   intA1P.o=summary(A1.o)[[1]][["Pr(>F)"]][3]
@@ -585,7 +625,7 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
     if (!is.null(fixed.n)) {
       s <- fixed.n
     } else {
-      s <- getN(k=1)
+      s <- .HongAndReed2021_Carter2019_getN(k=1)
     }
 
     # Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
@@ -635,7 +675,7 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
     if (!is.null(fixed.n)) {
       s <- fixed.n
     } else {
-      s <- getN(k=1)
+      s <- .HongAndReed2021_Carter2019_getN(k=1)
     }
 
     # Divide sample size by 2: the idea is that the main factor of interest defined the two group sizes. A moderator factor is then added to create a 2*2, but because the moderator is not the main focus, the empirical sample sizes should only be used for the two groups formed by the main factor--not the four groups formed by the 2*2 split.
@@ -691,12 +731,12 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
 # and selection at a proportion specified by propB if
 # sel and QRP are 1 not 0.
 
-#' param k the number of studies in the MA
-#' param delta the true effect (or the average of the true effects if heterogeneity exists)
-#' param tau the SD around the true effect
-#' param censor The censoring function - either "none", "med" (medium publication bias), "high" (high publication bias), or a vector of 3 values for the censoring function (posSign_NS_baseRate, negSign_NS_baseRate, counterSig_rate)
-#' param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
-#' param empN.boost A constant that is added to the empirical effect sizes: WARNING: NOT CAREFULLY TESTED YET!!
+# param k the number of studies in the MA
+# param delta the true effect (or the average of the true effects if heterogeneity exists)
+# param tau the SD around the true effect
+# param censor The censoring function - either "none", "med" (medium publication bias), "high" (high publication bias), or a vector of 3 values for the censoring function (posSign_NS_baseRate, negSign_NS_baseRate, counterSig_rate)
+# param qrpEnv the qrp environment that produced the literature: 'none', 'low', 'med', 'high'
+# param empN.boost A constant that is added to the empirical effect sizes: WARNING: NOT CAREFULLY TESTED YET!!
 
 # k=10;delta=.3;tau=.1;qrpEnv="med";.HongAndReed2021_Carter2019_censorFunc="A"; empN=TRUE; maxN = 1000; meanN = NA; minN = 0; empN.boost = 0
 .HongAndReed2021_Carter2019_simMA <- function(k, delta, tau, qrpEnv= c("none", "low", "medium", "high"), censorFunc = c("none", "medium", "high"), verbose=FALSE, fixed.n=NULL) {
@@ -744,12 +784,12 @@ getN <- function(k=1, min.n = 5, max.n = 1905, shape=1.15326986, scale=0.0462274
       publish <- 1
     } else if (is.character(censorFunc) && censorFunc == "medium") {
       # predefined .HongAndReed2021_Carter2019_censor function for "medium publication bias"
-      publish <- rbinom(n=1, size=1, prob=.HongAndReed2021_Carter2019_censorMedium(pObs = res[2], direction = sign(res[1])))
+      publish <- stats::rbinom(n=1, size=1, prob=.HongAndReed2021_Carter2019_censorMedium(pObs = res[2], direction = sign(res[1])))
     } else if (is.character(censorFunc) && censorFunc == "high") {
       # predefined .HongAndReed2021_Carter2019_censor function for "strong publication bias"
-      publish <- rbinom(n=1, size=1, prob=.HongAndReed2021_Carter2019_censorHigh(pObs = res[2], direction = sign(res[1])))
+      publish <- stats::rbinom(n=1, size=1, prob=.HongAndReed2021_Carter2019_censorHigh(pObs = res[2], direction = sign(res[1])))
     } else if (is.vector(censorFunc) && length(censorFunc)==3) {
-      publish <- rbinom(n=1, size=1, prob=.HongAndReed2021_Carter2019_censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = censorFunc[1], negSign_NS_baseRate = censorFunc[2], counterSig_rate = censorFunc[3]))
+      publish <- stats::rbinom(n=1, size=1, prob=.HongAndReed2021_Carter2019_censor(res[2], direction = sign(res[1]), posSign_NS_baseRate = censorFunc[1], negSign_NS_baseRate = censorFunc[2], counterSig_rate = censorFunc[3]))
     } else {
       stop("Wrong specification of .HongAndReed2021_Carter2019_censor function!")
     }

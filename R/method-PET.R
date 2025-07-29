@@ -21,7 +21,7 @@
 #' # Apply PET method
 #' result <- method("PET", data)
 #' print(result)
-method.PET <- function(method_name, data, settings = list()) {
+method.PET <- function(method_name, data, settings = NULL) {
 
   # Extract data
   effect_sizes    <- data$yi

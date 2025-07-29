@@ -39,7 +39,9 @@ dgm <- function(dgm_name, settings) {
   UseMethod("dgm", dgm_type)
 }
 
-#' Default DGM handler
+#' @title Default DGM handler
+#' @inheritParams dgm
+#'
 #' @export
 dgm.default <- function(dgm_name, settings) {
   available_dgms <- c(

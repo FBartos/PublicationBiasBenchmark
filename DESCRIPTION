@@ -11,7 +11,7 @@ Authors@R: c(
   )
 Description: Provides a unified interface for various publication bias correction 
     methods and data generating mechanisms for simulation studies.
-License: MIT
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
@@ -20,13 +20,12 @@ Depends:
     R (>= 3.5.0)
 Imports:
     stats,
-    truncdist,
-    invgamma,
     MASS,
-    pwr
+    pwr,
+    sandwich,
+    lmtest,
+    Rdpack
 Suggests:
     testthat (>= 3.0.0),
-    knitr,
     rmarkdown
 RdMacros: Rdpack
-VignetteBuilder: knitr

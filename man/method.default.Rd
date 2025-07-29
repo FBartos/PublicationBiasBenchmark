@@ -4,7 +4,14 @@
 \alias{method.default}
 \title{Default method handler}
 \usage{
-\method{method}{default}(method_name, data, settings = list(), ...)
+\method{method}{default}(method_name, data, settings = list())
+}
+\arguments{
+\item{method_name}{Character string specifying the method type}
+
+\item{data}{Data frame containing yi (effect sizes) and sei (standard errors)}
+
+\item{settings}{List containing method-specific settings}
 }
 \description{
 Default method handler

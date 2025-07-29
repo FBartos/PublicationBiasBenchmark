@@ -131,13 +131,13 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
   PrimaryData<-as.data.frame(matrix(ncol=19, nrow=m))
   colnames(PrimaryData)<-c('StdID','EstID','al','ali','alir','lambdai','lambdair','effect','se','lowerBound','upperBound','Sig','PosSig','NegSig','nSig','nPosSig','nNegSig','nPos','obs')
   for(i in 1:m){
-    alir<-rnorm(1, mean = ali, sd = sigr);
-    lambdair<- lambdai + runif(1, 0, 1)*(sigr>0)
-    x <- rnorm(obs, mean = 0, sd = 1)
-    y <- 1 + alir*x + lambdair*rnorm(obs, mean = 0, sd = 1)
-    eff_se_pval<-as.numeric(summary(lm(y~x))$coefficients[2,c(1,2,4)])
-    t<-abs(as.numeric(summary(lm(y~x))$coefficients[2,3]))
-    ci<-as.numeric(confint(lm(y~x), level=0.95)[2,1:2])
+    alir<-stats::rnorm(1, mean = ali, sd = sigr);
+    lambdair<- lambdai + stats::runif(1, 0, 1)*(sigr>0)
+    x <- stats::rnorm(obs, mean = 0, sd = 1)
+    y <- 1 + alir*x + lambdair*stats::rnorm(obs, mean = 0, sd = 1)
+    eff_se_pval<-as.numeric(summary(stats::lm(y~x))$coefficients[2,c(1,2,4)])
+    t<-abs(as.numeric(summary(stats::lm(y~x))$coefficients[2,3]))
+    ci<-as.numeric(stats::confint(stats::lm(y~x), level=0.95)[2,1:2])
     PrimaryData[i,1:14]<-c(StudyID, i, al,ali, alir, lambdai, lambdair, eff_se_pval[1:2], ci, (t>=2), (ci[1]>0), (ci[2]<0))
   }
   PrimaryData$nSig<-sum(PrimaryData$Sig)/m;
@@ -166,11 +166,11 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
   }
 
   for(i in 1:StudyN){
-    ali<-rnorm(1, mean = alpha, sd = sigi)
+    ali<-stats::rnorm(1, mean = alpha, sd = sigi)
     if(i==1){
-      MetaStudyData<-.HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, runif(1,0,1), type)
+      MetaStudyData<-.HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, stats::runif(1,0,1), type)
     }else{
-      MetaStudyData<-rbind(MetaStudyData, .HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, runif(1,0,1), type))
+      MetaStudyData<-rbind(MetaStudyData, .HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, stats::runif(1,0,1), type))
     }
   }
   return(MetaStudyData)
@@ -196,10 +196,10 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
   N <- length(Study)
   K <- regOLS$rank
   dfc <- (M/(M-1)) * ((N-1)/(N-K))
-  u<-apply(estfun(regOLS),2,function(x) tapply(x, Study,sum))
-  vcovCL<-dfc*sandwich(regOLS, meat=crossprod(u)/N)
-  ci <-coef(regOLS) + sqrt(diag(vcovCL)) %o% qt(c(0.025,0.975),summary(regOLS)$df[2])
-  return (list("co"=coeftest(regOLS, vcovCL), "ci"=ci))
+  u<-apply(sandwich::estfun(regOLS),2,function(x) tapply(x, Study,sum))
+  vcovCL<-dfc*sandwich::sandwich(regOLS, meat=crossprod(u)/N)
+  ci <-stats::coef(regOLS) + sqrt(diag(vcovCL)) %o% stats::qt(c(0.025,0.975),summary(regOLS)$df[2])
+  return (list("co"=lmtest::coeftest(regOLS, vcovCL), "ci"=ci))
 }
 #######################################################
 
@@ -210,10 +210,10 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 .HongAndReed2021_Alinaghi2019_ARBias <- function(MetaData, type, bias){
   if(type=='PRE'){
     rnd <- matrix(1, nrow=100, ncol=1)
-    for(rndi in 1:10){rnd[c((1+10*(rndi-1)):(10*rndi))] <- runif(1,0,1);}
+    for(rndi in 1:10){rnd[c((1+10*(rndi-1)):(10*rndi))] <- stats::runif(1,0,1);}
     MetaData<-as.data.frame(cbind(MetaData, rnd=rnd))
   }else{
-    MetaData<-as.data.frame(cbind(MetaData, rnd=runif(nrow(MetaData),0,1)))
+    MetaData<-as.data.frame(cbind(MetaData, rnd=stats::runif(nrow(MetaData),0,1)))
   }
   if(bias!='none'){
     if(type=='PRE'){

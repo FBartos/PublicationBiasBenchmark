@@ -123,10 +123,10 @@ validate_dgm_settings.Bom2019 <- function(dgm_name, settings) {
 ## Primary Study Data Generation
 ###################################
 .HongAndReed2021_Bom2019_dgp <-function(al1, sigh, obs){
-  x1=runif(obs, min = 100, max = 200);
-  x2=x1+rnorm(obs, mean = 0, sd = 50);
-  al2=rnorm(1,mean=0,sd=sigh);
-  z = 100 + al1*x1 + al2*x2 + rnorm(obs,mean=0,sd=100);
+  x1=stats::runif(obs, min = 100, max = 200);
+  x2=x1+stats::rnorm(obs, mean = 0, sd = 50);
+  al2=stats::rnorm(1,mean=0,sd=sigh);
+  z = 100 + al1*x1 + al2*x2 + stats::rnorm(obs,mean=0,sd=100);
   return (as.data.frame(cbind(z, x1 ,matrix(al1+al2, nrow=obs, ncol=1))))
 }
 ###################################
@@ -145,17 +145,17 @@ validate_dgm_settings.Bom2019 <- function(dgm_name, settings) {
       while (output[i,4]==0){
         data=.HongAndReed2021_Bom2019_dgp(al1,sigh,obs);
         output[i,5]=mean(data[,3]);
-        out <- lm(data[,1] ~ data[,2])
-        output[i,2]=coefficients(out)[2];
-        output[i,3]=sqrt(diag(vcov(out)))[2];
+        out <- stats::lm(data[,1] ~ data[,2])
+        output[i,2]=stats::coefficients(out)[2];
+        output[i,3]=sqrt(diag(stats::vcov(out)))[2];
         output[i,4]=((summary(out)$coefficients[2,4]<=0.05)*(0<=summary(out)$coefficients[2,1]));
       }
     } else if (i>num_publ){
       data=.HongAndReed2021_Bom2019_dgp(al1,sigh,obs);
       output[i,5]=mean(data[,3]);
-      out <- lm(data[,1] ~ data[,2])
-      output[i,2]=coefficients(out)[2];
-      output[i,3]=sqrt(diag(vcov(out)))[2];
+      out <- stats::lm(data[,1] ~ data[,2])
+      output[i,2]=stats::coefficients(out)[2];
+      output[i,3]=sqrt(diag(stats::vcov(out)))[2];
       output[i,4]=((summary(out)$coefficients[2,4]<=0.05)*(0<=summary(out)$coefficients[2,1]));
     } else { cat("Publication Bias Error", "\n"); }
   }

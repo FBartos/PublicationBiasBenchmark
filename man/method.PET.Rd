@@ -4,7 +4,7 @@
 \alias{method.PET}
 \title{PET (Precision-Effect Test) Method}
 \usage{
-\method{method}{PET}(method_name, data, settings = list())
+\method{method}{PET}(method_name, data, settings = NULL)
 }
 \arguments{
 \item{method_name}{Method name (automatically passed)}

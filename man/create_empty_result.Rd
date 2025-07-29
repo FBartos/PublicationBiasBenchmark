@@ -12,10 +12,6 @@ create_empty_result(method_name, note, extra_columns = list())
 \item{note}{Character string describing the failure reason}
 
 \item{extra_columns}{Named list of additional columns to include}
-
-\item{settings}{List of method settings to attach as attributes}
-
-\item{data}{Data set passed to the method}
 }
 \value{
 Data frame with standardized empty result structure
