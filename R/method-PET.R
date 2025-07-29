@@ -1,5 +1,6 @@
-#' PET (Precision-Effect Test) Method
+#' @title PET (Precision-Effect Test) Method
 #'
+#' @description
 #' Implements the Precision-Effect Test for publication bias correction.
 #' PET regresses effect sizes against standard errors to test for and correct
 #' publication bias. The intercept represents the bias-corrected effect size.
@@ -9,7 +10,6 @@
 #' @param settings List of method settings (currently unused)
 #'
 #' @return Data frame with PET results
-#' @export
 #'
 #' @examples
 #' # Generate some example data
@@ -21,6 +21,8 @@
 #' # Apply PET method
 #' result <- method("PET", data)
 #' print(result)
+#'
+#' @export
 method.PET <- function(method_name, data, settings = NULL) {
 
   # Extract data

@@ -31,4 +31,5 @@ data <- data.frame(
 # Apply PET method
 result <- method("PET", data)
 print(result)
+
 }
