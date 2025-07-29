@@ -19,3 +19,7 @@ This function provides a unified interface to various data generating
 mechanisms for simulation studies. The specific DGM is determined by
 the first argument.
 }
+\seealso{
+\code{\link[=validate_dgm_settigns]{validate_dgm_settigns()}},
+\code{\link[=dgm.Alinaghi2019]{dgm.Alinaghi2019()}}
+}

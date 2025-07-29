@@ -65,5 +65,3 @@ validate_dgm_settigns.no_bias <- function(dgm_name, settings) {
 
   return(invisible(TRUE))
 }
-
-is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
