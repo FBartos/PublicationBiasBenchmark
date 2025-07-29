@@ -22,4 +22,5 @@ the first argument.
 \seealso{
 \code{\link[=validate_dgm_settigns]{validate_dgm_settigns()}},
 \code{\link[=dgm.Alinaghi2019]{dgm.Alinaghi2019()}}
+\code{\link[=dgm.Stanley2017]{dgm.Stanley2017()}}
 }

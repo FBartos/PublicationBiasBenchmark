@@ -70,7 +70,7 @@ dgm.Alinaghi2019 <- function(dgm_name, settings) {
   mean_effect   <- settings[["mean_effect"]]
 
   # Simulate data sets
-  df <- .HongAndReed2019_Alinaghi2019_MetaStudy(environment, mean_effect)
+  df <- .HongAndReed2021_Alinaghi2019_MetaStudy(environment, mean_effect)
 
   # Create result data frame
   data <- data.frame(
@@ -112,7 +112,7 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Primary Study Data (Effect) Generation
 #######################################################
-.HongAndReed2019_Alinaghi2019_PrimaryStudy <- function(StudyID, al, ali, lambdai0, type){
+.HongAndReed2021_Alinaghi2019_PrimaryStudy <- function(StudyID, al, ali, lambdai0, type){
   if(type=='PRE'){
     sigr<-sqrt(0.25);
     m<-10;
@@ -152,7 +152,7 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Meta Analysis Data Generation
 #######################################################
-.HongAndReed2019_Alinaghi2019_CollectingData<- function(type, alpha){
+.HongAndReed2021_Alinaghi2019_CollectingData<- function(type, alpha){
   if(type=='PRE'){
     StudyN<-100;
     sigi<-2
@@ -167,9 +167,9 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
   for(i in 1:StudyN){
     ali<-rnorm(1, mean = alpha, sd = sigi)
     if(i==1){
-      MetaStudyData<-.HongAndReed2019_Alinaghi2019_PrimaryStudy(i, alpha, ali, runif(1,0,1), type)
+      MetaStudyData<-.HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, runif(1,0,1), type)
     }else{
-      MetaStudyData<-rbind(MetaStudyData, .HongAndReed2019_Alinaghi2019_PrimaryStudy(i, alpha, ali, runif(1,0,1), type))
+      MetaStudyData<-rbind(MetaStudyData, .HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, runif(1,0,1), type))
     }
   }
   return(MetaStudyData)
@@ -180,8 +180,8 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Creating Publication Bias
 #######################################################
-.HongAndReed2019_Alinaghi2019_MetaStudy <- function(type, alpha){
-  MetaData<-as.data.frame(.HongAndReed2019_Alinaghi2019_CollectingData(type, alpha))
+.HongAndReed2021_Alinaghi2019_MetaStudy <- function(type, alpha){
+  MetaData<-as.data.frame(.HongAndReed2021_Alinaghi2019_CollectingData(type, alpha))
   return(MetaData)
 }
 #######################################################
@@ -190,7 +190,7 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 # Clustered Standard Errors; ARRSM
 #######################################################
-.HongAndReed2019_Alinaghi2019_clusteredSE_ARRSM <-function(regOLS, Study){
+.HongAndReed2021_Alinaghi2019_clusteredSE_ARRSM <-function(regOLS, Study){
   M <- length(unique(Study))
   N <- length(Study)
   K <- regOLS$rank
@@ -206,7 +206,7 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Creating Publication Bias
 #######################################################
-.HongAndReed2019_Alinaghi2019_ARBias <- function(MetaData, type, bias){
+.HongAndReed2021_Alinaghi2019_ARBias <- function(MetaData, type, bias){
   if(type=='PRE'){
     rnd <- matrix(1, nrow=100, ncol=1)
     for(rndi in 1:10){rnd[c((1+10*(rndi-1)):(10*rndi))] <- runif(1,0,1);}
