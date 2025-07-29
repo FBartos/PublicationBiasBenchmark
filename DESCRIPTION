@@ -19,7 +19,11 @@ Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 3.5.0)
 Imports:
-    stats
+    stats,
+    truncdist,
+    invgamma,
+    MASS,
+    pwr
 Suggests:
     testthat (>= 3.0.0),
     knitr,

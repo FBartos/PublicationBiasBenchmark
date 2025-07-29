@@ -24,4 +24,5 @@ the first argument.
 \code{\link[=dgm.Stanley2017]{dgm.Stanley2017()}},
 \code{\link[=dgm.Alinaghi2019]{dgm.Alinaghi2019()}},
 \code{\link[=dgm.Bom2019]{dgm.Bom2019()}}
+\code{\link[=Carter2019]{Carter2019()}}
 }

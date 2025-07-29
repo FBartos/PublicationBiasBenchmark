@@ -90,8 +90,12 @@ validate_dgm_settigns.Bom2019 <- function(dgm_name, settings) {
     stop("Missing required settings: ", paste(missing_params, collapse = ", "))
 
   # Extract settings
-  environment   <- settings[["environment"]]
-  mean_effect   <- settings[["mean_effect"]]
+  environment          <- settings[["environment"]]
+  mean_effect          <- settings[["mean_effect"]]
+  effect_heterogeneity <- settings[["effect_heterogeneity"]]
+  bias                 <- settings[["bias"]]
+  n_studies            <- settings[["n_studies"]]
+  sample_sizes         <- settings[["sample_sizes"]]
 
   # Validate settings
   if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("LogOR", "Cohens_d"))
@@ -104,6 +108,8 @@ validate_dgm_settigns.Bom2019 <- function(dgm_name, settings) {
     stop("'n_studies' must be an integer larger targer than 0")
   if (length(sample_sizes) >= 1 || !any(is.numeric(sample_sizes)) || any(is.na(sample_sizes)) || any(!is.wholenumber(sample_sizes)) || any(sample_sizes < 1))
     stop("'sample_sizes' must be an integer vector larger targer than 0")
+  if (length(bias) != 1 || !is.numeric(bias) || is.na(bias) || (bias < 0 || bias > 1))
+    stop("'bias' must be in [0, 1] range")
 
   return(invisible(TRUE))
 }
