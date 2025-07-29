@@ -11,7 +11,7 @@
 
 \item{settings}{List containing \describe{
 \item{environment}{Type of the simulation environment. One of
-\code{"LogOR"} or \code{"Cohen_d"}.}
+\code{"LogOR"} or \code{"Cohens_d"}.}
 \item{mean_effect}{Mean effect}
 \item{effect_heterogeneity}{Mean effect heterogeneity}
 \item{bias}{Proportion of studies affected by publication bias}
@@ -29,7 +29,7 @@ Data frame with \describe{
 }
 \description{
 Simulates two scenarios for meta-analysis studies investigating the effect
-of a treatment):
+of a treatment in:
 (1) Log Odds Ratio scenario, where the outcome is binary and effect
 heterogeneity is controlled by a random component, and
 (2) Cohen's d scenario, where the outcome is continuous and effect
@@ -57,7 +57,7 @@ logistic regression, with the coefficient on \code{treat} (\verb{α₁}) as the 
 interest. Study sample sizes vary, resulting in different standard errors
 for estimated effects.
 
-In the Cohen's d (\code{"Cohen_d"}) scenario, the outcome variable is
+In the Cohen's d (\code{"Cohens_d"}) scenario, the outcome variable is
 continuous. The treatment effect is modeled as a fixed effect (\verb{α₁}) plus a
 random component (variance \verb{σ²_h}). Each study computes Cohen's d, the
 standardized mean difference between treatment and control groups. Study

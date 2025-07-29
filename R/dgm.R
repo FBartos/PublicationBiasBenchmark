@@ -10,8 +10,9 @@
 #' @return A data frame containing the generated data with standardized structure
 #'
 #' @seealso [validate_dgm_settigns()],
-#' [dgm.Alinaghi2019()]
-#' [dgm.Stanley2017()]
+#' [dgm.Stanley2017()],
+#' [dgm.Alinaghi2019()],
+#' [dgm.Bom2019()]
 #' @export
 dgm <- function(dgm_name, settings) {
 
@@ -28,7 +29,7 @@ dgm <- function(dgm_name, settings) {
 #' Default DGM handler
 #' @export
 dgm.default <- function(dgm_name, settings) {
-  available_dgms <- c("no_bias", "Alinaghi2019", "Stanley2017")
+  available_dgms <- c("no_bias", "Alinaghi2019", "Stanley2017", "Bom2019")
   stop("Unknown DGM type: '", class(dgm_name)[1],
        "'. Available DGMs: ", paste(available_dgms, collapse = ", "))
 }

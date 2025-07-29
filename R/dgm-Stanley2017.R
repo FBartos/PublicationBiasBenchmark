@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Simulates two scenarios for meta-analysis studies investigating the effect
-#' of a treatment):
+#' of a treatment in:
 #' (1) Log Odds Ratio scenario, where the outcome is binary and effect
 #' heterogeneity is controlled by a random component, and
 #' (2) Cohen's d scenario, where the outcome is continuous and effect
@@ -129,7 +129,8 @@ validate_dgm_settigns.Stanley2017 <- function(dgm_name, settings) {
 
 
 ### additional simulation functions ----
-# Imported and slightly modified from Hong & Reed 2019
+# Imported and slightly modified from Hong & Reed 2021
+# (https://osf.io/pr4mb/)
 
 ###############################################
 ## Primary Study Data (logOR) Generation     ##

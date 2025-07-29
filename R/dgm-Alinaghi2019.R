@@ -107,7 +107,8 @@ validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
 
 
 ### additional simulation functions ----
-# Imported and slightly modified from Hong & Reed 2019
+# Imported and slightly modified from Hong & Reed 2021
+# (https://osf.io/pr4mb/)
 
 ##############################
 ## Primary Study Data (Effect) Generation
