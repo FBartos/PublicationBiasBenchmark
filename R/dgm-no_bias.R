@@ -1,11 +1,34 @@
-#' Normal DGM (No Publication Bias)
+#' @title Normal Unbiased Data Generating Model
 #'
-#' Generates effect sizes from a normal distribution without publication bias
+#' @description
+#' An example data generating model to simulate effect sizes without
+#' publication bias.
 #'
 #' @param dgm_name DGM name (automatically passed)
-#' @param settings List containing n_studies, mean_effect, heterogeneity
+#' @param settings List containing \describe{
+#'   \item{environment}{Type of the simulation environment. One of
+#'                      \code{"LogOR"} or \code{"Cohens_d"}.}
+#'   \item{mean_effect}{Mean effect}
+#'   \item{effect_heterogeneity}{Mean effect heterogeneity}
+#'   \item{n_studies}{Number of effect size estimates}
+#' }
 #'
-#' @return Data frame with generated data
+#' @details
+#' Sample sizes of individual effect size estimates are generated from a
+#' negative binomial distribution based on empirical sample size distribution
+#' presented in Appendix B of
+#' \insertCite{alinaghi2018meta;textual}{PublicationBiasBenchmark}
+#'
+#'
+#' @return Data frame with \describe{
+#'   \item{yi}{effect size}
+#'   \item{sei}{standard error}
+#' }
+#'
+#' @references
+#' \insertAllCited{}
+#'
+#' @seealso [dgm()], [validate_dgm_settings()]
 #' @export
 dgm.no_bias <- function(dgm_name, settings) {
 
@@ -42,7 +65,7 @@ dgm.no_bias <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settigns.no_bias <- function(dgm_name, settings) {
+validate_dgm_settings.no_bias <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("n_studies", "mean_effect", "heterogeneity")

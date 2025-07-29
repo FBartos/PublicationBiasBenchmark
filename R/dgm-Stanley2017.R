@@ -64,7 +64,7 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settigns()]
+#' @seealso [dgm()], [validate_dgm_settings()]
 #' @export
 dgm.Stanley2017 <- function(dgm_name, settings) {
 
@@ -100,7 +100,7 @@ dgm.Stanley2017 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settigns.Stanley2017 <- function(dgm_name, settings) {
+validate_dgm_settings.Stanley2017 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("environment", "mean_effect", "effect_heterogeneity", "bias", "n_studies", "sample_sizes")

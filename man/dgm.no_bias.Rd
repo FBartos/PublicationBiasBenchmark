@@ -2,18 +2,40 @@
 % Please edit documentation in R/dgm-no_bias.R
 \name{dgm.no_bias}
 \alias{dgm.no_bias}
-\title{Normal DGM (No Publication Bias)}
+\title{Normal Unbiased Data Generating Model}
 \usage{
 \method{dgm}{no_bias}(dgm_name, settings)
 }
 \arguments{
 \item{dgm_name}{DGM name (automatically passed)}
 
-\item{settings}{List containing n_studies, mean_effect, heterogeneity}
+\item{settings}{List containing \describe{
+\item{environment}{Type of the simulation environment. One of
+\code{"LogOR"} or \code{"Cohens_d"}.}
+\item{mean_effect}{Mean effect}
+\item{effect_heterogeneity}{Mean effect heterogeneity}
+\item{n_studies}{Number of effect size estimates}
+}}
 }
 \value{
-Data frame with generated data
+Data frame with \describe{
+\item{yi}{effect size}
+\item{sei}{standard error}
+}
 }
 \description{
-Generates effect sizes from a normal distribution without publication bias
+An example data generating model to simulate effect sizes without
+publication bias.
+}
+\details{
+Sample sizes of individual effect size estimates are generated from a
+negative binomial distribution based on empirical sample size distribution
+presented in Appendix B of
+\insertCite{alinaghi2018meta;textual}{PublicationBiasBenchmark}
+}
+\references{
+\insertAllCited{}
+}
+\seealso{
+\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_settings]{validate_dgm_settings()}}
 }

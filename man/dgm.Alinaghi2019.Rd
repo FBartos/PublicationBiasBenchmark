@@ -70,5 +70,5 @@ that are significant or correctly signed.
 \insertAllCited{}
 }
 \seealso{
-\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_settigns]{validate_dgm_settigns()}}
+\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_settings]{validate_dgm_settings()}}
 }

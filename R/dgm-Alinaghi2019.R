@@ -61,7 +61,7 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settigns()]
+#' @seealso [dgm()], [validate_dgm_settings()]
 #' @export
 dgm.Alinaghi2019 <- function(dgm_name, settings) {
 
@@ -84,7 +84,7 @@ dgm.Alinaghi2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settigns.Alinaghi2019 <- function(dgm_name, settings) {
+validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("environment", "mean_effect")

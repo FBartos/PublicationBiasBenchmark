@@ -58,7 +58,7 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settigns()]
+#' @seealso [dgm()], [validate_dgm_settings()]
 #' @export
 dgm.Carter2019 <- function(dgm_name, settings) {
 
@@ -82,7 +82,7 @@ dgm.Carter2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settigns.Carter2019 <- function(dgm_name, settings) {
+validate_dgm_settings.Carter2019 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("mean_effect", "effect_heterogeneity", "bias", "QRP", "n_studies")

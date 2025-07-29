@@ -29,7 +29,7 @@ sim_settings <- list(
 
 # check whether it is feasible
 # (defined outside of the function - not to decrease performance during simulation)
-validate_dgm_settigns("no_bias", sim_settings)
+validate_dgm_settings("no_bias", sim_settings)
 
 # simulate the data
 df <- dgm("no_bias", sim_settings)
@@ -40,7 +40,7 @@ method("PET", df)
 
 ### Key Functions
 
-- `validate_dgm_settigns()`: Validates data generating mechanism
+- `validate_dgm_settings()`: Validates data generating mechanism
   settings before simulation
 - `dgm()`: Generates simulated data according to specified bias model
   and settings
@@ -65,5 +65,5 @@ For detailed documentation of all functions and parameters, use:
 ``` r
 ?dgm
 ?method
-?validate_dgm_settigns
+?validate_dgm_settings
 ```
