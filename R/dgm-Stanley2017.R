@@ -125,7 +125,7 @@ validate_dgm_settigns.Stanley2017 <- function(dgm_name, settings) {
     stop("'effect_heterogeneity' must be non-negative")
   if (length(n_studies) != 1 || !is.numeric(n_studies) || is.na(n_studies) || !is.wholenumber(n_studies) || n_studies < 1)
     stop("'n_studies' must be an integer larger targer than 0")
-  if (length(sample_sizes) >= 1 || !any(is.numeric(sample_sizes)) || any(is.na(sample_sizes)) || any(!is.wholenumber(sample_sizes)) || any(sample_sizes < 1))
+  if (length(sample_sizes) < 1 || !any(is.numeric(sample_sizes)) || any(is.na(sample_sizes)) || any(!is.wholenumber(sample_sizes)) || any(sample_sizes < 1))
     stop("'sample_sizes' must be an integer vector larger targer than 0")
   if (length(bias) != 1 || !is.numeric(bias) || is.na(bias) || (bias < 0 || bias > 1))
     stop("'bias' must be in [0, 1] range")
