@@ -6,10 +6,8 @@
 #'
 #' @param dgm_name DGM name (automatically passed)
 #' @param settings List containing \describe{
-#'   \item{environment}{Type of the simulation environment. One of
-#'                      \code{"LogOR"} or \code{"Cohens_d"}.}
 #'   \item{mean_effect}{Mean effect}
-#'   \item{effect_heterogeneity}{Mean effect heterogeneity}
+#'   \item{heterogeneity}{Effect heterogeneity}
 #'   \item{n_studies}{Number of effect size estimates}
 #' }
 #'
@@ -17,7 +15,7 @@
 #' Sample sizes of individual effect size estimates are generated from a
 #' negative binomial distribution based on empirical sample size distribution
 #' presented in Appendix B of
-#' \insertCite{alinaghi2018meta;textual}{PublicationBiasBenchmark}
+#' \insertCite{maier2023robust;textual}{PublicationBiasBenchmark}
 #'
 #'
 #' @return Data frame with \describe{
@@ -28,7 +26,7 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settings()]
+#' @seealso [dgm()], [validate_dgm_setting()]
 #' @export
 dgm.no_bias <- function(dgm_name, settings) {
 
@@ -65,7 +63,7 @@ dgm.no_bias <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settings.no_bias <- function(dgm_name, settings) {
+validate_dgm_setting.no_bias <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("n_studies", "mean_effect", "heterogeneity")
@@ -87,4 +85,20 @@ validate_dgm_settings.no_bias <- function(dgm_name, settings) {
     stop("'heterogeneity' must be non-negative")
 
   return(invisible(TRUE))
+}
+
+#' @export
+dgm_settings.no_bias <- function(dgm_name) {
+
+  # generate a list of pre-specified settings
+  settings <- data.frame(expand.grid(
+    mean_effect    = c(0, 0.3),
+    heterogeneity  = c(0, 0.15),
+    n_studies      = c(10, 100)
+  ))
+
+  # attach setting id
+  settings$setting_id <- 1:nrow(settings)
+
+  return(settings)
 }

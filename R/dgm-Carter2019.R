@@ -58,15 +58,15 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settings()]
+#' @seealso [dgm()], [validate_dgm_setting()]
 #' @export
 dgm.Carter2019 <- function(dgm_name, settings) {
 
   # Extract settings
   mean_effect          <- settings[["mean_effect"]]
   effect_heterogeneity <- settings[["effect_heterogeneity"]]
-  bias                 <- settings[["bias"]]
-  QRP                  <- settings[["QRP"]]
+  bias                 <- as.character(settings[["bias"]])
+  QRP                  <- as.character(settings[["QRP"]])
   n_studies            <- settings[["n_studies"]]
 
   # Simulate data sets
@@ -82,7 +82,7 @@ dgm.Carter2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settings.Carter2019 <- function(dgm_name, settings) {
+validate_dgm_setting.Carter2019 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("mean_effect", "effect_heterogeneity", "bias", "QRP", "n_studies")
@@ -93,8 +93,8 @@ validate_dgm_settings.Carter2019 <- function(dgm_name, settings) {
   # Extract settings
   mean_effect          <- settings[["mean_effect"]]
   effect_heterogeneity <- settings[["effect_heterogeneity"]]
-  bias                 <- settings[["bias"]]
-  QRP                  <- settings[["QRP"]]
+  bias                 <- as.character(settings[["bias"]])
+  QRP                  <- as.character(settings[["QRP"]])
   n_studies            <- settings[["n_studies"]]
 
   # Validate settings
@@ -110,6 +110,39 @@ validate_dgm_settings.Carter2019 <- function(dgm_name, settings) {
     stop("'QRP' must be a string with one of the following values: 'none', 'low', 'medium', 'high'")
 
   return(invisible(TRUE))
+}
+
+#' @export
+dgm_settings.Carter2019 <- function(dgm_name) {
+
+  # Keep the same order as in Hong and Reed 2021
+  k_set      <- c(10, 30, 60, 100)			   	# number of studies in each MA
+  delta_set  <- c(0, .2, .5, .8)				   	# true mean of effect sizes
+  qrpEnv_Set <- c("none", "medium", "high")	# QRP environment
+  censor_set <- c("none", "medium", "high")	# publication bias
+  tau_set    <- c(0, .2, .4)							  # heterogeneity; assumed to follow a normal distribution
+
+  # params stores all possible combinations of experimental factors
+  paramsONE <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set)
+
+
+  k_set      <- c(200, 400, 800)				  	# number of studies in each MA
+  delta_set  <- c(0, .2, .5, .8)				  	# true mean of effect sizes
+  qrpEnv_Set <- c("none", "medium", "high")	# QRP environment
+  censor_set <- c("none", "medium", "high")	# publication bias
+  tau_set    <- c(0, .2, .4)							  # heterogeneity; assumed to follow a normal distribution
+
+  # params stores all possible combinations of experimental factors
+  paramsTWO <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set)
+
+  # rename parameters
+  settings <- rbind(paramsONE, paramsTWO)
+  colnames(settings) <- c("n_studies", "mean_effect", "QRP", "bias", "effect_heterogeneity")
+
+  # attach setting id
+  settings$setting_id <- 1:nrow(settings)
+
+  return(settings)
 }
 
 

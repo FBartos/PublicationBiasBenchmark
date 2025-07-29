@@ -1,5 +1,8 @@
 ---
-output: github_document
+title:        "README"
+bibliography: inst/REFERENCES.bib
+csl:          inst/apa.csl
+output:       github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -40,10 +43,10 @@ sim_settings <- list(
 
 # check whether it is feasible
 # (defined outside of the function - not to decrease performance during simulation)
-validate_dgm_settings("no_bias", sim_settings)
+validate_dgm_setting("no_bias", sim_settings)
 
 # simulate the data
-df <- dgm("no_bias", sim_settings)
+df <- simulate_dgm("no_bias", sim_settings)
 
 # fit a method
 method("PET", df)
@@ -51,14 +54,18 @@ method("PET", df)
 
 ### Key Functions
 
-- `validate_dgm_settings()`: Validates data generating mechanism settings before simulation
-- `dgm()`: Generates simulated data according to specified bias model and settings
-- `method()`: Applies publication bias correction methods to simulated data
+#### Data Generating Mechanisms
+- `simulate_dgm()`: Generates simulated data according to specified data generating model and settings.
+- `dgm_settings()`: Lists prespecified settings of the data generating mechanism.
+- `validate_dgm_setting()`: Validates setting of the data generating mechanism.
 
 ### Available DGM Models
 
 - `"no_bias"`: Generates data without publication bias (a test simulation)
-- ...
+- `"Stanley2017"`: @stanley2017finding
+- `"Alinaghi2018"`: @alinaghi2018meta
+- `"Bom2019"`: @bom2019kinked
+- `"Carter2019"`: @carter2019correcting
 
 ### Available Methods
 
@@ -70,7 +77,10 @@ method("PET", df)
 For detailed documentation of all functions and parameters, use:
 
 ```{r, eval = FALSE}
-?dgm
+?simulate_dgm
 ?method
-?validate_dgm_settings
+?validate_dgm_setting
 ```
+
+
+### References

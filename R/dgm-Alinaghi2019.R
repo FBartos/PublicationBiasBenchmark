@@ -1,4 +1,4 @@
-#' @title Alinaghi and Reed 2019 Data Generating Model
+#' @title Alinaghi and Reed 2018 Data Generating Model
 #'
 #' @description
 #' This data generating model simulates univariate regression studies where a variable X
@@ -21,7 +21,7 @@
 #' }
 #'
 #' @details
-#' This data generating model is based on Alinaghi & Reed (2019), who study univariate
+#' This data generating model is based on Alinaghi & Reed (2018), who study univariate
 #' regression models where a variable X affects a continuous variable Y. The parameter
 #' of interest is the coefficient on X. In the "Random Effects" environment, each study
 #' produces one estimate, and the population effect differs across studies. The coefficient
@@ -61,16 +61,16 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settings()]
+#' @seealso [dgm()], [validate_dgm_setting()]
 #' @export
-dgm.Alinaghi2019 <- function(dgm_name, settings) {
+dgm.Alinaghi2018 <- function(dgm_name, settings) {
 
   # Extract settings
   environment   <- settings[["environment"]]
   mean_effect   <- settings[["mean_effect"]]
 
   # Simulate data sets
-  df <- .HongAndReed2021_Alinaghi2019_MetaStudy(environment, mean_effect)
+  df <- .HongAndReed2021_Alinaghi2018_MetaStudy(environment, mean_effect)
 
   # Create result data frame
   data <- data.frame(
@@ -84,7 +84,7 @@ dgm.Alinaghi2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
+validate_dgm_setting.Alinaghi2018 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("environment", "mean_effect")
@@ -105,6 +105,23 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
   return(invisible(TRUE))
 }
 
+#' @export
+dgm_settings.Alinaghi2018 <- function(dgm_name) {
+
+  # Keep the same order as in Hong and Reed 2021
+  environment <- c("RE", "PRE", "FE")
+  mean_effect <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
+
+  settings <- as.data.frame(matrix(NA, nrow = (length(environment)*length(mean_effect)), ncol=3))
+  colnames(settings)   <- c("environment", "mean_effect", "setting_id")
+  settings$environment <- sort(rep(environment, length(mean_effect)))
+  settings$mean_effect <- rep(mean_effect, length(environment))
+
+  # attach setting id
+  settings$setting_id <- 1:nrow(settings)
+
+  return(settings)
+}
 
 ### additional simulation functions ----
 # Imported and slightly modified from Hong & Reed 2021
@@ -113,7 +130,7 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Primary Study Data (Effect) Generation
 #######################################################
-.HongAndReed2021_Alinaghi2019_PrimaryStudy <- function(StudyID, al, ali, lambdai0, type){
+.HongAndReed2021_Alinaghi2018_PrimaryStudy <- function(StudyID, al, ali, lambdai0, type){
   if(type=='PRE'){
     sigr<-sqrt(0.25);
     m<-10;
@@ -153,7 +170,7 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Meta Analysis Data Generation
 #######################################################
-.HongAndReed2021_Alinaghi2019_CollectingData<- function(type, alpha){
+.HongAndReed2021_Alinaghi2018_CollectingData<- function(type, alpha){
   if(type=='PRE'){
     StudyN<-100;
     sigi<-2
@@ -168,9 +185,9 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
   for(i in 1:StudyN){
     ali<-stats::rnorm(1, mean = alpha, sd = sigi)
     if(i==1){
-      MetaStudyData<-.HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, stats::runif(1,0,1), type)
+      MetaStudyData<-.HongAndReed2021_Alinaghi2018_PrimaryStudy(i, alpha, ali, stats::runif(1,0,1), type)
     }else{
-      MetaStudyData<-rbind(MetaStudyData, .HongAndReed2021_Alinaghi2019_PrimaryStudy(i, alpha, ali, stats::runif(1,0,1), type))
+      MetaStudyData<-rbind(MetaStudyData, .HongAndReed2021_Alinaghi2018_PrimaryStudy(i, alpha, ali, stats::runif(1,0,1), type))
     }
   }
   return(MetaStudyData)
@@ -181,8 +198,8 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Creating Publication Bias
 #######################################################
-.HongAndReed2021_Alinaghi2019_MetaStudy <- function(type, alpha){
-  MetaData<-as.data.frame(.HongAndReed2021_Alinaghi2019_CollectingData(type, alpha))
+.HongAndReed2021_Alinaghi2018_MetaStudy <- function(type, alpha){
+  MetaData<-as.data.frame(.HongAndReed2021_Alinaghi2018_CollectingData(type, alpha))
   return(MetaData)
 }
 #######################################################
@@ -191,7 +208,7 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 # Clustered Standard Errors; ARRSM
 #######################################################
-.HongAndReed2021_Alinaghi2019_clusteredSE_ARRSM <-function(regOLS, Study){
+.HongAndReed2021_Alinaghi2018_clusteredSE_ARRSM <-function(regOLS, Study){
   M <- length(unique(Study))
   N <- length(Study)
   K <- regOLS$rank
@@ -207,7 +224,7 @@ validate_dgm_settings.Alinaghi2019 <- function(dgm_name, settings) {
 ##############################
 ## Creating Publication Bias
 #######################################################
-.HongAndReed2021_Alinaghi2019_ARBias <- function(MetaData, type, bias){
+.HongAndReed2021_Alinaghi2018_ARBias <- function(MetaData, type, bias){
   if(type=='PRE'){
     rnd <- matrix(1, nrow=100, ncol=1)
     for(rndi in 1:10){rnd[c((1+10*(rndi-1)):(10*rndi))] <- stats::runif(1,0,1);}

@@ -64,7 +64,7 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settings()]
+#' @seealso [dgm()], [validate_dgm_setting()]
 #' @export
 dgm.Stanley2017 <- function(dgm_name, settings) {
 
@@ -75,6 +75,10 @@ dgm.Stanley2017 <- function(dgm_name, settings) {
   bias                 <- settings[["bias"]]
   n_studies            <- settings[["n_studies"]]
   sample_sizes         <- settings[["sample_sizes"]]
+
+  # unlist effect sizes if passed as a list instead of a vector
+  if (is.list(sample_sizes) && length(sample_sizes) == 1)
+    sample_sizes <- sample_sizes[[1]]
 
   # Simulate data sets
   if (environment == "LogOR"){
@@ -100,7 +104,7 @@ dgm.Stanley2017 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settings.Stanley2017 <- function(dgm_name, settings) {
+validate_dgm_setting.Stanley2017 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("environment", "mean_effect", "effect_heterogeneity", "bias", "n_studies", "sample_sizes")
@@ -115,6 +119,10 @@ validate_dgm_settings.Stanley2017 <- function(dgm_name, settings) {
   bias                 <- settings[["bias"]]
   n_studies            <- settings[["n_studies"]]
   sample_sizes         <- settings[["sample_sizes"]]
+
+  # unlist effect sizes if passed as a list instead of a vector
+  if (is.list(sample_sizes) && length(sample_sizes) == 1)
+    sample_sizes <- sample_sizes[[1]]
 
   # Validate settings
   if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("LogOR", "Cohens_d"))
@@ -133,6 +141,58 @@ validate_dgm_settings.Stanley2017 <- function(dgm_name, settings) {
   return(invisible(TRUE))
 }
 
+#' @export
+dgm_settings.Stanley2017 <- function(dgm_name) {
+
+  # Keep the same order as in Hong and Reed 2021
+  simulationType  <- "Cohens_d"
+  effectSize_List <- c(0, 50)
+  sigH_List       <- c(0, 6.25, 12.5, 25, 50)
+  PubBias_List    <- c(0, 0.5, 0.75)
+  MetaStudyN_List <- c(5,10,20,40,80)
+  param1 <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+
+  simulationType   <- "LogOR"
+  effectSize_List  <- c(0.00, 0.03, 0.06)
+  sigH_List        <- c(0.006)
+  PubBias_List     <- c(0.0, 0.5)
+  MetaStudyN_List  <- c(5,10,20,40,80)
+  param2           <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+
+  paramONE <- rbind(param1,param2)
+
+
+  simulationType  <- "Cohens_d"
+  effectSize_List <- c(0, 50)
+  sigH_List       <- c(0, 6.25, 12.5, 25, 50)
+  PubBias_List    <- c(0, 0.5, 0.75)
+  MetaStudyN_List <- c(100,200,400,800)
+  param3          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+
+  simulationType  <- "LogOR"
+  effectSize_List <- c(0.00, 0.03, 0.06)
+  sigH_List       <- c(0.006)
+  PubBias_List    <- c(0.0, 0.5)
+  MetaStudyN_List <- c(100,200,400,800)
+  param4          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+
+  paramTWO <- rbind(param3,param4)
+
+
+  # rename parameters
+  settings <- rbind(paramONE,paramTWO)
+  colnames(settings)    <- c("mean_effect", "effect_heterogeneity", "bias", "n_studies", "environment")
+  settings$sample_sizes <- NA
+
+  # enlist the corresponding sample sizes
+  settings$sample_sizes[settings$environment == "Cohens_d"] <- list(c(32,64,125,250,500))
+  settings$sample_sizes[settings$environment == "LogOR"]    <- list(c(50,100,100,250,500))
+
+  # attach setting id
+  settings$setting_id <- 1:nrow(settings)
+
+  return(settings)
+}
 
 ### additional simulation functions ----
 # Imported and slightly modified from Hong & Reed 2021

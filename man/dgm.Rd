@@ -2,7 +2,7 @@
 % Please edit documentation in R/dgm.R
 \name{dgm}
 \alias{dgm}
-\title{Generic data generating mechanism function}
+\title{DGM Method}
 \usage{
 dgm(dgm_name, settings)
 }
@@ -10,32 +10,8 @@ dgm(dgm_name, settings)
 \item{dgm_name}{Character string specifying the DGM type}
 
 \item{settings}{List containing the required parameters for the DGM or
-numeric settings_id}
-}
-\value{
-A data frame containing the generated data with standardized structure
+numeric setting_id}
 }
 \description{
-This function provides a unified interface to various data generating
-mechanisms for simulation studies. The specific DGM is determined by
-the first argument.
-}
-\examples{
-dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
-                       bias = "high", QRP = "high", n_studies = 10))
-
-dgm("Alinaghi2019", list(environment = "FE", mean_effect = 0))
-
-dgm("Stanley2017", list(environment = "Cohens_d", mean_effect = 0,
-                        effect_heterogeneity = 0, bias = 0, n_studies = 5,
-                        sample_sizes = c(32,64,125,250,500)))
-
-
-}
-\seealso{
-\code{\link[=validate_dgm_settings]{validate_dgm_settings()}},
-\code{\link[=dgm.Stanley2017]{dgm.Stanley2017()}},
-\code{\link[=dgm.Alinaghi2019]{dgm.Alinaghi2019()}},
-\code{\link[=dgm.Bom2019]{dgm.Bom2019()}},
-\code{\link[=dgm.Carter2019]{dgm.Carter2019()}}
+DGM Method
 }

@@ -68,5 +68,5 @@ moderators, and (d) optional stopping.
 \insertAllCited{}
 }
 \seealso{
-\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_settings]{validate_dgm_settings()}}
+\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_setting]{validate_dgm_setting()}}
 }

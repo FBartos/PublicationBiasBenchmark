@@ -56,7 +56,7 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @seealso [dgm()], [validate_dgm_settings()]
+#' @seealso [dgm()], [validate_dgm_setting()]
 #' @export
 dgm.Bom2019 <- function(dgm_name, settings) {
 
@@ -67,6 +67,10 @@ dgm.Bom2019 <- function(dgm_name, settings) {
   bias                 <- settings[["bias"]]
   n_studies            <- settings[["n_studies"]]
   sample_sizes         <- settings[["sample_sizes"]]
+
+  # unlist effect sizes if passed as a list instead of a vector
+  if (is.list(sample_sizes) && length(sample_sizes) == 1)
+    sample_sizes <- sample_sizes[[1]]
 
   # Simulate data sets
   df <- .HongAndReed2021_Bom2019_MetaStudy(mean_effect, effect_heterogeneity, n_studies, bias, sample_sizes)
@@ -81,7 +85,7 @@ dgm.Bom2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-validate_dgm_settings.Bom2019 <- function(dgm_name, settings) {
+validate_dgm_setting.Bom2019 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
   required_params <- c("environment", "mean_effect", "effect_heterogeneity", "bias", "n_studies", "sample_sizes")
@@ -96,6 +100,10 @@ validate_dgm_settings.Bom2019 <- function(dgm_name, settings) {
   bias                 <- settings[["bias"]]
   n_studies            <- settings[["n_studies"]]
   sample_sizes         <- settings[["sample_sizes"]]
+
+  # unlist effect sizes if passed as a list instead of a vector
+  if (is.list(sample_sizes) && length(sample_sizes) == 1)
+    sample_sizes <- sample_sizes[[1]]
 
   # Validate settings
   if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("LogOR", "Cohens_d"))
@@ -113,6 +121,39 @@ validate_dgm_settings.Bom2019 <- function(dgm_name, settings) {
 
   return(invisible(TRUE))
 }
+
+#' @export
+dgm_settings.Bom2019 <- function(dgm_name) {
+
+  # Keep the same order as in Hong and Reed 2021
+  sigH_List       <- c(0,0.125,0.25,0.5,1.0,2.0,4.0)
+  MetaStudyN_List <- c(5, 10, 20, 40, 80)
+  effectSize_List <- c(0, 1)
+  PubBias_List    <- c(0, 25, 50, 75) / 100 # already divided by 100 in contrast to Hong and Reed
+  paramONE        <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List))
+
+  sigH_List       <- c(0,0.125,0.25,0.5,1.0,2.0,4.0);
+  MetaStudyN_List <- c(100, 200, 400, 800);
+  effectSize_List <- c(0, 1);
+  PubBias_List    <- c(0, 25, 50, 75) / 100
+  paramTWO <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List))
+
+  param <- rbind(paramONE, paramTWO)
+
+  # rename parameters
+  settings <- rbind(paramONE, paramTWO)
+  colnames(settings)    <- c("mean_effect", "effect_heterogeneity", "bias", "n_studies")
+  settings$sample_sizes <- NA
+
+  # enlist the corresponding sample sizes
+  settings$sample_sizes <- list(c(62,125,250,500,1000))
+
+  # attach setting id
+  settings$setting_id <- 1:nrow(settings)
+
+  return(settings)
+}
+
 
 
 ### additional simulation functions ----
@@ -136,7 +177,7 @@ validate_dgm_settings.Bom2019 <- function(dgm_name, settings) {
   output =  matrix(0, nrow=ssize, ncol=6);
   colnames(output) <- c("id","y","al_se","Significant","popal","obs");
 
-  num_publ=ssize*(Bias/100);
+  num_publ=ssize*Bias; # already dividing the bias by 100 for comparability of arguments
   for(i in 1:ssize) {
     obs<-obsList[(i-1) %% length(obsList) + 1]; # modified
     output[i,1]=i;

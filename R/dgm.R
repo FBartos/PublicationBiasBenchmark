@@ -1,31 +1,49 @@
-#' Generic data generating mechanism function
+#' @title Simulate From Data Generating Mechanism
 #'
+#' @description
 #' This function provides a unified interface to various data generating
 #' mechanisms for simulation studies. The specific DGM is determined by
 #' the first argument.
 #'
 #' @param dgm_name Character string specifying the DGM type
 #' @param settings List containing the required parameters for the DGM or
-#' numeric settings_id
+#' numeric setting_id
 #'
 #' @return A data frame containing the generated data with standardized structure
 #'
 #' @examples
-#' dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
+#' simulate_dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
 #'                        bias = "high", QRP = "high", n_studies = 10))
 #'
-#' dgm("Alinaghi2019", list(environment = "FE", mean_effect = 0))
+#' simulate_dgm("Alinaghi2018", list(environment = "FE", mean_effect = 0))
 #'
-#' dgm("Stanley2017", list(environment = "Cohens_d", mean_effect = 0,
+#' simulate_dgm("Stanley2017", list(environment = "Cohens_d", mean_effect = 0,
 #'                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
 #'                         sample_sizes = c(32,64,125,250,500)))
 #'
 #'
-#' @seealso [validate_dgm_settings()],
+#' @seealso [validate_dgm_setting()],
 #' [dgm.Stanley2017()],
-#' [dgm.Alinaghi2019()],
+#' [dgm.Alinaghi2018()],
 #' [dgm.Bom2019()],
 #' [dgm.Carter2019()]
+#' @export
+simulate_dgm <- function(dgm_name, settings) {
+
+  # Allow calling DGMs with pre-specified `setting_id`
+  if (length(settings) == 1 && is.numeric(settings) && is.wholenumber(settings)) {
+    settings <- get_dgm_setting(dgm_name, settings)
+    settings <- as.list(settings)
+    settings <- settings[names(settings) != "setting_id"]
+  }
+
+  # Call the DGM with the pre-specified settings
+  dgm(dgm_name, settings)
+}
+
+#' @title DGM Method
+#' @inheritParams simulate_dgm
+#'
 #' @export
 dgm <- function(dgm_name, settings) {
 
@@ -46,7 +64,7 @@ dgm <- function(dgm_name, settings) {
 dgm.default <- function(dgm_name, settings) {
   available_dgms <- c(
     "no_bias",                                              # example DGM
-    "Alinaghi2019", "Stanley2017", "Bom2019", "Carter2019"  # DGMs based on Hong and Reed 2021
+    "Stanley2017", "Alinaghi2018", "Bom2019", "Carter2019"  # DGMs based on Hong and Reed 2021
   )
   stop("Unknown DGM type: '", class(dgm_name)[1],
        "'. Available DGMs: ", paste(available_dgms, collapse = ", "))
@@ -64,20 +82,20 @@ dgm.default <- function(dgm_name, settings) {
 #' the specified DGM.
 #'
 #' @examples
-#' validate_dgm_settings("Carter2019", list(mean_effect = 0,
+#' validate_dgm_setting("Carter2019", list(mean_effect = 0,
 #'                         effect_heterogeneity = 0, bias = "high",
 #'                         QRP = "high", n_studies = 10))
 #'
-#' validate_dgm_settings("Alinaghi2019", list(environment = "FE",
+#' validate_dgm_setting("Alinaghi2018", list(environment = "FE",
 #'                         mean_effect = 0))
 #'
-#' validate_dgm_settings("Stanley2017", list(environment = "Cohens_d",
+#' validate_dgm_setting("Stanley2017", list(environment = "Cohens_d",
 #'                         mean_effect = 0,
 #'                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
 #'                         sample_sizes = c(32,64,125,250,500)))
 #'
 #' @export
-validate_dgm_settings <- function(dgm_name, settings) {
+validate_dgm_setting <- function(dgm_name, settings) {
 
   # Convert character to appropriate class for dispatch
   if (is.character(dgm_name)) {
@@ -86,5 +104,48 @@ validate_dgm_settings <- function(dgm_name, settings) {
     dgm_type <- dgm_name
   }
 
-  UseMethod("validate_dgm_settings", dgm_type)
+  UseMethod("validate_dgm_setting", dgm_type)
+}
+
+
+#' @title Return Pre-specified DGM Settings
+#'
+#' @description
+#' This function returns the list of pre-specified settings for a given Data
+#' Generating Mechanism (DGM).
+#'
+#' @inheritParams dgm
+#'
+#' @return A data frame containing the pre-specified settings including a
+#' `setting_id` column which maps settings id to the corresponding settings.
+#'
+#' @examples
+#' dgm_settings("Carter2019")
+#'
+#' dgm_settings("Alinaghi2018")
+#'
+#' dgm_settings("Stanley2017")
+#'
+#' @export
+dgm_settings <- function(dgm_name) {
+
+  # Convert character to appropriate class for dispatch
+  if (is.character(dgm_name)) {
+    dgm_type <- structure(dgm_name, class = dgm_name)
+  } else {
+    dgm_type <- dgm_name
+  }
+
+  UseMethod("dgm_settings", dgm_type)
+}
+
+get_dgm_setting <- function(dgm_name, setting_id) {
+
+  settings      <- dgm_settings(dgm_name)
+  this_settings <- settings[settings[["setting_id"]] == setting_id,,drop = FALSE]
+
+  if (nrow(this_settings) == 0)
+    stop("No matching 'setting_id' found")
+
+  return(this_settings)
 }

@@ -10,10 +10,8 @@
 \item{dgm_name}{DGM name (automatically passed)}
 
 \item{settings}{List containing \describe{
-\item{environment}{Type of the simulation environment. One of
-\code{"LogOR"} or \code{"Cohens_d"}.}
 \item{mean_effect}{Mean effect}
-\item{effect_heterogeneity}{Mean effect heterogeneity}
+\item{heterogeneity}{Effect heterogeneity}
 \item{n_studies}{Number of effect size estimates}
 }}
 }
@@ -31,11 +29,11 @@ publication bias.
 Sample sizes of individual effect size estimates are generated from a
 negative binomial distribution based on empirical sample size distribution
 presented in Appendix B of
-\insertCite{alinaghi2018meta;textual}{PublicationBiasBenchmark}
+\insertCite{maier2023robust;textual}{PublicationBiasBenchmark}
 }
 \references{
 \insertAllCited{}
 }
 \seealso{
-\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_settings]{validate_dgm_settings()}}
+\code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_setting]{validate_dgm_setting()}}
 }
