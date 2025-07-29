@@ -21,6 +21,7 @@ Depends:
 Imports:
     stats,
     metafor,
+    osfr,
     MASS,
     pwr,
     sandwich,
