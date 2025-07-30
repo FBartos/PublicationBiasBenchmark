@@ -40,6 +40,19 @@ df <- simulate_dgm("no_bias", sim_settings)
 method("PET", df)
 ```
 
+### Using Pre-Simulated Datasets
+
+``` r
+library(PublicationBiasBenchmark)
+
+# download the pre-simulated datasets to "sims" folder
+download_folder <- file.path(getwd(), "sims")
+download_dgm_datasets("no_bias", path = download_folder)
+
+# retrieve first repetition of first condition from the downloaded datasets
+retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+```
+
 ### Key Functions
 
 #### Data Generating Mechanisms
@@ -50,6 +63,10 @@ method("PET", df)
   mechanism.
 - `validate_dgm_setting()`: Validates setting of the data generating
   mechanism.
+- `download_dgm_datasets()`: Downloads pre-simulated datasets from the
+  DGM’s OSF repository.
+- `retrieve_dgm_dataset()`: Retrieves the condition and repetition of
+  the pre-simulated dataset downloaded from the DGM’s OSF repository.
 
 ### Available DGM Models
 
@@ -62,7 +79,8 @@ method("PET", df)
 
 ### Available Methods
 
-- `"PET"`: Publication bias correction using PET (Precision-Effect Test)
+- `"RMA"`: Random effects meta-analysis
+- `"PET"`: Precision-Effect Test (PET) publication bias adjustment
 - …
 
 ## Documentation

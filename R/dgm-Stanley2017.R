@@ -142,7 +142,7 @@ validate_dgm_setting.Stanley2017 <- function(dgm_name, settings) {
 }
 
 #' @export
-dgm_settings.Stanley2017 <- function(dgm_name) {
+dgm_conditions.Stanley2017 <- function(dgm_name) {
 
   # Keep the same order as in Hong and Reed 2021
   simulationType  <- "Cohens_d"
@@ -189,7 +189,7 @@ dgm_settings.Stanley2017 <- function(dgm_name) {
   settings$sample_sizes[settings$environment == "LogOR"]    <- list(c(50,100,100,250,500))
 
   # attach setting id
-  settings$setting_id <- 1:nrow(settings)
+  settings$condition_id <- 1:nrow(settings)
 
   return(settings)
 }

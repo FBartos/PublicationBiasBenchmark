@@ -1,5 +1,6 @@
-#' Generic method function for publication bias correction
+#' @title  Generic method function for publication bias correction
 #'
+#' @description
 #' This function provides a unified interface to various publication bias
 #' correction methods. The specific method is determined by the first argument.
 #'

@@ -10,7 +10,7 @@ validate_dgm_setting(dgm_name, settings)
 \item{dgm_name}{Character string specifying the DGM type}
 
 \item{settings}{List containing the required parameters for the DGM or
-numeric setting_id}
+numeric condition_id}
 }
 \value{
 Error or \code{TRUE} depending whether the settings are valid for

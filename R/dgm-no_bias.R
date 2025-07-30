@@ -88,7 +88,7 @@ validate_dgm_setting.no_bias <- function(dgm_name, settings) {
 }
 
 #' @export
-dgm_settings.no_bias <- function(dgm_name) {
+dgm_conditions.no_bias <- function(dgm_name) {
 
   # generate a list of pre-specified settings
   settings <- data.frame(expand.grid(
@@ -98,7 +98,7 @@ dgm_settings.no_bias <- function(dgm_name) {
   ))
 
   # attach setting id
-  settings$setting_id <- 1:nrow(settings)
+  settings$condition_id <- 1:nrow(settings)
 
   return(settings)
 }

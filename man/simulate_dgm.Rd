@@ -10,7 +10,7 @@ simulate_dgm(dgm_name, settings)
 \item{dgm_name}{Character string specifying the DGM type}
 
 \item{settings}{List containing the required parameters for the DGM or
-numeric setting_id}
+numeric condition_id}
 }
 \value{
 A data frame containing the generated data with standardized structure

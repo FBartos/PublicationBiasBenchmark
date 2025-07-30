@@ -123,7 +123,7 @@ validate_dgm_setting.Bom2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-dgm_settings.Bom2019 <- function(dgm_name) {
+dgm_conditions.Bom2019 <- function(dgm_name) {
 
   # Keep the same order as in Hong and Reed 2021
   sigH_List       <- c(0,0.125,0.25,0.5,1.0,2.0,4.0)
@@ -149,7 +149,7 @@ dgm_settings.Bom2019 <- function(dgm_name) {
   settings$sample_sizes <- list(c(62,125,250,500,1000))
 
   # attach setting id
-  settings$setting_id <- 1:nrow(settings)
+  settings$condition_id <- 1:nrow(settings)
 
   return(settings)
 }

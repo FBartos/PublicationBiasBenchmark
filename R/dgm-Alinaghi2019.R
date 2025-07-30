@@ -106,19 +106,19 @@ validate_dgm_setting.Alinaghi2018 <- function(dgm_name, settings) {
 }
 
 #' @export
-dgm_settings.Alinaghi2018 <- function(dgm_name) {
+dgm_conditions.Alinaghi2018 <- function(dgm_name) {
 
   # Keep the same order as in Hong and Reed 2021
   environment <- c("RE", "PRE", "FE")
   mean_effect <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
 
   settings <- as.data.frame(matrix(NA, nrow = (length(environment)*length(mean_effect)), ncol=3))
-  colnames(settings)   <- c("environment", "mean_effect", "setting_id")
+  colnames(settings)   <- c("environment", "mean_effect", "condition_id")
   settings$environment <- sort(rep(environment, length(mean_effect)))
   settings$mean_effect <- rep(mean_effect, length(environment))
 
   # attach setting id
-  settings$setting_id <- 1:nrow(settings)
+  settings$condition_id <- 1:nrow(settings)
 
   return(settings)
 }

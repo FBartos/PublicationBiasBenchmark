@@ -7,7 +7,7 @@
 #'
 #' @param dgm_name Character string specifying the DGM type
 #' @param settings List containing the required parameters for the DGM or
-#' numeric setting_id
+#' numeric condition_id
 #'
 #' @return A data frame containing the generated data with standardized structure
 #'
@@ -30,11 +30,11 @@
 #' @export
 simulate_dgm <- function(dgm_name, settings) {
 
-  # Allow calling DGMs with pre-specified `setting_id`
+  # Allow calling DGMs with pre-specified `condition_id`
   if (length(settings) == 1 && is.numeric(settings) && is.wholenumber(settings)) {
-    settings <- get_dgm_setting(dgm_name, settings)
+    settings <- get_dgm_condition(dgm_name, settings)
     settings <- as.list(settings)
-    settings <- settings[names(settings) != "setting_id"]
+    settings <- settings[names(settings) != "condition_id"]
   }
 
   # Call the DGM with the pre-specified settings
@@ -107,7 +107,6 @@ validate_dgm_setting <- function(dgm_name, settings) {
   UseMethod("validate_dgm_setting", dgm_type)
 }
 
-
 #' @title Return Pre-specified DGM Settings
 #'
 #' @description
@@ -115,19 +114,26 @@ validate_dgm_setting <- function(dgm_name, settings) {
 #' Generating Mechanism (DGM).
 #'
 #' @inheritParams dgm
+#' @param condition_id which conditions should settings be returned for.
 #'
 #' @return A data frame containing the pre-specified settings including a
-#' `setting_id` column which maps settings id to the corresponding settings.
+#' `condition_id` column which maps settings id to the corresponding settings.
 #'
 #' @examples
-#' dgm_settings("Carter2019")
+#' dgm_conditions("Carter2019")
+#' get_dgm_condition("Carter2019", condition_id = 1)
 #'
-#' dgm_settings("Alinaghi2018")
+#' dgm_conditions("Alinaghi2018")
 #'
-#' dgm_settings("Stanley2017")
+#' dgm_conditions("Stanley2017")
 #'
+#' @aliases dgm_conditions get_dgm_condition
+#' @name dgm_conditions
+NULL
+
+#' @rdname dgm_conditions
 #' @export
-dgm_settings <- function(dgm_name) {
+dgm_conditions <- function(dgm_name) {
 
   # Convert character to appropriate class for dispatch
   if (is.character(dgm_name)) {
@@ -136,16 +142,44 @@ dgm_settings <- function(dgm_name) {
     dgm_type <- dgm_name
   }
 
-  UseMethod("dgm_settings", dgm_type)
+  UseMethod("dgm_conditions", dgm_type)
 }
 
-get_dgm_setting <- function(dgm_name, setting_id) {
+#' @rdname dgm_conditions
+#' @export
+get_dgm_condition <- function(dgm_name, condition_id) {
 
-  settings      <- dgm_settings(dgm_name)
-  this_settings <- settings[settings[["setting_id"]] == setting_id,,drop = FALSE]
+  settings       <- dgm_conditions(dgm_name)
+  this_condition <- settings[settings[["condition_id"]] == condition_id,,drop = FALSE]
 
-  if (nrow(this_settings) == 0)
-    stop("No matching 'setting_id' found")
+  if (nrow(this_condition) == 0)
+    stop("No matching 'condition_id' found")
 
-  return(this_settings)
+  return(this_condition)
+}
+
+#' @title Return OSF Link to the DGM Repository
+#'
+#' @description
+#' This function returns a string with the link to the OSF project containing
+#' simulated data sets and methods' results.
+#'
+#' @inheritParams dgm
+#'
+#' @return A character containing an OSF link.
+#'
+#' @examples
+#' dgm_conditions("no_bias")
+#'
+#' @export
+dgm_repository <- function(dgm_name) {
+
+  # Convert character to appropriate class for dispatch
+  if (is.character(dgm_name)) {
+    dgm_type <- structure(dgm_name, class = dgm_name)
+  } else {
+    dgm_type <- dgm_name
+  }
+
+  UseMethod("dgm_repository", dgm_type)
 }

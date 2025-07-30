@@ -113,7 +113,7 @@ validate_dgm_setting.Carter2019 <- function(dgm_name, settings) {
 }
 
 #' @export
-dgm_settings.Carter2019 <- function(dgm_name) {
+dgm_conditions.Carter2019 <- function(dgm_name) {
 
   # Keep the same order as in Hong and Reed 2021
   k_set      <- c(10, 30, 60, 100)			   	# number of studies in each MA
@@ -140,7 +140,7 @@ dgm_settings.Carter2019 <- function(dgm_name) {
   colnames(settings) <- c("n_studies", "mean_effect", "QRP", "bias", "effect_heterogeneity")
 
   # attach setting id
-  settings$setting_id <- 1:nrow(settings)
+  settings$condition_id <- 1:nrow(settings)
 
   return(settings)
 }

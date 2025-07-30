@@ -61,7 +61,7 @@ method.RMA <- function(method_name, data, settings = NULL) {
 
     tau_estimate <- sqrt(rma_model$tau2)
     tau_p_value  <- rma_model$QEp
-    taus <- try(confint(rma_model))
+    taus <- try(stats::confint(rma_model))
     if (inherits(taus, "try-error")) {
       tau_ci_lower <- NA
       tau_ci_upper <- NA
