@@ -55,8 +55,6 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = down
 
 ### Key Functions
 
-#### Data Generating Mechanisms
-
 - `simulate_dgm()`: Generates simulated data according to specified data
   generating model and settings.
 - `dgm_settings()`: Lists prespecified settings of the data generating
@@ -83,15 +81,25 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = down
 - `"PET"`: Precision-Effect Test (PET) publication bias adjustment
 - …
 
-## Documentation
+### DGM OSF Repositories
 
-For detailed documentation of all functions and parameters, use:
+All DGM are linked to OSF repositories containing the following
+elements:
 
-``` r
-?simulate_dgm
-?method
-?validate_dgm_setting
-```
+- `data` : folder containing by-condition simulated datasets for all
+  repetitions
+- `results` : folder containing by-method results for all conditions \*
+  repetitions
+- `metadata` : folder containing the following information:
+  - `conditions.csv` : file mapping of all conditions and the
+    corresponding settings
+  - `data_generation.R` : file with code and reproducibility details for
+    exact reproduction of the pre-simulated datasets
+  - `methods.R` : file with code and reproducibility details for exact
+    reproduction of the by method results
+
+Link to the OSF repository can be accessed via the `dgm_repository()`
+function.
 
 ### References
 
