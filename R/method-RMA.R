@@ -5,14 +5,16 @@
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)
-#' @param settings List of method settings (currently unused)
+#' @param settings List of method settings (see Details.)
 #'
 #' @return Data frame with RMA results
 #'
 #' @details
-#' The default settings uses Restricted Maximum Likelihood estimator
-#' (\code{method = "REML"}) with Knapp-Hartung adjustment
-#' (\code{test = "knha"}).
+#' The following settings are implemented \describe{
+#'   \item{\code{"default"}}{Restricted Maximum Likelihood estimator
+#'        (\code{method = "REML"}) with Knapp-Hartung adjustment
+#'        (\code{test = "knha"}).}
+#' }
 #'
 #'
 #' @examples
@@ -23,34 +25,31 @@
 #' )
 #'
 #' # Apply PET method
-#' result <- method("RMA", data)
+#' result <- method("RMA", data, "v1")
 #' print(result)
 #'
 #' @export
-method.RMA <- function(method_name, data, settings = NULL) {
-
-  # Extract data
-  effect_sizes    <- data$yi
-  standard_errors <- data$sei
-
-  if (length(effect_sizes) < 3) {
-    return(create_empty_result(
-      method_name = method_name,
-      note        = "At least 2 studies required for RMA analysis",
-      extra_columns = list(
-        tau_estimate = NA,
-        tau_ci_lower = NA,
-        tau_ci_upper = NA,
-        tau_p_value  = NA
-      )
-    ))
-  }
+method.RMA <- function(method_name, data, settings) {
 
   # Fit RMA
   result <- tryCatch({
 
-    rma_model <- metafor::rma.uni(yi = effect_sizes, sei = standard_errors,
-                                  method = "REML", test = "knha")
+    # Extract data
+    effect_sizes    <- data$yi
+    standard_errors <- data$sei
+
+    # Check input
+    if (length(effect_sizes) < 3)
+      stop("At least 3 studies required for RMA analysis")
+
+    # Create a model call based on the settings
+    # RMA settings contain the function call extension
+    # - only data needs to be added to the call
+    settings$yi  <- effect_sizes
+    settings$sei <- standard_errors
+
+    # Call the model
+    rma_model <- do.call(metafor::rma.uni, settings)
 
     # Extract results
     estimate     <- rma_model$beta[1]
@@ -105,4 +104,14 @@ method.RMA <- function(method_name, data, settings = NULL) {
   })
 
   return(result)
+}
+
+#' @export
+method_settings.RMA <- function(dgm_name) {
+
+  settings <- list(
+    "default" = list(method = "REML", test = "knha") # recommended settings according to metafor
+  )
+
+  return(settings)
 }

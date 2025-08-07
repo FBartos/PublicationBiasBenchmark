@@ -11,7 +11,9 @@
 
 \item{data}{Data frame containing yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List containing method-specific settings}
+\item{settings}{Either a character identifying a method version or list
+containing method-specific settings. An emty input will result in running the
+default (first implemented) version of the method.}
 }
 \description{
 Default method handler

@@ -1,17 +1,17 @@
-#' @title PET (Precision-Effect Test) Method
+#' @title PEESE (Precision-Effect Estimate with Standard Errors) Method
 #'
 #' @description
-#' Implements the Precision-Effect Test for publication bias correction.
-#' PET regresses effect sizes against standard errors to test for and correct
-#' publication bias. The intercept represents the bias-corrected effect size
-#' estimate. See
+#' Implements the Precision-Effect Estimate with Standard Errors method for
+#' publication bias correction. PEESE regresses effect sizes against standard
+#' errors^2 to correct for publication bias. The intercept represents the
+#' bias-corrected effect size estimate. See
 #' \insertCite{stanley2014meta;textual}{PublicationBiasBenchmark} for details.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)
 #' @param settings List of method settings (no settings version are implemented)
 #'
-#' @return Data frame with PET results
+#' @return Data frame with PEESE results
 #'
 #' @examples
 #' # Generate some example data
@@ -20,14 +20,14 @@
 #'   sei = c(0.1, 0.15, 0.08, 0.12, 0.09)
 #' )
 #'
-#' # Apply PET method
-#' result <- method("PET", data)
+#' # Apply PEESE method
+#' result <- method("PEESE", data)
 #' print(result)
 #'
 #' @export
-method.PET <- function(method_name, data, settings = NULL) {
+method.PEESE <- function(method_name, data, settings = NULL) {
 
-  # Fit PET model: effect_size ~ intercept + slope * standard_error
+  # Fit PEESE model: effect_size ~ intercept + slope * standard_error^2
   result <- tryCatch({
 
     # Extract data
@@ -36,17 +36,17 @@ method.PET <- function(method_name, data, settings = NULL) {
 
     # Check input
     if (length(effect_sizes) < 3)
-      stop("At least 3 studies required for PET-PEESE analysis")
+      stop("At least 3 studies required for PET analysis")
 
     if (var(standard_errors) < 0)
       stop("No variance in standard errors")
 
-    pet_model <- stats::lm(effect_sizes ~ standard_errors, weights = 1/standard_errors^2)
+    peese_model <- stats::lm(effect_sizes ~ I(standard_errors^2), weights = 1/standard_errors^2)
 
     # Extract results
-    coefficients    <- stats::coef(pet_model)
-    se_coefficients <- summary(pet_model)$coefficients[, "Std. Error"]
-    p_values        <- summary(pet_model)$coefficients[, "Pr(>|t|)"]
+    coefficients    <- stats::coef(peese_model)
+    se_coefficients <- summary(peese_model)$coefficients[, "Std. Error"]
+    p_values        <- summary(peese_model)$coefficients[, "Pr(>|t|)"]
 
     # The intercept represents the bias-corrected effect size
     estimate         <- coefficients[1]
@@ -93,7 +93,7 @@ method.PET <- function(method_name, data, settings = NULL) {
 }
 
 #' @export
-method_settings.PET <- function(dgm_name) {
+method_settings.PEESE <- function(dgm_name) {
 
   settings <- list(
     "default" = list() # no available settings

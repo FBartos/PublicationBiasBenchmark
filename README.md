@@ -17,10 +17,35 @@ devtools::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-### Basic Example
+### Simulating From Existing Data Generating Models
 
 ``` r
-library(PublicationBiasBenchmark)
+
+# Obtain a data.frame with pre-defined conditions
+dgm_conditions("Stanley2017)
+
+# simulate the data from the second condition
+df <- simulate_dgm("Stanley2017", 2)
+
+# fit a method
+run_method("RMA", df)
+```
+
+### Using Pre-Simulated Datasets
+
+``` r
+
+# download the pre-simulated datasets to "sims" folder
+download_folder <- file.path(getwd(), "sims")
+download_dgm_datasets("no_bias", path = download_folder)
+
+# retrieve first repetition of first condition from the downloaded datasets
+retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+```
+
+### Simulating From Existing DGM With Custom Settings
+
+``` r
 
 # define sim setting
 sim_settings <- list(
@@ -37,36 +62,33 @@ validate_dgm_setting("no_bias", sim_settings)
 df <- simulate_dgm("no_bias", sim_settings)
 
 # fit a method
-method("PET", df)
-```
-
-### Using Pre-Simulated Datasets
-
-``` r
-library(PublicationBiasBenchmark)
-
-# download the pre-simulated datasets to "sims" folder
-download_folder <- file.path(getwd(), "sims")
-download_dgm_datasets("no_bias", path = download_folder)
-
-# retrieve first repetition of first condition from the downloaded datasets
-retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+run_method("RMA", df)
 ```
 
 ### Key Functions
 
+#### Data Generating Mechanisms
+
 - `simulate_dgm()`: Generates simulated data according to specified data
   generating model and settings.
-- `dgm_settings()`: Lists prespecified settings of the data generating
-  mechanism.
-- `validate_dgm_setting()`: Validates setting of the data generating
-  mechanism.
+- `dgm_conditions()`: Lists prespecified conditions of the data
+  generating mechanism.
+- `validate_dgm_setting()`: Validates (custom) setting of the data
+  generating mechanism.
 - `download_dgm_datasets()`: Downloads pre-simulated datasets from the
-  DGM’s OSF repository.
+  OSF repository.
 - `retrieve_dgm_dataset()`: Retrieves the condition and repetition of
-  the pre-simulated dataset downloaded from the DGM’s OSF repository.
+  the pre-simulated dataset downloaded from the OSF repository.
+
+#### Method Estimation
+
+- `run_method()`: Estimates method on a supplied data according to the
+  specified settings.
+- `method_settings()`: Lists prespecified settings of the method.
 
 ### Available DGM Models
+
+See `methods("dgm")` for the full list:
 
 - `"no_bias"`: Generates data without publication bias (a test
   simulation)
@@ -77,14 +99,22 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = down
 
 ### Available Methods
 
+See `methods("method")` for the full list:
+
 - `"RMA"`: Random effects meta-analysis
 - `"PET"`: Precision-Effect Test (PET) publication bias adjustment
+  (Stanley & Doucouliagos, 2014)
+- `"PEESE"`: Precision-Effect Estimate with Standard Errors (PEESE)
+  publication bias adjustment (Stanley & Doucouliagos, 2014)
+- `"PETPEESE"`: Precision-Effect Test and Precision-Effect Estimate with
+  Standard Errors (PET-PEESE) publication bias adjustment (Stanley &
+  Doucouliagos, 2014)
 - …
 
 ### DGM OSF Repositories
 
-All DGM are linked to OSF repositories containing the following
-elements:
+All DGM are linked within the OSF repository () and contain the
+following elements:
 
 - `data` : folder containing by-condition simulated datasets for all
   repetitions
@@ -97,9 +127,6 @@ elements:
     exact reproduction of the pre-simulated datasets
   - `methods.R` : file with code and reproducibility details for exact
     reproduction of the by method results
-
-Link to the OSF repository can be accessed via the `dgm_repository()`
-function.
 
 ### References
 
@@ -128,6 +155,14 @@ Carter, E. C., Schönbrodt, F. D., Gervais, W. M., & Hilgard, J. (2019).
 Correcting for bias in psychology: A comparison of meta-analytic
 methods. *Advances in Methods and Practices in Psychological Science*,
 *2*(2), 115–144. <https://doi.org/10.1177/2515245919847196>
+
+</div>
+
+<div id="ref-stanley2014meta" class="csl-entry">
+
+Stanley, T. D., & Doucouliagos, H. (2014). Meta-regression
+approximations to reduce publication selection bias. *Research Synthesis
+Methods*, *5*(1), 60–78. <https://doi.org/10.1002/jrsm.1095>
 
 </div>
 

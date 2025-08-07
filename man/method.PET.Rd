@@ -11,7 +11,7 @@
 
 \item{data}{Data frame with yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List of method settings (currently unused)}
+\item{settings}{List of method settings (no settings version are implemented)}
 }
 \value{
 Data frame with PET results
@@ -19,7 +19,9 @@ Data frame with PET results
 \description{
 Implements the Precision-Effect Test for publication bias correction.
 PET regresses effect sizes against standard errors to test for and correct
-publication bias. The intercept represents the bias-corrected effect size.
+publication bias. The intercept represents the bias-corrected effect size
+estimate. See
+\insertCite{stanley2014meta;textual}{PublicationBiasBenchmark} for details.
 }
 \examples{
 # Generate some example data

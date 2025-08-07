@@ -2,32 +2,19 @@
 % Please edit documentation in R/method.R
 \name{method}
 \alias{method}
-\title{Generic method function for publication bias correction}
+\title{Method Method}
 \usage{
-method(method_name, data, settings = list())
+method(method_name, data, settings)
 }
 \arguments{
 \item{method_name}{Character string specifying the method type}
 
 \item{data}{Data frame containing yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List containing method-specific settings}
-}
-\value{
-A data frame with standardized method results
+\item{settings}{Either a character identifying a method version or list
+containing method-specific settings. An emty input will result in running the
+default (first implemented) version of the method.}
 }
 \description{
-This function provides a unified interface to various publication bias
-correction methods. The specific method is determined by the first argument.
-}
-\examples{
-# Example usage with PET method
-data <- data.frame(
-  yi = c(0.2, 0.3, 0.1, 0.4),
-  sei = c(0.1, 0.15, 0.08, 0.12)
-)
-result <- method("PET", data)
-
-# Example usage with PETPEESE method
-# result <- method("PETPEESE", data)
+Method Method
 }

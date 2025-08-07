@@ -4,14 +4,14 @@
 \alias{method.RMA}
 \title{Random Effects Meta-Analysis Method}
 \usage{
-\method{method}{RMA}(method_name, data, settings = NULL)
+\method{method}{RMA}(method_name, data, settings)
 }
 \arguments{
 \item{method_name}{Method name (automatically passed)}
 
 \item{data}{Data frame with yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List of method settings (currently unused)}
+\item{settings}{List of method settings (see Details.)}
 }
 \value{
 Data frame with RMA results
@@ -20,9 +20,11 @@ Data frame with RMA results
 Implements the publication bias-unadjusted random effects meta-analysis.
 }
 \details{
-The default settings uses Restricted Maximum Likelihood estimator
+The following settings are implemented \describe{
+\item{\code{"v1"}}{Restricted Maximum Likelihood estimator
 (\code{method = "REML"}) with Knapp-Hartung adjustment
-(\code{test = "knha"}).
+(\code{test = "knha"}).}
+}
 }
 \examples{
 # Generate some example data
@@ -32,7 +34,7 @@ data <- data.frame(
 )
 
 # Apply PET method
-result <- method("RMA", data)
+result <- method("RMA", data, "v1")
 print(result)
 
 }
