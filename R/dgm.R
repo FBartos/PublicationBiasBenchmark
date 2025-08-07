@@ -157,29 +157,3 @@ get_dgm_condition <- function(dgm_name, condition_id) {
 
   return(this_condition)
 }
-
-#' @title Return OSF Link to the DGM Repository
-#'
-#' @description
-#' This function returns a string with the link to the OSF project containing
-#' simulated data sets and methods' results.
-#'
-#' @inheritParams dgm
-#'
-#' @return A character containing an OSF link.
-#'
-#' @examples
-#' dgm_conditions("no_bias")
-#'
-#' @export
-dgm_repository <- function(dgm_name) {
-
-  # Convert character to appropriate class for dispatch
-  if (is.character(dgm_name)) {
-    dgm_type <- structure(dgm_name, class = dgm_name)
-  } else {
-    dgm_type <- dgm_name
-  }
-
-  UseMethod("dgm_repository", dgm_type)
-}

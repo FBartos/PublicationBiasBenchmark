@@ -24,6 +24,7 @@ Defaults to \code{FALSE}.}
 }
 \description{
 This function downloads datasets of a specified Data Generating Mechanism (DGM).
+All data are located at \url{https://osf.io/exf3m/}.
 }
 \examples{
 \dontrun{

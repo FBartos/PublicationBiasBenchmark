@@ -31,7 +31,7 @@ df <- simulate_dgm("Stanley2017", 2)
 run_method("RMA", df)
 ```
 
-### Using Pre-Simulated Datasets
+### Use Pre-Simulated Datasets
 
 ``` r
 
@@ -41,6 +41,21 @@ download_dgm_datasets("no_bias", path = download_folder)
 
 # retrieve first repetition of first condition from the downloaded datasets
 retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+```
+
+### Use Pre-Computed Results
+
+``` r
+
+# download the pre-computed results to "res" folder
+download_folder <- file.path(getwd(), "res")
+download_dgm_results("no_bias", path = download_folder)
+
+# retrieve results for the first repetition of first condition of RMA from the downloaded results
+retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+
+# retrieve all results across all conditions and repetitions
+retrieve_dgm_results("no_bias", path = download_folder)
 ```
 
 ### Simulating From Existing DGM With Custom Settings
@@ -121,12 +136,16 @@ following elements:
 - `results` : folder containing by-method results for all conditions \*
   repetitions
 - `metadata` : folder containing the following information:
-  - `conditions.csv` : file mapping of all conditions and the
+  - `dgm-conditions.csv` : file mapping of all conditions and the
     corresponding settings
-  - `data_generation.R` : file with code and reproducibility details for
-    exact reproduction of the pre-simulated datasets
-  - `methods.R` : file with code and reproducibility details for exact
-    reproduction of the by method results
+  - `dgm-generation.R` : file with code for exact reproduction of the
+    pre-simulated datasets
+  - `dgm-sessionInfo.txt`: file with reproducibility details for the
+    pre-simulated datasets
+  - `results`.R\` : file with code for exact reproduction of the by
+    method results (might be method / method groups specific)
+  - `results-sessionInfo.txt`: file with reproducibility details for the
+    precomputed results (might be method / method groups specific)
 
 ### References
 

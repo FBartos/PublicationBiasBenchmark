@@ -21,7 +21,7 @@ Implements the publication bias-unadjusted random effects meta-analysis.
 }
 \details{
 The following settings are implemented \describe{
-\item{\code{"v1"}}{Restricted Maximum Likelihood estimator
+\item{\code{"default"}}{Restricted Maximum Likelihood estimator
 (\code{method = "REML"}) with Knapp-Hartung adjustment
 (\code{test = "knha"}).}
 }

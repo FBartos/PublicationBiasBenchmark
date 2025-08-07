@@ -102,7 +102,3 @@ dgm_conditions.no_bias <- function(dgm_name) {
 
   return(settings)
 }
-
-# link to osf repository containing data and results
-#' @export
-dgm_repository.no_bias <- function(dgm_name) return("https://osf.io/exf3m/")
