@@ -19,7 +19,7 @@
 #'   yi = c(0.2, 0.3, 0.1, 0.4),
 #'   sei = c(0.1, 0.15, 0.08, 0.12)
 #' )
-#' result <- run_method("RMA", data, "v1")
+#' result <- run_method("RMA", data, "default")
 #'
 #' # Example usage with PETPEESE method
 #' # result <- method("PETPEESE", data)
@@ -68,7 +68,7 @@ method.default <- function(method_name, data, settings = list()) {
 #' @description
 #' This function returns the list of pre-specified settings for a given Method
 #'
-#' @inheritParams dgm
+#' @inheritParams method
 #' @param version_id which method version should be used.
 #'
 #' @return A list containing the pre-specified settings. For most methods, the
@@ -76,14 +76,10 @@ method.default <- function(method_name, data, settings = list()) {
 #' of settings that is dispatched within the method call is possible.
 #'
 #' @examples
-#' dgm_conditions("Carter2019")
-#' get_dgm_condition("Carter2019", condition_id = 1)
+#' method_settings("RMA")
+#' get_method_setting("RMA", version_id = "default")
 #'
-#' dgm_conditions("Alinaghi2018")
-#'
-#' dgm_conditions("Stanley2017")
-#'
-#' @aliases dgm_conditions get_dgm_condition
+#' @aliases method_settings get_method_setting
 #' @name method_settings
 NULL
 

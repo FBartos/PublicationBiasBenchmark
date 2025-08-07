@@ -46,7 +46,7 @@ method.PETPEESE <- function(method_name, data, settings) {
     if (length(effect_sizes) < 3)
       stop("At least 3 studies required for PET-PEESE analysis")
 
-    if (var(standard_errors) < 0)
+    if (stats::var(standard_errors) <= 0)
       stop("No variance in standard errors")
 
 
@@ -115,7 +115,7 @@ method.PETPEESE <- function(method_name, data, settings) {
 }
 
 #' @export
-method_settings.PETPEESE <- function(dgm_name) {
+method_settings.PETPEESE <- function(method_name) {
 
   settings <- list(
     "default" = list(conditional_alpha = 0.10)

@@ -107,7 +107,7 @@ method.RMA <- function(method_name, data, settings) {
 }
 
 #' @export
-method_settings.RMA <- function(dgm_name) {
+method_settings.RMA <- function(method_name) {
 
   settings <- list(
     "default" = list(method = "REML", test = "knha") # recommended settings according to metafor

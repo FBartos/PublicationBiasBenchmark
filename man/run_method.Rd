@@ -28,7 +28,7 @@ data <- data.frame(
   yi = c(0.2, 0.3, 0.1, 0.4),
   sei = c(0.1, 0.15, 0.08, 0.12)
 )
-result <- run_method("RMA", data, "v1")
+result <- run_method("RMA", data, "default")
 
 # Example usage with PETPEESE method
 # result <- method("PETPEESE", data)

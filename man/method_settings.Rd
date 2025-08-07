@@ -2,8 +2,6 @@
 % Please edit documentation in R/method.R
 \name{method_settings}
 \alias{method_settings}
-\alias{dgm_conditions}
-\alias{get_dgm_condition}
 \alias{get_method_setting}
 \title{Return Pre-specified Method Settings}
 \usage{
@@ -12,6 +10,8 @@ method_settings(method_name)
 get_method_setting(method_name, version_id)
 }
 \arguments{
+\item{method_name}{Character string specifying the method type}
+
 \item{version_id}{which method version should be used.}
 }
 \value{
@@ -23,11 +23,7 @@ of settings that is dispatched within the method call is possible.
 This function returns the list of pre-specified settings for a given Method
 }
 \examples{
-dgm_conditions("Carter2019")
-get_dgm_condition("Carter2019", condition_id = 1)
-
-dgm_conditions("Alinaghi2018")
-
-dgm_conditions("Stanley2017")
+method_settings("RMA")
+get_method_setting("RMA", version_id = "default")
 
 }

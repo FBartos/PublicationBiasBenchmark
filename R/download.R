@@ -187,7 +187,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, condition_id = NULL, r
     method_results <- list.files(results_path)
 
     if (length(method_results) == 0)
-      stop(sprintf("There are no computed results for '%1$s' dgm locatated at the specified location '%2$s'.", condition_id, data_path))
+      stop(sprintf("There are no computed results for '%1$s' dgm locatated at the specified location '%2$s'.", condition_id, results_path))
 
     results_file <- lapply(method_results, function(method_result) utils::read.csv(file = file.path(results_path, method_result), header = TRUE))
     results_file <- save_rbind(results_file)

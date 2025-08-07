@@ -38,7 +38,7 @@ method.PEESE <- function(method_name, data, settings = NULL) {
     if (length(effect_sizes) < 3)
       stop("At least 3 studies required for PET analysis")
 
-    if (var(standard_errors) < 0)
+    if (stats::var(standard_errors) <= 0)
       stop("No variance in standard errors")
 
     peese_model <- stats::lm(effect_sizes ~ I(standard_errors^2), weights = 1/standard_errors^2)
@@ -93,7 +93,7 @@ method.PEESE <- function(method_name, data, settings = NULL) {
 }
 
 #' @export
-method_settings.PEESE <- function(dgm_name) {
+method_settings.PEESE <- function(method_name) {
 
   settings <- list(
     "default" = list() # no available settings
