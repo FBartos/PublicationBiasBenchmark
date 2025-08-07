@@ -17,7 +17,7 @@
 #'   download_dgm_datasets("no_bias")
 #' }
 #'
-#' @aliases download_dgm_datasets download_dgm_results
+#' @aliases download_dgm_datasets download_dgm_results download_dgm_metrics
 #' @name download_dgm
 NULL
 
@@ -32,6 +32,13 @@ download_dgm_datasets <- function(dgm_name, path = getwd(), add = FALSE) {
 download_dgm_results <- function(dgm_name, path = getwd(), add = FALSE) {
   .download_dgm_fun(dgm_name, what = "results", path = path, add = add)
 }
+
+#' @rdname download_dgm
+#' @export
+download_dgm_metrics <- function(dgm_name, path = getwd(), add = FALSE) {
+  .download_dgm_fun(dgm_name, what = "metrics", path = path, add = add)
+}
+
 
 .download_dgm_fun <- function(dgm_name, what, path, add) {
 
@@ -135,12 +142,12 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 }
 
 
-#' @title Retrieve a Pre-Simulated Condition and Repetition From a DGM
+#' @title Retrieve a Pre-Computed Results of a Method Applied to DGM
 #'
 #' @description
-#' This function returns a pre-simulated dataset of a given repetition and
-#' condition from a dgm. The pre-simulated datasets must be already stored
-#' locally. See [download_dgm_datasets()] function for more guidance.
+#' This function returns a pre-computed results of a given method at a specific
+#' repetition and condition from a dgm. The pre-computed results must be already stored
+#' locally. See [download_dgm_results()] function for more guidance.
 #'
 #' @inheritParams dgm
 #' @inheritParams download_dgm
@@ -205,3 +212,81 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, condition_id = NULL, r
 
   return(results_file)
 }
+
+
+#' @title Retrieve Pre-Computed Performance Metrics for a DGM
+#'
+#' @description
+#' This function returns pre-computed performance metrics for a specified
+#' Data Generating Mechanism (DGM). The pre-computed metrics must be already stored
+#' locally. See [download_dgm_metrics()] function for more guidance.
+#'
+#' @inheritParams dgm
+#' @inheritParams download_dgm
+#' @inheritParams dgm_conditions
+#' @inheritParams retrieve_dgm_dataset
+#' @param metric Which performance metric should be returned (e.g., "bias", "mse", "coverage").
+#' All metrics can be returned by setting to \code{NULL}.
+#' @param method Which method should be returned. All methods can be returned by setting to \code{NULL}.
+#'
+#' @return A data.frame
+#'
+#' @examples
+#' \dontrun{
+#'   # get bias metrics for all methods and conditions
+#'   retrieve_dgm_metrics("no_bias", metric = "bias")
+#'
+#'   # get all metrics for RMA method
+#'   retrieve_dgm_metrics("no_bias", method = "RMA")
+#'
+#'   # get MSE metrics for PET method in condition 1
+#'   retrieve_dgm_metrics("no_bias", metric = "mse", method = "PET", condition_id = 1)
+#' }
+#'
+#' @export
+retrieve_dgm_metrics <- function(dgm_name, metric = NULL, method = NULL, condition_id = NULL, path = getwd()){
+
+  if (missing(dgm_name))
+    stop("'dgm_name' must be specified")
+
+  # check that the directory / metrics folders exist
+  metrics_path <- file.path(path, dgm_name, "metrics")
+  if (!dir.exists(metrics_path))
+    stop(sprintf("Computed metrics of the specified dgm '%1$s' cannot be located at the specified location '%2$s'. You might need to download the computed metrics using the 'download_dgm_metrics()' function first.", dgm_name, path))
+
+  # return the specific metric results or all metrics
+  if (!is.null(metric) && length(metric) == 1) {
+
+    # check that the corresponding file was downloaded
+    if (!file.exists(file.path(metrics_path, paste0(metric, ".csv"))))
+      stop(sprintf("Computed metrics '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", metric, dgm_name, metrics_path))
+
+    # load the file
+    metrics_file <- utils::read.csv(file = file.path(metrics_path, paste0(metric, ".csv")), header = TRUE)
+
+  } else {
+
+    metric_files <- list.files(metrics_path, pattern = "\\.csv$")
+
+    if (length(metric_files) == 0)
+      stop(sprintf("There are no computed metrics for '%1$s' dgm located at the specified location '%2$s'.", dgm_name, metrics_path))
+
+    metrics_files <- lapply(metric_files, function(metric_file) {
+      utils::read.csv(file = file.path(metrics_path, metric_file), header = TRUE)
+    })
+    metrics_file <- save_merge(metrics_files)
+
+  }
+
+  # subset by method, condition, repetition if specified
+  if (!is.null(method)) {
+    metrics_file <- metrics_file[metrics_file$method %in% method, ]
+  }
+  if (!is.null(condition_id)) {
+    metrics_file <- metrics_file[metrics_file$condition %in% condition_id, ]
+  }
+
+  return(metrics_file)
+}
+
+

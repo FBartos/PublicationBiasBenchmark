@@ -2,7 +2,7 @@
 % Please edit documentation in R/download.R
 \name{retrieve_dgm_results}
 \alias{retrieve_dgm_results}
-\title{Retrieve a Pre-Simulated Condition and Repetition From a DGM}
+\title{Retrieve a Pre-Computed Results of a Method Applied to DGM}
 \usage{
 retrieve_dgm_results(
   dgm_name,
@@ -30,9 +30,9 @@ be saved. Defaults to the current working directory.}
 A data.frame
 }
 \description{
-This function returns a pre-simulated dataset of a given repetition and
-condition from a dgm. The pre-simulated datasets must be already stored
-locally. See \code{\link[=download_dgm_datasets]{download_dgm_datasets()}} function for more guidance.
+This function returns a pre-computed results of a given method at a specific
+repetition and condition from a dgm. The pre-computed results must be already stored
+locally. See \code{\link[=download_dgm_results]{download_dgm_results()}} function for more guidance.
 }
 \examples{
 \dontrun{

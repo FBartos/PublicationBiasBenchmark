@@ -51,11 +51,26 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = down
 download_folder <- file.path(getwd(), "res")
 download_dgm_results("no_bias", path = download_folder)
 
-# retrieve results for the first repetition of first condition of RMA from the downloaded results
-retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+# retrieve results the first repetition of first condition of RMA from the downloaded results
+retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id = 1, path = download_folder)
 
 # retrieve all results across all conditions and repetitions
 retrieve_dgm_results("no_bias", path = download_folder)
+```
+
+### Use Pre-Computed Metrics
+
+``` r
+
+# download the pre-computed results to "res" folder
+download_folder <- file.path(getwd(), "res")
+download_dgm_metrics("no_bias", path = download_folder)
+
+# retrieve metrics of bias the first condition of RMA from the downloaded results
+retrieve_dgm_metrics("no_bias", metric = "bias", method = "RMA", condition_id = 1, path = download_folder)
+
+# retrieve all metrics across all conditions and metrics
+retrieve_dgm_metrics("no_bias", path = download_folder)
 ```
 
 ### Simulating From Existing DGM With Custom Settings
@@ -92,14 +107,30 @@ run_method("RMA", df)
   generating mechanism.
 - `download_dgm_datasets()`: Downloads pre-simulated datasets from the
   OSF repository.
-- `retrieve_dgm_dataset()`: Retrieves the condition and repetition of
-  the pre-simulated dataset downloaded from the OSF repository.
+- `retrieve_dgm_dataset()`: Retrieves the pre-simulated dataset of a
+  given condition and repetition from downloaded from the pre-downloaded
+  OSF repository.
 
-#### Method Estimation
+#### Method Estimation And Results
 
 - `run_method()`: Estimates method on a supplied data according to the
   specified settings.
 - `method_settings()`: Lists prespecified settings of the method.
+- `download_dgm_results()`: Downloads pre-computed results from the OSF
+  repository.
+- `retrieve_dgm_results()`: Retrieves the pre-computed results of a
+  given method, condition, and repetition from the pre-downloaded OSF
+  repository.
+
+#### Performance Metrics And Results
+
+- `bias()`, `bias_mcse()`, etc.: Functions to compute performance
+  metrics and their Monte Carlo standard errors.
+- `download_dgm_metrics()`: Downloads pre-computed performance metrics
+  from the OSF repository.
+- `retrieve_dgm_metrics()`: Retrieves the pre-computed performance
+  metrics of a given method, condition, and repetition from the
+  pre-downloaded OSF repository.
 
 ### Available DGM Models
 
@@ -126,6 +157,11 @@ See `methods("method")` for the full list:
   Doucouliagos, 2014)
 - …
 
+### Available Performance Metrics
+
+See `?performance_metrics` for the full list of performance metrics and
+their Monte Carlo standard errors/
+
 ### DGM OSF Repositories
 
 All DGM are linked within the OSF repository () and contain the
@@ -135,6 +171,8 @@ following elements:
   repetitions
 - `results` : folder containing by-method results for all conditions \*
   repetitions
+- `metrics` : folder containing by-metric performance for all methods \*
+  conditions
 - `metadata` : folder containing the following information:
   - `dgm-conditions.csv` : file mapping of all conditions and the
     corresponding settings
@@ -142,10 +180,12 @@ following elements:
     pre-simulated datasets
   - `dgm-sessionInfo.txt`: file with reproducibility details for the
     pre-simulated datasets
-  - `results`.R\` : file with code for exact reproduction of the by
-    method results (might be method / method groups specific)
+  - `results.R` : file with code for exact reproduction of the by method
+    results (might be method / method groups specific)
   - `results-sessionInfo.txt`: file with reproducibility details for the
     precomputed results (might be method / method groups specific)
+  - `performance_metrics.R` : file with code for computation of
+    performance metrics
 
 ### References
 

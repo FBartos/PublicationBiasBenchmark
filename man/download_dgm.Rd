@@ -4,11 +4,14 @@
 \alias{download_dgm}
 \alias{download_dgm_datasets}
 \alias{download_dgm_results}
+\alias{download_dgm_metrics}
 \title{Download Datasets of a DGM}
 \usage{
 download_dgm_datasets(dgm_name, path = getwd(), add = FALSE)
 
 download_dgm_results(dgm_name, path = getwd(), add = FALSE)
+
+download_dgm_metrics(dgm_name, path = getwd(), add = FALSE)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
