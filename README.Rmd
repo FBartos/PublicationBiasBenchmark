@@ -134,6 +134,7 @@ All DGM are linked within the OSF repository () and contain the following elemen
 
 - `data` : folder containing by-condition simulated datasets for all repetitions
 - `results` : folder containing by-method results for all conditions * repetitions
+- `metrics` : folder containing by-method performance metrics for all conditions 
 - `metadata` : folder containing the following information:
   - `dgm-conditions.csv` : file mapping of all conditions and the corresponding settings
   - `dgm-generation.R` : file with code for exact reproduction of the pre-simulated datasets
