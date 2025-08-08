@@ -35,7 +35,7 @@ devtools::install_github("FBartos/PublicationBiasBenchmark")
 ```r
 
 # Obtain a data.frame with pre-defined conditions
-dgm_conditions("Stanley2017)
+dgm_conditions("Stanley2017")
 
 # simulate the data from the second condition
 df <- simulate_dgm("Stanley2017", 2)
