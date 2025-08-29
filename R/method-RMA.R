@@ -25,85 +25,67 @@
 #' )
 #'
 #' # Apply PET method
-#' result <- method("RMA", data, "v1")
+#' result <- run_method("RMA", data, "v1")
 #' print(result)
 #'
 #' @export
 method.RMA <- function(method_name, data, settings) {
 
   # Fit RMA
-  result <- tryCatch({
 
-    # Extract data
-    effect_sizes    <- data$yi
-    standard_errors <- data$sei
+  # Extract data
+  effect_sizes    <- data$yi
+  standard_errors <- data$sei
 
-    # Check input
-    if (length(effect_sizes) < 3)
-      stop("At least 3 studies required for RMA analysis")
+  # Check input
+  if (length(effect_sizes) < 3)
+    stop("At least 3 studies required for RMA analysis")
 
-    # Create a model call based on the settings
-    # RMA settings contain the function call extension
-    # - only data needs to be added to the call
-    settings$yi  <- effect_sizes
-    settings$sei <- standard_errors
+  # Create a model call based on the settings
+  # RMA settings contain the function call extension
+  # - only data needs to be added to the call
+  settings$yi  <- effect_sizes
+  settings$sei <- standard_errors
 
-    # Call the model
-    rma_model <- do.call(metafor::rma.uni, settings)
+  # Call the model
+  rma_model <- do.call(metafor::rma.uni, settings)
 
-    # Extract results
-    estimate     <- rma_model$beta[1]
-    estimate_se  <- rma_model$se[1]
-    estimate_lci <- rma_model$ci.lb[1]
-    estimate_uci <- rma_model$ci.ub[1]
-    estimate_p   <- rma_model$pval[1]
+  # Extract results
+  estimate     <- rma_model$beta[1]
+  estimate_se  <- rma_model$se[1]
+  estimate_lci <- rma_model$ci.lb[1]
+  estimate_uci <- rma_model$ci.ub[1]
+  estimate_p   <- rma_model$pval[1]
 
-    tau_estimate <- sqrt(rma_model$tau2)
-    tau_p_value  <- rma_model$QEp
-    taus <- try(stats::confint(rma_model))
-    if (inherits(taus, "try-error")) {
-      tau_ci_lower <- NA
-      tau_ci_upper <- NA
-    } else {
-      tau_ci_lower <- taus$random["tau","ci.lb"]
-      tau_ci_upper <- taus$random["tau","ci.ub"]
-    }
+  tau_estimate <- sqrt(rma_model$tau2)
+  tau_p_value  <- rma_model$QEp
+  taus <- try(stats::confint(rma_model))
+  if (inherits(taus, "try-error")) {
+    tau_ci_lower <- NA
+    tau_ci_upper <- NA
+  } else {
+    tau_ci_lower <- taus$random["tau","ci.lb"]
+    tau_ci_upper <- taus$random["tau","ci.ub"]
+  }
 
-    convergence <- TRUE
-    note        <- NA
+  convergence <- TRUE
+  note        <- NA
 
-    return(data.frame(
-      method           = method_name,
-      estimate         = estimate,
-      standard_error   = estimate_se,
-      ci_lower         = estimate_lci,
-      ci_upper         = estimate_uci,
-      p_value          = estimate_p,
-      BF               = NA,
-      convergence      = convergence,
-      note             = note,
-      tau_estimate     = tau_estimate,
-      tau_ci_lower     = tau_ci_lower,
-      tau_ci_upper     = tau_ci_upper,
-      tau_p_value      = tau_p_value
-    ))
-
-  }, error = function(e) {
-
-    return(create_empty_result(
-      method_name = method_name,
-      note        = paste("Model fitting failed:", e$message),
-      extra_columns = list(
-        tau_estimate = NA,
-        tau_ci_lower = NA,
-        tau_ci_upper = NA,
-        tau_p_value  = NA
-      )
-    ))
-
-  })
-
-  return(result)
+  return(data.frame(
+    method           = method_name,
+    estimate         = estimate,
+    standard_error   = estimate_se,
+    ci_lower         = estimate_lci,
+    ci_upper         = estimate_uci,
+    p_value          = estimate_p,
+    BF               = NA,
+    convergence      = convergence,
+    note             = note,
+    tau_estimate     = tau_estimate,
+    tau_ci_lower     = tau_ci_lower,
+    tau_ci_upper     = tau_ci_upper,
+    tau_p_value      = tau_p_value
+  ))
 }
 
 #' @export
@@ -115,3 +97,6 @@ method_settings.RMA <- function(method_name) {
 
   return(settings)
 }
+
+#' @export
+method_extra_columns.RMA <- c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value")

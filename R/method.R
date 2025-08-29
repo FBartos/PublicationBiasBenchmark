@@ -27,13 +27,31 @@ run_method <- function(method_name, data, settings = NULL) {
 
   # Allow calling methods with pre-specified `settings`
   if (length(settings) == 1 && is.character(settings)) {
-    settings <- get_method_setting(method_name, settings)
+    settings_name <- settings
+    settings      <- get_method_setting(method_name, settings)
   } else if (length(settings) == 0) {
-    settings <- get_method_setting(method_name, "default")
+    settings_name <- "default"
+    settings      <- get_method_setting(method_name, "default")
+  } else {
+    settings_name <- "<custom>"
   }
 
   # Call the method with the pre-specified settings
-  method(method_name, data, settings)
+  results <- try(method(method_name, data, settings))
+
+  # In case of error, return the error message and append the method specific columns
+  if (inherits(results, "try-error")) {
+    results <- create_empty_result(
+      method_name   = method_name,
+      note          = paste("Model fitting failed:", as.character(results)),
+      extra_columns = get_method_extra_columns(method_name)
+    )
+  }
+
+  # Append the method settigns
+  results$method_setting <- settings_name
+
+  return(results)
 }
 
 #' @title Method Method
@@ -111,15 +129,16 @@ get_method_setting <- function(method_name, version_id) {
 }
 
 
+
 #' @title Create standardized empty method result for convergence failures
 #'
 #' @param method_name Character string of the method name
 #' @param note Character string describing the failure reason
-#' @param extra_columns Named list of additional columns to include
+#' @param extra_columns Character vector of additional empty columns to add to the table
 #'
 #' @return Data frame with standardized empty result structure
 #' @export
-create_empty_result <- function(method_name, note, extra_columns = list()) {
+create_empty_result <- function(method_name, note, extra_columns = NULL) {
 
   # Base columns that all methods should have
   base_result <- data.frame(
@@ -135,11 +154,60 @@ create_empty_result <- function(method_name, note, extra_columns = list()) {
   )
 
   # Add any extra columns specific to certain methods
-  if (length(extra_columns) > 0) {
-    for (col_name in names(extra_columns)) {
-      base_result[[col_name]] <- extra_columns[[col_name]]
-    }
+  for (i in seq_along(extra_columns)) {
+    base_result[[col_name]] <- NA
   }
 
   return(base_result)
+}
+
+
+#' @title Get method-specific extra columns
+#'
+#' @description
+#' Retrieves the character vector of custom columns for a given method.
+#' These are method-specific columns beyond the standard columns
+#' (method, estimate, standard_error, ci_lower, ci_upper, p_value, BF,
+#' convergence, note) that each method returns.
+#'
+#' @param method_name Character string of the method name
+#'
+#' @return Character vector of extra column names, or empty character vector
+#' if no extra columns are defined for the method
+#' @export
+#'
+#' @examples
+#' # Get extra columns for PET method
+#' get_method_extra_columns("PET")
+#'
+#' # Get extra columns for RMA method
+#' get_method_extra_columns("RMA")
+get_method_extra_columns <- function(method_name) {
+
+  # Convert character to appropriate class for dispatch
+  if (is.character(method_name)) {
+    method_type <- structure(method_name, class = method_name)
+  } else {
+    method_type <- method_name
+  }
+
+  # Try to get the method_extra_columns object
+  extra_cols <- tryCatch({
+    UseMethod("method_extra_columns", method_type)
+  }, error = function(e) {
+    # If no method_extra_columns is defined, return empty character vector
+    character(0)
+  })
+
+  return(extra_cols)
+}
+
+
+#' @title Default method_extra_columns handler
+#' @inheritParams get_method_extra_columns
+#'
+#' @export
+method_extra_columns.default <- function(method_name) {
+  # Return empty character vector for methods without extra columns
+  return(character(0))
 }

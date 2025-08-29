@@ -21,75 +21,60 @@
 #' )
 #'
 #' # Apply PET method
-#' result <- method("PET", data)
+#' result <- run_method("PET", data)
 #' print(result)
 #'
 #' @export
 method.PET <- function(method_name, data, settings = NULL) {
 
   # Fit PET model: effect_size ~ intercept + slope * standard_error
-  result <- tryCatch({
 
-    # Extract data
-    effect_sizes    <- data$yi
-    standard_errors <- data$sei
+  # Extract data
+  effect_sizes    <- data$yi
+  standard_errors <- data$sei
 
-    # Check input
-    if (length(effect_sizes) < 3)
-      stop("At least 3 studies required for PET-PEESE analysis")
+  # Check input
+  if (length(effect_sizes) < 3)
+    stop("At least 3 studies required for PET-PEESE analysis")
 
-    if (stats::var(standard_errors) <= 0)
-      stop("No variance in standard errors")
+  if (stats::var(standard_errors) <= 0)
+    stop("No variance in standard errors")
 
-    pet_model <- stats::lm(effect_sizes ~ standard_errors, weights = 1/standard_errors^2)
+  pet_model <- stats::lm(effect_sizes ~ standard_errors, weights = 1/standard_errors^2)
 
-    # Extract results
-    coefficients    <- stats::coef(pet_model)
-    se_coefficients <- summary(pet_model)$coefficients[, "Std. Error"]
-    p_values        <- summary(pet_model)$coefficients[, "Pr(>|t|)"]
+  # Extract results
+  coefficients    <- stats::coef(pet_model)
+  se_coefficients <- summary(pet_model)$coefficients[, "Std. Error"]
+  p_values        <- summary(pet_model)$coefficients[, "Pr(>|t|)"]
 
-    # The intercept represents the bias-corrected effect size
-    estimate         <- coefficients[1]
-    estimate_se      <- se_coefficients[1]
-    estimate_p       <- p_values[1]
-    bias_coefficient <- coefficients[2]
-    bias_p_value     <- p_values[2]
+  # The intercept represents the bias-corrected effect size
+  estimate         <- coefficients[1]
+  estimate_se      <- se_coefficients[1]
+  estimate_p       <- p_values[1]
+  bias_coefficient <- coefficients[2]
+  bias_p_value     <- p_values[2]
 
-    # Calculate confidence interval
-    estimate_lci <- estimate - 1.96 * estimate_se
-    estimate_uci <- estimate + 1.96 * estimate_se
+  # Calculate confidence interval
+  estimate_lci <- estimate - 1.96 * estimate_se
+  estimate_uci <- estimate + 1.96 * estimate_se
 
-    convergence <- TRUE
-    note        <- NA
+  convergence <- TRUE
+  note        <- NA
 
-    return(data.frame(
-      method           = method_name,
-      estimate         = estimate,
-      standard_error   = estimate_se,
-      ci_lower         = estimate_lci,
-      ci_upper         = estimate_uci,
-      p_value          = estimate_p,
-      BF               = NA,
-      convergence      = convergence,
-      note             = note,
-      bias_coefficient = bias_coefficient,
-      bias_p_value     = bias_p_value
-    ))
-
-  }, error = function(e) {
-
-    return(create_empty_result(
-      method_name = method_name,
-      note        = paste("Model fitting failed:", e$message),
-      extra_columns = list(
-        bias_coefficient = NA,
-        bias_p_value     = NA
-      )
-    ))
-
-  })
-
-  return(result)
+  return(data.frame(
+    method           = method_name,
+    estimate         = estimate,
+    standard_error   = estimate_se,
+    ci_lower         = estimate_lci,
+    ci_upper         = estimate_uci,
+    p_value          = estimate_p,
+    BF               = NA,
+    convergence      = convergence,
+    note             = note,
+    # added columns below
+    bias_coefficient = bias_coefficient,
+    bias_p_value     = bias_p_value
+  ))
 }
 
 #' @export
@@ -101,3 +86,6 @@ method_settings.PET <- function(method_name) {
 
   return(settings)
 }
+
+#' @export
+method_extra_columns.PET <- c("bias_coefficient", "bias_p_value")
