@@ -113,6 +113,10 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 
   metric_out <- list()
 
+  # Create dynamic column names based on metric
+  metric_col_name <- metric_name
+  mcse_col_name <- paste0(metric_name, "_mcse")
+
   for (method in methods_to_compute) {
     for (condition in conditions$condition_id) {
 
@@ -137,10 +141,10 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
           result_df <- data.frame(
             method         = method,
             method_setting = unique(method_condition_results$method_setting),
-            condition_id   = condition,
-            value          = NA,
-            value_mcse     = NA
+            condition_id   = condition
           )
+          result_df[[metric_col_name]] <- NA
+          result_df[[mcse_col_name]] <- NA
           metric_out[[key]] <- result_df
           next
         }
@@ -165,10 +169,10 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
           stop(paste(convergence_col, "column not found in results for convergence metric computation"))
         }
         convergence_indicator <- method_condition_results[[convergence_col]]
-        result_df[["value"]] <- metric_fun(
+        result_df[[metric_col_name]] <- metric_fun(
           test_rejects_h0 = convergence_indicator
         )
-        result_df[["value_mcse"]] <- metric_mcse_fun(
+        result_df[[mcse_col_name]] <- metric_mcse_fun(
           test_rejects_h0 = convergence_indicator
         )
 
@@ -179,16 +183,16 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         valid_idx <- !is.na(estimates)
         if (sum(valid_idx) == 0) {
           warning(paste("No valid estimates for method", method, "condition", condition, "- setting values to NA"))
-          result_df[["value"]]      <- NA
-          result_df[["value_mcse"]] <- NA
+          result_df[[metric_col_name]] <- NA
+          result_df[[mcse_col_name]] <- NA
         } else {
           estimates <- estimates[valid_idx]
 
-          result_df[["value"]] <- metric_fun(
+          result_df[[metric_col_name]] <- metric_fun(
             theta_hat = estimates,
             theta     = true_effect
           )
-          result_df[["value_mcse"]] <- metric_mcse_fun(
+          result_df[[mcse_col_name]] <- metric_mcse_fun(
             theta_hat = estimates
           )
         }
@@ -200,16 +204,16 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         valid_idx <- !is.na(estimates)
         if (sum(valid_idx) == 0) {
           warning(paste("No valid estimates for method", method, "condition", condition, "- setting values to NA"))
-          result_df[["value"]]      <- NA
-          result_df[["value_mcse"]] <- NA
+          result_df[[metric_col_name]] <- NA
+          result_df[[mcse_col_name]] <- NA
         } else {
           estimates <- estimates[valid_idx]
 
-          result_df[["value"]] <- metric_fun(
+          result_df[[metric_col_name]] <- metric_fun(
             theta_hat = estimates,
             theta     = true_effect
           )
-          result_df[["value_mcse"]] <- metric_mcse_fun(
+          result_df[[mcse_col_name]] <- metric_mcse_fun(
             theta_hat = estimates,
             theta     = true_effect
           )
@@ -222,15 +226,15 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         valid_idx <- !is.na(estimates)
         if (sum(valid_idx) == 0) {
           warning(paste("No valid estimates for method", method, "condition", condition, "- setting values to NA"))
-          result_df[["value"]]      <- NA
-          result_df[["value_mcse"]] <- NA
+          result_df[[metric_col_name]] <- NA
+          result_df[[mcse_col_name]] <- NA
         } else {
           estimates <- estimates[valid_idx]
 
-          result_df[["value"]] <- metric_fun(
+          result_df[[metric_col_name]] <- metric_fun(
             theta_hat = estimates
           )
-          result_df[["value_mcse"]] <- metric_mcse_fun(
+          result_df[[mcse_col_name]] <- metric_mcse_fun(
             theta_hat = estimates
           )
         }
@@ -244,18 +248,18 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 
         if (sum(valid_idx) == 0) {
           warning(paste("No valid confidence intervals for method", method, "condition", condition, "- setting values to NA"))
-          result_df[["value"]]      <- NA
-          result_df[["value_mcse"]] <- NA
+          result_df[[metric_col_name]] <- NA
+          result_df[[mcse_col_name]] <- NA
         } else {
           ci_lower <- ci_lower[valid_idx]
           ci_upper <- ci_upper[valid_idx]
 
-          result_df[["value"]] <- metric_fun(
+          result_df[[metric_col_name]] <- metric_fun(
             ci_lower = ci_lower,
             ci_upper = ci_upper,
             theta    = true_effect
           )
-          result_df[["value_mcse"]] <- metric_mcse_fun(
+          result_df[[mcse_col_name]] <- metric_mcse_fun(
             ci_lower = ci_lower,
             ci_upper = ci_upper,
             theta    = true_effect
@@ -274,14 +278,14 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
           valid_idx <- !is.na(p_values)
           if (sum(valid_idx) == 0) {
             warning(paste("No valid p-values for method", method, "condition", condition, "- setting values to NA"))
-            result_df[["value"]]      <- NA
-            result_df[["value_mcse"]] <- NA
+            result_df[[metric_col_name]] <- NA
+            result_df[[mcse_col_name]] <- NA
           } else {
             test_rejects_h0 <- p_values[valid_idx] < power_threshold
-            result_df[["value"]] <- metric_fun(
+            result_df[[metric_col_name]] <- metric_fun(
               test_rejects_h0 = test_rejects_h0
             )
-            result_df[["value_mcse"]] <- metric_mcse_fun(
+            result_df[[mcse_col_name]] <- metric_mcse_fun(
               test_rejects_h0 = test_rejects_h0
             )
           }
@@ -295,15 +299,15 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
           valid_idx <- !is.na(bf_values)
           if (sum(valid_idx) == 0) {
             warning(paste("No valid Bayes factors for method", method, "condition", condition, "- setting values to NA"))
-            result_df[["value"]] <- NA
-            result_df[["value_mcse"]] <- NA
+            result_df[[metric_col_name]] <- NA
+            result_df[[mcse_col_name]] <- NA
           } else {
             # For Bayes factors, reject H0 (favor H1) when BF > threshold
             test_rejects_h0 <- bf_values[valid_idx] > power_threshold
-            result_df[["value"]] <- metric_fun(
+            result_df[[metric_col_name]] <- metric_fun(
               test_rejects_h0 = test_rejects_h0
             )
-            result_df[["value_mcse"]] <- metric_mcse_fun(
+            result_df[[mcse_col_name]] <- metric_mcse_fun(
               test_rejects_h0 = test_rejects_h0
             )
           }
@@ -317,17 +321,17 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         valid_idx <- !is.na(ci_lower) & !is.na(ci_upper)
         if (sum(valid_idx) == 0) {
           warning(paste("No valid confidence intervals for method", method, "condition", condition, "- setting values to NA"))
-          result_df[["value"]]      <- NA
-          result_df[["value_mcse"]] <- NA
+          result_df[[metric_col_name]] <- NA
+          result_df[[mcse_col_name]] <- NA
         } else {
           ci_lower <- ci_lower[valid_idx]
           ci_upper <- ci_upper[valid_idx]
 
-          result_df[["value"]] <- metric_fun(
+          result_df[[metric_col_name]] <- metric_fun(
             ci_upper = ci_upper,
             ci_lower = ci_lower
           )
-          result_df[["value_mcse"]] <- metric_mcse_fun(
+          result_df[[mcse_col_name]] <- metric_mcse_fun(
             ci_upper = ci_upper,
             ci_lower = ci_lower
           )
