@@ -4,14 +4,14 @@
 \alias{create_empty_result}
 \title{Create standardized empty method result for convergence failures}
 \usage{
-create_empty_result(method_name, note, extra_columns = list())
+create_empty_result(method_name, note, extra_columns = NULL)
 }
 \arguments{
 \item{method_name}{Character string of the method name}
 
 \item{note}{Character string describing the failure reason}
 
-\item{extra_columns}{Named list of additional columns to include}
+\item{extra_columns}{Character vector of additional empty columns to add to the table}
 }
 \value{
 Data frame with standardized empty result structure

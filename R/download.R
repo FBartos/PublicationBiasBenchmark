@@ -7,8 +7,8 @@
 #' @param dgm_name Character string specifying the name of the DGM dataset to download.
 #' @param path Character string specifying the directory path where the dataset should
 #' be saved. Defaults to the current working directory.
-#' @param add Logical indicating whether to add the downloaded data to an existing dataset.
-#' Defaults to \code{FALSE}.
+#' @param overwrite Logical indicating whether to overwrite existing files.
+#' Defaults to \code{FALSE}, which means only missing files will be downloaded.
 #'
 #' @return \code{TRUE} if the download was successful, otherwise an error is raised.
 #'
@@ -23,24 +23,24 @@ NULL
 
 #' @rdname download_dgm
 #' @export
-download_dgm_datasets <- function(dgm_name, path = getwd(), add = FALSE) {
-  .download_dgm_fun(dgm_name, what = "data", path = path, add = add)
+download_dgm_datasets <- function(dgm_name, path = getwd(), overwrite = FALSE) {
+  .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_results <- function(dgm_name, path = getwd(), add = FALSE) {
-  .download_dgm_fun(dgm_name, what = "results", path = path, add = add)
+download_dgm_results <- function(dgm_name, path = getwd(), overwrite = FALSE) {
+  .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_metrics <- function(dgm_name, path = getwd(), add = FALSE) {
-  .download_dgm_fun(dgm_name, what = "metrics", path = path, add = add)
+download_dgm_metrics <- function(dgm_name, path = getwd(), overwrite = FALSE) {
+  .download_dgm_fun(dgm_name, what = "metrics", path = path, overwrite = overwrite)
 }
 
 
-.download_dgm_fun <- function(dgm_name, what, path, add) {
+.download_dgm_fun <- function(dgm_name, what, path, overwrite) {
 
   # get link to the repository
   osf_link <- "https://osf.io/exf3m/"
@@ -60,8 +60,6 @@ download_dgm_metrics <- function(dgm_name, path = getwd(), add = FALSE) {
 
   # check the data folder
   data_path <- file.path(path, dgm_name, what)
-  if (!add && dir.exists(data_path) && length(list.files(data_path)) != 0)
-    stop(sprintf("A non-empty directory at '%1$s' already exists", data_path))
   if (!dir.exists(data_path)) {
     dir.create(data_path)
   }
@@ -72,8 +70,8 @@ download_dgm_metrics <- function(dgm_name, path = getwd(), add = FALSE) {
     # file name
     temp_fname <- osf_files$name[i]
 
-    # save file if it does not exist
-    if (!file.exists(file.path(data_path, temp_fname))) {
+    # save file if it does not exist or if overwrite is TRUE
+    if (!file.exists(file.path(data_path, temp_fname)) || overwrite) {
       osfr::osf_download(osf_files[i, ], path = data_path)
     }
   }

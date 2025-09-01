@@ -31,7 +31,7 @@ data <- data.frame(
 )
 
 # Apply PEESE method
-result <- method("PEESE", data)
+result <- run_method("PEESE", data)
 print(result)
 
 }

@@ -7,11 +7,11 @@
 \alias{download_dgm_metrics}
 \title{Download Datasets of a DGM}
 \usage{
-download_dgm_datasets(dgm_name, path = getwd(), add = FALSE)
+download_dgm_datasets(dgm_name, path = getwd(), overwrite = FALSE)
 
-download_dgm_results(dgm_name, path = getwd(), add = FALSE)
+download_dgm_results(dgm_name, path = getwd(), overwrite = FALSE)
 
-download_dgm_metrics(dgm_name, path = getwd(), add = FALSE)
+download_dgm_metrics(dgm_name, path = getwd(), overwrite = FALSE)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
@@ -19,8 +19,8 @@ download_dgm_metrics(dgm_name, path = getwd(), add = FALSE)
 \item{path}{Character string specifying the directory path where the dataset should
 be saved. Defaults to the current working directory.}
 
-\item{add}{Logical indicating whether to add the downloaded data to an existing dataset.
-Defaults to \code{FALSE}.}
+\item{overwrite}{Logical indicating whether to overwrite existing files.
+Defaults to \code{FALSE}, which means only missing files will be downloaded.}
 }
 \value{
 \code{TRUE} if the download was successful, otherwise an error is raised.

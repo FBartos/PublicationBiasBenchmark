@@ -40,7 +40,7 @@ data <- data.frame(
 )
 
 # Apply PEESE method
-result <- method("PETPEESE", data)
+result <- run_method("PETPEESE", data)
 print(result)
 
 }

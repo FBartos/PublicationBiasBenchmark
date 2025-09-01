@@ -123,6 +123,10 @@ bias_mcse <- function(theta_hat) {
 #' @rdname performance_metrics
 #' @export
 relative_bias <- function(theta_hat, theta) {
+  # Return NaN if any theta is 0 (division by zero)
+  if (any(theta == 0)) {
+    return(NaN)
+  }
   # (sum(theta_hat) / length(theta_hat) - theta) / theta
   # uses 'theta_hat - theta' in case theta differs across settings
   sum(theta_hat - theta) / length(theta_hat) / theta
@@ -131,6 +135,10 @@ relative_bias <- function(theta_hat, theta) {
 #' @rdname performance_metrics
 #' @export
 relative_bias_mcse <- function(theta_hat, theta) {
+  # Return NaN if any theta is 0 (division by zero)
+  if (any(theta == 0)) {
+    return(NaN)
+  }
   n_sim <- length(theta_hat)
   S_theta_sq <- S_theta_squared(theta_hat)
   sqrt(S_theta_sq / (theta^2 * n_sim))
