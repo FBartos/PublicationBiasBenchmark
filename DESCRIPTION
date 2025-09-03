@@ -26,6 +26,7 @@ Imports:
     pwr,
     sandwich,
     lmtest,
+    puniform,
     Rdpack
 Suggests:
     testthat (>= 3.0.0),
