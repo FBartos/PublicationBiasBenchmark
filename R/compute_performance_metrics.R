@@ -534,7 +534,7 @@ compute_metrics <- function(dgm_name, methods, results_folder = "simulations",
     )
 
     # Save results (metric_result already contains combined existing + new results if applicable)
-    write.csv(metric_result, file = output_file, row.names = FALSE)
+    utils::write.csv(metric_result, file = output_file, row.names = FALSE)
 
     if (verbose) {
       cat("Saved", metric, "results to", output_file, "\n")

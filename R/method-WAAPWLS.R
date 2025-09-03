@@ -39,10 +39,11 @@ method.WAAPWLS <- function(method_name, data, settings = NULL) {
   wls_model <- stats::lm(effect_sizes ~ 1, weights = 1/standard_errors^2)
 
   # Identify high-powered studies
-  high_powered <- stats::coef(wls_model)[1] / 2.8 >= standard_errors
+  high_powered   <- stats::coef(wls_model)[1] / 2.8 >= standard_errors
+  n_high_powered <- sum(high_powered)
 
   # Decide which model to use based on number of high-powered studies
-  if (sum(high_powered) >= 2) {
+  if (n_high_powered >= 2) {
     # Use WAAP: fit model only to high-powered studies
     waap_model <- stats::lm(effect_sizes[high_powered] ~ 1, weights = 1/standard_errors[high_powered]^2)
 
@@ -82,7 +83,8 @@ method.WAAPWLS <- function(method_name, data, settings = NULL) {
     BF               = NA,
     convergence      = convergence,
     note             = note,
-    selected_method  = selected_method
+    selected_method  = selected_method,
+    n_high_powered   = n_high_powered
   ))
 }
 
@@ -98,5 +100,5 @@ method_settings.WAAPWLS <- function(method_name) {
 
 #' @export
 method_extra_columns.WAAPWLS <- function(method_name) {
-  return(c("selected_method"))
+  return(c("selected_method", "n_high_powered"))
 }

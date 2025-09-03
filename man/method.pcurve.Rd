@@ -17,11 +17,11 @@
 Data frame with P-Curve results
 }
 \description{
-Implements the P-Curve method for publication bias detection and correction.
+Implements the P-Curve method.
 P-Curve analyzes the distribution of p-values from significant studies to
-assess whether the significant findings reflect true effects or publication bias.
-The method tests whether the p-curve is right-skewed (indicating true effects)
-or flat/left-skewed (indicating publication bias).
+assess whether the significant findings reflect true effects or QRP/publication bias.
+The method also provides tests for the evidential value, lack of evidential value,
+and p-hacking.
 }
 \details{
 The following settings are implemented \describe{

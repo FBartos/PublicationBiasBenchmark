@@ -1,11 +1,11 @@
 #' @title pcurve (P-Curve) Method
 #'
 #' @description
-#' Implements the P-Curve method for publication bias detection and correction.
+#' Implements the P-Curve method.
 #' P-Curve analyzes the distribution of p-values from significant studies to
-#' assess whether the significant findings reflect true effects or publication bias.
-#' The method tests whether the p-curve is right-skewed (indicating true effects)
-#' or flat/left-skewed (indicating publication bias).
+#' assess whether the significant findings reflect true effects or QRP/publication bias.
+#' The method also provides tests for the evidential value, lack of evidential value,
+#' and p-hacking.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)
@@ -61,8 +61,8 @@ method.pcurve <- function(method_name, data, settings) {
   estimate_p   <- NA
 
   res_skew <- try(.method_pcurve_pc_skew(
-    t  = effect_sizes / standard_errors,
-    df = sample_sizes - 2,
+    t.value  = effect_sizes / standard_errors,
+    df       = sample_sizes - 2,
   ))
   if (inherits(res_skew, "try-error")) {
     p_value_evidence <- NA
@@ -125,15 +125,15 @@ method_extra_columns.pcurve <- function(method_name) {
   t.sig <- pc_data$t_obs
   df.sig <- pc_data$df_obs
   ncp_est <- sqrt((df.sig+2)/4)*dobs
-  tc <- qt(.975, df.sig)
-  power_est <- 1-pt(tc, df.sig, ncp_est)
-  p_larger <- pt(t.sig,df=df.sig,ncp=ncp_est)
+  tc <- stats::qt(.975, df.sig)
+  power_est <- 1-stats::pt(tc, df.sig, ncp_est)
+  p_larger <- stats::pt(t.sig,df=df.sig,ncp=ncp_est)
   ppr <- (p_larger-(1-power_est))/power_est
 
   # Problem: ks.test gives an error if the number of test statistics is small and
   # bootstrapping selects a weird sample. In case of errors, return a large loss value
   KSD <- tryCatch({
-    ks.test(ppr, punif)$statistic
+    stats::ks.test(ppr, stats::punif)$statistic
   }, error = function(e) {
     return(1e10) # return a large loss function value
   })
@@ -188,7 +188,7 @@ method_extra_columns.pcurve <- function(method_name) {
     outlong <- data.frame(method="pcurve", term="b0", variable=c("estimate", "conf.low", "conf.high"), value=out[1, ])
 
     # add number of significant studies that entered p-curve
-    outlong <- plyr::rbind.fill(outlong, data.frame(
+    outlong <- rbind(outlong, data.frame(
       method="pcurve",
       term="kSig",
       variable="estimate",
@@ -210,14 +210,14 @@ method_extra_columns.pcurve <- function(method_name) {
 .method_pcurve_pcurve_prep <- function(t_obs, df_obs){
   # first, calculate p-values and d-values for all studies
   d_vals = (t_obs*2)/sqrt(df_obs)
-  p_vals = (1 - pt(t_obs, df_obs)) * 2
+  p_vals = (1 - stats::pt(t_obs, df_obs)) * 2
   # then, shove everything into a data.frame to keep things organized
   unfiltered_data = data.frame(t_obs, df_obs, p_vals, d_vals)
   # now for the checks.
   # strip out anything that is NS, or if t < 0.
   # Note that we're not throwing any warnings out here.
-  unfiltered_data = dplyr::filter(unfiltered_data, t_obs > 0)
-  clean_data = dplyr::filter(unfiltered_data, p_vals < .05)
+  unfiltered_data = unfiltered_data[unfiltered_data$t_obs   > 0  ,,drop = FALSE]
+  clean_data      = unfiltered_data[unfiltered_data$p_vals < .05 ,,drop = FALSE]
   # all done!
   return(clean_data)
 }
@@ -229,16 +229,19 @@ method_extra_columns.pcurve <- function(method_name) {
 # and estimates the ES of every resample using pcurve.
 pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
   d.boot <- c()
-  if (progress==TRUE) {
-    require(progress)
-    pb <- progress_bar$new(format="Bootstrapping [:bar] :percent ETA: :eta", total=B, clear=FALSE)
-  }
+  # if (progress==TRUE) {
+  #   require(progress)
+  #   pb <- progress_bar$new(format="Bootstrapping [:bar] :percent ETA: :eta", total=B, clear=FALSE)
+  # }
 
   for (i in 1:B) {
-    if (progress==TRUE) pb$tick()
+    # if (progress==TRUE) pb$tick()
     # get a random resample, with replacement
     # note that sample() doesn't work here, necessary to use sample_n()
-    resample_data = dplyr::sample_n(pc_data, length(pc_data$t_obs), replace=TRUE)
+
+    # changed from:
+    # resample_data = dplyr::sample_n(pc_data, length(pc_data$t_obs), replace=TRUE)
+    resample_data <- pc_data[sample(seq_len(nrow(pc_data)), nrow(pc_data), TRUE),]
     #print(resample_data)
     #
     d.boot <- c(d.boot, stats::optimize(.method_pcurve_pcurve_loss, c(dmin, dmax), pc_data = resample_data)$minimum)
@@ -293,7 +296,7 @@ pcurve_estimate_d_CI <- function(pc_data, dmin, dmax, B, progress=TRUE) {
   xc=stats::qchisq(p=1-p.crit, df=df)
   #Find noncentrality parameter (ncp) that leads 33% power to obtain xc
   f = function(delta, pr, x, df) stats::pchisq(x, df = df, ncp = delta) - (1-power)
-  out = uniroot(f, c(0, 37.62), x = xc, df = df)
+  out = stats::uniroot(f, c(0, 37.62), x = xc, df = df)
   return(out$root)
 }
 
@@ -382,7 +385,7 @@ get_pp_values <- function(type, statistic, df, df2, p.crit=.05, power=1/3) {
 # New p-curve computation (p-curve app 3.0, http://www.p-curve.com/app3/)
 .method_pcurve_p_curve_3 <- function(pps) {
 
-  pps <- na.omit(pps)
+  pps <- stats::na.omit(pps)
 
   # STOUFFER: Overall tests aggregating pp-values
   ktot <- sum(!is.na(pps$ppr))
@@ -409,7 +412,7 @@ get_pp_values <- function(type, statistic, df, df2, p.crit=.05, power=1/3) {
 # Old p-curve computation (p-curve app 2.0, http://www.p-curve.com/app2/)
 .method_pcurve_p_curve_2 <- function(pps) {
 
-  pps <- na.omit(pps)
+  pps <- stats::na.omit(pps)
 
   df <- 2*sum(nrow(pps))
 
