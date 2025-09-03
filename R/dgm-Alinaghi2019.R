@@ -54,6 +54,7 @@
 #' @return Data frame with \describe{
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
+#'   \item{ni}{sample size}
 #'   \item{study_id}{study identifier}
 #'   \item{es_id}{effect size identifier}
 #' }
@@ -76,6 +77,7 @@ dgm.Alinaghi2018 <- function(dgm_name, settings) {
   data <- data.frame(
    yi       = df$effect,
    sei      = df$se,
+   ni       = df$obs,
    study_id = df$StdID,
    es_id    = df$EstID
   )

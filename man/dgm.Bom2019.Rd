@@ -25,6 +25,7 @@ sequentially reused until all effect size estimates are generated.}
 Data frame with \describe{
 \item{yi}{effect size}
 \item{sei}{standard error}
+\item{ni}{sample size}
 }
 }
 \description{

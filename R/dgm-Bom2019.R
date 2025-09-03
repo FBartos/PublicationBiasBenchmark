@@ -51,6 +51,7 @@
 #' @return Data frame with \describe{
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
+#'   \item{ni}{sample size}
 #' }
 #'
 #' @references
@@ -78,7 +79,8 @@ dgm.Bom2019 <- function(dgm_name, settings) {
   # Create result data frame
   data <- data.frame(
     yi   = df[,"y"],
-    sei  = df[,"al_se"]
+    sei  = df[,"al_se"],
+    ni   = df[,"obs"] * 2
   )
 
   return(data)

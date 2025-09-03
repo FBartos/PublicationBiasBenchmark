@@ -23,6 +23,7 @@ levels: \code{"none"}, \code{"medium"}, \code{"high"}.}
 Data frame with \describe{
 \item{yi}{effect size}
 \item{sei}{standard error}
+\item{ni}{sample size}
 }
 }
 \description{

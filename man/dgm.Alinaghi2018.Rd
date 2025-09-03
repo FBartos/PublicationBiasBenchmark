@@ -19,6 +19,7 @@
 Data frame with \describe{
 \item{yi}{effect size}
 \item{sei}{standard error}
+\item{ni}{sample size}
 \item{study_id}{study identifier}
 \item{es_id}{effect size identifier}
 }

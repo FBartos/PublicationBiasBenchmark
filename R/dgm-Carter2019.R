@@ -53,6 +53,7 @@
 #' @return Data frame with \describe{
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
+#'   \item{ni}{sample size}
 #' }
 #'
 #' @references
@@ -75,7 +76,8 @@ dgm.Carter2019 <- function(dgm_name, settings) {
   # Create result data frame
   data <- data.frame(
     yi   = df[,"d"],
-    sei  = df[,"se"]
+    sei  = df[,"se"],
+    ni   = df[,"N"]
   )
 
   return(data)

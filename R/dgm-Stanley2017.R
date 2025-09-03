@@ -59,6 +59,7 @@
 #' @return Data frame with \describe{
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
+#'   \item{ni}{sample size}
 #' }
 #'
 #' @references
@@ -91,12 +92,14 @@ dgm.Stanley2017 <- function(dgm_name, settings) {
   if (environment == "LogOR"){
     data <- data.frame(
       yi   = df[,"EstimatedLogOR"],
-      sei  = df[,"StdErrLogOR"]
+      sei  = df[,"StdErrLogOR"],
+      ni   = df[,"PrimaryStudyOBS"] * 2
     )
   } else if (environment == "Cohens_d"){
     data <- data.frame(
       yi   = df[,"EstimatedCohend"],
-      sei  = df[,"StdErrCohend"]
+      sei  = df[,"StdErrCohend"],
+      ni   = df[,"PrimaryStudyOBS"] * 2
     )
   }
 
