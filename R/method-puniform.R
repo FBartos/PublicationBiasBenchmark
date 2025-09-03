@@ -5,7 +5,9 @@
 #' P-Uniform uses the distribution of p-values from significant studies to test
 #' for publication bias and estimate the effect size corrected for publication bias.
 #' The method assumes that p-values follow a uniform distribution under the null
-#' hypothesis of no effect, and uses this to detect and correct for bias.
+#' hypothesis of no effect, and uses this to detect and correct for bias. See
+#' \insertCite{vanassen2015meta;textual}{PublicationBiasBenchmark} and
+#' \insertCite{vanaert2025puniform;textual}{PublicationBiasBenchmark} for details.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)

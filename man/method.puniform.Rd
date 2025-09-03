@@ -21,7 +21,9 @@ Implements the P-Uniform method for publication bias detection and correction.
 P-Uniform uses the distribution of p-values from significant studies to test
 for publication bias and estimate the effect size corrected for publication bias.
 The method assumes that p-values follow a uniform distribution under the null
-hypothesis of no effect, and uses this to detect and correct for bias.
+hypothesis of no effect, and uses this to detect and correct for bias. See
+\insertCite{vanassen2015meta;textual}{PublicationBiasBenchmark} and
+\insertCite{vanaert2025puniform;textual}{PublicationBiasBenchmark} for details.
 }
 \details{
 The following settings are implemented \describe{

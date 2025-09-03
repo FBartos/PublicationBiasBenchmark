@@ -21,7 +21,8 @@ Implements the P-Curve method.
 P-Curve analyzes the distribution of p-values from significant studies to
 assess whether the significant findings reflect true effects or QRP/publication bias.
 The method also provides tests for the evidential value, lack of evidential value,
-and p-hacking.
+and p-hacking. See
+\insertCite{simonsohn2014pcurve;textual}{PublicationBiasBenchmark} for details.
 }
 \details{
 The following settings are implemented \describe{

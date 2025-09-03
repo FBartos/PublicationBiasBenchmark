@@ -22,6 +22,7 @@ First fits a WLS model to all studies, then identifies high-powered studies base
 the criterion that the WLS estimate divided by 2.8 is greater than or equal to the
 standard error. If at least 2 high-powered studies are found, uses WAAP (weighted
 average of adequate power studies only), otherwise uses the original WLS estimate.
+See \insertCite{stanley2017finding;textual}{PublicationBiasBenchmark} for details.
 }
 \examples{
 # Generate some example data

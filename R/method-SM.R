@@ -5,7 +5,8 @@
 #' The method first fits a random effects meta-analysis model, then applies
 #' selection modeling to adjust for publication bias using the metafor package.
 #' Selection models account for the probability that studies are published
-#' based on their p-values or effect sizes.
+#' based on their p-values or effect sizes. See
+#' \insertCite{vevea1995general;textual}{PublicationBiasBenchmark} for details.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)

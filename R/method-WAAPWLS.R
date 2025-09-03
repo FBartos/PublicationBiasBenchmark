@@ -6,6 +6,9 @@
 #' the criterion that the WLS estimate divided by 2.8 is greater than or equal to the
 #' standard error. If at least 2 high-powered studies are found, uses WAAP (weighted
 #' average of adequate power studies only), otherwise uses the original WLS estimate.
+#' See \insertCite{stanley2017finding;textual}{PublicationBiasBenchmark} for details.
+#'
+#'
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)

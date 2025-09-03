@@ -21,7 +21,8 @@ Implements Selection Models for publication bias correction in meta-analysis.
 The method first fits a random effects meta-analysis model, then applies
 selection modeling to adjust for publication bias using the metafor package.
 Selection models account for the probability that studies are published
-based on their p-values or effect sizes.
+based on their p-values or effect sizes. See
+\insertCite{vevea1995general;textual}{PublicationBiasBenchmark} for details.
 }
 \details{
 The following settings are implemented \describe{
