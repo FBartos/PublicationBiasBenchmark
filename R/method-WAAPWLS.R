@@ -97,4 +97,6 @@ method_settings.WAAPWLS <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.WAAPWLS <- c("selected_method")
+method_extra_columns.WAAPWLS <- function(method_name) {
+  return(c("selected_method"))
+}

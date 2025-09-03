@@ -155,7 +155,7 @@ create_empty_result <- function(method_name, note, extra_columns = NULL) {
 
   # Add any extra columns specific to certain methods
   for (i in seq_along(extra_columns)) {
-    base_result[[col_name]] <- NA
+    base_result[[extra_columns[i]]] <- NA
   }
 
   return(base_result)
@@ -191,15 +191,7 @@ get_method_extra_columns <- function(method_name) {
     method_type <- method_name
   }
 
-  # Try to get the method_extra_columns object
-  extra_cols <- tryCatch({
-    UseMethod("method_extra_columns", method_type)
-  }, error = function(e) {
-    # If no method_extra_columns is defined, return empty character vector
-    character(0)
-  })
-
-  return(extra_cols)
+  UseMethod("method_extra_columns", method_type)
 }
 
 

@@ -100,4 +100,6 @@ method_settings.RMA <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.RMA <- c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value")
+method_extra_columns.RMA <- function(method_name) {
+  return(c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value"))
+}

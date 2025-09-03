@@ -104,7 +104,9 @@ method_settings.pcurve <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.pcurve <- c("p_value_evidence", "p_value_lack", "p_value_hack")
+method_extra_columns.pcurve <- function(method_name) {
+  return(c("p_value_evidence", "p_value_lack", "p_value_hack"))
+}
 
 
 ### additional computation functions ----

@@ -80,4 +80,6 @@ method_settings.WLS <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.WLS <- c()
+method_extra_columns.WLS <- function(method_name) {
+  return(character(0))
+}

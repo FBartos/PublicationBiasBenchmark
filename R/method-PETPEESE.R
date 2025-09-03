@@ -107,4 +107,6 @@ method_settings.PETPEESE <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.PETPEESE <- c("bias_coefficient", "bias_p_value", "selected_method")
+method_extra_columns.PETPEESE <- function(method_name) {
+  return(c("bias_coefficient", "bias_p_value", "selected_method"))
+}
