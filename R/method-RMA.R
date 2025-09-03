@@ -39,7 +39,7 @@ method.RMA <- function(method_name, data, settings) {
 
   # Check input
   if (length(effect_sizes) < 3)
-    stop("At least 3 studies required for RMA analysis")
+    stop("At least 3 estimates required for RMA analysis", call. = FALSE)
 
   # Create a model call based on the settings
   # RMA settings contain the function call extension
@@ -92,7 +92,8 @@ method.RMA <- function(method_name, data, settings) {
 method_settings.RMA <- function(method_name) {
 
   settings <- list(
-    "default" = list(method = "REML", test = "knha") # recommended settings according to metafor
+    # recommended settings according to metafor with an increased number of iterations for convergence
+    "default" = list(method = "REML", test = "knha", control = list(stepadj = 0.5, maxiter = 500))
   )
 
   return(settings)

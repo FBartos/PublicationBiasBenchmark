@@ -43,7 +43,7 @@ run_method <- function(method_name, data, settings = NULL) {
   if (inherits(results, "try-error")) {
     results <- create_empty_result(
       method_name   = method_name,
-      note          = paste("Model fitting failed:", as.character(results)),
+      note          = as.character(results),
       extra_columns = get_method_extra_columns(method_name)
     )
   }

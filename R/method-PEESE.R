@@ -35,7 +35,7 @@ method.PEESE <- function(method_name, data, settings = NULL) {
 
   # Check input
   if (length(effect_sizes) < 3)
-    stop("At least 3 studies required for PET analysis")
+    stop("At least 3 estimates required for PEESE analysis", call. = FALSE)
 
   if (stats::var(standard_errors) <= 0)
     stop("No variance in standard errors")

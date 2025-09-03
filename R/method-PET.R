@@ -35,10 +35,10 @@ method.PET <- function(method_name, data, settings = NULL) {
 
   # Check input
   if (length(effect_sizes) < 3)
-    stop("At least 3 studies required for PET-PEESE analysis")
+    stop("At least 3 estimates required for PET analysis", call. = FALSE)
 
   if (stats::var(standard_errors) <= 0)
-    stop("No variance in standard errors")
+    stop("No variance in standard errors", call. = FALSE)
 
   pet_model <- stats::lm(effect_sizes ~ standard_errors, weights = 1/standard_errors^2)
 
