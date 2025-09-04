@@ -23,6 +23,7 @@ Imports:
     metafor,
     osfr,
     MASS,
+    numDeriv,
     pwr,
     sandwich,
     lmtest,

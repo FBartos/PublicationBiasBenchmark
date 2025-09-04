@@ -60,16 +60,6 @@
 #'   power_threshold = 6
 #' )
 #'
-#' # Compute convergence
-#' convergence_results <- compute_single_metric(
-#'   dgm_name = "no_bias",
-#'   metric_name = "convergence",
-#'   methods = c("RMA", "PET"),
-#'   conditions = conditions,
-#'   results_folder = "simulations",
-#'   metric_fun = function(x) mean(x, na.rm = TRUE),
-#'   metric_mcse_fun = function(x) sqrt(mean(x, na.rm = TRUE) * (1 - mean(x, na.rm = TRUE)) / length(x))
-#' )
 #' }
 #'
 #' @export

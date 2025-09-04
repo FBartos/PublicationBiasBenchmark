@@ -14,7 +14,7 @@
 #'
 #' @details
 #' The following settings are implemented \describe{
-#'   \item{\code{"v1"}}{
+#'   \item{\code{"default"}}{
 #'        (\code{conditional_alpha = 0.10}) determines whether to use PET
 #'        (PET's effect is not significant at alpha = 0.10 or PEESE estimate
 #'        (PET's effect is significant at alpha = 0.10)}

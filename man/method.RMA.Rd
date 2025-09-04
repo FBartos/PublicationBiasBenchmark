@@ -34,7 +34,7 @@ data <- data.frame(
 )
 
 # Apply PET method
-result <- run_method("RMA", data, "v1")
+result <- run_method("RMA", data)
 print(result)
 
 }

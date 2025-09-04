@@ -162,7 +162,7 @@ create_empty_result <- function(method_name, note, extra_columns = NULL) {
 }
 
 
-#' @title Get method-specific extra columns
+#' @title Method Extra Columns
 #'
 #' @description
 #' Retrieves the character vector of custom columns for a given method.
@@ -174,7 +174,6 @@ create_empty_result <- function(method_name, note, extra_columns = NULL) {
 #'
 #' @return Character vector of extra column names, or empty character vector
 #' if no extra columns are defined for the method
-#' @export
 #'
 #' @examples
 #' # Get extra columns for PET method
@@ -182,6 +181,13 @@ create_empty_result <- function(method_name, note, extra_columns = NULL) {
 #'
 #' # Get extra columns for RMA method
 #' get_method_extra_columns("RMA")
+#'
+#' @aliases method_extra_columns get_method_extra_columns
+#' @name method_extra_columns
+NULL
+
+#' @rdname method_extra_columns
+#' @export
 get_method_extra_columns <- function(method_name) {
 
   # Convert character to appropriate class for dispatch
@@ -194,9 +200,21 @@ get_method_extra_columns <- function(method_name) {
   UseMethod("method_extra_columns", method_type)
 }
 
-
-#' @title Default method_extra_columns handler
-#' @inheritParams get_method_extra_columns
-#'
+#' @rdname method_extra_columns
 #' @export
-method_extra_columns.default <- character(0)
+method_extra_columns <- function(method_name) {
+  
+  # Convert character to appropriate class for dispatch
+  if (is.character(method_name)) {
+    method_type <- structure(method_name, class = method_name)
+  } else {
+    method_type <- method_name
+  }
+
+  UseMethod("method_extra_columns", method_type)
+}
+
+#' @rdname method_extra_columns
+#' @export
+method_extra_columns.default <- function(method_name)
+  character(0)

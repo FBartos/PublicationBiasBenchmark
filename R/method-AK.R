@@ -158,7 +158,7 @@ method_extra_columns.AK <- function(method_name)
   if(tauhat<0 | betap<0){ LLH <- 10^10; }
   if(z=="est"){return(LLH);}else{return(logL);}
 }
-.method_AK_AK1logLik_LLH <- function(para) {
+.method_AK_AK1logLik_LLH <- function(para, AKdata) {
   return(.method_AK_AK1logLik(para, AKdata, "est"))
 }
 
@@ -195,7 +195,7 @@ method_extra_columns.AK <- function(method_name)
     PValue <- stats::dt(EstCoefficients/StdErrors, df=nrow(AKdata)-length(EstCoefficients))
     EstResults <- rbind(EstCoefficients, StdErrors, PValue)
     rownames(EstResults) <- c("Coefficients", "Std.Err", "p-value")
-    crit <- qt(0.975,df=(nrow(AKdata)-length(EstCoefficients)))
+    crit <- stats::qt(0.975,df=(nrow(AKdata)-length(EstCoefficients)))
 
 
     AKEstimationResults$value <- c(EstResults[1,3], EstResults[2,3], (EstResults[1,3]/EstResults[2,3]), EstResults[3,3], (EstResults[1,3]-crit*EstResults[2,3]), (EstResults[1,3]+crit*EstResults[2,3]), EstResults[1,2], EstResults[2,2],EstResults[1,1], EstResults[2,1])
@@ -253,7 +253,7 @@ method_extra_columns.AK <- function(method_name)
   if(tauhat<0 | beta1<0 | beta2<0 | beta3<0 ){ LLH <- 10^10; }
   if(z=="est"){return(LLH);}else{return(logL);}
 }
-.method_AK_AK2logLik_LLH <- function(para) {
+.method_AK_AK2logLik_LLH <- function(para, AKdata) {
   return(.method_AK_AK2logLik(para, AKdata, "est"))
 }
 
@@ -299,7 +299,7 @@ method_extra_columns.AK <- function(method_name)
     if(sum(is.finite(PValue))==length(EstCoefficients)){
       EstResults <- rbind(EstCoefficients, StdErrors, PValue)
       rownames(EstResults) <- c("Coefficients", "Std.Err", "p-value")
-      crit <- qt(0.975,df=(nrow(AKdata)-length(EstCoefficients)))
+      crit <- stats::qt(0.975,df=(nrow(AKdata)-length(EstCoefficients)))
       AKEstimationResults$value <- c(EstResults[1,5], EstResults[2,5], (EstResults[1,5]/EstResults[2,5]), EstResults[3,5], (EstResults[1,5]-crit*EstResults[2,5]), (EstResults[1,5]+crit*EstResults[2,5]), EstResults[1,2], EstResults[2,2], EstResults[1,3], EstResults[2,3], EstResults[1,4], EstResults[2,4],EstResults[1,1], EstResults[2,1])
       return(AKEstimationResults)
     }else{
