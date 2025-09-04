@@ -6,3 +6,6 @@
 README.Rmd
 README.html
 ^\.Rproj\.user$
+^res
+^sims
+^simulations

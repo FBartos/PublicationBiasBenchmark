@@ -27,7 +27,7 @@
 #' )
 #'
 #' # Apply trimfill method
-#' result <- run_method("trimfill", data, "v1")
+#' result <- run_method("trimfill", data)
 #' print(result)
 #'
 #' @export
