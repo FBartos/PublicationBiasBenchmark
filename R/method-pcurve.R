@@ -9,7 +9,8 @@
 #' \insertCite{simonsohn2014pcurve;textual}{PublicationBiasBenchmark} for details.
 #'
 #' @param method_name Method name (automatically passed)
-#' @param data Data frame with yi (effect sizes) and sei (standard errors)
+#' @param data Data frame with yi (effect sizes), sei (standard errors), and ni
+#' (sample sizes wherever available, otherwise set to Inf)
 #' @param settings List of method settings (see Details)
 #'
 #' @return Data frame with P-Curve results
@@ -105,9 +106,8 @@ method_settings.pcurve <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.pcurve <- function(method_name) {
-  return(c("p_value_evidence", "p_value_lack", "p_value_hack"))
-}
+method_extra_columns.pcurve <- function(method_name)
+  c("p_value_evidence", "p_value_lack", "p_value_hack")
 
 
 ### additional computation functions ----

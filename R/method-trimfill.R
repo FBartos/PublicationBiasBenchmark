@@ -113,7 +113,6 @@ method_settings.trimfill <- function(method_name) {
 
 
 #' @export
-method_extra_columns.trimfill <- function(method_name) {
-  return(c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value", "k_missing", "k_missing_se"))
-}
+method_extra_columns.trimfill <- function(method_name)
+  c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value", "k_missing", "k_missing_se")
 

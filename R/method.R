@@ -199,7 +199,4 @@ get_method_extra_columns <- function(method_name) {
 #' @inheritParams get_method_extra_columns
 #'
 #' @export
-method_extra_columns.default <- function(method_name) {
-  # Return empty character vector for methods without extra columns
-  return(character(0))
-}
+method_extra_columns.default <- character(0)

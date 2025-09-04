@@ -102,6 +102,5 @@ method_settings.WAAPWLS <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.WAAPWLS <- function(method_name) {
-  return(c("selected_method", "n_high_powered"))
-}
+method_extra_columns.WAAPWLS <- function(method_name)
+  c("selected_method", "n_high_powered")

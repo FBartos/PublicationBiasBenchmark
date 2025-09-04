@@ -45,7 +45,7 @@ method.SM <- function(method_name, data, settings) {
 
   # Check input
   if (length(effect_sizes) < 3)
-    stop("At least 3 studies required for SM analysis", call. = FALSE)
+    stop("At least 3 estimates required for SM analysis", call. = FALSE)
 
   # Prepare RMA settings and add data
   rma_settings <- settings[["rma"]]
@@ -127,6 +127,5 @@ method_settings.SM <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.PET <- function(method_name) {
-  return(c("bias_coefficient", "bias_coefficient_se", "bias_p_value"))
-}
+method_extra_columns.SM <- function(method_name)
+  c("bias_coefficient", "bias_coefficient_se", "bias_p_value")

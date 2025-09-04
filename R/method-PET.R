@@ -88,6 +88,5 @@ method_settings.PET <- function(method_name) {
 }
 
 #' @export
-method_extra_columns.PET <- function(method_name) {
-  return(c("bias_coefficient", "bias_p_value"))
-}
+method_extra_columns.PET <- function(method_name)
+  c("bias_coefficient", "bias_p_value")

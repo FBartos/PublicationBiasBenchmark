@@ -9,7 +9,8 @@
 \arguments{
 \item{method_name}{Method name (automatically passed)}
 
-\item{data}{Data frame with yi (effect sizes) and sei (standard errors)}
+\item{data}{Data frame with yi (effect sizes), sei (standard errors), and ni
+(sample sizes wherever available, otherwise set to Inf)}
 
 \item{settings}{List of method settings (see Details)}
 }
