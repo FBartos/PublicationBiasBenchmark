@@ -114,4 +114,4 @@ method_settings.puniform <- function(method_name) {
 
 #' @export
 method_extra_columns.puniform <- function(method_name)
-  c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value", "bias_p_value")
+  c("version", "tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value", "bias_p_value")
