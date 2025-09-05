@@ -113,11 +113,11 @@ method_settings.SM <- function(method_name) {
       "rma"      = list(method = "ML", test = "knha", control = list(stepadj = 0.5, maxiter = 500)),
       "selmodel" = list(type = "stepfun", steps = c(0.025))
     ),
-    "SM3" = list(
+    "3PSM" = list(
       "rma"      = list(method = "ML", test = "knha", control = list(stepadj = 0.5, maxiter = 500)),
       "selmodel" = list(type = "stepfun", steps = c(0.025))
     ),
-    "SM4" = list(
+    "4PSM" = list(
       "rma"      = list(method = "ML", test = "knha", control = list(stepadj = 0.5, maxiter = 500)),
       "selmodel" = list(type = "stepfun", steps = c(0.025, 0.50))
     )
@@ -128,4 +128,4 @@ method_settings.SM <- function(method_name) {
 
 #' @export
 method_extra_columns.SM <- function(method_name)
-  c("bias_coefficient", "bias_coefficient_se", "bias_p_value")
+  c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_p_value", "bias_coefficient", "bias_coefficient_se", "bias_p_value")
