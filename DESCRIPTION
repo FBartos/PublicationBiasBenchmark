@@ -28,6 +28,7 @@ Imports:
     sandwich,
     lmtest,
     puniform,
+    RoBMA,
     Rdpack
 Suggests:
     testthat (>= 3.0.0),
