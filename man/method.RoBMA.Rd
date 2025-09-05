@@ -9,7 +9,7 @@
 \arguments{
 \item{method_name}{Method name (automatically passed)}
 
-\item{data}{Data frame with yi (effect sizes), sei (standard errors), type
+\item{data}{Data frame with yi (effect sizes), sei (standard errors), es_type
 (either \code{"SMD"} for Cohen's d / Hedge's g, \code{"logOR"} for log odds
 ratio, \code{"z"} for Fisher's z, or \code{"r"} for correlations. Default's to
 "SMD" if unspecified)}
@@ -27,7 +27,7 @@ publication bias adjustment methods. See
 \insertCite{bartos2023robust;textual}{PublicationBiasBenchmark} for
 details.
 
-Note that the prior settings is dispatched based on \code{"type"} column attached
+Note that the prior settings is dispatched based on \code{"es_type"} column attached
 to the dataset. The resulting estimates are then summarized on the same scale
 as was the dataset input (for \code{"r"}, heterogeneity is summarized on Fisher's z).
 }
@@ -46,9 +46,9 @@ three-level specification whenever \code{"study_ids"} are supplied with the data
 \examples{
 # Generate some example data
 data <- data.frame(
-  yi   = c(0.2, 0.3, 0.1, 0.4, 0.25),
-  sei  = c(0.1, 0.15, 0.08, 0.12, 0.09),
-  type = "SMD"
+  yi      = c(0.2, 0.3, 0.1, 0.4, 0.25),
+  sei     = c(0.1, 0.15, 0.08, 0.12, 0.09),
+  es_type = "SMD"
 )
 
 # Apply PET method

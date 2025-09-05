@@ -8,12 +8,12 @@
 #' \insertCite{bartos2023robust;textual}{PublicationBiasBenchmark} for
 #' details.
 #'
-#' Note that the prior settings is dispatched based on \code{"type"} column attached
+#' Note that the prior settings is dispatched based on \code{"es_type"} column attached
 #' to the dataset. The resulting estimates are then summarized on the same scale
 #' as was the dataset input (for \code{"r"}, heterogeneity is summarized on Fisher's z).
 #'
 #' @param method_name Method name (automatically passed)
-#' @param data Data frame with yi (effect sizes), sei (standard errors), type
+#' @param data Data frame with yi (effect sizes), sei (standard errors), es_type
 #' (either \code{"SMD"} for Cohen's d / Hedge's g, \code{"logOR"} for log odds
 #' ratio, \code{"z"} for Fisher's z, or \code{"r"} for correlations. Default's to
 #' "SMD" if unspecified)
@@ -37,9 +37,9 @@
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(
-#'   yi   = c(0.2, 0.3, 0.1, 0.4, 0.25),
-#'   sei  = c(0.1, 0.15, 0.08, 0.12, 0.09),
-#'   type = "SMD"
+#'   yi      = c(0.2, 0.3, 0.1, 0.4, 0.25),
+#'   sei     = c(0.1, 0.15, 0.08, 0.12, 0.09),
+#'   es_type = "SMD"
 #' )
 #'
 #' # Apply PET method
@@ -61,14 +61,14 @@ method.RoBMA <- function(method_name, data, settings) {
   }
 
   # Specify effect sizes
-  if (is.null(data[["type"]])) {
-    type <- "SMD"
+  if (is.null(data[["es_type"]])) {
+    es_type <- "SMD"
   } else {
-    type <- unique(data$type)
-    if (length(type) > 1)
-      stop("Only one effect size type can be supplied.")
-    if (!type %in% c("SMD", "logOR", "z", "r"))
-      stop("Effect size type was not recognized.")
+    es_type <- unique(data$es_type)
+    if (length(es_type) > 1)
+      stop("Only one effect size es_type can be supplied.")
+    if (!es_type %in% c("SMD", "logOR", "z", "r"))
+      stop("Effect size es_type was not recognized.")
   }
 
   # Check input
@@ -77,19 +77,19 @@ method.RoBMA <- function(method_name, data, settings) {
 
   RoBMA_call <- settings
   # Dispatch the effect size types
-  if (type == "SMD") {
+  if (es_type == "SMD") {
     RoBMA_call$d  <- effect_sizes
     RoBMA_call$se <- standard_errors
     output_scale  <- "cohens_d"
-  } else if (type == "logOR") {
+  } else if (es_type == "logOR") {
     RoBMA_call$logOR  <- effect_sizes
     RoBMA_call$se     <- standard_errors
     output_scale      <- "logOR"
-  } else if (type == "z") {
+  } else if (es_type == "z") {
     RoBMA_call$z  <- effect_sizes
     RoBMA_call$se <- standard_errors
     output_scale  <- "fishers_z"
-  } else if (type == "r") {
+  } else if (es_type == "r") {
     RoBMA_call$r  <- effect_sizes
     RoBMA_call$se <- standard_errors
     output_scale  <- "r"
