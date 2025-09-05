@@ -49,7 +49,7 @@ download_dgm_metrics <- function(dgm_name, path = getwd(), overwrite = FALSE) {
   osf_repo <- osfr::osf_retrieve_node(osf_link)
 
   # select the data folder
-  osf_files <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what))
+  osf_files <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what), n_max = Inf)
 
   ### download all condition datasets to the specified folder
   # check the directory name
@@ -153,21 +153,25 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 #' @inheritParams retrieve_dgm_dataset
 #' @param method Which method should be returned. The complete
 #' results can be returned by setting to \code{NULL}.
+#' @param method_setting Which method setting should be returned. Defaults to "default".
 #'
 #' @return A data.frame
 #'
 #' @examples
 #' \dontrun{
-#'   # get condition 1, repetition 1
+#'   # get condition 1, repetition 1 for default method setting
 #'   retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
 #'
-#'   # get condition 1, all repetitions
+#'   # get condition 1, all repetitions for default method setting
 #'   retrieve_dgm_results("no_bias", condition_id = 1)
+#'
+#'   # get condition 1, repetition 1 for specific method and method setting
+#'   retrieve_dgm_results("no_bias", method = "RMA", method_setting = "robust", condition_id = 1, repetition_id = 1)
 #' }
 #'
 #'
 #' @export
-retrieve_dgm_results <- function(dgm_name, method = NULL, condition_id = NULL, repetition_id = NULL, path = getwd()){
+retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "default", condition_id = NULL, repetition_id = NULL, path = getwd()){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
@@ -180,12 +184,15 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, condition_id = NULL, r
   # return ithe specific methods results or all results
   if (!is.null(method) && length(method) == 1) {
 
+    # construct the method-method_setting filename
+    method_filename <- paste0(method, "-", method_setting, ".csv")
+
     # check that the corresponding file was downloaded
-    if (!file.exists(file.path(results_path, paste0(method, ".csv"))))
-      stop(sprintf("Computed results of the '%1$s' method for '%2$s' dgm cannot be locatated at the specified location '%3$s'.", method, condition_id, results_path))
+    if (!file.exists(file.path(results_path, method_filename)))
+      stop(sprintf("Computed results of the '%1$s-%2$s' method for '%3$s' dgm cannot be locatated at the specified location '%4$s'.", method, method_setting, dgm_name, results_path))
 
     # load the file
-    results_file <- utils::read.csv(file = file.path(results_path, paste0(method, ".csv")), header = TRUE)
+    results_file <- utils::read.csv(file = file.path(results_path, method_filename), header = TRUE)
 
   } else {
 

@@ -9,6 +9,7 @@
 #' @param dgm_name Character string specifying the DGM name
 #' @param metric_name Name of the metric to compute (e.g., "bias", "mse")
 #' @param methods Character vector of method names
+#' @param method_settings Character vector of method settings, must be same length as methods
 #' @param conditions Data frame of conditions from dgm_conditions()
 #' @param results_folder Path to folder containing pre-computed results
 #' @param metric_fun Function to compute the metric
@@ -41,6 +42,7 @@
 #'   dgm_name = "no_bias",
 #'   metric_name = "bias",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   conditions = conditions,
 #'   results_folder = "simulations",
 #'   metric_fun = bias,
@@ -52,6 +54,7 @@
 #'   dgm_name = "no_bias",
 #'   metric_name = "power",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   conditions = conditions,
 #'   results_folder = "simulations",
 #'   metric_fun = power,
@@ -63,13 +66,18 @@
 #' }
 #'
 #' @export
-compute_single_metric <- function(dgm_name, metric_name, methods, conditions, results_folder,
+compute_single_metric <- function(dgm_name, metric_name, methods, method_settings, conditions, results_folder,
                                  metric_fun, metric_mcse_fun,
                                  power_test_type = "pvalue", power_threshold = NULL,
                                  estimate_col = "estimate", true_effect_col = "mean_effect",
                                  ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
                                  pvalue_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                                  overwrite = FALSE, output_folder = NULL, ...) {
+
+  # Validate that methods and method_settings have the same length
+  if (length(methods) != length(method_settings)) {
+    stop("methods and method_settings must have the same length")
+  }
 
   # Set default threshold based on test type
   if (is.null(power_threshold)) {
@@ -83,20 +91,23 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 
   # Check if results already exist (only if overwrite is FALSE and output_folder is provided)
   existing_results <- NULL
-  methods_to_compute <- methods
+  methods_to_compute <- seq_along(methods)
 
   if (!overwrite && !is.null(output_folder)) {
     output_file <- file.path(output_folder, paste0(metric_name, ".csv"))
     if (file.exists(output_file)) {
       existing_results <- utils::read.csv(output_file, stringsAsFactors = FALSE)
 
-      # Check which methods already have results
-      existing_methods <- unique(existing_results$method)
-      methods_to_compute <- setdiff(methods, existing_methods)
+      # Check which method-method_setting combinations already have results
+      existing_combinations <- paste0(existing_results$method, "-", existing_results$method_setting)
+      current_combinations <- paste0(methods, "-", method_settings)
+
+      # Find indices of combinations that need to be computed
+      methods_to_compute <- which(!current_combinations %in% existing_combinations)
 
       if (length(methods_to_compute) == 0) {
-        # All methods already computed, return existing results for these methods
-        return(existing_results[existing_results$method %in% methods, ])
+        # All combinations already computed, return existing results for these combinations
+        return(existing_results[existing_combinations %in% current_combinations, ])
       }
     }
   }
@@ -107,13 +118,18 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
   metric_col_name <- metric_name
   mcse_col_name <- paste0(metric_name, "_mcse")
 
-  for (method in methods_to_compute) {
+  for (i in methods_to_compute) {
+    method <- methods[i]
+    method_setting <- method_settings[i]
+print(method)
+print(method_setting)
     for (condition in conditions$condition_id) {
 
       # Retrieve the precomputed results
       method_condition_results <- retrieve_dgm_results(
         dgm_name     = dgm_name,
         method       = method,
+        method_setting = method_setting,
         condition_id = condition,
         path         = results_folder
       )
@@ -126,29 +142,30 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 
         # If no converged results remain, create NA result
         if (nrow(method_condition_results) == 0) {
-          warning(paste("No converged results for method", method, "condition", condition, "- setting values to NA"))
+          warning(paste("No converged results for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
           # Create result with NAs
           result_df <- data.frame(
             method         = method,
-            method_setting = unique(method_condition_results$method_setting),
+            method_setting = method_setting,
             condition_id   = condition
           )
           result_df[[metric_col_name]] <- NA
           result_df[[mcse_col_name]] <- NA
+          key <- paste0(method, "-", method_setting, "-", condition)
           metric_out[[key]] <- result_df
           next
         }
       }
 
       # Compute the metric based on its requirements
-      key <- paste0(method, "-", condition)
+      key <- paste0(method, "-", method_setting, "-", condition)
 
       # Get the true effect for this condition
       true_effect <- conditions[conditions$condition_id == condition, true_effect_col]
 
       result_df <- data.frame(
         method         = method,
-        method_setting = unique(method_condition_results$method_setting),
+        method_setting = method_setting,
         condition_id   = condition
       )
 
@@ -172,7 +189,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         # Remove NAs
         valid_idx <- !is.na(estimates)
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid estimates for method", method, "condition", condition, "- setting values to NA"))
+          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
           result_df[[metric_col_name]] <- NA
           result_df[[mcse_col_name]] <- NA
         } else {
@@ -193,7 +210,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         # Remove NAs
         valid_idx <- !is.na(estimates)
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid estimates for method", method, "condition", condition, "- setting values to NA"))
+          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
           result_df[[metric_col_name]] <- NA
           result_df[[mcse_col_name]] <- NA
         } else {
@@ -215,7 +232,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         # Remove NAs
         valid_idx <- !is.na(estimates)
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid estimates for method", method, "condition", condition, "- setting values to NA"))
+          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
           result_df[[metric_col_name]] <- NA
           result_df[[mcse_col_name]] <- NA
         } else {
@@ -237,7 +254,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         valid_idx <- !is.na(ci_lower) & !is.na(ci_upper)
 
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid confidence intervals for method", method, "condition", condition, "- setting values to NA"))
+          warning(paste("No valid confidence intervals for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
           result_df[[metric_col_name]] <- NA
           result_df[[mcse_col_name]] <- NA
         } else {
@@ -267,7 +284,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
           # Remove NAs
           valid_idx <- !is.na(p_values)
           if (sum(valid_idx) == 0) {
-            warning(paste("No valid p-values for method", method, "condition", condition, "- setting values to NA"))
+            warning(paste("No valid p-values for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
             result_df[[metric_col_name]] <- NA
             result_df[[mcse_col_name]] <- NA
           } else {
@@ -288,7 +305,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
           # Remove NAs
           valid_idx <- !is.na(bf_values)
           if (sum(valid_idx) == 0) {
-            warning(paste("No valid Bayes factors for method", method, "condition", condition, "- setting values to NA"))
+            warning(paste("No valid Bayes factors for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
             result_df[[metric_col_name]] <- NA
             result_df[[mcse_col_name]] <- NA
           } else {
@@ -310,7 +327,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
         # Remove NAs
         valid_idx <- !is.na(ci_lower) & !is.na(ci_upper)
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid confidence intervals for method", method, "condition", condition, "- setting values to NA"))
+          warning(paste("No valid confidence intervals for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
           result_df[[metric_col_name]] <- NA
           result_df[[mcse_col_name]] <- NA
         } else {
@@ -354,6 +371,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #'
 #' @param dgm_name Character string specifying the DGM name
 #' @param methods Character vector of method names
+#' @param method_settings Character vector of method settings, must be same length as methods
 #' @param results_folder Path to folder containing pre-computed results
 #' @param output_folder Path to folder where results should be saved
 #' @param metrics Character vector of metrics to compute. If NULL, computes all standard metrics.
@@ -380,6 +398,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' results <- compute_metrics(
 #'   dgm_name = "no_bias",
 #'   methods = c("RMA", "PET", "PEESE", "PETPEESE"),
+#'   method_settings = c("default", "default", "default", "default"),
 #'   results_folder = "simulations",
 #'   output_folder = "results"
 #' )
@@ -388,6 +407,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' results <- compute_metrics(
 #'   dgm_name = "no_bias",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   results_folder = "simulations",
 #'   output_folder = "results",
 #'   metrics = c("bias", "mse", "coverage")
@@ -397,6 +417,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' results <- compute_metrics(
 #'   dgm_name = "no_bias",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   results_folder = "simulations",
 #'   output_folder = "results",
 #'   power_test_type = "bayes_factor",
@@ -407,6 +428,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' results <- compute_metrics(
 #'   dgm_name = "no_bias",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   results_folder = "simulations",
 #'   output_folder = "results",
 #'   power_test_type = "pvalue",
@@ -417,6 +439,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' results <- compute_metrics(
 #'   dgm_name = "no_bias",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   results_folder = "simulations",
 #'   output_folder = "results",
 #'   metrics = c("bias", "mse", "coverage", "power", "convergence")
@@ -426,6 +449,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' results <- compute_metrics(
 #'   dgm_name = "no_bias",
 #'   methods = c("RMA", "PET"),
+#'   method_settings = c("default", "default"),
 #'   results_folder = "simulations",
 #'   output_folder = "results",
 #'   estimate_col = "my_estimate",
@@ -439,13 +463,18 @@ compute_single_metric <- function(dgm_name, metric_name, methods, conditions, re
 #' }
 #'
 #' @export
-compute_metrics <- function(dgm_name, methods, results_folder = "simulations",
+compute_metrics <- function(dgm_name, methods, method_settings, results_folder = "simulations",
                            output_folder = "results", metrics = NULL, verbose = TRUE,
                            power_test_type = "pvalue", power_threshold = NULL,
                            estimate_col = "estimate", true_effect_col = "mean_effect",
                            ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
                            pvalue_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                            overwrite = FALSE) {
+
+  # Validate that methods and method_settings have the same length
+  if (length(methods) != length(method_settings)) {
+    stop("methods and method_settings must have the same length")
+  }
 
   # Get DGM conditions
   conditions <- dgm_conditions(dgm_name)
@@ -506,6 +535,7 @@ compute_metrics <- function(dgm_name, methods, results_folder = "simulations",
       dgm_name          = dgm_name,
       metric_name       = metric,
       methods           = methods,
+      method_settings   = method_settings,
       conditions        = conditions,
       results_folder    = results_folder,
       metric_fun        = metric_functions[[metric]]$fun,
