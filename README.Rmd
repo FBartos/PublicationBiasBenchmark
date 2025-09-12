@@ -209,8 +209,9 @@ All DGM are linked within the OSF repository () and contain the following elemen
   - `dgm-conditions.csv` : file mapping of all conditions and the corresponding settings
   - `dgm-generation.R` : file with code for exact reproduction of the pre-simulated datasets
   - `dgm-sessionInfo.txt`: file with reproducibility details for the pre-simulated datasets
+  - `dgm-session.log`: file with reproducibility details for the pre-simulated datasets (based on sessioninfo package)
   - `results.R` : file with code for exact reproduction of the by method results (might be method / method groups specific)
   - `results-sessionInfo.txt`: file with reproducibility details for the precomputed results (might be method / method groups specific)
-  - `performance_metrics.R` : file with code for computation of performance metrics 
+  - `pm-computation.R` : file with code for computation of performance metrics 
   
 ### References
