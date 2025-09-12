@@ -1,4 +1,4 @@
-#' @title WAAPWLS (Weighted Least Squares - Weighted Average of Adequate Power) Method
+#' @title WAAPWLS (Weighted Average of Adequately Powered Studies) Method
 #'
 #' @description
 #' Implements the WAAPWLS method for meta-analysis, which combines WLS and WAAP approaches.
@@ -7,8 +7,6 @@
 #' standard error. If at least 2 high-powered studies are found, uses WAAP (weighted
 #' average of adequate power studies only), otherwise uses the original WLS estimate.
 #' See \insertCite{stanley2017finding;textual}{PublicationBiasBenchmark} for details.
-#'
-#'
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)

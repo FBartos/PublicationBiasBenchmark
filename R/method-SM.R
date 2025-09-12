@@ -98,8 +98,8 @@ method.SM <- function(method_name, data, settings) {
     tau_ci_lower        = tau_ci_lower,
     tau_ci_upper        = tau_ci_upper,
     tau_p_value         = tau_p_value,
-    bias_coefficient    = I(list(bias_coefficient)),
-    bias_coefficient_se = I(list(bias_coefficient_se)),
+    bias_coefficient    = paste0(bias_coefficient, collapse = ", "),
+    bias_coefficient_se = paste0(bias_coefficient_se, collapse = ", "),
     bias_p_value        = bias_p_value
   ))
 }

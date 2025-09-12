@@ -137,12 +137,12 @@ method.RoBMA <- function(method_name, data, settings) {
     tau_ci_lower     = tau_ci_lower,
     tau_ci_upper     = tau_ci_upper,
     tau_BF           = tau_BF,
-    bias_SM_coefficient          = I(list(bias_SM_coefficient)),
-    bias_SM_coefficient_ci_lower = I(list(bias_SM_coefficient_ci_lower)),
-    bias_SM_coefficient_ci_upper = I(list(bias_SM_coefficient_ci_upper)),
-    bias_PP_coefficient          = I(list(bias_PP_coefficient)),
-    bias_PP_coefficient_ci_lower = I(list(bias_PP_coefficient_ci_lower)),
-    bias_PP_coefficient_ci_upper = I(list(bias_PP_coefficient_ci_upper)),
+    bias_SM_coefficient          = paste0(bias_SM_coefficient, collapse = ", "),
+    bias_SM_coefficient_ci_lower = paste0(bias_SM_coefficient_ci_lower, collapse = ", "),
+    bias_SM_coefficient_ci_upper = paste0(bias_SM_coefficient_ci_upper, collapse = ", "),
+    bias_PP_coefficient          = paste0(bias_PP_coefficient, collapse = ", "),
+    bias_PP_coefficient_ci_lower = paste0(bias_PP_coefficient_ci_lower, collapse = ", "),
+    bias_PP_coefficient_ci_upper = paste0(bias_PP_coefficient_ci_upper, collapse = ", "),
     bias_BF                      = bias_BF
   ))
 }

@@ -121,8 +121,7 @@ compute_single_metric <- function(dgm_name, metric_name, methods, method_setting
   for (i in methods_to_compute) {
     method <- methods[i]
     method_setting <- method_settings[i]
-print(method)
-print(method_setting)
+
     for (condition in conditions$condition_id) {
 
       # Retrieve the precomputed results

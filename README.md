@@ -17,6 +17,15 @@ devtools::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
+``` r
+library(PublicationBiasBenchmark)
+#> 
+#> Attaching package: 'PublicationBiasBenchmark'
+#> The following object is masked from 'package:stats':
+#> 
+#>     power
+```
+
 ### Simulating From Existing Data Generating Models
 
 ``` r
@@ -72,6 +81,38 @@ retrieve_dgm_metrics("no_bias", metric = "bias", method = "RMA", condition_id = 
 # retrieve all metrics across all conditions and metrics
 retrieve_dgm_metrics("no_bias", path = download_folder)
 ```
+
+### Visualize Precomputed Results
+
+``` r
+# retrieve all metrics across all conditions and metrics
+download_folder <- file.path(getwd(), "res")
+df <- retrieve_dgm_metrics("no_bias", path = download_folder)
+
+# retrieve conditions
+conditions <- dgm_conditions("no_bias")
+
+# add labels
+df$label <- with(df, paste0(method, " (", method_setting, ")"))
+
+# distinquish between H0 and H1
+df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+
+par(mfrow = c(3, 2))
+
+par(mar = c(4, 10, 1, 1))
+boxplot(convergence ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df, xlab = "Convergence")
+boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.25), data = df, xlab = "RMSE")
+boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.25, 0.25), data = df, xlab = "Bias")
+abline(v = 0, lty = 3)
+boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df, xlab = "CI Coverage")
+abline(v = 0.95, lty = 3)
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data = df[df$H0,], xlab = "Type I Error")
+abline(v = 0.05, lty = 3)
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df[!df$H0,], xlab = "Power")
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ### Simulating From Existing DGM With Custom Settings
 

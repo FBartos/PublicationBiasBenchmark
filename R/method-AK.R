@@ -97,8 +97,8 @@ method.AK <- function(method_name, data, settings) {
     note                = note,
     tau_estimate        = tau_estimate,
     tau2_se             = tau2_se,
-    bias_coefficient    = I(bias_coefficient),
-    bias_coefficient_se = I(bias_coefficient_se),
+    bias_coefficient    = paste0(bias_coefficient, collapse = ", "),
+    bias_coefficient_se = paste0(bias_coefficient_se, collapse = ", "),
     version             = version
   ))
 }

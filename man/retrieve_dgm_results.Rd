@@ -7,6 +7,7 @@
 retrieve_dgm_results(
   dgm_name,
   method = NULL,
+  method_setting = "default",
   condition_id = NULL,
   repetition_id = NULL,
   path = getwd()
@@ -17,6 +18,8 @@ retrieve_dgm_results(
 
 \item{method}{Which method should be returned. The complete
 results can be returned by setting to \code{NULL}.}
+
+\item{method_setting}{Which method setting should be returned. Defaults to "default".}
 
 \item{condition_id}{which conditions should settings be returned for.}
 
@@ -36,11 +39,14 @@ locally. See \code{\link[=download_dgm_results]{download_dgm_results()}} functio
 }
 \examples{
 \dontrun{
-  # get condition 1, repetition 1
+  # get condition 1, repetition 1 for default method setting
   retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
 
-  # get condition 1, all repetitions
+  # get condition 1, all repetitions for default method setting
   retrieve_dgm_results("no_bias", condition_id = 1)
+
+  # get condition 1, repetition 1 for specific method and method setting
+  retrieve_dgm_results("no_bias", method = "RMA", method_setting = "robust", condition_id = 1, repetition_id = 1)
 }
 
 

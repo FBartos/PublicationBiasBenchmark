@@ -72,7 +72,7 @@ download_dgm_metrics <- function(dgm_name, path = getwd(), overwrite = FALSE) {
 
     # save file if it does not exist or if overwrite is TRUE
     if (!file.exists(file.path(data_path, temp_fname)) || overwrite) {
-      osfr::osf_download(osf_files[i, ], path = data_path)
+      osfr::osf_download(osf_files[i, ], path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"))
     }
   }
 

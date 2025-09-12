@@ -8,6 +8,7 @@ compute_single_metric(
   dgm_name,
   metric_name,
   methods,
+  method_settings,
   conditions,
   results_folder,
   metric_fun,
@@ -32,6 +33,8 @@ compute_single_metric(
 \item{metric_name}{Name of the metric to compute (e.g., "bias", "mse")}
 
 \item{methods}{Character vector of method names}
+
+\item{method_settings}{Character vector of method settings, must be same length as methods}
 
 \item{conditions}{Data frame of conditions from dgm_conditions()}
 
@@ -87,6 +90,7 @@ bias_results <- compute_single_metric(
   dgm_name = "no_bias",
   metric_name = "bias",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   conditions = conditions,
   results_folder = "simulations",
   metric_fun = bias,
@@ -98,6 +102,7 @@ power_results <- compute_single_metric(
   dgm_name = "no_bias",
   metric_name = "power",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   conditions = conditions,
   results_folder = "simulations",
   metric_fun = power,

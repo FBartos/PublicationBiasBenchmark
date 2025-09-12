@@ -2,7 +2,7 @@
 % Please edit documentation in R/method-WAAPWLS.R
 \name{method.WAAPWLS}
 \alias{method.WAAPWLS}
-\title{WAAPWLS (Weighted Least Squares - Weighted Average of Adequate Power) Method}
+\title{WAAPWLS (Weighted Average of Adequately Powered Studies) Method}
 \usage{
 \method{method}{WAAPWLS}(method_name, data, settings = NULL)
 }

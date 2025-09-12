@@ -7,6 +7,7 @@
 compute_metrics(
   dgm_name,
   methods,
+  method_settings,
   results_folder = "simulations",
   output_folder = "results",
   metrics = NULL,
@@ -27,6 +28,8 @@ compute_metrics(
 \item{dgm_name}{Character string specifying the DGM name}
 
 \item{methods}{Character vector of method names}
+
+\item{method_settings}{Character vector of method settings, must be same length as methods}
 
 \item{results_folder}{Path to folder containing pre-computed results}
 
@@ -74,6 +77,7 @@ performance metrics.
 results <- compute_metrics(
   dgm_name = "no_bias",
   methods = c("RMA", "PET", "PEESE", "PETPEESE"),
+  method_settings = c("default", "default", "default", "default"),
   results_folder = "simulations",
   output_folder = "results"
 )
@@ -82,6 +86,7 @@ results <- compute_metrics(
 results <- compute_metrics(
   dgm_name = "no_bias",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   results_folder = "simulations",
   output_folder = "results",
   metrics = c("bias", "mse", "coverage")
@@ -91,6 +96,7 @@ results <- compute_metrics(
 results <- compute_metrics(
   dgm_name = "no_bias",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   results_folder = "simulations",
   output_folder = "results",
   power_test_type = "bayes_factor",
@@ -101,6 +107,7 @@ results <- compute_metrics(
 results <- compute_metrics(
   dgm_name = "no_bias",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   results_folder = "simulations",
   output_folder = "results",
   power_test_type = "pvalue",
@@ -111,6 +118,7 @@ results <- compute_metrics(
 results <- compute_metrics(
   dgm_name = "no_bias",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   results_folder = "simulations",
   output_folder = "results",
   metrics = c("bias", "mse", "coverage", "power", "convergence")
@@ -120,6 +128,7 @@ results <- compute_metrics(
 results <- compute_metrics(
   dgm_name = "no_bias",
   methods = c("RMA", "PET"),
+  method_settings = c("default", "default"),
   results_folder = "simulations",
   output_folder = "results",
   estimate_col = "my_estimate",
