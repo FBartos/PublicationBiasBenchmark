@@ -119,19 +119,22 @@ compute_single_metric <- function(dgm_name, metric_name, methods, method_setting
   mcse_col_name <- paste0(metric_name, "_mcse")
 
   for (i in methods_to_compute) {
-    method <- methods[i]
+
+    method         <- methods[i]
     method_setting <- method_settings[i]
+
+    # Retrieve the precomputed results
+    method_results <- retrieve_dgm_results(
+      dgm_name       = dgm_name,
+      method         = method,
+      method_setting = method_setting,
+      path           = results_folder
+    )
 
     for (condition in conditions$condition_id) {
 
-      # Retrieve the precomputed results
-      method_condition_results <- retrieve_dgm_results(
-        dgm_name     = dgm_name,
-        method       = method,
-        method_setting = method_setting,
-        condition_id = condition,
-        path         = results_folder
-      )
+      # Select the condition results
+      method_condition_results <- method_results[method_results$condition_id == condition,]
 
       # Filter for converged results if we're not computing convergence metric
       if (metric_name != "convergence") {
