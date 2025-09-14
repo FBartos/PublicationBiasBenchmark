@@ -15,8 +15,9 @@
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes), sei (standard errors), es_type
 #' (either \code{"SMD"} for Cohen's d / Hedge's g, \code{"logOR"} for log odds
-#' ratio, \code{"z"} for Fisher's z, or \code{"r"} for correlations. Default's to
-#' "SMD" if unspecified)
+#' ratio, \code{"z"} for Fisher's z, or \code{"r"} for correlations. Defaults to
+#' \code{"none"} which re-scales the default priors to unit-information width based
+#' on total sample size supplied \code{"ni"}.)
 #' @param settings List of method settings (see Details.)
 #'
 #' @return Data frame with RoBMA results
@@ -67,7 +68,7 @@ method.RoBMA <- function(method_name, data, settings) {
     es_type <- unique(data$es_type)
     if (length(es_type) > 1)
       stop("Only one effect size es_type can be supplied.")
-    if (!es_type %in% c("SMD", "logOR", "z", "r"))
+    if (!es_type %in% c("SMD", "logOR", "z", "r", "none"))
       stop("Effect size es_type was not recognized.")
   }
 
@@ -93,6 +94,32 @@ method.RoBMA <- function(method_name, data, settings) {
     RoBMA_call$r  <- effect_sizes
     RoBMA_call$se <- standard_errors
     output_scale  <- "r"
+  } else if (es_type == "none") {
+    # specify unit information prior scaling
+    if (is.null(data$ni))
+      stop("Total sample size `ni` must be specified of the `es_type` is not set (or set to `none`).")
+
+    fit_scale     <- metafor::rma(yi = effect_sizes, sei = standard_errors, method = "FE")
+    outcome_scale <- fit_scale$se * sqrt(sum(data$ni))    # prior scaling factor
+    prior_scaling <- outcome_scale * RoBMA:::scale_d2z(1) # prior has a scale of 1 on Cohen's d => rescaling proportionally
+
+    RoBMA_call$y  <- effect_sizes
+    RoBMA_call$se <- standard_errors
+    RoBMA_call$prior_scale    <- "none"
+    RoBMA_call$priors_effect        <- RoBMA::prior(distribution = "normal",   parameters = list(mean  = 0, sd = 1 * prior_scaling))
+    RoBMA_call$priors_heterogeneity <- RoBMA::prior(distribution = "invgamma", parameters = list(shape = 1, scale = 0.15 * prior_scaling))
+    RoBMA_call$priors_bias          <- list(
+      RoBMA::prior_weightfunction(distribution = "two.sided", parameters = list(alpha = c(1, 1),       steps = c(0.05)),             prior_weights = 1/12),
+      RoBMA::prior_weightfunction(distribution = "two.sided", parameters = list(alpha = c(1, 1, 1),    steps = c(0.05, 0.1)),        prior_weights = 1/12),
+      RoBMA::prior_weightfunction(distribution = "one.sided", parameters = list(alpha = c(1, 1),       steps = c(0.05)),             prior_weights = 1/12),
+      RoBMA::prior_weightfunction(distribution = "one.sided", parameters = list(alpha = c(1, 1, 1),    steps = c(0.025, 0.05)),      prior_weights = 1/12),
+      RoBMA::prior_weightfunction(distribution = "one.sided", parameters = list(alpha = c(1, 1, 1),    steps = c(0.05, 0.5)),        prior_weights = 1/12),
+      RoBMA::prior_weightfunction(distribution = "one.sided", parameters = list(alpha = c(1, 1, 1, 1), steps = c(0.025, 0.05, 0.5)), prior_weights = 1/12),
+      RoBMA::prior_PET(distribution =   "Cauchy", parameters = list(0, 1), truncation = list(0, Inf), prior_weights = 1/4),
+      RoBMA::prior_PEESE(distribution = "Cauchy", parameters = list(0, 5 / prior_scaling), truncation = list(0, Inf), prior_weights = 1/4)
+    )
+
+    output_scale  <- "none"
   }
   RoBMA_call$study_ids <- study_ids
 

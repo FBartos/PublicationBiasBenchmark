@@ -11,8 +11,9 @@
 
 \item{data}{Data frame with yi (effect sizes), sei (standard errors), es_type
 (either \code{"SMD"} for Cohen's d / Hedge's g, \code{"logOR"} for log odds
-ratio, \code{"z"} for Fisher's z, or \code{"r"} for correlations. Default's to
-"SMD" if unspecified)}
+ratio, \code{"z"} for Fisher's z, or \code{"r"} for correlations. Defaults to
+\code{"none"} which re-scales the default priors to unit-information width based
+on total sample size supplied \code{"ni"}.)}
 
 \item{settings}{List of method settings (see Details.)}
 }
