@@ -6,10 +6,4 @@
 README.Rmd
 README.html
 ^\.Rproj\.user$
-^res
-^sims
-^simulations
-^Bom2019
-^Carter2019
-^Stanley2017
-^Alinaghi2018
+^resources

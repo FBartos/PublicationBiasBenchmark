@@ -1,7 +1,7 @@
-#' @title Performance metrics and Monte Carlo Standard Errors
+#' @title Performance Measures and Monte Carlo Standard Errors
 #'
 #' @description
-#' A comprehensive set of functions for computing performance metrics and their
+#' A comprehensive set of functions for computing performance measures and their
 #' Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 #' based on definitions from Table 3 in
 #' \insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}. Also see
@@ -9,14 +9,14 @@
 #' details. Bias and relative bias were modified to account for possibly different
 #' true values across repetitions.
 #'
-#' @name performance_metrics
+#' @name measures
 #' @aliases bias bias_mcse relative_bias relative_bias_mcse mse mse_mcse rmse rmse_mcse
 #' @aliases empirical_variance empirical_variance_mcse empirical_se empirical_se_mcse
 #' @aliases coverage coverage_mcse power power_mcse mean_ci_width mean_ci_width_mcse
 #' @aliases mean_generic_statistic mean_generic_statistic_mcse
 #'
 #' @details
-#' The package provides the following performance metrics and their corresponding MCSE functions:
+#' The package provides the following performance measures and their corresponding MCSE functions:
 #'
 #' \itemize{
 #'   \item \code{bias(theta_hat, theta)}: Bias estimate
@@ -104,7 +104,7 @@ S_G_squared <- function(G) {
   sum((G - mean(G))^2) / (n_sim - 1)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 bias <- function(theta_hat, theta) {
   # sum(theta_hat) / length(theta_hat) - theta
@@ -112,7 +112,7 @@ bias <- function(theta_hat, theta) {
   sum(theta_hat - theta) / length(theta_hat)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 bias_mcse <- function(theta_hat) {
   n_sim <- length(theta_hat)
@@ -120,7 +120,7 @@ bias_mcse <- function(theta_hat) {
   sqrt(S_theta_sq / n_sim)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 relative_bias <- function(theta_hat, theta) {
   # Return NaN if any theta is 0 (division by zero)
@@ -132,7 +132,7 @@ relative_bias <- function(theta_hat, theta) {
   sum(theta_hat - theta) / length(theta_hat) / theta
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 relative_bias_mcse <- function(theta_hat, theta) {
   # Return NaN if any theta is 0 (division by zero)
@@ -144,13 +144,13 @@ relative_bias_mcse <- function(theta_hat, theta) {
   sqrt(S_theta_sq / (theta^2 * n_sim))
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 mse <- function(theta_hat, theta) {
   sum((theta_hat - theta)^2) / length(theta_hat)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 mse_mcse <- function(theta_hat, theta) {
   n_sim <- length(theta_hat)
@@ -158,13 +158,13 @@ mse_mcse <- function(theta_hat, theta) {
   sqrt(S_theta_minus_theta_sq / n_sim)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 rmse <- function(theta_hat, theta) {
   sqrt(sum((theta_hat - theta)^2) / length(theta_hat))
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 rmse_mcse <- function(theta_hat, theta) {
   n_sim <- length(theta_hat)
@@ -173,13 +173,13 @@ rmse_mcse <- function(theta_hat, theta) {
   sqrt(S_theta_minus_theta_sq / (4 * mse_val * n_sim))
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 empirical_variance <- function(theta_hat) {
   S_theta_squared(theta_hat)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 empirical_variance_mcse <- function(theta_hat) {
   n_sim <- length(theta_hat)
@@ -187,13 +187,13 @@ empirical_variance_mcse <- function(theta_hat) {
   sqrt(2 * S_theta_sq^2 / (n_sim - 1))
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 empirical_se <- function(theta_hat) {
   sqrt(S_theta_squared(theta_hat))
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 empirical_se_mcse <- function(theta_hat) {
   n_sim <- length(theta_hat)
@@ -201,14 +201,14 @@ empirical_se_mcse <- function(theta_hat) {
   sqrt(S_theta_sq / (2 * (n_sim - 1)))
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 coverage <- function(ci_lower, ci_upper, theta) {
   ci_includes_theta <- (ci_lower <= theta) & (ci_upper >= theta)
   sum(ci_includes_theta) / length(ci_includes_theta)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 coverage_mcse <- function(ci_lower, ci_upper, theta) {
   ci_includes_theta <- (ci_lower <= theta) & (ci_upper >= theta)
@@ -217,13 +217,13 @@ coverage_mcse <- function(ci_lower, ci_upper, theta) {
   sqrt(cov_val * (1 - cov_val) / n_sim)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 power <- function(test_rejects_h0) {
   sum(test_rejects_h0) / length(test_rejects_h0)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 power_mcse <- function(test_rejects_h0) {
   n_sim <- length(test_rejects_h0)
@@ -231,13 +231,13 @@ power_mcse <- function(test_rejects_h0) {
   sqrt(pow_val * (1 - pow_val) / n_sim)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 mean_ci_width <- function(ci_upper, ci_lower) {
   sum(ci_upper - ci_lower) / length(ci_upper)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 mean_ci_width_mcse <- function(ci_upper, ci_lower) {
   n_sim <- length(ci_upper)
@@ -245,13 +245,13 @@ mean_ci_width_mcse <- function(ci_upper, ci_lower) {
   sqrt(S_w_sq / n_sim)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 mean_generic_statistic <- function(G) {
   sum(G) / length(G)
 }
 
-#' @rdname performance_metrics
+#' @rdname measures
 #' @export
 mean_generic_statistic_mcse <- function(G) {
   n_sim <- length(G)

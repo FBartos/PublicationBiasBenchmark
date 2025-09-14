@@ -19,6 +19,8 @@ devtools::install_github("FBartos/PublicationBiasBenchmark")
 
 ``` r
 library(PublicationBiasBenchmark)
+#> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
+#> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
 #> 
 #> Attaching package: 'PublicationBiasBenchmark'
 #> The following object is masked from 'package:stats':
@@ -44,50 +46,49 @@ run_method("RMA", df)
 
 ``` r
 
-# download the pre-simulated datasets to "sims" folder
-download_folder <- file.path(getwd(), "sims")
+# download the pre-simulated datasets
+# the default settings downloads the datasets to the `resources` directory, use
+# PublicationBiasBenchmark.options(simulation_directory = "/path/")
+# to change the settings
 download_dgm_datasets("no_bias", path = download_folder)
 
 # retrieve first repetition of first condition from the downloaded datasets
-retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1, path = download_folder)
+retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 ```
 
 ### Use Pre-Computed Results
 
 ``` r
 
-# download the pre-computed results to "res" folder
-download_folder <- file.path(getwd(), "res")
-download_dgm_results("no_bias", path = download_folder)
+# download the pre-computed results
+download_dgm_results("no_bias")
 
 # retrieve results the first repetition of first condition of RMA from the downloaded results
-retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id = 1, path = download_folder)
+retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id = 1)
 
 # retrieve all results across all conditions and repetitions
-retrieve_dgm_results("no_bias", path = download_folder)
+retrieve_dgm_results("no_bias")
 ```
 
-### Use Pre-Computed Metrics
+### Use Pre-Computed Measures
 
 ``` r
 
-# download the pre-computed results to "res" folder
-download_folder <- file.path(getwd(), "res")
-download_dgm_metrics("no_bias", path = download_folder)
+# download the pre-computed measures
+download_dgm_measures("no_bias")
 
-# retrieve metrics of bias the first condition of RMA from the downloaded results
-retrieve_dgm_metrics("no_bias", metric = "bias", method = "RMA", condition_id = 1, path = download_folder)
+# retrieve measures of bias the first condition of RMA from the downloaded results
+retrieve_dgm_measures("no_bias", metric = "bias", method = "RMA", condition_id = 1)
 
-# retrieve all metrics across all conditions and metrics
-retrieve_dgm_metrics("no_bias", path = download_folder)
+# retrieve all measures across all conditions and measures
+retrieve_dgm_measures("no_bias")
 ```
 
 ### Visualize Precomputed Results
 
 ``` r
-# retrieve all metrics across all conditions and metrics
-download_folder <- file.path(getwd(), "res")
-df <- retrieve_dgm_metrics("no_bias", path = download_folder)
+# retrieve all measures across all conditions and measures
+df <- retrieve_dgm_measures("no_bias")
 
 # retrieve conditions
 conditions <- dgm_conditions("no_bias")
@@ -163,14 +164,14 @@ run_method("RMA", df)
   given method, condition, and repetition from the pre-downloaded OSF
   repository.
 
-#### Performance Metrics And Results
+#### Performance measures And Results
 
 - `bias()`, `bias_mcse()`, etc.: Functions to compute performance
-  metrics and their Monte Carlo standard errors.
-- `download_dgm_metrics()`: Downloads pre-computed performance metrics
+  measures and their Monte Carlo standard errors.
+- `download_dgm_measures()`: Downloads pre-computed performance measures
   from the OSF repository.
-- `retrieve_dgm_metrics()`: Retrieves the pre-computed performance
-  metrics of a given method, condition, and repetition from the
+- `retrieve_dgm_measures()`: Retrieves the pre-computed performance
+  measures of a given method, condition, and repetition from the
   pre-downloaded OSF repository.
 
 ### Available DGM Models
@@ -179,7 +180,7 @@ See `methods("dgm")` for the full list:
 
 - `"no_bias"`: Generates data without publication bias (a test
   simulation)
-- `"Stanley2017"`: Stanley et al. (2017)
+- `"Stanley2017"`: Tom D. Stanley et al. (2017)
 - `"Alinaghi2018"`: Alinaghi & Reed (2018)
 - `"Bom2019"`: Bom & Rachinger (2019)
 - `"Carter2019"`: Carter et al. (2019)
@@ -189,19 +190,31 @@ See `methods("dgm")` for the full list:
 See `methods("method")` for the full list:
 
 - `"RMA"`: Random effects meta-analysis
+- `"WLS"`: Weighted Least Squares
+- `"trimfill"`: Trim-and-Fill (Duval & Tweedie, 2000)
+- `"WAAPWLS"`: Weighted Least Squares - Weighted Average of Adequately
+  Power Studies (Tom D. Stanley et al., 2017)
+- `"WILS"`: Weighted and Iterated Least Squares (T. D. Stanley &
+  Doucouliagos, 2024)
 - `"PET"`: Precision-Effect Test (PET) publication bias adjustment
-  (Stanley & Doucouliagos, 2014)
+  (Tom D. Stanley & Doucouliagos, 2014)
 - `"PEESE"`: Precision-Effect Estimate with Standard Errors (PEESE)
-  publication bias adjustment (Stanley & Doucouliagos, 2014)
+  publication bias adjustment (Tom D. Stanley & Doucouliagos, 2014)
 - `"PETPEESE"`: Precision-Effect Test and Precision-Effect Estimate with
-  Standard Errors (PET-PEESE) publication bias adjustment (Stanley &
-  Doucouliagos, 2014)
-- …
+  Standard Errors (PET-PEESE) publication bias adjustment (Tom D.
+  Stanley & Doucouliagos, 2014)
+- `"EK"`: Endogenous Kink (Bom & Rachinger, 2019)
+- `"SM"`: Selection Models (3PSM, 4PSM) (Vevea & Hedges, 1995)
+- `"pcurve"`: P-curve (Simonsohn et al., 2014)
+- `"puniform"`: P-uniform and P-uniform\* Aert & Assen (2025)
+- `"AK"`: Andrews & Kasy selection models (AK1, AK2) (Andrews & Kasy,
+  2019)
+- `"RoBMA"`: Robust Bayesian Meta-Analysis (Bartoš et al., 2023)
 
-### Available Performance Metrics
+### Available Performance Measures
 
-See `?performance_metrics` for the full list of performance metrics and
-their Monte Carlo standard errors/
+See `?performance_measures` for the full list of performance measures
+and their Monte Carlo standard errors/
 
 ### DGM OSF Repositories
 
@@ -212,8 +225,8 @@ following elements:
   repetitions
 - `results` : folder containing by-method results for all conditions \*
   repetitions
-- `metrics` : folder containing by-metric performance for all methods \*
-  conditions
+- `measures` : folder containing by-measure performance for all methods
+  \* conditions
 - `metadata` : folder containing the following information:
   - `dgm-conditions.csv` : file mapping of all conditions and the
     corresponding settings
@@ -221,23 +234,50 @@ following elements:
     pre-simulated datasets
   - `dgm-sessionInfo.txt`: file with reproducibility details for the
     pre-simulated datasets
+  - `dgm-session.log`: file with reproducibility details for the
+    pre-simulated datasets (based on sessioninfo package)
   - `results.R` : file with code for exact reproduction of the by method
     results (might be method / method groups specific)
   - `results-sessionInfo.txt`: file with reproducibility details for the
     precomputed results (might be method / method groups specific)
-  - `performance_metrics.R` : file with code for computation of
-    performance metrics
+  - `pm-computation.R` : file with code for computation of performance
+    measures
 
 ### References
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0" line-spacing="2">
 
+<div id="ref-vanaert2025puniform" class="csl-entry">
+
+Aert, R. C. M. van, & Assen, M. A. L. M. van. (2025). Correcting for
+publication bias in a meta-analysis with the p-uniform\* method.
+*Psychonomic Bulletin & Review*. <https://osf.io/preprints/bitss/zqjr9/>
+
+</div>
+
 <div id="ref-alinaghi2018meta" class="csl-entry">
 
 Alinaghi, N., & Reed, W. R. (2018). Meta-analysis and publication bias:
 How well does the FAT-PET-PEESE procedure work? *Research Synthesis
 Methods*, *9*(2), 285–311. <https://doi.org/10.1002/jrsm.1298>
+
+</div>
+
+<div id="ref-andrews2019identification" class="csl-entry">
+
+Andrews, I., & Kasy, M. (2019). Identification of and correction for
+publication bias. *American Economic Review*, *109*(8), 2766–2794.
+<https://doi.org/10.1257/aer.20180310>
+
+</div>
+
+<div id="ref-bartos2023robust" class="csl-entry">
+
+Bartoš, F., Maier, M., Wagenmakers, E.-J., Doucouliagos, H., & Stanley,
+T. (2023). Robust bayesian meta-analysis: Model-averaging across
+complementary publication bias adjustment methods. *Research Synthesis
+Methods*, *14*(1), 99–116. <https://doi.org/10.1002/jrsm.1594>
 
 </div>
 
@@ -258,19 +298,63 @@ methods. *Advances in Methods and Practices in Psychological Science*,
 
 </div>
 
+<div id="ref-duval2000trim" class="csl-entry">
+
+Duval, S. J., & Tweedie, R. L. (2000). Trim and fill: A simple
+funnel-plot-based method of testing and adjusting for publication bias
+in meta-analysis. *Biometrics*, *56*(2), 455–463.
+<https://doi.org/10.1111/j.0006-341X.2000.00455.x>
+
+</div>
+
+<div id="ref-simonsohn2014pcurve" class="csl-entry">
+
+Simonsohn, U., Nelson, L. D., & Simmons, J. P. (2014). P-curve and
+effect size: Correcting for publication bias using only significant
+results. *Perspectives on Psychological Science*, *9*(6), 666–681.
+<https://doi.org/10.1177/1745691614553988>
+
+</div>
+
 <div id="ref-stanley2014meta" class="csl-entry">
 
-Stanley, T. D., & Doucouliagos, H. (2014). Meta-regression
+Stanley, Tom D., & Doucouliagos, H. (2014). Meta-regression
 approximations to reduce publication selection bias. *Research Synthesis
 Methods*, *5*(1), 60–78. <https://doi.org/10.1002/jrsm.1095>
 
 </div>
 
+<div id="ref-stanley2024harnessing" class="csl-entry">
+
+Stanley, T. D., & Doucouliagos, H. (2024). Harnessing the power of
+excess statistical significance: Weighted and iterative least squares.
+*Psychological Methods*, *29*(2), 407–420.
+<https://doi.org/10.1037/met0000502>
+
+</div>
+
 <div id="ref-stanley2017finding" class="csl-entry">
 
-Stanley, T. D., Doucouliagos, H., & Ioannidis, J. P. (2017). Finding the
-power to reduce publication bias. *Statistics in Medicine*, *36*(10),
-1580–1598. <https://doi.org/10.1002/sim.7228>
+Stanley, Tom D., Doucouliagos, H., & Ioannidis, J. P. (2017). Finding
+the power to reduce publication bias. *Statistics in Medicine*,
+*36*(10), 1580–1598. <https://doi.org/10.1002/sim.7228>
+
+</div>
+
+<div id="ref-vanassen2015meta" class="csl-entry">
+
+Van Assen, M. A. L. M., Aert, R. C. M. van, & Wicherts, J. M. (2015).
+Meta-analysis using effect size distributions of only statistically
+significant studies. *Psychological Methods*, *20*(3), 293–309.
+<https://doi.org/10.1037/met0000025>
+
+</div>
+
+<div id="ref-vevea1995general" class="csl-entry">
+
+Vevea, J. L., & Hedges, L. V. (1995). A general linear model for
+estimating effect size in the presence of publication bias.
+*Psychometrika*, *60*(3), 419–435. <https://doi.org/10.1007/BF02294384>
 
 </div>
 

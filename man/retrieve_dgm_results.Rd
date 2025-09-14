@@ -10,7 +10,7 @@ retrieve_dgm_results(
   method_setting = "default",
   condition_id = NULL,
   repetition_id = NULL,
-  path = getwd()
+  path = NULL
 )
 }
 \arguments{
@@ -26,8 +26,10 @@ results can be returned by setting to \code{NULL}.}
 \item{repetition_id}{Which repetition should be returned. The complete
 condition can be returned by setting to either \code{NULL}.}
 
-\item{path}{Character string specifying the directory path where the dataset should
-be saved. Defaults to the current working directory.}
+\item{path}{Character string specifying the directory path where the datasets/results/measures
+should be saved. Defaults to the location specified via
+\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
+in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 }
 \value{
 A data.frame
@@ -44,9 +46,6 @@ locally. See \code{\link[=download_dgm_results]{download_dgm_results()}} functio
 
   # get condition 1, all repetitions for default method setting
   retrieve_dgm_results("no_bias", condition_id = 1)
-
-  # get condition 1, repetition 1 for specific method and method setting
-  retrieve_dgm_results("no_bias", method = "RMA", method_setting = "robust", condition_id = 1, repetition_id = 1)
 }
 
 

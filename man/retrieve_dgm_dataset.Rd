@@ -4,12 +4,7 @@
 \alias{retrieve_dgm_dataset}
 \title{Retrieve a Pre-Simulated Condition and Repetition From a DGM}
 \usage{
-retrieve_dgm_dataset(
-  dgm_name,
-  condition_id,
-  repetition_id = NULL,
-  path = getwd()
-)
+retrieve_dgm_dataset(dgm_name, condition_id, repetition_id = NULL, path = NULL)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the DGM type}
@@ -19,8 +14,10 @@ retrieve_dgm_dataset(
 \item{repetition_id}{Which repetition should be returned. The complete
 condition can be returned by setting to either \code{NULL}.}
 
-\item{path}{Character string specifying the directory path where the dataset should
-be saved. Defaults to the current working directory.}
+\item{path}{Character string specifying the directory path where the datasets/results/measures
+should be saved. Defaults to the location specified via
+\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
+in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 }
 \value{
 A data.frame

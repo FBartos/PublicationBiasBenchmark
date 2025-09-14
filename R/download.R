@@ -5,8 +5,10 @@
 #' All data are located at \url{https://osf.io/exf3m/}.
 #'
 #' @param dgm_name Character string specifying the name of the DGM dataset to download.
-#' @param path Character string specifying the directory path where the dataset should
-#' be saved. Defaults to the current working directory.
+#' @param path Character string specifying the directory path where the datasets/results/measures
+#' should be saved. Defaults to the location specified via
+#' \code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
+#' in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #' @param overwrite Logical indicating whether to overwrite existing files.
 #' Defaults to \code{FALSE}, which means only missing files will be downloaded.
 #'
@@ -17,30 +19,33 @@
 #'   download_dgm_datasets("no_bias")
 #' }
 #'
-#' @aliases download_dgm_datasets download_dgm_results download_dgm_metrics
+#' @aliases download_dgm_datasets download_dgm_results download_dgm_measures
 #' @name download_dgm
 NULL
 
 #' @rdname download_dgm
 #' @export
-download_dgm_datasets <- function(dgm_name, path = getwd(), overwrite = FALSE) {
+download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE) {
   .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_results <- function(dgm_name, path = getwd(), overwrite = FALSE) {
+download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE) {
   .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_metrics <- function(dgm_name, path = getwd(), overwrite = FALSE) {
-  .download_dgm_fun(dgm_name, what = "metrics", path = path, overwrite = overwrite)
+download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE) {
+  .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite)
 }
 
 
 .download_dgm_fun <- function(dgm_name, what, path, overwrite) {
+
+  if (is.null(path))
+    path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
   # get link to the repository
   osf_link <- "https://osf.io/exf3m/"
@@ -106,12 +111,15 @@ download_dgm_metrics <- function(dgm_name, path = getwd(), overwrite = FALSE) {
 #'
 #'
 #' @export
-retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, path = getwd()){
+retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, path = NULL){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
   if (missing(condition_id))
     stop("'condition_id' must be specified")
+
+  if (is.null(path))
+    path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
   # check that the directory / condition folders exist
   data_path <- file.path(path, dgm_name, "data")
@@ -164,17 +172,16 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 #'
 #'   # get condition 1, all repetitions for default method setting
 #'   retrieve_dgm_results("no_bias", condition_id = 1)
-#'
-#'   # get condition 1, repetition 1 for specific method and method setting
-#'   retrieve_dgm_results("no_bias", method = "RMA", method_setting = "robust", condition_id = 1, repetition_id = 1)
 #' }
 #'
 #'
 #' @export
-retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "default", condition_id = NULL, repetition_id = NULL, path = getwd()){
+retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "default", condition_id = NULL, repetition_id = NULL, path = NULL){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
+  if (is.null(path))
+    path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
   # check that the directory / condition folders exist
   results_path <- file.path(path, dgm_name, "results")
@@ -219,79 +226,81 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "defa
 }
 
 
-#' @title Retrieve Pre-Computed Performance Metrics for a DGM
+#' @title Retrieve Pre-Computed Performance measures for a DGM
 #'
 #' @description
-#' This function returns pre-computed performance metrics for a specified
-#' Data Generating Mechanism (DGM). The pre-computed metrics must be already stored
-#' locally. See [download_dgm_metrics()] function for more guidance.
+#' This function returns pre-computed performance measures for a specified
+#' Data Generating Mechanism (DGM). The pre-computed measures must be already stored
+#' locally. See [download_dgm_measures()] function for more guidance.
 #'
 #' @inheritParams dgm
 #' @inheritParams download_dgm
 #' @inheritParams dgm_conditions
 #' @inheritParams retrieve_dgm_dataset
 #' @param metric Which performance metric should be returned (e.g., "bias", "mse", "coverage").
-#' All metrics can be returned by setting to \code{NULL}.
+#' All measures can be returned by setting to \code{NULL}.
 #' @param method Which method should be returned. All methods can be returned by setting to \code{NULL}.
 #'
 #' @return A data.frame
 #'
 #' @examples
 #' \dontrun{
-#'   # get bias metrics for all methods and conditions
-#'   retrieve_dgm_metrics("no_bias", metric = "bias")
+#'   # get bias measures for all methods and conditions
+#'   retrieve_dgm_measures("no_bias", metric = "bias")
 #'
-#'   # get all metrics for RMA method
-#'   retrieve_dgm_metrics("no_bias", method = "RMA")
+#'   # get all measures for RMA method
+#'   retrieve_dgm_measures("no_bias", method = "RMA")
 #'
-#'   # get MSE metrics for PET method in condition 1
-#'   retrieve_dgm_metrics("no_bias", metric = "mse", method = "PET", condition_id = 1)
+#'   # get MSE measures for PET method in condition 1
+#'   retrieve_dgm_measures("no_bias", metric = "mse", method = "PET", condition_id = 1)
 #' }
 #'
 #' @export
-retrieve_dgm_metrics <- function(dgm_name, metric = NULL, method = NULL, condition_id = NULL, path = getwd()){
+retrieve_dgm_measures <- function(dgm_name, metric = NULL, method = NULL, condition_id = NULL, path = NULL){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
+  if (is.null(path))
+    path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
-  # check that the directory / metrics folders exist
-  metrics_path <- file.path(path, dgm_name, "metrics")
-  if (!dir.exists(metrics_path))
-    stop(sprintf("Computed metrics of the specified dgm '%1$s' cannot be located at the specified location '%2$s'. You might need to download the computed metrics using the 'download_dgm_metrics()' function first.", dgm_name, path))
+  # check that the directory / measures folders exist
+  measures_path <- file.path(path, dgm_name, "measures")
+  if (!dir.exists(measures_path))
+    stop(sprintf("Computed measures of the specified dgm '%1$s' cannot be located at the specified location '%2$s'. You might need to download the computed measures using the 'download_dgm_measures()' function first.", dgm_name, path))
 
-  # return the specific metric results or all metrics
+  # return the specific metric results or all measures
   if (!is.null(metric) && length(metric) == 1) {
 
     # check that the corresponding file was downloaded
-    if (!file.exists(file.path(metrics_path, paste0(metric, ".csv"))))
-      stop(sprintf("Computed metrics '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", metric, dgm_name, metrics_path))
+    if (!file.exists(file.path(measures_path, paste0(metric, ".csv"))))
+      stop(sprintf("Computed measures '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", metric, dgm_name, measures_path))
 
     # load the file
-    metrics_file <- utils::read.csv(file = file.path(metrics_path, paste0(metric, ".csv")), header = TRUE)
+    measures_file <- utils::read.csv(file = file.path(measures_path, paste0(metric, ".csv")), header = TRUE)
 
   } else {
 
-    metric_files <- list.files(metrics_path, pattern = "\\.csv$")
+    metric_files <- list.files(measures_path, pattern = "\\.csv$")
 
     if (length(metric_files) == 0)
-      stop(sprintf("There are no computed metrics for '%1$s' dgm located at the specified location '%2$s'.", dgm_name, metrics_path))
+      stop(sprintf("There are no computed measures for '%1$s' dgm located at the specified location '%2$s'.", dgm_name, measures_path))
 
-    metrics_files <- lapply(metric_files, function(metric_file) {
-      utils::read.csv(file = file.path(metrics_path, metric_file), header = TRUE)
+    measures_files <- lapply(metric_files, function(metric_file) {
+      utils::read.csv(file = file.path(measures_path, metric_file), header = TRUE)
     })
-    metrics_file <- save_merge(metrics_files)
+    measures_file <- save_merge(measures_files)
 
   }
 
   # subset by method, condition, repetition if specified
   if (!is.null(method)) {
-    metrics_file <- metrics_file[metrics_file$method %in% method, ]
+    measures_file <- measures_file[measures_file$method %in% method, ]
   }
   if (!is.null(condition_id)) {
-    metrics_file <- metrics_file[metrics_file$condition %in% condition_id, ]
+    measures_file <- measures_file[measures_file$condition %in% condition_id, ]
   }
 
-  return(metrics_file)
+  return(measures_file)
 }
 
 

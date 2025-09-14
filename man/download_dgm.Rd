@@ -4,20 +4,22 @@
 \alias{download_dgm}
 \alias{download_dgm_datasets}
 \alias{download_dgm_results}
-\alias{download_dgm_metrics}
+\alias{download_dgm_measures}
 \title{Download Datasets of a DGM}
 \usage{
-download_dgm_datasets(dgm_name, path = getwd(), overwrite = FALSE)
+download_dgm_datasets(dgm_name, path = NULL, overwrite = FALSE)
 
-download_dgm_results(dgm_name, path = getwd(), overwrite = FALSE)
+download_dgm_results(dgm_name, path = NULL, overwrite = FALSE)
 
-download_dgm_metrics(dgm_name, path = getwd(), overwrite = FALSE)
+download_dgm_measures(dgm_name, path = NULL, overwrite = FALSE)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
 
-\item{path}{Character string specifying the directory path where the dataset should
-be saved. Defaults to the current working directory.}
+\item{path}{Character string specifying the directory path where the datasets/results/measures
+should be saved. Defaults to the location specified via
+\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
+in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing files.
 Defaults to \code{FALSE}, which means only missing files will be downloaded.}

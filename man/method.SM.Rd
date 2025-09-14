@@ -26,10 +26,10 @@ based on their p-values or effect sizes. See
 }
 \details{
 The following settings are implemented \describe{
-\item{\code{"default"} or \code{"SM3"}}{3-parameter step function selection model with
+\item{\code{"default"} or \code{"3PSM"}}{3-parameter step function selection model with
 Maximum Likelihood estimator (\code{method = "ML"}) and one step
 at one-sided p = 0.025 (i.e., selection for significance))}
-\item{\code{"SM4"}}{4-parameter step function selection model with
+\item{\code{"4PSM"}}{4-parameter step function selection model with
 Maximum Likelihood estimator (\code{method = "ML"}) and two steps
 at one-sided p = 0.025 and p = 0.50 (i.e., selection for significance
 and direction of the effect)}
@@ -43,7 +43,7 @@ data <- data.frame(
 )
 
 # Apply SM method
-result <- run_method("SM", data, "SM3")
+result <- run_method("SM", data, "3PSM")
 print(result)
 
 }
