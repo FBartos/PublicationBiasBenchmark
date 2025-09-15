@@ -25,6 +25,11 @@
 #' @param p_value_col Character string specifying the column name containing p-values. Default is "p_value"
 #' @param bf_col Character string specifying the column name containing Bayes factors. Default is "BF"
 #' @param convergence_col Character string specifying the column name containing convergence indicators. Default is "convergence"
+#' @param method_replacements Character vector of method names that shall be used as a replacement in the case of non-convergence.
+#' Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method bases.
+#' If multiple elements are specified, these replacement are applied consecutive in case the previous replacements also failed to converged.
+#' @param method_setting_replacements Character vector of method settings that shall be used as a replacement in the case of non-convergence.
+#' @param n_repetitions Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.
 #' @param overwrite Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist
 #' @param ... Additional arguments passed to measure functions
 #' @inheritParams download_dgm_datasets
@@ -71,10 +76,13 @@ compute_single_measure <- function(dgm_name, measure_name, methods, method_setti
                                    estimate_col = "estimate", true_effect_col = "mean_effect",
                                    ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
                                    p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
+                                   method_replacements = NULL, method_setting_replacements = NULL, n_repetitions = 1000,
                                    overwrite = FALSE, path = NULL, ...) {
 
   # Validate that methods and method_settings have the same length
   if (length(methods) != length(method_settings))
+    stop("methods and method_settings must have the same length")
+  if (length(method_replacements) != length(method_setting_replacements))
     stop("methods and method_settings must have the same length")
 
   # Set default threshold based on test type
@@ -89,13 +97,16 @@ compute_single_measure <- function(dgm_name, measure_name, methods, method_setti
   existing_results   <- NULL
   methods_to_compute <- seq_along(methods)
 
+  # Create a file name
+  file_name <- paste0(measure_name, if (length(method_replacements) == 0) ".csv" else "-replacement.csv")
+
   # Specify directory structures
   if (is.null(path))
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
   output_folder <- file.path(path, dgm_name, "measures")
 
   if (!overwrite) {
-    output_file <- file.path(output_folder, paste0(measure_name, ".csv"))
+    output_file <- file.path(output_folder, file_name)
     if (file.exists(output_file)) {
       existing_results <- utils::read.csv(output_file, stringsAsFactors = FALSE)
 
@@ -119,6 +130,17 @@ compute_single_measure <- function(dgm_name, measure_name, methods, method_setti
   measure_col_name <- measure_name
   mcse_col_name    <- paste0(measure_name, "_mcse")
 
+  # Preload replacement methods
+  method_replacements_results <- list()
+  for (i in seq_along(method_replacements)) {
+    method_replacements_results[[paste0(method_replacements[i], "-", method_setting_replacements[i])]] <- retrieve_dgm_results(
+      dgm_name       = dgm_name,
+      method         = method_replacements[i],
+      method_setting = method_setting_replacements[i],
+      path           = path
+    )
+  }
+
   for (i in methods_to_compute) {
 
     method         <- methods[i]
@@ -132,233 +154,189 @@ compute_single_measure <- function(dgm_name, measure_name, methods, method_setti
       path           = path
     )
 
+    # Check that all pre-specified columns exist
+    columns_required <- c(convergence_col, estimate_col, ci_lower_col, ci_upper_col, switch(power_test_type, "p_value" = p_value_col, "bayes_factor" = bf_col))
+    if (!all(columns_required %in% names(method_results)))
+      stop(sprintf("The following columns are undefined: %1$s,",
+                   columns_required[!columns_required %in% names(method_results)]))
+
     for (condition in conditions$condition_id) {
 
       # Select the condition results
       method_condition_results <- method_results[method_results$condition_id == condition,,drop = FALSE]
 
-      # Filter for converged results if we're not computing convergence measure
-      if (measure_name != "convergence") {
-        if (convergence_col %in% names(method_condition_results)) {
-          method_condition_results <- method_condition_results[method_condition_results[[convergence_col]] == TRUE,,drop = FALSE]
-        }
+      # Replace results in case of missingness
+      replaced <- FALSE
+      if (!all(method_condition_results[[convergence_col]]) && length(method_replacements) > 0) {
 
-        # If no converged results remain, create NA result
-        if (nrow(method_condition_results) == 0) {
-          warning(paste("No converged results for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-          # Create result with NAs
-          result_df <- data.frame(
-            method         = method,
-            method_setting = method_setting,
-            condition_id   = condition
-          )
-          result_df[[measure_col_name]] <- NA
-          result_df[[mcse_col_name]]    <- NA
-          key <- paste0(method, "-", method_setting, "-", condition)
-          measure_out[[key]] <- result_df
-          next
+        # Subset converged results
+        method_condition_results <- method_condition_results[method_condition_results[[convergence_col]],,drop = FALSE]
+
+        # Find missing repetitions
+        repetitions_all     <- 1:n_repetitions
+        repetitions_missing <- repetitions_all[!repetitions_all %in% method_condition_results[["repetition_id"]][method_condition_results[[convergence_col]]]]
+
+        # Fill in the missing repetitions
+        replaced <- NULL
+        for (method_replacement_i in seq_along(method_replacements)){
+
+          # Break if all missing repetitions are replaced
+          if (length(repetitions_missing) == 0)
+            break
+
+          # Find missing repetitions
+          temp_replacement <- method_replacements_results[[paste0(method_replacements[method_replacement_i], "-", method_setting_replacements[method_replacement_i])]]
+          temp_replacement <- temp_replacement[temp_replacement$condition_id == condition & temp_replacement[[convergence_col]],,drop=FALSE]
+          temp_replacement <- temp_replacement[temp_replacement[["repetition_id"]] %in% repetitions_missing,,drop=FALSE]
+
+          # Store information about replacement
+          replaced <- paste0(replaced, paste0(paste0(method_replacements[method_replacement_i], "-", method_setting_replacements[method_replacement_i],"=",nrow(temp_replacement))), sep = ";")
+
+          # Merge and update
+          method_condition_results <- safe_rbind(list(method_condition_results, temp_replacement))
+          repetitions_missing      <- repetitions_all[!repetitions_all %in% method_condition_results[["repetition_id"]][method_condition_results[[convergence_col]]]]
         }
       }
 
-      # Compute the measure based on its requirements
-      key <- paste0(method, "-", method_setting, "-", condition)
-
-      # Get the true effect for this condition
-      true_effect <- conditions[conditions$condition_id == condition, true_effect_col]
-
+      # Create result holder
+      key       <- paste0(method, "-", method_setting, "-", condition)
       result_df <- data.frame(
         method         = method,
         method_setting = method_setting,
         condition_id   = condition
       )
 
+      if (!isFALSE(replaced))
+        result_df[["replaced"]] <- replaced
+
+      # Filter for converged results if we're not computing convergence measure
+      if (measure_name != "convergence") {
+        method_condition_results <- method_condition_results[method_condition_results[[convergence_col]],,drop = FALSE]
+
+        # If no converged results remain, create NA result
+        if (nrow(method_condition_results) == 0) {
+          warning(paste("No converged results for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
+          result_df[[measure_col_name]] <- NA
+          result_df[[mcse_col_name]]    <- NA
+          result_df[["n_valid"]]        <- 0
+          measure_out[[key]] <- result_df
+          next
+        }
+      }
+
+      # Get the true effect for this condition
+      true_effect <- conditions[conditions$condition_id == condition, true_effect_col]
+
       # Compute measure and MCSE based on measure type
       if (measure_name == "convergence") {
-        # Convergence measure - proportion of methods that converged
-        if (!convergence_col %in% names(method_condition_results)) {
-          stop(paste(convergence_col, "column not found in results for convergence measure computation"))
-        }
+
         convergence_indicator <- method_condition_results[[convergence_col]]
-        result_df[[measure_col_name]] <- measure_fun(
-          test_rejects_h0 = convergence_indicator
-        )
-        result_df[[mcse_col_name]] <- measure_mcse_fun(
-          test_rejects_h0 = convergence_indicator
-        )
+        result_df[[measure_col_name]] <- measure_fun(test_rejects_h0 = convergence_indicator)
+        result_df[[mcse_col_name]]    <- measure_mcse_fun(test_rejects_h0 = convergence_indicator)
+        result_df[["n_valid"]]        <- length(convergence_indicator)
 
-      } else if (measure_name == "bias") {
-        # Bias measure
+      } else if (measure_name %in% c("bias", "relative_bias", "mse", "rmse", "empirical_variance", "empirical_se")) {
+
         estimates <- method_condition_results[[estimate_col]]
-        # Remove NAs
         valid_idx <- !is.na(estimates)
-        if (sum(valid_idx) == 0) {
-          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-          result_df[[measure_col_name]] <- NA
-          result_df[[mcse_col_name]] <- NA
-        } else {
-          estimates <- estimates[valid_idx]
 
-          result_df[[measure_col_name]] <- measure_fun(
-            theta_hat = estimates,
-            theta     = true_effect
-          )
-          result_df[[mcse_col_name]] <- measure_mcse_fun(
-            theta_hat = estimates
-          )
+        if (sum(valid_idx) == 0) {
+
+          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"), immediate. = TRUE)
+          result_df[[measure_col_name]] <- NA
+          result_df[[mcse_col_name]]    <- NA
+
+        } else if (measure_name == "bias") {
+
+          estimates <- estimates[valid_idx]
+          result_df[[measure_col_name]] <- measure_fun(theta_hat = estimates, theta = true_effect)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(theta_hat = estimates)
+
+        } else if (measure_name %in% c("relative_bias", "mse", "rmse")) {
+
+          estimates <- estimates[valid_idx]
+          result_df[[measure_col_name]] <- measure_fun(theta_hat = estimates, theta = true_effect)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(theta_hat = estimates, theta = true_effect)
+
+        } else if (method %in% c("empirical_variance", "empirical_se")) {
+
+          estimates <- estimates[valid_idx]
+          result_df[[measure_col_name]] <- measure_fun(theta_hat = estimates)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(theta_hat = estimates)
+
         }
 
-      } else if (measure_name %in% c("relative_bias", "mse", "rmse")) {
-        # measures where MCSE functions need both theta_hat and theta
-        estimates <- method_condition_results[[estimate_col]]
-        # Remove NAs
-        valid_idx <- !is.na(estimates)
-        if (sum(valid_idx) == 0) {
-          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-          result_df[[measure_col_name]] <- NA
-          result_df[[mcse_col_name]] <- NA
-        } else {
-          estimates <- estimates[valid_idx]
+        result_df[["n_valid"]] <- sum(valid_idx)
 
-          result_df[[measure_col_name]] <- measure_fun(
-            theta_hat = estimates,
-            theta     = true_effect
-          )
-          result_df[[mcse_col_name]] <- measure_mcse_fun(
-            theta_hat = estimates,
-            theta     = true_effect
-          )
-        }
+      } else if (measure_name %in% c("coverage", "mean_ci_width")) {
 
-      } else if (measure_name %in% c("empirical_variance", "empirical_se")) {
-        # measures that only need theta_hat
-        estimates <- method_condition_results[[estimate_col]]
-        # Remove NAs
-        valid_idx <- !is.na(estimates)
-        if (sum(valid_idx) == 0) {
-          warning(paste("No valid estimates for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-          result_df[[measure_col_name]] <- NA
-          result_df[[mcse_col_name]] <- NA
-        } else {
-          estimates <- estimates[valid_idx]
-
-          result_df[[measure_col_name]] <- measure_fun(
-            theta_hat = estimates
-          )
-          result_df[[mcse_col_name]] <- measure_mcse_fun(
-            theta_hat = estimates
-          )
-        }
-
-      } else if (measure_name == "coverage") {
-        # Coverage needs CI bounds and true effect
-        ci_lower <- method_condition_results[[ci_lower_col]]
-        ci_upper <- method_condition_results[[ci_upper_col]]
-        # Remove NAs
+        ci_lower  <- method_condition_results[[ci_lower_col]]
+        ci_upper  <- method_condition_results[[ci_upper_col]]
         valid_idx <- !is.na(ci_lower) & !is.na(ci_upper)
 
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid confidence intervals for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
+
+          warning(paste("No valid confidence intervals for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"), immediate. = TRUE)
           result_df[[measure_col_name]] <- NA
-          result_df[[mcse_col_name]] <- NA
-        } else {
+          result_df[[mcse_col_name]]    <- NA
+
+        } else if (measure_name == "coverage") {
+
           ci_lower <- ci_lower[valid_idx]
           ci_upper <- ci_upper[valid_idx]
+          result_df[[measure_col_name]] <- measure_fun(ci_lower = ci_lower, ci_upper = ci_upper, theta = true_effect)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(ci_lower = ci_lower, ci_upper = ci_upper, theta = true_effect)
 
-          result_df[[measure_col_name]] <- measure_fun(
-            ci_lower = ci_lower,
-            ci_upper = ci_upper,
-            theta    = true_effect
-          )
-          result_df[[mcse_col_name]] <- measure_mcse_fun(
-            ci_lower = ci_lower,
-            ci_upper = ci_upper,
-            theta    = true_effect
-          )
+        } else if (measure_name == "mean_ci_width") {
+
+          ci_lower <- ci_lower[valid_idx]
+          ci_upper <- ci_upper[valid_idx]
+          result_df[[measure_col_name]] <- measure_fun(ci_lower = ci_lower, ci_upper = ci_upper)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(ci_lower = ci_lower, ci_upper = ci_upper)
+
         }
+
+        result_df[["n_valid"]] <- sum(valid_idx)
 
       } else if (measure_name == "power") {
-        # Power needs test rejection indicator - dispatch based on test type
-        if (power_test_type == "p_value") {
-          # Use p-values for power computation
-          if (!p_value_col %in% names(method_condition_results)) {
-            stop(paste(p_value_col, "column not found in results for p-value based power computation"))
-          }
-          p_values <- method_condition_results[[p_value_col]]
-          # Remove NAs
-          valid_idx <- !is.na(p_values)
-          if (sum(valid_idx) == 0) {
-            warning(paste("No valid p-values for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-            result_df[[measure_col_name]] <- NA
-            result_df[[mcse_col_name]] <- NA
-          } else {
-            test_rejects_h0 <- p_values[valid_idx] < power_threshold
-            result_df[[measure_col_name]] <- measure_fun(
-              test_rejects_h0 = test_rejects_h0
-            )
-            result_df[[mcse_col_name]] <- measure_mcse_fun(
-              test_rejects_h0 = test_rejects_h0
-            )
-          }
-        } else if (power_test_type == "bayes_factor") {
-          # Use Bayes factors for power computation
-          if (!bf_col %in% names(method_condition_results)) {
-            stop(paste(bf_col, "column not found in results for Bayes factor based power computation"))
-          }
-          bf_values <- method_condition_results[[bf_col]]
-          # Remove NAs
-          valid_idx <- !is.na(bf_values)
-          if (sum(valid_idx) == 0) {
-            warning(paste("No valid Bayes factors for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-            result_df[[measure_col_name]] <- NA
-            result_df[[mcse_col_name]] <- NA
-          } else {
-            # For Bayes factors, reject H0 (favor H1) when BF > threshold
-            test_rejects_h0 <- bf_values[valid_idx] > power_threshold
-            result_df[[measure_col_name]] <- measure_fun(
-              test_rejects_h0 = test_rejects_h0
-            )
-            result_df[[mcse_col_name]] <- measure_mcse_fun(
-              test_rejects_h0 = test_rejects_h0
-            )
-          }
-        }
 
-      } else if (measure_name == "mean_ci_width") {
-        # CI width needs CI bounds
-        ci_lower <- method_condition_results[[ci_lower_col]]
-        ci_upper <- method_condition_results[[ci_upper_col]]
-        # Remove NAs
-        valid_idx <- !is.na(ci_lower) & !is.na(ci_upper)
+        test_column    <- switch(power_test_type, "p_value" = p_value_col, "bayes_factor" = bf_col)
+        test_statistic <- method_condition_results[[test_column]]
+        valid_idx      <- !is.na(test_statistic)
+
         if (sum(valid_idx) == 0) {
-          warning(paste("No valid confidence intervals for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"))
-          result_df[[measure_col_name]] <- NA
-          result_df[[mcse_col_name]] <- NA
-        } else {
-          ci_lower <- ci_lower[valid_idx]
-          ci_upper <- ci_upper[valid_idx]
 
-          result_df[[measure_col_name]] <- measure_fun(
-            ci_upper = ci_upper,
-            ci_lower = ci_lower
-          )
-          result_df[[mcse_col_name]] <- measure_mcse_fun(
-            ci_upper = ci_upper,
-            ci_lower = ci_lower
-          )
+          warning(paste("No valid ", power_test_type," for method", method, "method_setting", method_setting, "condition", condition, "- setting values to NA"), immediate. = TRUE)
+          result_df[[measure_col_name]] <- NA
+          result_df[[mcse_col_name]]    <- NA
+
+        } else if (power_test_type == "p_value") {
+
+          test_rejects_h0 <- test_statistic[valid_idx] < power_threshold
+          result_df[[measure_col_name]] <- measure_fun(test_rejects_h0 = test_rejects_h0)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(test_rejects_h0 = test_rejects_h0)
+
+        } else if (power_test_type == "bayes_factor") {
+
+          test_rejects_h0 <- test_statistic[valid_idx] > power_threshold
+          result_df[[measure_col_name]] <- measure_fun(test_rejects_h0 = test_rejects_h0)
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(test_rejects_h0 = test_rejects_h0)
+
         }
+
+        result_df[["n_valid"]] <- sum(valid_idx)
       }
 
       measure_out[[key]] <- result_df
     }
   }
 
-  # Combine new results with existing ones if applicable
-  new_results <- do.call(rbind, measure_out)
+  # Merge into data.frame
+  new_results <- safe_rbind(measure_out)
 
+  # Combine existing and new results
   if (!is.null(existing_results)) {
-    # Combine existing and new results
-    all_results <- rbind(existing_results, new_results)
-    return(all_results)
+    new_results <- safe_rbind(list(new_results, existing_results))
   }
 
   return(new_results)
@@ -454,14 +432,17 @@ compute_single_measure <- function(dgm_name, measure_name, methods, method_setti
 #'
 #' @export
 compute_measures <- function(dgm_name, methods, method_settings, measures = NULL, verbose = TRUE,
-                           power_test_type = "p_value", power_threshold = NULL,
-                           estimate_col = "estimate", true_effect_col = "mean_effect",
-                           ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
-                           p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
-                           overwrite = FALSE, conditions = NULL, path = NULL) {
+                             power_test_type = "p_value", power_threshold = NULL,
+                             estimate_col = "estimate", true_effect_col = "mean_effect",
+                             ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
+                             p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
+                             method_replacements = NULL, method_setting_replacements = NULL, n_repetitions = 1000,
+                             overwrite = FALSE, conditions = NULL, path = NULL) {
 
   # Validate that methods and method_settings have the same length
   if (length(methods) != length(method_settings))
+    stop("methods and method_settings must have the same length")
+  if (length(method_replacements) != length(method_setting_replacements))
     stop("methods and method_settings must have the same length")
 
   if (is.null(path))
@@ -499,12 +480,13 @@ compute_measures <- function(dgm_name, methods, method_settings, measures = NULL
   results <- list()
 
   for (measure in measures) {
-    if (!measure %in% names(measure_functions)) {
-      warning("Unknown measure: ", measure, ". Skipping.")
-      next
-    }
 
-    output_file <- file.path(output_folder, paste0(measure, ".csv"))
+    if (!measure %in% names(measure_functions))
+      stop(paste0("Unknown measure: ", measure, ". Skipping."))
+
+    # Specify file name
+    file_name   <- paste0(measure, if (length(method_replacements) == 0) ".csv" else "-replacement.csv")
+    output_file <- file.path(output_folder, file_name)
 
     # If overwrite is TRUE, remove existing file to start fresh
     if (overwrite && file.exists(output_file)) {
@@ -524,20 +506,23 @@ compute_measures <- function(dgm_name, methods, method_settings, measures = NULL
 
     measure_result <- compute_single_measure(
       dgm_name          = dgm_name,
-      measure_name       = measure,
+      measure_name      = measure,
       methods           = methods,
       method_settings   = method_settings,
       conditions        = conditions,
-      measure_fun        = measure_functions[[measure]]$fun,
-      measure_mcse_fun   = measure_functions[[measure]]$mcse_fun,
+      measure_fun       = measure_functions[[measure]]$fun,
+      measure_mcse_fun  = measure_functions[[measure]]$mcse_fun,
       power_test_type   = power_test_type,
       power_threshold   = power_threshold,
       estimate_col      = estimate_col,
       true_effect_col   = true_effect_col,
       ci_lower_col      = ci_lower_col,
       ci_upper_col      = ci_upper_col,
-      p_value_col        = p_value_col,
+      p_value_col       = p_value_col,
       bf_col            = bf_col,
+      method_replacements         = method_replacements,
+      method_setting_replacements = method_setting_replacements,
+      n_repetitions               = n_repetitions,
       convergence_col   = convergence_col,
       overwrite         = overwrite,
       path              = path

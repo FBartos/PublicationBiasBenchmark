@@ -6,16 +6,17 @@
 \usage{
 retrieve_dgm_measures(
   dgm_name,
-  metric = NULL,
+  measure = NULL,
   method = NULL,
   condition_id = NULL,
-  path = NULL
+  path = NULL,
+  replacement = FALSE
 )
 }
 \arguments{
 \item{dgm_name}{Character string specifying the DGM type}
 
-\item{metric}{Which performance metric should be returned (e.g., "bias", "mse", "coverage").
+\item{measure}{Which performance measure should be returned (e.g., "bias", "mse", "coverage").
 All measures can be returned by setting to \code{NULL}.}
 
 \item{method}{Which method should be returned. All methods can be returned by setting to \code{NULL}.}
@@ -26,6 +27,8 @@ All measures can be returned by setting to \code{NULL}.}
 should be saved. Defaults to the location specified via
 \code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
 in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
+
+\item{replacement}{Whether performance measures computed using replacement should be returned. Defaults to \code{FALSE}.}
 }
 \value{
 A data.frame
@@ -38,13 +41,13 @@ locally. See \code{\link[=download_dgm_measures]{download_dgm_measures()}} funct
 \examples{
 \dontrun{
   # get bias measures for all methods and conditions
-  retrieve_dgm_measures("no_bias", metric = "bias")
+  retrieve_dgm_measures("no_bias", measure = "bias")
 
   # get all measures for RMA method
   retrieve_dgm_measures("no_bias", method = "RMA")
 
   # get MSE measures for PET method in condition 1
-  retrieve_dgm_measures("no_bias", metric = "mse", method = "PET", condition_id = 1)
+  retrieve_dgm_measures("no_bias", measure = "mse", method = "PET", condition_id = 1)
 }
 
 }

@@ -19,6 +19,9 @@ compute_measures(
   p_value_col = "p_value",
   bf_col = "BF",
   convergence_col = "convergence",
+  method_replacements = NULL,
+  method_setting_replacements = NULL,
+  n_repetitions = 1000,
   overwrite = FALSE,
   conditions = NULL,
   path = NULL

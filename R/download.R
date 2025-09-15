@@ -253,26 +253,27 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "defa
 #' @inheritParams download_dgm
 #' @inheritParams dgm_conditions
 #' @inheritParams retrieve_dgm_dataset
-#' @param metric Which performance metric should be returned (e.g., "bias", "mse", "coverage").
+#' @param measure Which performance measure should be returned (e.g., "bias", "mse", "coverage").
 #' All measures can be returned by setting to \code{NULL}.
 #' @param method Which method should be returned. All methods can be returned by setting to \code{NULL}.
+#' @param replacement Whether performance measures computed using replacement should be returned. Defaults to \code{FALSE}.
 #'
 #' @return A data.frame
 #'
 #' @examples
 #' \dontrun{
 #'   # get bias measures for all methods and conditions
-#'   retrieve_dgm_measures("no_bias", metric = "bias")
+#'   retrieve_dgm_measures("no_bias", measure = "bias")
 #'
 #'   # get all measures for RMA method
 #'   retrieve_dgm_measures("no_bias", method = "RMA")
 #'
 #'   # get MSE measures for PET method in condition 1
-#'   retrieve_dgm_measures("no_bias", metric = "mse", method = "PET", condition_id = 1)
+#'   retrieve_dgm_measures("no_bias", measure = "mse", method = "PET", condition_id = 1)
 #' }
 #'
 #' @export
-retrieve_dgm_measures <- function(dgm_name, metric = NULL, method = NULL, condition_id = NULL, path = NULL){
+retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, condition_id = NULL, path = NULL, replacement = FALSE){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
@@ -284,25 +285,30 @@ retrieve_dgm_measures <- function(dgm_name, metric = NULL, method = NULL, condit
   if (!dir.exists(measures_path))
     stop(sprintf("Computed measures of the specified dgm '%1$s' cannot be located at the specified location '%2$s'. You might need to download the computed measures using the 'download_dgm_measures()' function first.", dgm_name, path))
 
-  # return the specific metric results or all measures
-  if (!is.null(metric) && length(metric) == 1) {
+  # return the specific measure results or all measures
+  if (!is.null(measure) && length(measure) == 1) {
 
     # check that the corresponding file was downloaded
-    if (!file.exists(file.path(measures_path, paste0(metric, ".csv"))))
-      stop(sprintf("Computed measures '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", metric, dgm_name, measures_path))
+    if (!file.exists(file.path(measures_path, paste0(measure, ".csv"))))
+      stop(sprintf("Computed measures '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", measure, dgm_name, measures_path))
 
     # load the file
-    measures_file <- utils::read.csv(file = file.path(measures_path, paste0(metric, ".csv")), header = TRUE)
+    measures_file <- utils::read.csv(file = file.path(measures_path, paste0(measure, if(replacement) "-replacement", ".csv")), header = TRUE)
 
   } else {
 
-    metric_files <- list.files(measures_path, pattern = "\\.csv$")
+    measure_files <- list.files(measures_path, pattern = "\\.csv$")
+    if (replacement) {
+      measure_files <- measure_files[grepl("replacement", measure_files)]
+    } else {
+      measure_files <- measure_files[!grepl("replacement", measure_files)]
+    }
 
-    if (length(metric_files) == 0)
+    if (length(measure_files) == 0)
       stop(sprintf("There are no computed measures for '%1$s' dgm located at the specified location '%2$s'.", dgm_name, measures_path))
 
-    measures_files <- lapply(metric_files, function(metric_file) {
-      utils::read.csv(file = file.path(measures_path, metric_file), header = TRUE)
+    measures_files <- lapply(measure_files, function(measure_file) {
+      utils::read.csv(file = file.path(measures_path, measure_file), header = TRUE)
     })
     measures_file <- safe_merge(measures_files)
 

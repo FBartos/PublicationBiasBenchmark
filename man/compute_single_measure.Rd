@@ -21,6 +21,9 @@ compute_single_measure(
   p_value_col = "p_value",
   bf_col = "BF",
   convergence_col = "convergence",
+  method_replacements = NULL,
+  method_setting_replacements = NULL,
+  n_repetitions = 1000,
   overwrite = FALSE,
   path = NULL,
   ...
@@ -61,6 +64,14 @@ default is 0.05 (reject if p < 0.05). For Bayes factors, default is 10
 \item{bf_col}{Character string specifying the column name containing Bayes factors. Default is "BF"}
 
 \item{convergence_col}{Character string specifying the column name containing convergence indicators. Default is "convergence"}
+
+\item{method_replacements}{Character vector of method names that shall be used as a replacement in the case of non-convergence.
+Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method bases.
+If multiple elements are specified, these replacement are applied consecutive in case the previous replacements also failed to converged.}
+
+\item{method_setting_replacements}{Character vector of method settings that shall be used as a replacement in the case of non-convergence.}
+
+\item{n_repetitions}{Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
