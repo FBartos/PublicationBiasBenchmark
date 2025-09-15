@@ -82,7 +82,7 @@ method.AK <- function(method_name, data, settings) {
   bias_coefficient    <- list(res$value[grepl("rho", res$term) & res$variable == "estimate"])
   bias_coefficient_se <- list(res$value[grepl("rho", res$term) & res$variable == "std.error"])
 
-  convergence <- TRUE
+  convergence <- !is.na(res$value[res$term == "b0" & res$variable == "estimate"])
   note        <- NA
 
   return(data.frame(
