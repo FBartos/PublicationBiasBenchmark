@@ -28,19 +28,19 @@ NULL
 #' @rdname download_dgm
 #' @export
 download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite)
+  .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress)
 }
 
 #' @rdname download_dgm
 #' @export
 download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite)
+  .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress)
 }
 
 #' @rdname download_dgm
 #' @export
 download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite)
+  .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress)
 }
 
 
@@ -83,14 +83,15 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
   # Calculate the total size
   if (PublicationBiasBenchmark.get_option("prompt_for_download")) {
     size_MB <- sum(sapply(seq_len(nrow(osf_files)), function(i) osf_files$meta[[i]]$attributes$size / 1024^2))
-    rl      <- readline(sprintf("You are about to download %1$i files (%2$.2f %3$s) to '%4$s'. Do you want to proceed? [Y, n]\n(Set `PublicationBiasBenchmark.options('prompt_for_download' = FALSE)` to skip this message in the future)",
+    rl      <- readline(sprintf("You are about to download %1$i files (%2$.2f %3$s) to '%4$s'. Do you want to proceed? [Y, n]",
                                 nrow(osf_files),
                                 ifelse(size_MB > 1024, size_MB / 1024, size_MB),
                                 ifelse(size_MB > 1024, "GB" , "MB"),
                                 data_path
                                 ))
+    message("(Set `PublicationBiasBenchmark.options('prompt_for_download' = FALSE)` to skip this message in the future)")
     rl <- tolower(as.character(rl))
-    if (rl != "" || substr(rl, 1, 1) == "y")
+    if (!((rl == "" || substr(rl, 1, 1) == "y")))
       return(invisible(FALSE))
   }
 
