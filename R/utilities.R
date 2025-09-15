@@ -9,6 +9,13 @@
 #' @param ... named option(s) to change - for a list of available options, see
 #' details below.
 #'
+#' @details
+#' \describe{
+#'   \item{\code{"simulation_directory"}}{Location where the benchmark data/results/measures are stored}
+#'   \item{\code{"prompt_for_download"}}{Whether each file download should ask for explicit approval}
+#' }
+#'
+#'
 #' @return The current value of all available PublicationBiasBenchmark options (after applying any
 #' changes specified) is returned invisibly as a named list.
 #'
@@ -49,6 +56,7 @@ PublicationBiasBenchmark.get_option <- function(name){
 
 PublicationBiasBenchmark.private <- new.env()
 assign("simulation_directory", "notset", envir = PublicationBiasBenchmark.private)
+assign("prompt_for_download", TRUE, envir = PublicationBiasBenchmark.private)
 
 
 .onLoad <- function(libname, pkgname){

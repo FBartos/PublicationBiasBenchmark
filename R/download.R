@@ -11,6 +11,8 @@
 #' in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #' @param overwrite Logical indicating whether to overwrite existing files.
 #' Defaults to \code{FALSE}, which means only missing files will be downloaded.
+#' @param progress Logical indicating whether to show progress downloading files.
+#' Defaults to \code{TRUE}.
 #'
 #' @return \code{TRUE} if the download was successful, otherwise an error is raised.
 #'
@@ -25,24 +27,24 @@ NULL
 
 #' @rdname download_dgm
 #' @export
-download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE) {
+download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
   .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE) {
+download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
   .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE) {
+download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
   .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite)
 }
 
 
-.download_dgm_fun <- function(dgm_name, what, path, overwrite) {
+.download_dgm_fun <- function(dgm_name, what, path, overwrite, progress) {
 
   if (is.null(path))
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
@@ -70,16 +72,29 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE) {
   }
 
   # download the individual files
-  for (i in seq_len(nrow(osf_files))) {
+  if (!overwrite) {
+    current_files <- list.files(data_path)
+    osf_files     <- osf_files[!osf_files$name %in% current_files,]
 
-    # file name
-    temp_fname <- osf_files$name[i]
-
-    # save file if it does not exist or if overwrite is TRUE
-    if (!file.exists(file.path(data_path, temp_fname)) || overwrite) {
-      osfr::osf_download(osf_files[i, ], path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"))
-    }
+    if(nrow(osf_files) == 0)
+      return(invisible(TRUE))
   }
+
+  # Calculate the total size
+  if (PublicationBiasBenchmark.get_option("prompt_for_download")) {
+    size_MB <- sum(sapply(seq_len(nrow(osf_files)), function(i) osf_files$meta[[i]]$attributes$size / 1024^2))
+    rl      <- readline(sprintf("You are about to download %1$i files (%2$.2f %3$s) to '%4$s'. Do you want to proceed? [Y, n]\n(Set `PublicationBiasBenchmark.options('prompt_for_download' = FALSE)` to skip this message in the future)",
+                                nrow(osf_files),
+                                ifelse(size_MB > 1024, size_MB / 1024, size_MB),
+                                ifelse(size_MB > 1024, "GB" , "MB"),
+                                data_path
+                                ))
+    rl <- tolower(as.character(rl))
+    if (rl != "" || substr(rl, 1, 1) == "y")
+      return(invisible(FALSE))
+  }
+
+  osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress)
 
   return(invisible(TRUE))
 }

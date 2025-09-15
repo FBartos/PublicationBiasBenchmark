@@ -7,11 +7,21 @@
 \alias{download_dgm_measures}
 \title{Download Datasets of a DGM}
 \usage{
-download_dgm_datasets(dgm_name, path = NULL, overwrite = FALSE)
+download_dgm_datasets(
+  dgm_name,
+  path = NULL,
+  overwrite = FALSE,
+  progress = TRUE
+)
 
-download_dgm_results(dgm_name, path = NULL, overwrite = FALSE)
+download_dgm_results(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE)
 
-download_dgm_measures(dgm_name, path = NULL, overwrite = FALSE)
+download_dgm_measures(
+  dgm_name,
+  path = NULL,
+  overwrite = FALSE,
+  progress = TRUE
+)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
@@ -23,6 +33,9 @@ in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing files.
 Defaults to \code{FALSE}, which means only missing files will be downloaded.}
+
+\item{progress}{Logical indicating whether to show progress downloading files.
+Defaults to \code{TRUE}.}
 }
 \value{
 \code{TRUE} if the download was successful, otherwise an error is raised.
