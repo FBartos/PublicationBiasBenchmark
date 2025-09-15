@@ -1,6 +1,6 @@
 is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
 
-save_rbind <- function(df_list) {
+safe_rbind <- function(df_list) {
 
   if (length(df_list) == 1)
     return(df_list[[1]])
@@ -22,9 +22,7 @@ save_rbind <- function(df_list) {
 
   return(df)
 }
-
-
-save_merge <- function(df_list) {
+safe_merge <- function(df_list) {
 
   if (length(df_list) == 1)
     return(df_list[[1]])

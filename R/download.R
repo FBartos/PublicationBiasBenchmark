@@ -225,7 +225,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "defa
       stop(sprintf("There are no computed results for '%1$s' dgm locatated at the specified location '%2$s'.", condition_id, results_path))
 
     results_file <- lapply(method_results, function(method_result) utils::read.csv(file = file.path(results_path, method_result), header = TRUE))
-    results_file <- save_rbind(results_file)
+    results_file <- safe_rbind(results_file)
 
   }
 
@@ -304,7 +304,7 @@ retrieve_dgm_measures <- function(dgm_name, metric = NULL, method = NULL, condit
     measures_files <- lapply(metric_files, function(metric_file) {
       utils::read.csv(file = file.path(measures_path, metric_file), header = TRUE)
     })
-    measures_file <- save_merge(measures_files)
+    measures_file <- safe_merge(measures_files)
 
   }
 
