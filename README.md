@@ -19,7 +19,7 @@ devtools::install_github("FBartos/PublicationBiasBenchmark")
 
 ``` r
 library(PublicationBiasBenchmark)
-#> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
+#> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
 #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
 #> 
 #> Attaching package: 'PublicationBiasBenchmark'
@@ -50,7 +50,7 @@ run_method("RMA", df)
 # the default settings downloads the datasets to the `resources` directory, use
 # PublicationBiasBenchmark.options(simulation_directory = "/path/")
 # to change the settings
-download_dgm_datasets("no_bias", path = download_folder)
+download_dgm_datasets("no_bias")
 
 # retrieve first repetition of first condition from the downloaded datasets
 retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
@@ -78,7 +78,7 @@ retrieve_dgm_results("no_bias")
 download_dgm_measures("no_bias")
 
 # retrieve measures of bias the first condition of RMA from the downloaded results
-retrieve_dgm_measures("no_bias", metric = "bias", method = "RMA", condition_id = 1)
+retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id = 1)
 
 # retrieve all measures across all conditions and measures
 retrieve_dgm_measures("no_bias")
@@ -96,7 +96,7 @@ conditions <- dgm_conditions("no_bias")
 # add labels
 df$label <- with(df, paste0(method, " (", method_setting, ")"))
 
-# distinquish between H0 and H1
+# distinguish between H0 and H1
 df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
 
 par(mfrow = c(3, 2))
@@ -213,13 +213,13 @@ See `methods("method")` for the full list:
 
 ### Available Performance Measures
 
-See `?performance_measures` for the full list of performance measures
-and their Monte Carlo standard errors/
+See `?measures` for the full list of performance measures and their
+Monte Carlo standard errors/
 
 ### DGM OSF Repositories
 
-All DGM are linked within the OSF repository () and contain the
-following elements:
+All DGM are linked within the OSF repository (<https://osf.io/exf3m/>)
+and contain the following elements:
 
 - `data` : folder containing by-condition simulated datasets for all
   repetitions
