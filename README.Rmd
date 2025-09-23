@@ -18,13 +18,34 @@ knitr::opts_chunk$set(
 
 # PublicationBiasBenchmark
 
-An R package for benchmarking publication bias correction methods through simulation studies.
+**PublicationBiasBenchmark** is an R package for benchmarking publication bias correction methods through simulation studies. It provides:  
+- Predefined data generating models from the literature  
+- Functions for running meta-analytic methods on simulated data  
+- Pre-simulated datasets and pre-computed results for reproducible benchmarks  
+- Tools for visualizing and comparing method performance
+
+All datasets and results are hosted on OSF: <https://osf.io/exf3m/>
+
+If you use this package in your research, please cite:
+
+> Bartoš, F., Pawel, S., Siepe, B. S. (2025). Rethinking Simulation Studies: Living Synthetic Benchmarks for Cumulative Methodological Research. Working paper. <https://github.com/FBartos/PublicationBiasBenchmark>
+
+A BibTeX entry is given by
+```BibTeX
+@misc{Bartos2025,
+  year = {2025},
+  author = {Franti{\v{s}}ek Barto{\v{s}} and Samuel Pawel and Bj{\"o}rn S. Siepe},
+  title = {Rethinking Simulation Studies: {L}iving Synthetic Benchmarks for Cumulative Methodological Research},
+  url = {https://github.com/FBartos/PublicationBiasBenchmark},
+  note = {Working paper}
+}
+```
 
 ## Installation
 
 ```{r, eval = FALSE}
 # Install from GitHub
-devtools::install_github("FBartos/PublicationBiasBenchmark")
+remotes::install_github("FBartos/PublicationBiasBenchmark")
 ```
 
 ## Usage
