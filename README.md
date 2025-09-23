@@ -14,7 +14,8 @@ provides:
 benchmarks  
 - Tools for visualizing and comparing method performance
 
-All datasets and results are hosted on OSF: <https://osf.io/exf3m/>
+All datasets and results are hosted on OSF:
+<https://doi.org/10.17605/OSF.IO/EXF3M>
 
 If you use this package in your research, please cite:
 
