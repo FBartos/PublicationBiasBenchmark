@@ -201,6 +201,8 @@ See `methods("dgm")` for the full list:
 
 See `methods("method")` for the full list:
 
+- `"mean"`: Mean effects size
+- `"FMA"`: Fixed effects meta-analysis
 - `"RMA"`: Random effects meta-analysis
 - `"WLS"`: Weighted Least Squares
 - `"trimfill"`: Trim-and-Fill [@duval2000trim]

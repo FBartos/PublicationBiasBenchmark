@@ -13,7 +13,13 @@
 #' The following settings are implemented \describe{
 #'   \item{\code{"default"}}{Restricted Maximum Likelihood estimator
 #'        (\code{method = "REML"}) with Knapp-Hartung adjustment
-#'        (\code{test = "knha"}).}
+#'        (\code{test = "knha"}) for a simple random effects meta-analysis
+#'        and Restricted Maximum Likelihood estimator
+#'        (\code{method = "REML"}) with t-distribution adjustment (\code{test = "t"})
+#'        and cluster robust standard errors with small-sample adjustment
+#'        (if converged, otherwise no small-sample adjustment or no cluster robust
+#'        standard errors) for a multilevel random effects meta-analysis if
+#'        \code{study_ids} is specified in the data}
 #' }
 #'
 #'
@@ -24,7 +30,7 @@
 #'   sei = c(0.1, 0.15, 0.08, 0.12, 0.09)
 #' )
 #'
-#' # Apply PET method
+#' # Apply RMA method
 #' result <- run_method("RMA", data)
 #' print(result)
 #'
@@ -37,6 +43,13 @@ method.RMA <- function(method_name, data, settings) {
   effect_sizes    <- data$yi
   standard_errors <- data$sei
 
+  # Use clustering wherever available
+  if (is.null(data[["study_id"]])) {
+    study_ids <- NULL
+  } else {
+    study_ids <- data[["study_id"]]
+  }
+
   # Check input
   if (length(effect_sizes) < 3)
     stop("At least 3 estimates required for RMA analysis", call. = FALSE)
@@ -44,18 +57,56 @@ method.RMA <- function(method_name, data, settings) {
   # Create a model call based on the settings
   # RMA settings contain the function call extension
   # - only data needs to be added to the call
-  settings$yi  <- effect_sizes
-  settings$sei <- standard_errors
 
-  # Call the model
-  rma_model <- do.call(metafor::rma.uni, settings)
+  # Dispatch single vs. multilevel settings
+  if (is.null(study_ids)) {
+
+    settings$yi  <- effect_sizes
+    settings$sei <- standard_errors
+
+    settings[["test"]]     <- settings[["test.uni"]]
+    settings[["test.uni"]] <- NULL
+    settings[["test.mv"]]  <- NULL
+
+    # Call the model
+    rma_model <- do.call(metafor::rma.uni, settings)
+    rma_est   <- rma_model
+
+  } else {
+
+    settings$yi  <- effect_sizes
+    settings$V   <- standard_errors^2
+
+    settings[["test"]]     <- settings[["test.mv"]]
+    settings[["test.uni"]] <- NULL
+    settings[["test.mv"]]  <- NULL
+    settings[["dfs"]]      <- "contain"
+
+    effect_ids <- seq_along(study_ids)
+    settings$random <- ~ effect_ids | study_ids
+
+    # Call the model
+    rma_model  <- do.call(metafor::rma.mv, settings)
+    rma_est    <- try(metafor::robust(rma_model, cluster = study_ids, clubSandwich = TRUE))
+    if (inherits(rma_est, "try-error")) {
+      rma_est <- try(metafor::robust(rma_model, cluster = study_ids, clubSandwich = FALSE))
+    }
+    if (inherits(rma_est, "try-error")) {
+      rma_est <- try(metafor::robust(rma_model, cluster = study_ids, adjust = FALSE))
+    }
+    if (inherits(rma_est, "try-error")) {
+      rma_est <- rma_model
+    }
+
+  }
+
 
   # Extract results
-  estimate     <- rma_model$beta[1]
-  estimate_se  <- rma_model$se[1]
-  estimate_lci <- rma_model$ci.lb[1]
-  estimate_uci <- rma_model$ci.ub[1]
-  estimate_p   <- rma_model$pval[1]
+  estimate     <- rma_est$beta[1]
+  estimate_se  <- rma_est$se[1]
+  estimate_lci <- rma_est$ci.lb[1]
+  estimate_uci <- rma_est$ci.ub[1]
+  estimate_p   <- rma_est$pval[1]
 
   tau_estimate <- sqrt(rma_model$tau2)
   tau_p_value  <- rma_model$QEp
@@ -93,7 +144,7 @@ method_settings.RMA <- function(method_name) {
 
   settings <- list(
     # recommended settings according to metafor with an increased number of iterations for convergence
-    "default" = list(method = "REML", test = "knha", control = list(stepadj = 0.5, maxiter = 500))
+    "default" = list(method = "REML", test.uni = "knha", test.mv = "t", control = list(stepadj = 0.5, maxiter = 500))
   )
 
   return(settings)

@@ -23,7 +23,13 @@ Implements the publication bias-unadjusted random effects meta-analysis.
 The following settings are implemented \describe{
 \item{\code{"default"}}{Restricted Maximum Likelihood estimator
 (\code{method = "REML"}) with Knapp-Hartung adjustment
-(\code{test = "knha"}).}
+(\code{test = "knha"}) for a simple random effects meta-analysis
+and Restricted Maximum Likelihood estimator
+(\code{method = "REML"}) with t-distribution adjustment (\code{test = "t"})
+and cluster robust standard errors with small-sample adjustment
+(if converged, otherwise no small-sample adjustment or no cluster robust
+standard errors) for a multilevel random effects meta-analysis if
+\code{study_ids} is specified in the data}
 }
 }
 \examples{
@@ -33,7 +39,7 @@ data <- data.frame(
   sei = c(0.1, 0.15, 0.08, 0.12, 0.09)
 )
 
-# Apply PET method
+# Apply RMA method
 result <- run_method("RMA", data)
 print(result)
 

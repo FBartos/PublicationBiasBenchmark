@@ -47,7 +47,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ``` r
 library(PublicationBiasBenchmark)
-#> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
+#> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
 #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
 #> 
 #> Attaching package: 'PublicationBiasBenchmark'
@@ -217,6 +217,8 @@ See `methods("dgm")` for the full list:
 
 See `methods("method")` for the full list:
 
+- `"mean"`: Mean effects size
+- `"FMA"`: Fixed effects meta-analysis
 - `"RMA"`: Random effects meta-analysis
 - `"WLS"`: Weighted Least Squares
 - `"trimfill"`: Trim-and-Fill (Duval & Tweedie, 2000)
