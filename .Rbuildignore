@@ -7,3 +7,7 @@ README.Rmd
 README.html
 ^\.Rproj\.user$
 ^resources
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

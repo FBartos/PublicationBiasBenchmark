@@ -47,5 +47,5 @@ Suggests:
     testthat (>= 3.0.0),
     rmarkdown
 RdMacros: Rdpack
-URL: https://github.com/FBartos/PublicationBiasBenchmark
+URL: https://github.com/FBartos/PublicationBiasBenchmark, https://fbartos.github.io/PublicationBiasBenchmark/
 BugReports: https://github.com/FBartos/PublicationBiasBenchmark/issues
