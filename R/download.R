@@ -289,11 +289,13 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, condi
   if (!is.null(measure) && length(measure) == 1) {
 
     # check that the corresponding file was downloaded
-    if (!file.exists(file.path(measures_path, paste0(measure, ".csv"))))
+    file_name <- paste0(measure, if(replacement) "-replacement", ".csv")
+
+    if (!file.exists(file.path(measures_path, file_name)))
       stop(sprintf("Computed measures '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", measure, dgm_name, measures_path))
 
     # load the file
-    measures_file <- utils::read.csv(file = file.path(measures_path, paste0(measure, if(replacement) "-replacement", ".csv")), header = TRUE)
+    measures_file <- utils::read.csv(file = file.path(measures_path, file_name), header = TRUE)
 
   } else {
 
