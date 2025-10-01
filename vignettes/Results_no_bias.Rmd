@@ -10,30 +10,58 @@ vignette: >
 
 ```{r, include = FALSE}
 library(PublicationBiasBenchmark)
+dgm_name <- "no_bias"
+path     <- "C:/R-Packages/PublicationBiasBenchmark/resources"
 # retrieve all measures across all conditions and measures
-download_dgm_measures("no_bias")
-df <- retrieve_dgm_measures("no_bias")
+download_dgm_measures(dgm_name, path = path)
+df  <- retrieve_dgm_measures(dgm_name, path = path)
+dfr <- retrieve_dgm_measures(dgm_name, replacement = TRUE, path = path)
 
 # retrieve conditions
-conditions <- dgm_conditions("no_bias")
+conditions <- dgm_conditions(dgm_name)
 
 # add labels
-df$label <- with(df, paste0(method, " (", method_setting, ")"))
+df$label  <- with(df, paste0(method, " (", method_setting, ")"))
+dfr$label <- with(dfr, paste0(method, " (", method_setting, ")"))
+method_labels <- unique(df$label)
 
 # distinguish between H0 and H1
-df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+df$H0  <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+dfr$H0 <- dfr$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
 ```
 
-## Results {.tabset}
+```{r echo=FALSE} 
+tb <- do.call(rbind, lapply(method_labels, function(ml) with(df[df$label == ml,],
+ data.frame(
+    "Method"      = ml,
+    "Convergence" = mean(convergence),
+    "Bias"        = mean(bias),
+    "RMSE"        = mean(rmse),
+    "Coverage"    = mean(coverage),
+    "Type I."     = mean(power[H0]),
+    "Power"       = mean(power[!H0])
+  ))
+))
 
-### Convergence
+kableExtra::kable_paper(kableExtra::kbl(tb), "hover", full_width = FALSE)
+
+```
+
+## Performance Measures {.tabset .tabset-fade .tabset-pills}
+
+### Conditional on Convergence {.tabset .tabset-fade .tabset-pills}
+
+The results below are conditional on convergence. 
+Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+
+#### Convergence
 
 ```{r fig.height = 8, echo=FALSE} 
 par(mar = c(4, 10, 1, 1))
 boxplot(convergence ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = df, xlab = "Convergence")
 ```
 
-### Bias
+#### Bias
 
 ```{r fig.height = 8, echo=FALSE} 
 par(mar = c(4, 10, 1, 1))
@@ -41,7 +69,7 @@ boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.5, 0.5), d
 abline(v = 0, lty = 3)
 ```
 
-### RMSE
+#### RMSE
 
 ```{r fig.height = 8, echo=FALSE} 
 par(mar = c(4, 10, 1, 1))
@@ -49,7 +77,7 @@ boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data
 abline(v = 0, lty = 3)
 ```
 
-### CI Coverage
+#### CI Coverage
 
 ```{r fig.height = 8, echo=FALSE} 
 par(mar = c(4, 10, 1, 1))
@@ -57,7 +85,7 @@ boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), da
 abline(v = 0.95, lty = 3)
 ```
 
-### Type I Error
+#### Type I Error
 
 ```{r fig.height = 8, echo=FALSE} 
 par(mar = c(4, 10, 1, 1))
@@ -65,9 +93,61 @@ boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data 
 abline(v = 0.05, lty = 3)
 ```
 
-### Power
+#### Power
 
 ```{r fig.height = 8, echo=FALSE} 
 par(mar = c(4, 10, 1, 1))
 boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = df[!df$H0,], xlab = "Power")
+```
+
+
+### Method Replacement  {.tabset .tabset-fade .tabset-pills}
+
+The results below incorporate method replacement. If method fails to converge, its results is replaced by a simpler method. See TODO for details of the method replacement specification.
+Note that these results combine do not correspond to "pure" method performance as they might combine multiple different methods.
+
+#### Convergence
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(convergence ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = dfr, xlab = "Convergence")
+```
+
+#### Bias
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.5, 0.5), data = dfr, xlab = "Bias")
+abline(v = 0, lty = 3)
+```
+
+#### RMSE
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data = dfr, xlab = "RMSE")
+abline(v = 0, lty = 3)
+```
+
+#### CI Coverage
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = dfr, xlab = "CI Coverage")
+abline(v = 0.95, lty = 3)
+```
+
+#### Type I Error
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = dfr[dfr$H0,], xlab = "Type I Error")
+abline(v = 0.05, lty = 3)
+```
+
+#### Power
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = dfr[!dfr$H0,], xlab = "Power")
 ```

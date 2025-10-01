@@ -300,6 +300,14 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, condi
   } else {
 
     measure_files <- list.files(measures_path, pattern = "\\.csv$")
+
+    # pairwise comparison must be handled manually
+    if (length(measure) == 1 && measure == "pairwise") {
+      measure_files <- measure_files[grepl("pairwise", measure_files)]
+    } else {
+      measure_files <- measure_files[!grepl("pairwise", measure_files)]
+    }
+
     if (replacement) {
       measure_files <- measure_files[grepl("replacement", measure_files)]
     } else {
