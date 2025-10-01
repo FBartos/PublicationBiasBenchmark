@@ -1,0 +1,73 @@
+---
+title: "Results: No bias"
+author: František Bartoš
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Results: No bias}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(PublicationBiasBenchmark)
+# retrieve all measures across all conditions and measures
+download_dgm_measures("no_bias")
+df <- retrieve_dgm_measures("no_bias")
+
+# retrieve conditions
+conditions <- dgm_conditions("no_bias")
+
+# add labels
+df$label <- with(df, paste0(method, " (", method_setting, ")"))
+
+# distinguish between H0 and H1
+df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+```
+
+## Results {.tabset}
+
+### Convergence
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(convergence ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = df, xlab = "Convergence")
+```
+
+### Bias
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.5, 0.5), data = df, xlab = "Bias")
+abline(v = 0, lty = 3)
+```
+
+### RMSE
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data = df, xlab = "RMSE")
+abline(v = 0, lty = 3)
+```
+
+### CI Coverage
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = df, xlab = "CI Coverage")
+abline(v = 0.95, lty = 3)
+```
+
+### Type I Error
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = df[df$H0,], xlab = "Type I Error")
+abline(v = 0.05, lty = 3)
+```
+
+### Power
+
+```{r fig.height = 8, echo=FALSE} 
+par(mar = c(4, 10, 1, 1))
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 1), data = df[!df$H0,], xlab = "Power")
+```
