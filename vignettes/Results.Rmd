@@ -91,6 +91,11 @@ for (measure in c("Bias")) {
   rb[[measure]]  <- rank(abs(tb[[measure]]), ties.method = "min")
   rbr[[measure]] <- rank(abs(tbr[[measure]]), ties.method = "min")
 }
+tb[["combined"]]  <- rowMeans(tb[, c("RMSE", "Error", "Bias", "Coverage", "Power")])
+tbr[["combined"]] <- rowMeans(tbr[, c("RMSE", "Error", "Bias", "Coverage", "Power")])
+
+rb[["combined"]]  <- rank(tb[["combined"]], ties.method = "min")
+rbr[["combined"]] <- rank(tbr[["combined"]], ties.method = "min")
 
 # Create raincloud plot function
 create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, reference_line = NULL, title_text = NULL) {
@@ -159,6 +164,29 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
 
 ## Average Performance {.tabset .tabset-fade .tabset-pills}
 
+### Combined
+
+```{r echo=FALSE}
+tb_combined <- data.frame(
+  Rank_Convergence   = rb$combined[order(rb$combined)],
+  Method_Convergence = paste0(rb$Method, "-", rb$Setting)[order(rb$combined)],
+  Value_Convergence  = tb$combined[order(rb$combined)],
+  Rank_Replacement   = rbr$combined[order(rbr$combined)],
+  Method_Replacement = paste0(rbr$Method, "-", rbr$Setting)[order(rbr$combined)],
+  Value_Replacement  = tbr$combined[order(rbr$combined)]
+)
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tb_combined, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+
+```
+
+
 ### Bias
 
 ```{r echo=FALSE} 
@@ -173,7 +201,8 @@ tb_bias <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tb_bias, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
@@ -194,7 +223,8 @@ tb_rmse <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tb_rmse, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
@@ -215,7 +245,8 @@ tb_coverage <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tb_coverage, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
@@ -236,7 +267,8 @@ tb_error <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tb_error, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
@@ -257,7 +289,8 @@ tb_power <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tb_power, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
