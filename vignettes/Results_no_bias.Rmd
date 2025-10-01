@@ -155,7 +155,12 @@ Note that the methods might differ in convergence rate and are therefore not com
 
 ```{r echo=FALSE} 
 DT::formatRound(
-  DT::datatable(tb, options = list(pageLength = -1)), 
+  DT::datatable(tb, options = list(
+    pageLength = -1, 
+    responsive = TRUE,
+    deferRender = TRUE,
+    scrollX = TRUE
+  )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 3
 )
@@ -165,7 +170,12 @@ DT::formatRound(
 
 ```{r echo=FALSE} 
 DT::formatRound(
-  DT::datatable(rb, options = list(pageLength = -1)), 
+  DT::datatable(rb, options = list(
+    pageLength = -1, 
+    responsive = TRUE,
+    deferRender = TRUE,
+    scrollX = TRUE
+  )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 1
 )
@@ -180,7 +190,12 @@ Note that these results combine do not correspond to "pure" method performance a
 
 ```{r echo=FALSE} 
 DT::formatRound(
-  DT::datatable(tbr, options = list(pageLength = -1)), 
+  DT::datatable(tbr, options = list(
+    pageLength = -1, 
+    responsive = TRUE,
+    deferRender = TRUE,
+    scrollX = TRUE
+  )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 3
 )
@@ -190,7 +205,12 @@ DT::formatRound(
 
 ```{r echo=FALSE} 
 DT::formatRound(
-  DT::datatable(rbr, options = list(pageLength = -1)), 
+  DT::datatable(rbr, options = list(
+    pageLength = -1, 
+    responsive = TRUE,
+    deferRender = TRUE,
+    scrollX = TRUE
+  )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 1
 )
@@ -289,3 +309,17 @@ create_raincloud_plot(dfr[dfr$H0,], "power", "Type I Error", ylim_range = c(0, 1
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
 create_raincloud_plot(dfr[!dfr$H0,], "power", "Power", ylim_range = c(0, 1))
 ```
+
+<script>
+$(document).ready(function() {
+  // Fix DataTables in tabs
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+  });
+  
+  // For Bootstrap 5
+  $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+    $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+  });
+});
+</script>
