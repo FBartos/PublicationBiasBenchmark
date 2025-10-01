@@ -2193,96 +2193,106 @@ NA
 </div>
 </div>
 <div class="section level2 tabset tabset-fade tabset-pills">
-<h2 class="tabset tabset-fade tabset-pills" id="by-condition-performance">By-Condition
-Performance<a class="anchor" aria-label="anchor" href="#by-condition-performance"></a>
+<h2 class="tabset tabset-fade tabset-pills" id="by-condition-performance-conditional">By-Condition Performance
+(Conditional)<a class="anchor" aria-label="anchor" href="#by-condition-performance-conditional"></a>
 </h2>
-
-
-<ul class="nav nav-pills" id="by-condition-performance" role="tablist">
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#conditional-on-convergence" id="conditional-on-convergence-tab" type="button" role="tab" aria-controls="conditional-on-convergence" aria-selected="true" class="active nav-link">Conditional on
-Convergence</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#method-replacement" id="method-replacement-tab" type="button" role="tab" aria-controls="method-replacement" aria-selected="false" class="nav-link">Method Replacement</button></li>
-</ul>
-<div class="tab-content">
-<div class="active show fade tab-pane" id="conditional-on-convergence" role="tabpanel" aria-labelledby="conditional-on-convergence-tab">
-
 <p>The results below are conditional on convergence. Note that the
 methods might differ in convergence rate and are therefore not compared
 on the same data sets.</p>
-<div class="section level4">
-<h4 id="convergence">Convergence<a class="anchor" aria-label="anchor" href="#convergence"></a>
-</h4>
+
+
+
+
+
+
+<ul class="nav nav-pills" id="by-condition-performance-conditional" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#convergence" id="convergence-tab" type="button" role="tab" aria-controls="convergence" aria-selected="true" class="active nav-link">Convergence</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-1" id="bias-1-tab" type="button" role="tab" aria-controls="bias-1" aria-selected="false" class="nav-link">Bias</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-1" id="rmse-1-tab" type="button" role="tab" aria-controls="rmse-1" aria-selected="false" class="nav-link">RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-1" id="ci-coverage-1-tab" type="button" role="tab" aria-controls="ci-coverage-1" aria-selected="false" class="nav-link">CI Coverage</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-1" id="type-i-error-1-tab" type="button" role="tab" aria-controls="type-i-error-1" aria-selected="false" class="nav-link">Type I Error</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-1" id="power-1-tab" type="button" role="tab" aria-controls="power-1" aria-selected="false" class="nav-link">Power</button></li>
+</ul>
+<div class="tab-content">
+<div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="bias-1">Bias<a class="anchor" aria-label="anchor" href="#bias-1"></a>
-</h4>
+<div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
-<div class="section level4">
-<h4 id="rmse-1">RMSE<a class="anchor" aria-label="anchor" href="#rmse-1"></a>
-</h4>
+<div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
-<div class="section level4">
-<h4 id="ci-coverage-1">CI Coverage<a class="anchor" aria-label="anchor" href="#ci-coverage-1"></a>
-</h4>
+<div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="type-i-error-1">Type I Error<a class="anchor" aria-label="anchor" href="#type-i-error-1"></a>
-</h4>
+<div class="fade tab-pane" id="type-i-error-1" role="tabpanel" aria-labelledby="type-i-error-1-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="power-1">Power<a class="anchor" aria-label="anchor" href="#power-1"></a>
-</h4>
+<div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 </div>
 </div>
-<div class="fade tab-pane" id="method-replacement" role="tabpanel" aria-labelledby="method-replacement-tab">
-
+</div>
+<div class="section level2 tabset tabset-fade tabset-pills">
+<h2 class="tabset tabset-fade tabset-pills" id="by-condition-performance-replacement">By-Condition Performance
+(Replacement)<a class="anchor" aria-label="anchor" href="#by-condition-performance-replacement"></a>
+</h2>
 <p>The results below incorporate method replacement. If method fails to
 converge, its results is replaced by a simpler method. See TODO for
 details of the method replacement specification. Note that these results
 combine do not correspond to “pure” method performance as they might
 combine multiple different methods.</p>
-<div class="section level4">
-<h4 id="convergence-1">Convergence<a class="anchor" aria-label="anchor" href="#convergence-1"></a>
-</h4>
+
+
+
+
+
+
+<ul class="nav nav-pills" id="by-condition-performance-replacement" role="tablist">
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#convergence-1" id="convergence-1-tab" type="button" role="tab" aria-controls="convergence-1" aria-selected="true" class="active nav-link">Convergence</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-2" id="bias-2-tab" type="button" role="tab" aria-controls="bias-2" aria-selected="false" class="nav-link">Bias</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-2" id="rmse-2-tab" type="button" role="tab" aria-controls="rmse-2" aria-selected="false" class="nav-link">RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-2" id="ci-coverage-2-tab" type="button" role="tab" aria-controls="ci-coverage-2" aria-selected="false" class="nav-link">CI Coverage</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-2" id="type-i-error-2-tab" type="button" role="tab" aria-controls="type-i-error-2" aria-selected="false" class="nav-link">Type I Error</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-2" id="power-2-tab" type="button" role="tab" aria-controls="power-2" aria-selected="false" class="nav-link">Power</button></li>
+</ul>
+<div class="tab-content">
+<div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="bias-2">Bias<a class="anchor" aria-label="anchor" href="#bias-2"></a>
-</h4>
+<div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
-<div class="section level4">
-<h4 id="rmse-2">RMSE<a class="anchor" aria-label="anchor" href="#rmse-2"></a>
-</h4>
+<div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
-<div class="section level4">
-<h4 id="ci-coverage-2">CI Coverage<a class="anchor" aria-label="anchor" href="#ci-coverage-2"></a>
-</h4>
+<div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="type-i-error-2">Type I Error<a class="anchor" aria-label="anchor" href="#type-i-error-2"></a>
-</h4>
+<div class="fade tab-pane" id="type-i-error-2" role="tabpanel" aria-labelledby="type-i-error-2-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="power-2">Power<a class="anchor" aria-label="anchor" href="#power-2"></a>
-</h4>
+<div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
+
 <p><img src="Results_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
-</div>
 </div>
 </div>
 </div>
