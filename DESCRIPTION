@@ -46,7 +46,11 @@ Imports:
 Suggests:
     testthat (>= 3.0.0),
     rmarkdown,
-    knitr
+    knitr,
+    kableExtra,
+    DT,
+    ggplot2,
+    ggdist
 RdMacros: Rdpack
 URL: https://github.com/FBartos/PublicationBiasBenchmark, https://fbartos.github.io/PublicationBiasBenchmark/
 BugReports: https://github.com/FBartos/PublicationBiasBenchmark/issues
