@@ -1,0 +1,226 @@
+---
+title: "Adding New Methods to PublicationBiasBenchmark"
+author: František Bartoš
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Adding New Methods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+This vignette explains how to add new publication bias correction methods to the `PublicationBiasBenchmark` package. 
+We'll use the PET (Precision-Effect Test) method as an example.
+
+## Overview
+
+Each method in the package consists of three key components:
+
+1. **Main method function**: Implements the statistical method
+2. **Settings function**: Defines available method configurations  
+3. **Extra columns function**: Specifies additional result columns
+
+All three functions must be implemented in a single file named `method-{METHOD_NAME}.R` in the `R/` directory.
+
+## File Structure and Naming
+
+For a method called "PET", you need to create a file named `R/method-PET.R` containing three functions:
+
+- `method.PET()` - The main implementation
+- `method_settings.PET()` - Available settings/configurations
+- `method_extra_columns.PET()` - Additional result columns
+
+The naming pattern is crucial for the package's S3 method dispatch system to work correctly.
+
+## 1. Main Method Function: `method.{METHOD_NAME}()`
+
+This is the core function that implements your statistical method. 
+Here's the PET implementation as an example:
+
+```{r, eval=FALSE}
+#' @title PET (Precision-Effect Test) Method
+#'
+#' @description
+#' Implements the Precision-Effect Test for publication bias correction.
+#' PET regresses effect sizes against standard errors to test for and correct
+#' publication bias. The intercept represents the bias-corrected effect size
+#' estimate.
+#'
+#' @param method_name Method name (automatically passed)
+#' @param data Data frame with yi (effect sizes) and sei (standard errors)
+#' @param settings List of method settings
+#'
+#' @return Data frame with PET results
+#'
+#' @export
+method.PET <- function(method_name, data, settings = NULL) {
+  
+  # Extract data
+  effect_sizes    <- data$yi
+  standard_errors <- data$sei
+  
+  # Input validation and error handling
+  if (length(effect_sizes) < 3)
+    stop("At least 3 estimates required for PET analysis", call. = FALSE)
+  
+  if (stats::var(standard_errors) <= 0)
+    stop("No variance in standard errors", call. = FALSE)
+  
+  # Implement the statistical method
+  pet_model <- stats::lm(effect_sizes ~ standard_errors, 
+                        weights = 1/standard_errors^2)
+  
+  # Extract and process results
+  coefficients    <- stats::coef(pet_model)
+  se_coefficients <- summary(pet_model)$coefficients[, "Std. Error"]
+  p_values        <- summary(pet_model)$coefficients[, "Pr(>|t|)"]
+  
+  # Main estimates
+  estimate    <- coefficients[1]  # Intercept = bias-corrected effect
+  estimate_se <- se_coefficients[1]
+  estimate_p  <- p_values[1]
+  
+  # Additional method-specific results
+  bias_coefficient <- coefficients[2]
+  bias_p_value     <- p_values[2]
+  
+  # Calculate confidence intervals
+  estimate_lci <- estimate - 1.96 * estimate_se
+  estimate_uci <- estimate + 1.96 * estimate_se
+  
+  # Return standardized results
+  return(data.frame(
+    method         = method_name,
+    estimate       = estimate,
+    standard_error = estimate_se,
+    ci_lower       = estimate_lci,
+    ci_upper       = estimate_uci,
+    p_value        = estimate_p,
+    BF             = NA,
+    convergence    = TRUE,
+    note           = NA,
+    # Method-specific columns
+    bias_coefficient = bias_coefficient,
+    bias_p_value     = bias_p_value
+  ))
+}
+```
+
+### Key Requirements for the Main Function:
+
+**Input Parameters:**
+
+- `method_name`: Automatically passed by the framework
+- `data`: Data frame with `yi` (effect sizes), `sei` (standard errors), and `ni` (sample sizes).
+- `settings`: Optional list of method-specific settings
+
+Some data generating mechanisms may provide additional information in the `data` argument. 
+If your method can utilize this information, you should implement additional input check and dispatch logic.
+Those additional columns might include:
+
+ - `study_id`: Unique identifier for each study (in the presence of multilevel/clustered data)
+ - `es_type`: Type of standardized effect size (e.g., "SMD", "logOR", "none")
+
+**Output:**
+Must return a data frame with these **required columns**:
+
+- `method`: Method name
+- `estimate`: Meta-analytic effect size estimate
+- `standard_error`: Standard error of the estimate
+- `ci_lower`: Lower confidence interval bound (95%)
+- `ci_upper`: Upper confidence interval bound (95%)
+- `p_value`: P-value for the estimate
+- `BF`: Bayes factor for the estimate
+- `convergence`: Logical indicating successful convergence
+- `note`: Character string with notes
+
+If your method does not provide certain values (e.g., Bayes factor), use `NA`.
+
+**Error Handling:**
+
+- Include input validation and meaningful error messages
+- Use `stop()` with `call. = FALSE` for user-friendly errors
+- The framework handles errors automatically - your function can throw errors. 
+The package will catch the errors and attach them to an empty output with `convergence = FALSE` and the error message in `note`.
+
+## 2. Settings Function: `method_settings.{METHOD_NAME}()`
+
+This function defines the available configurations for your method:
+
+```{r, eval=FALSE}
+#' @export
+method_settings.PET <- function(method_name) {
+  
+  settings <- list(
+    "default" = list() # PET has no configurable settings
+  )
+  
+  return(settings)
+}
+```
+
+The selected settings are passed to your main function as the `settings` parameter.
+There, the main function can use these settings to adjust its behavior.
+Once defined, these settings cannot be changed retrospectively to ensure reproducibility
+and continuity of the benchmark.
+
+For an example of a method that defines several settings we can examine the random effects meta-analysis (RMA) method:
+
+```{r, eval=FALSE}
+# Example with multiple settings (from RMA method)
+method_settings.RMA <- function(method_name) {
+  
+  settings <- list(
+    "default" = list(
+      method = "REML", 
+      test.uni = "knha", 
+      test.mv = "t", 
+      control = list(stepadj = 0.5, maxiter = 500)
+    )
+  )
+  
+  return(settings)
+}
+```
+
+## 3. Extra Columns Function: `method_extra_columns.{METHOD_NAME}()`
+
+This function specifies additional columns that your method returns beyond the required ones:
+
+```{r, eval=FALSE}
+#' @export
+method_extra_columns.PET <- function(method_name) {
+  c("bias_coefficient", "bias_p_value")
+}
+```
+The column names must match exactly the additional columns that your main function returns.
+These columns will be included in the final output data frame alongside the required columns 
+and guarantee that the results can be merged in case the method fails with an error.
+
+Use `character(0)` or `c()` if your method has no extra columns
+
+## Using Your New Method
+
+Once implemented, your method can be used through the unified interface:
+
+```{r, eval=FALSE}
+# Create example data
+data <- data.frame(
+  yi  = c(0.2, 0.3, 0.1, 0.4, 0.25),
+  sei = c(0.1, 0.15, 0.08, 0.12, 0.09)
+)
+
+# Run your method
+result <- run_method("PET", data)
+print(result)
+
+# Use specific settings (if available)
+result <- run_method("PET", data, "default")
+```
