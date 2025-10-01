@@ -149,8 +149,8 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
 
   # Keep the same order as in Hong and Reed 2021
   simulationType  <- "Cohens_d"
-  effectSize_List <- c(0, 50)
-  sigH_List       <- c(0, 6.25, 12.5, 25, 50)
+  effectSize_List <- c(0, 0.50)
+  sigH_List       <- c(0, 0.625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(5,10,20,40,80)
   param1 <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
@@ -166,8 +166,8 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
 
 
   simulationType  <- "Cohens_d"
-  effectSize_List <- c(0, 50)
-  sigH_List       <- c(0, 6.25, 12.5, 25, 50)
+  effectSize_List <- c(0, 0.50)
+  sigH_List       <- c(0, 0.625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(100,200,400,800)
   param3          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
@@ -254,9 +254,9 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
 #################################################################
 .HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d <- function(TreatmentEffect, sigH, primaryObs){
   obsControl<-primaryObs;
-  y_cj<-stats::rnorm(obsControl, 300, 86.603) + stats::rnorm(obsControl, 0, 50)
+  y_cj<-stats::rnorm(obsControl, 300, .86603) + stats::rnorm(obsControl, 0, .50)
   obsTreatment<-primaryObs;
-  Te<- stats::rnorm(obsTreatment, 300, 86.603) + stats::rnorm(obsTreatment, 0, 50) + (TreatmentEffect + stats::rnorm(1, 0, sigH))
+  Te<- stats::rnorm(obsTreatment, 300, .86603) + stats::rnorm(obsTreatment, 0, .50) + (TreatmentEffect + stats::rnorm(1, 0, sigH))
 
   dfn1<-(length(Te)-1); dfn2<-(length(y_cj)-1);
   s1<-sum((Te-mean(Te))^2)/dfn1; s2<-sum((y_cj-mean(y_cj))^2)/dfn2;
@@ -265,7 +265,7 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   stdErr_Cohen_d<-sqrt(((dfn1+dfn2+2)/((dfn1+1)*(dfn1+1)))+estimatedCohen_d^2/(2*(dfn1+dfn2+2)))
   cohen_ci<-estimatedCohen_d+stats::qt(c(0.025,.975),(dfn1+dfn2))*stdErr_Cohen_d
   cohen_t<-estimatedCohen_d/stdErr_Cohen_d;
-  return(c(TreatmentEffect,sigH,TreatmentEffect/100,estimatedCohen_d,stdErr_Cohen_d,cohen_ci,(cohen_t>1.96),primaryObs))
+  return(c(TreatmentEffect,sigH,TreatmentEffect,estimatedCohen_d,stdErr_Cohen_d,cohen_ci,(cohen_t>1.96),primaryObs))
 }
 ###################################
 ## Meta Analysis Data Generation ##
