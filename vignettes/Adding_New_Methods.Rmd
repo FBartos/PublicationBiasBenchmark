@@ -1,5 +1,5 @@
 ---
-title: "Adding New Methods to PublicationBiasBenchmark"
+title: "Adding New Methods"
 author: František Bartoš
 output: rmarkdown::html_vignette
 vignette: >
@@ -125,7 +125,7 @@ Some data generating mechanisms may provide additional information in the `data`
 If your method can utilize this information, you should implement additional input check and dispatch logic.
 Those additional columns might include:
 
- - `study_id`: Unique identifier for each study (in the presence of multilevel/clustered data)
+ - `study_id`: Unique identifier for each study/cluster (in the presence of multilevel/clustered data)
  - `es_type`: Type of standardized effect size (e.g., "SMD", "logOR", "none")
 
 **Output:**
