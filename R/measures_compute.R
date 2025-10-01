@@ -67,6 +67,10 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   if (length(method) != length(method_setting))
     stop("method and method_setting must have the same length")
 
+  # Get DGM conditions
+  if (is.null(conditions))
+    conditions <- dgm_conditions(dgm_name)
+
   # Validate method_replacements
   if (!is.null(method_replacements)) {
     if (!is.list(method_replacements))
@@ -420,7 +424,6 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 #'
 #' @examples
 #' \dontrun{
-
 #' }
 #'
 #' @export
@@ -434,13 +437,8 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              overwrite = FALSE, conditions = NULL, path = NULL) {
 
   # Most input validation is done in compute_single_measure
-
   if (is.null(path))
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
-
-  # Get DGM conditions
-  if (is.null(conditions))
-    conditions <- dgm_conditions(dgm_name)
 
   # Define all available measures if not specified
   if (is.null(measures))

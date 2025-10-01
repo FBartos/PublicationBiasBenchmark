@@ -2,18 +2,17 @@
 % Please edit documentation in R/measures_compute.R
 \name{compute_single_measure}
 \alias{compute_single_measure}
-\title{Compute Performance Measures for a DGM}
+\title{Compute Performance Measures}
 \usage{
 compute_single_measure(
   dgm_name,
   measure_name,
-  methods,
-  method_settings,
+  method,
+  method_setting,
   conditions,
   measure_fun,
   measure_mcse_fun,
   power_test_type = "p_value",
-  power_threshold = NULL,
   estimate_col = "estimate",
   true_effect_col = "mean_effect",
   ci_lower_col = "ci_lower",
@@ -21,8 +20,9 @@ compute_single_measure(
   p_value_col = "p_value",
   bf_col = "BF",
   convergence_col = "convergence",
+  power_threshold_p_value = 0.05,
+  power_threshold_bayes_factor = 10,
   method_replacements = NULL,
-  method_setting_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
   path = NULL,
@@ -34,9 +34,9 @@ compute_single_measure(
 
 \item{measure_name}{Name of the measure to compute (e.g., "bias", "mse")}
 
-\item{methods}{Character vector of method names}
+\item{method}{Character vector of method names}
 
-\item{method_settings}{Character vector of method settings, must be same length as methods}
+\item{method_setting}{Character vector of method settings, must be same length as method}
 
 \item{conditions}{Data frame of conditions from dgm_conditions()}
 
@@ -44,12 +44,9 @@ compute_single_measure(
 
 \item{measure_mcse_fun}{Function to compute the MCSE for the measure}
 
-\item{power_test_type}{Character string specifying the test type for power computation:
-"p_value" (default) or "bayes_factor"}
-
-\item{power_threshold}{Numeric threshold for power computation. For p-values,
-default is 0.05 (reject if p < 0.05). For Bayes factors, default is 10
-(reject if BF > 10, indicating strong evidence for H1)}
+\item{power_test_type}{Character vector specifying the test type for power computation:
+"p_value" (default) or "bayes_factor" for each method. If a single value is provided, it is
+repeated for all methods.}
 
 \item{estimate_col}{Character string specifying the column name containing parameter estimates. Default is "estimate"}
 
@@ -65,11 +62,22 @@ default is 0.05 (reject if p < 0.05). For Bayes factors, default is 10
 
 \item{convergence_col}{Character string specifying the column name containing convergence indicators. Default is "convergence"}
 
-\item{method_replacements}{Character vector of method names that shall be used as a replacement in the case of non-convergence.
-Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method bases.
-If multiple elements are specified, these replacement are applied consecutive in case the previous replacements also failed to converged.}
+\item{power_threshold_p_value}{Numeric threshold for power computation with p-values.
+Default is 0.05 (reject H0 if p < 0.05).}
 
-\item{method_setting_replacements}{Character vector of method settings that shall be used as a replacement in the case of non-convergence.}
+\item{power_threshold_bayes_factor}{Numeric threshold for power computation with Bayes factors.
+Default is 10 (reject H0 if BF > 10)}
+
+\item{method_replacements}{Named list of replacement method specifications. Each element should be named
+with the "method-method_setting" combination (e.g., "RMA-default") and contain a named list with:
+\itemize{
+\item{\code{method}: Character vector of replacement method names}
+\item{\code{method_setting}: Character vector of replacement method settings (same length as methods)}
+\item{\code{power_test_type}: Optional character vector of power test types for each replacement method (same length as methods). If not specified, uses the main power_test_type parameter}
+}
+If multiple elements are specified within the vectors, these replacements are applied consecutively
+in case the previous replacements also failed to converge.
+Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.}
 
 \item{n_repetitions}{Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.}
 
@@ -96,31 +104,6 @@ function.
 # Get conditions for a DGM
 conditions <- dgm_conditions("no_bias")
 
-# Compute bias for specific methods
-bias_results <- compute_single_measure(
-  dgm_name = "no_bias",
-  measure_name = "bias",
-  methods = c("RMA", "PET"),
-  method_settings = c("default", "default"),
-  conditions = conditions,
-  results_folder = "simulations",
-  measure_fun = bias,
-  measure_mcse_fun = bias_mcse
-)
-
-# Compute power using Bayes factors
-power_results <- compute_single_measure(
-  dgm_name = "no_bias",
-  measure_name = "power",
-  methods = c("RMA", "PET"),
-  method_settings = c("default", "default"),
-  conditions = conditions,
-  results_folder = "simulations",
-  measure_fun = power,
-  measure_mcse_fun = power_mcse,
-  power_test_type = "bayes_factor",
-  power_threshold = 6
-)
 
 }
 
