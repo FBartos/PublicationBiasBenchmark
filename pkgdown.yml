@@ -1,8 +1,10 @@
 pandoc: 3.1.11
 pkgdown: 2.1.3
 pkgdown_sha: ~
-articles: {}
-last_built: 2025-10-01T11:17Z
+articles:
+  Adding_New_DGMs: Adding_New_DGMs.html
+  Adding_New_Methods: Adding_New_Methods.html
+last_built: 2025-10-01T12:55Z
 urls:
   reference: https://fbartos.github.io/PublicationBiasBenchmark/reference
   article: https://fbartos.github.io/PublicationBiasBenchmark/articles
