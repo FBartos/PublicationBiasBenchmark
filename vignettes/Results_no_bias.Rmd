@@ -159,7 +159,16 @@ DT::formatRound(
     pageLength = -1, 
     responsive = TRUE,
     deferRender = TRUE,
-    scrollX = TRUE
+    scrollX = TRUE,
+    autoWidth = FALSE,
+    columnDefs = list(list(width = '100px', targets = '_all')),
+    initComplete = DT::JS(
+      "function(settings, json) {",
+      "  setTimeout(function() {",
+      "    $(this.api().table().container()).trigger('resize');",
+      "  }, 100);",
+      "}"
+    )
   )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 3
@@ -174,7 +183,16 @@ DT::formatRound(
     pageLength = -1, 
     responsive = TRUE,
     deferRender = TRUE,
-    scrollX = TRUE
+    scrollX = TRUE,
+    autoWidth = FALSE,
+    columnDefs = list(list(width = '100px', targets = '_all')),
+    initComplete = DT::JS(
+      "function(settings, json) {",
+      "  setTimeout(function() {",
+      "    $(this.api().table().container()).trigger('resize');",
+      "  }, 100);",
+      "}"
+    )
   )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 1
@@ -194,7 +212,16 @@ DT::formatRound(
     pageLength = -1, 
     responsive = TRUE,
     deferRender = TRUE,
-    scrollX = TRUE
+    scrollX = TRUE,
+    autoWidth = FALSE,
+    columnDefs = list(list(width = '100px', targets = '_all')),
+    initComplete = DT::JS(
+      "function(settings, json) {",
+      "  setTimeout(function() {",
+      "    $(this.api().table().container()).trigger('resize');",
+      "  }, 100);",
+      "}"
+    )
   )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 3
@@ -209,7 +236,16 @@ DT::formatRound(
     pageLength = -1, 
     responsive = TRUE,
     deferRender = TRUE,
-    scrollX = TRUE
+    scrollX = TRUE,
+    autoWidth = FALSE,
+    columnDefs = list(list(width = '100px', targets = '_all')),
+    initComplete = DT::JS(
+      "function(settings, json) {",
+      "  setTimeout(function() {",
+      "    $(this.api().table().container()).trigger('resize');",
+      "  }, 100);",
+      "}"
+    )
   )), 
   columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
   digits = 1
@@ -310,16 +346,68 @@ create_raincloud_plot(dfr[dfr$H0,], "power", "Type I Error", ylim_range = c(0, 1
 create_raincloud_plot(dfr[!dfr$H0,], "power", "Power", ylim_range = c(0, 1))
 ```
 
-<script>
+```{js}
 $(document).ready(function() {
-  // Fix DataTables in tabs
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-    $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+  // Comprehensive solution for DT in nested tabs
+  
+  // Function to reinitialize DataTables
+  function reinitializeDataTables() {
+    setTimeout(function() {
+      // Find all DataTables and recalculate
+      $('.dataTables_wrapper').each(function() {
+        var table = $(this).find('table').DataTable();
+        if (table) {
+          try {
+            table.columns.adjust();
+            table.responsive.recalc();
+            $(this).trigger('resize');
+          } catch(e) {
+            // Ignore errors for tables that aren't ready
+          }
+        }
+      });
+    }, 200);
+  }
+  
+  // Handle all possible tab events for Bootstrap 4 and 5
+  $(document).on('shown.bs.tab shown.bs.pill', 'a[data-toggle="tab"], a[data-toggle="pill"], button[data-bs-toggle="tab"], button[data-bs-toggle="pill"]', function (e) {
+    reinitializeDataTables();
   });
   
-  // For Bootstrap 5
-  $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
-    $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+  // Additional event handlers for more robust detection
+  $(document).on('click', '.nav-tabs a, .nav-pills a, .nav-tabs button, .nav-pills button', function() {
+    setTimeout(reinitializeDataTables, 300);
+  });
+  
+  // Observer to watch for tab content becoming visible
+  if (window.MutationObserver) {
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          var target = $(mutation.target);
+          if (target.hasClass('active') && target.hasClass('tab-pane')) {
+            reinitializeDataTables();
+          }
+        }
+      });
+    });
+    
+    // Observe all tab panes
+    $('.tab-content .tab-pane').each(function() {
+      observer.observe(this, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+  
+  // Initial setup after page load
+  setTimeout(function() {
+    reinitializeDataTables();
+    // Force one more recalculation after everything is settled
+    setTimeout(reinitializeDataTables, 1000);
+  }, 500);
+  
+  // Handle window resize events
+  $(window).on('resize', function() {
+    setTimeout(reinitializeDataTables, 100);
   });
 });
-</script>
+```
