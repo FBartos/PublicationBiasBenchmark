@@ -66,11 +66,11 @@ tbr <- do.call(rbind, lapply(method_labels, function(ml) with(dfr[dfr$label == m
 # add ranks
 rb  <- tb
 rbr <- tbr
-for (measure in c("RMSE", "Coverage", "Error")) {
+for (measure in c("RMSE", "Error")) {
   rb[[measure]]  <- rank(tb[[measure]], ties.method = "min")
   rbr[[measure]] <- rank(tbr[[measure]], ties.method = "min")
 }
-for (measure in c("Convergence", "Power")) {
+for (measure in c("Convergence", "Coverage", "Power")) {
   rb[[measure]]  <- rank(-tb[[measure]], ties.method = "min")
   rbr[[measure]] <- rank(-tbr[[measure]], ties.method = "min")
 }
@@ -143,6 +143,8 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
 }
 
 ```
+
+<!-- This is a commented section of text and markdown.
 
 ## Average Performance {.tabset .tabset-fade .tabset-pills}
 
@@ -264,7 +266,7 @@ DT::formatRound(
 
 </details>
 
-
+     It will not be rendered in the output document. -->
 ## By-Condition Performance {.tabset .tabset-fade .tabset-pills}
 
 ### Conditional on Convergence {.tabset .tabset-fade .tabset-pills}
