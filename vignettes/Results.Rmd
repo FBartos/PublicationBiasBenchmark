@@ -1,9 +1,9 @@
 ---
-title: "Results: No bias"
+title: "Results"
 author: František Bartoš
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Results: No bias}
+  %\VignetteIndexEntry{Results}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,23 +20,35 @@ library(PublicationBiasBenchmark)
 PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
 library(ggplot2)
 library(ggdist)
-dgm_name <- "no_bias"
-# retrieve all measures across all conditions and measures
-download_dgm_measures(dgm_name, path = path)
-df  <- retrieve_dgm_measures(dgm_name, path = path)
-dfr <- retrieve_dgm_measures(dgm_name, replacement = TRUE, path = path)
 
-# retrieve conditions
-conditions <- dgm_conditions(dgm_name)
+dgm_names <- c("Stanley2017", "Carter2019")
+df_list  <- list()
+dfr_list <- list()
+for (dgm_name in dgm_names) {
+  # retrieve all measures across all conditions and measures
+  download_dgm_measures(dgm_name, path = path)
+  df  <- retrieve_dgm_measures(dgm_name, path = path)
+  dfr <- retrieve_dgm_measures(dgm_name, replacement = TRUE, path = path)  
+  
+  # retrieve conditions
+  conditions <- dgm_conditions(dgm_name)
+  
+  # add labels
+  df$label  <- with(df, paste0(method, " (", method_setting, ")"))
+  dfr$label <- with(dfr, paste0(method, " (", method_setting, ")"))
+  method_labels <- unique(df$label)
+  
+  # distinguish between H0 and H1
+  df$H0  <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+  dfr$H0 <- dfr$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+  
+  df_list[[dgm_name]]  <- df
+  dfr_list[[dgm_name]] <- dfr
+}
 
-# add labels
-df$label  <- with(df, paste0(method, " (", method_setting, ")"))
-dfr$label <- with(dfr, paste0(method, " (", method_setting, ")"))
-method_labels <- unique(df$label)
+df  <- do.call(rbind, df_list)
+dfr <- do.call(rbind, dfr_list)
 
-# distinguish between H0 and H1
-df$H0  <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
-dfr$H0 <- dfr$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
 
 # compute average performance
 tb <- do.call(rbind, lapply(method_labels, function(ml) with(df[df$label == ml,],
@@ -145,129 +157,114 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
 
 ```
 
-<!-- This is a commented section of text and markdown.
-
 ## Average Performance {.tabset .tabset-fade .tabset-pills}
 
-### Conditional on Convergence
-
-The results below are conditional on convergence. 
-Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
-
-<details open>
-<summary><strong>Measures</strong></summary>
+### Bias
 
 ```{r echo=FALSE} 
-DT::formatRound(
-  DT::datatable(tb, options = list(
-    pageLength = -1, 
-    responsive = TRUE,
-    deferRender = TRUE,
-    scrollX = TRUE,
-    autoWidth = FALSE,
-    columnDefs = list(list(width = '100px', targets = '_all')),
-    initComplete = DT::JS(
-      "function(settings, json) {",
-      "  setTimeout(function() {",
-      "    $(this.api().table().container()).trigger('resize');",
-      "  }, 100);",
-      "}"
-    )
-  )), 
-  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
-  digits = 3
+tb_bias <- data.frame(
+  Rank_Convergence   = rb$Bias[order(rb$Bias)],
+  Method_Convergence = paste0(rb$Method, "-", rb$Setting)[order(rb$Bias)],
+  Value_Convergence  = tb$Bias[order(rb$Bias)],
+  Rank_Replacement   = rbr$Bias[order(rbr$Bias)],
+  Method_Replacement = paste0(rbr$Method, "-", rbr$Setting)[order(rbr$Bias)],
+  Value_Replacement  = tbr$Bias[order(rbr$Bias)]
 )
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tb_bias, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
 ```
 
-</details>
-
-<details>
-<summary><strong>Ranks</strong></summary>
+### RMSE
 
 ```{r echo=FALSE} 
-DT::formatRound(
-  DT::datatable(rb, options = list(
-    pageLength = -1, 
-    responsive = TRUE,
-    deferRender = TRUE,
-    scrollX = TRUE,
-    autoWidth = FALSE,
-    columnDefs = list(list(width = '100px', targets = '_all')),
-    initComplete = DT::JS(
-      "function(settings, json) {",
-      "  setTimeout(function() {",
-      "    $(this.api().table().container()).trigger('resize');",
-      "  }, 100);",
-      "}"
-    )
-  )), 
-  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
-  digits = 1
+tb_rmse <- data.frame(
+  Rank_Convergence   = rb$RMSE[order(rb$RMSE)],
+  Method_Convergence = paste0(rb$Method, "-", rb$Setting)[order(rb$RMSE)],
+  Value_Convergence  = tb$RMSE[order(rb$RMSE)],
+  Rank_Replacement   = rbr$RMSE[order(rbr$RMSE)],
+  Method_Replacement = paste0(rbr$Method, "-", rbr$Setting)[order(rbr$RMSE)],
+  Value_Replacement  = tbr$RMSE[order(rbr$RMSE)]
 )
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tb_rmse, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
 ```
 
-</details>
-
-### Method Replacement
-
-The results below incorporate method replacement. If method fails to converge, its results is replaced by a simpler method. See TODO for details of the method replacement specification.
-Note that these results combine do not correspond to "pure" method performance as they might combine multiple different methods.
-
-<details open>
-<summary><strong>Measures</strong></summary>
+### CI Coverage
 
 ```{r echo=FALSE} 
-DT::formatRound(
-  DT::datatable(tbr, options = list(
-    pageLength = -1, 
-    responsive = TRUE,
-    deferRender = TRUE,
-    scrollX = TRUE,
-    autoWidth = FALSE,
-    columnDefs = list(list(width = '100px', targets = '_all')),
-    initComplete = DT::JS(
-      "function(settings, json) {",
-      "  setTimeout(function() {",
-      "    $(this.api().table().container()).trigger('resize');",
-      "  }, 100);",
-      "}"
-    )
-  )), 
-  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
-  digits = 3
+tb_coverage <- data.frame(
+  Rank_Convergence   = rb$Coverage[order(rb$Coverage)],
+  Method_Convergence = paste0(rb$Method, "-", rb$Setting)[order(rb$Coverage)],
+  Value_Convergence  = tb$Coverage[order(rb$Coverage)],
+  Rank_Replacement   = rbr$Coverage[order(rbr$Coverage)],
+  Method_Replacement = paste0(rbr$Method, "-", rbr$Setting)[order(rbr$Coverage)],
+  Value_Replacement  = tbr$Coverage[order(rbr$Coverage)]
 )
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tb_coverage, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
 ```
 
-</details>
-
-<details>
-<summary><strong>Ranks</strong></summary>
+### Type I Error
 
 ```{r echo=FALSE} 
-DT::formatRound(
-  DT::datatable(rbr, options = list(
-    pageLength = -1, 
-    responsive = TRUE,
-    deferRender = TRUE,
-    scrollX = TRUE,
-    autoWidth = FALSE,
-    columnDefs = list(list(width = '100px', targets = '_all')),
-    initComplete = DT::JS(
-      "function(settings, json) {",
-      "  setTimeout(function() {",
-      "    $(this.api().table().container()).trigger('resize');",
-      "  }, 100);",
-      "}"
-    )
-  )), 
-  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
-  digits = 1
+tb_error <- data.frame(
+  Rank_Convergence   = rb$Error[order(rb$Error)],
+  Method_Convergence = paste0(rb$Method, "-", rb$Setting)[order(rb$Error)],
+  Value_Convergence  = tb$Error[order(rb$Error)],
+  Rank_Replacement   = rbr$Error[order(rbr$Error)],
+  Method_Replacement = paste0(rbr$Method, "-", rbr$Setting)[order(rbr$Error)],
+  Value_Replacement  = tbr$Error[order(rbr$Error)]
 )
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tb_error, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
 ```
 
-</details>
+### Power
 
-     It will not be rendered in the output document. -->
+```{r echo=FALSE} 
+tb_power <- data.frame(
+  Rank_Convergence   = rb$Power[order(rb$Power)],
+  Method_Convergence = paste0(rb$Method, "-", rb$Setting)[order(rb$Power)],
+  Value_Convergence  = tb$Power[order(rb$Power)],
+  Rank_Replacement   = rbr$Power[order(rbr$Power)],
+  Method_Replacement = paste0(rbr$Method, "-", rbr$Setting)[order(rbr$Power)],
+  Value_Replacement  = tbr$Power[order(rbr$Power)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tb_power, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+
 ## By-Condition Performance {.tabset .tabset-fade .tabset-pills}
 
 ### Conditional on Convergence {.tabset .tabset-fade .tabset-pills}
