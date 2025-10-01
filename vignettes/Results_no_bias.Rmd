@@ -146,12 +146,13 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
 
 ## Average Performance {.tabset .tabset-fade .tabset-pills}
 
-### Conditional on Convergence {.tabset .tabset-fade .tabset-pills}
+### Conditional on Convergence
 
 The results below are conditional on convergence. 
 Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
 
-#### Measures
+<details open>
+<summary><strong>Measures</strong></summary>
 
 ```{r echo=FALSE} 
 DT::formatRound(
@@ -175,7 +176,10 @@ DT::formatRound(
 )
 ```
 
-#### Ranks
+</details>
+
+<details>
+<summary><strong>Ranks</strong></summary>
 
 ```{r echo=FALSE} 
 DT::formatRound(
@@ -199,12 +203,15 @@ DT::formatRound(
 )
 ```
 
-### Method Replacement  {.tabset .tabset-fade .tabset-pills}
+</details>
+
+### Method Replacement
 
 The results below incorporate method replacement. If method fails to converge, its results is replaced by a simpler method. See TODO for details of the method replacement specification.
 Note that these results combine do not correspond to "pure" method performance as they might combine multiple different methods.
 
-#### Measures
+<details open>
+<summary><strong>Measures</strong></summary>
 
 ```{r echo=FALSE} 
 DT::formatRound(
@@ -228,7 +235,10 @@ DT::formatRound(
 )
 ```
 
-#### Ranks
+</details>
+
+<details>
+<summary><strong>Ranks</strong></summary>
 
 ```{r echo=FALSE} 
 DT::formatRound(
@@ -251,6 +261,8 @@ DT::formatRound(
   digits = 1
 )
 ```
+
+</details>
 
 
 ## By-Condition Performance {.tabset .tabset-fade .tabset-pills}
@@ -348,64 +360,52 @@ create_raincloud_plot(dfr[!dfr$H0,], "power", "Power", ylim_range = c(0, 1))
 
 ```{js}
 $(document).ready(function() {
-  // Comprehensive solution for DT in nested tabs
+  // Simple solution for DT in tabs and details elements
   
   // Function to reinitialize DataTables
   function reinitializeDataTables() {
     setTimeout(function() {
-      // Find all DataTables and recalculate
       $('.dataTables_wrapper').each(function() {
         var table = $(this).find('table').DataTable();
         if (table) {
           try {
             table.columns.adjust();
             table.responsive.recalc();
-            $(this).trigger('resize');
           } catch(e) {
-            // Ignore errors for tables that aren't ready
+            // Ignore errors
           }
         }
       });
-    }, 200);
+    }, 150);
   }
   
-  // Handle all possible tab events for Bootstrap 4 and 5
-  $(document).on('shown.bs.tab shown.bs.pill', 'a[data-toggle="tab"], a[data-toggle="pill"], button[data-bs-toggle="tab"], button[data-bs-toggle="pill"]', function (e) {
+  // Handle Bootstrap tab events
+  $(document).on('shown.bs.tab', 'a[data-toggle="tab"], button[data-bs-toggle="tab"]', function (e) {
     reinitializeDataTables();
   });
   
-  // Additional event handlers for more robust detection
-  $(document).on('click', '.nav-tabs a, .nav-pills a, .nav-tabs button, .nav-pills button', function() {
-    setTimeout(reinitializeDataTables, 300);
+  // Handle details toggle events
+  $(document).on('toggle', 'details', function(e) {
+    if (this.open) {
+      reinitializeDataTables();
+    }
   });
   
-  // Observer to watch for tab content becoming visible
-  if (window.MutationObserver) {
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-          var target = $(mutation.target);
-          if (target.hasClass('active') && target.hasClass('tab-pane')) {
-            reinitializeDataTables();
-          }
-        }
-      });
-    });
-    
-    // Observe all tab panes
-    $('.tab-content .tab-pane').each(function() {
-      observer.observe(this, { attributes: true, attributeFilter: ['class'] });
-    });
-  }
+  // Handle clicks on summary elements
+  $(document).on('click', 'summary', function() {
+    setTimeout(reinitializeDataTables, 200);
+  });
   
-  // Initial setup after page load
-  setTimeout(function() {
-    reinitializeDataTables();
-    // Force one more recalculation after everything is settled
-    setTimeout(reinitializeDataTables, 1000);
-  }, 500);
+  // Tab click handlers
+  $(document).on('click', '.nav-tabs a, .nav-pills a', function() {
+    setTimeout(reinitializeDataTables, 250);
+  });
   
-  // Handle window resize events
+  // Initial setup
+  setTimeout(reinitializeDataTables, 500);
+  setTimeout(reinitializeDataTables, 1500); // Extra delay for safety
+  
+  // Window resize
   $(window).on('resize', function() {
     setTimeout(reinitializeDataTables, 100);
   });
