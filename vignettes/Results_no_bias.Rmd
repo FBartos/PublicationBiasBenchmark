@@ -9,9 +9,15 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+# use pre-local results if compiled locally
+if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
+  path <- "C:/R-Packages/PublicationBiasBenchmark/resources"
+} else { 
+  path <- NULL
+}
+
 library(PublicationBiasBenchmark)
 dgm_name <- "no_bias"
-path     <- "C:/R-Packages/PublicationBiasBenchmark/resources"
 # retrieve all measures across all conditions and measures
 download_dgm_measures(dgm_name, path = path)
 df  <- retrieve_dgm_measures(dgm_name, path = path)
@@ -28,26 +34,105 @@ method_labels <- unique(df$label)
 # distinguish between H0 and H1
 df$H0  <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
 dfr$H0 <- dfr$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
-```
 
-```{r echo=FALSE} 
+# compute average performance
 tb <- do.call(rbind, lapply(method_labels, function(ml) with(df[df$label == ml,],
  data.frame(
-    "Method"      = ml,
+    "Method"      = unique(method),
+    "Setting"     = unique(method_setting),
     "Convergence" = mean(convergence),
     "Bias"        = mean(bias),
     "RMSE"        = mean(rmse),
     "Coverage"    = mean(coverage),
-    "Type I."     = mean(power[H0]),
+    "Error"       = mean(power[H0]),
+    "Power"       = mean(power[!H0])
+  ))
+))
+tbr <- do.call(rbind, lapply(method_labels, function(ml) with(dfr[dfr$label == ml,],
+ data.frame(
+    "Method"      = unique(method),
+    "Setting"     = unique(method_setting),
+    "Convergence" = mean(convergence),
+    "Bias"        = mean(bias),
+    "RMSE"        = mean(rmse),
+    "Coverage"    = mean(coverage),
+    "Error"       = mean(power[H0]),
     "Power"       = mean(power[!H0])
   ))
 ))
 
-kableExtra::kable_paper(kableExtra::kbl(tb), "hover", full_width = FALSE)
+# add ranks
+rb  <- tb
+rbr <- tbr
+for (measure in c("RMSE", "Coverage", "Error")) {
+  rb[[measure]]  <- rank(tb[[measure]], ties.method = "min")
+  rbr[[measure]] <- rank(tbr[[measure]], ties.method = "min")
+}
+for (measure in c("Convergence", "Power")) {
+  rb[[measure]]  <- rank(-tb[[measure]], ties.method = "min")
+  rbr[[measure]] <- rank(-tbr[[measure]], ties.method = "min")
+}
+for (measure in c("Bias")) {
+  rb[[measure]]  <- rank(abs(tb[[measure]]), ties.method = "min")
+  rbr[[measure]] <- rank(abs(tbr[[measure]]), ties.method = "min")
+}
 
 ```
 
-## Performance Measures {.tabset .tabset-fade .tabset-pills}
+## Average Performance {.tabset .tabset-fade .tabset-pills}
+
+### Conditional on Convergence {.tabset .tabset-fade .tabset-pills}
+
+The results below are conditional on convergence. 
+Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+
+#### Measures
+
+```{r echo=FALSE} 
+DT::formatRound(
+  DT::datatable(tb, options = list(pageLength = -1)), 
+  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
+  digits = 3
+)
+```
+
+#### Ranks
+
+```{r echo=FALSE} 
+DT::formatRound(
+  DT::datatable(rb, options = list(pageLength = -1)), 
+  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
+  digits = 1
+)
+```
+
+### Method Replacement  {.tabset .tabset-fade .tabset-pills}
+
+The results below incorporate method replacement. If method fails to converge, its results is replaced by a simpler method. See TODO for details of the method replacement specification.
+Note that these results combine do not correspond to "pure" method performance as they might combine multiple different methods.
+
+#### Measures
+
+```{r echo=FALSE} 
+DT::formatRound(
+  DT::datatable(tbr, options = list(pageLength = -1)), 
+  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
+  digits = 3
+)
+```
+
+#### Ranks
+
+```{r echo=FALSE} 
+DT::formatRound(
+  DT::datatable(rbr, options = list(pageLength = -1)), 
+  columns = c("Convergence", "Bias", "RMSE", "Coverage", "Error", "Power"),
+  digits = 1
+)
+```
+
+
+## By-Condition Performance {.tabset .tabset-fade .tabset-pills}
 
 ### Conditional on Convergence {.tabset .tabset-fade .tabset-pills}
 
