@@ -77,15 +77,438 @@ Bartoš</h4>
 
 
 
+
 <ul class="nav nav-pills" id="average-performance" role="tablist">
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias" id="bias-tab" type="button" role="tab" aria-controls="bias" aria-selected="true" class="active nav-link">Bias</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#combined" id="combined-tab" type="button" role="tab" aria-controls="combined" aria-selected="true" class="active nav-link">Combined</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias" id="bias-tab" type="button" role="tab" aria-controls="bias" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse" id="rmse-tab" type="button" role="tab" aria-controls="rmse" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage" id="ci-coverage-tab" type="button" role="tab" aria-controls="ci-coverage" aria-selected="false" class="nav-link">CI Coverage</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error" id="type-i-error-tab" type="button" role="tab" aria-controls="type-i-error" aria-selected="false" class="nav-link">Type I Error</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power" id="power-tab" type="button" role="tab" aria-controls="power" aria-selected="false" class="nav-link">Power</button></li>
 </ul>
 <div class="tab-content">
-<div class="active show fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
+<div class="active show fade tab-pane" id="combined" role="tabpanel" aria-labelledby="combined-tab">
+
+<table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Condition
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Replacement
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+RoBMA-PSMA
+</td>
+<td style="text-align:right;">
+0.304
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+RoBMA-PSMA
+</td>
+<td style="text-align:right;">
+0.307
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+PET-default
+</td>
+<td style="text-align:right;">
+0.354
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+PET-default
+</td>
+<td style="text-align:right;">
+0.354
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+EK-default
+</td>
+<td style="text-align:right;">
+0.357
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+EK-default
+</td>
+<td style="text-align:right;">
+0.357
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+PETPEESE-default
+</td>
+<td style="text-align:right;">
+0.411
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+PETPEESE-default
+</td>
+<td style="text-align:right;">
+0.411
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+PEESE-default
+</td>
+<td style="text-align:right;">
+0.419
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+PEESE-default
+</td>
+<td style="text-align:right;">
+0.419
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+WAAPWLS-default
+</td>
+<td style="text-align:right;">
+0.426
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+WAAPWLS-default
+</td>
+<td style="text-align:right;">
+0.426
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+WLS-default
+</td>
+<td style="text-align:right;">
+0.439
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+WLS-default
+</td>
+<td style="text-align:right;">
+0.439
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+trimfill-default
+</td>
+<td style="text-align:right;">
+0.446
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+trimfill-default
+</td>
+<td style="text-align:right;">
+0.446
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+FMA-default
+</td>
+<td style="text-align:right;">
+0.448
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+FMA-default
+</td>
+<td style="text-align:right;">
+0.448
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+RMA-default
+</td>
+<td style="text-align:right;">
+0.451
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+RMA-default
+</td>
+<td style="text-align:right;">
+0.451
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+mean-default
+</td>
+<td style="text-align:right;">
+0.466
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+mean-default
+</td>
+<td style="text-align:right;">
+0.466
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+puniform-default
+</td>
+<td style="text-align:right;">
+0.490
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+puniform-default
+</td>
+<td style="text-align:right;">
+0.480
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+puniform-star
+</td>
+<td style="text-align:right;">
+25.096
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+puniform-star
+</td>
+<td style="text-align:right;">
+25.096
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+AK-AK1
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+AK-AK1
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+AK-AK2
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+AK-AK2
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+pcurve-default
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+pcurve-default
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+SM-3PSM
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+SM-3PSM
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+SM-4PSM
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+SM-4PSM
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+WILS-default
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+WILS-default
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
@@ -131,7 +554,7 @@ Value
 mean-default
 </td>
 <td style="text-align:right;">
--5.968661
+-5.969
 </td>
 <td style="text-align:right;">
 1
@@ -140,7 +563,7 @@ mean-default
 mean-default
 </td>
 <td style="text-align:right;">
--5.968661
+-5.969
 </td>
 </tr>
 <tr>
@@ -151,7 +574,7 @@ mean-default
 pcurve-default
 </td>
 <td style="text-align:right;">
--6.024102
+-6.024
 </td>
 <td style="text-align:right;">
 2
@@ -160,7 +583,7 @@ pcurve-default
 RMA-default
 </td>
 <td style="text-align:right;">
--6.038435
+-6.038
 </td>
 </tr>
 <tr>
@@ -171,7 +594,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
--6.038435
+-6.038
 </td>
 <td style="text-align:right;">
 3
@@ -180,7 +603,7 @@ RMA-default
 pcurve-default
 </td>
 <td style="text-align:right;">
--6.054197
+-6.054
 </td>
 </tr>
 <tr>
@@ -191,7 +614,7 @@ pcurve-default
 FMA-default
 </td>
 <td style="text-align:right;">
--6.084295
+-6.084
 </td>
 <td style="text-align:right;">
 4
@@ -200,7 +623,7 @@ FMA-default
 FMA-default
 </td>
 <td style="text-align:right;">
--6.084295
+-6.084
 </td>
 </tr>
 <tr>
@@ -211,7 +634,7 @@ FMA-default
 WLS-default
 </td>
 <td style="text-align:right;">
--6.084295
+-6.084
 </td>
 <td style="text-align:right;">
 4
@@ -220,7 +643,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
--6.084295
+-6.084
 </td>
 </tr>
 <tr>
@@ -231,7 +654,7 @@ WLS-default
 trimfill-default
 </td>
 <td style="text-align:right;">
--6.107122
+-6.107
 </td>
 <td style="text-align:right;">
 6
@@ -240,7 +663,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
--6.107049
+-6.107
 </td>
 </tr>
 <tr>
@@ -251,7 +674,7 @@ trimfill-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
--6.114112
+-6.114
 </td>
 <td style="text-align:right;">
 7
@@ -260,7 +683,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
--6.114112
+-6.114
 </td>
 </tr>
 <tr>
@@ -271,7 +694,7 @@ WAAPWLS-default
 PEESE-default
 </td>
 <td style="text-align:right;">
--6.141869
+-6.142
 </td>
 <td style="text-align:right;">
 8
@@ -280,7 +703,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
--6.141869
+-6.142
 </td>
 </tr>
 <tr>
@@ -291,7 +714,7 @@ PEESE-default
 AK-AK1
 </td>
 <td style="text-align:right;">
--6.144619
+-6.145
 </td>
 <td style="text-align:right;">
 9
@@ -300,7 +723,7 @@ AK-AK1
 puniform-default
 </td>
 <td style="text-align:right;">
--6.142022
+-6.142
 </td>
 </tr>
 <tr>
@@ -311,7 +734,7 @@ puniform-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
--6.147872
+-6.148
 </td>
 <td style="text-align:right;">
 10
@@ -320,7 +743,7 @@ PETPEESE-default
 AK-AK1
 </td>
 <td style="text-align:right;">
--6.144262
+-6.144
 </td>
 </tr>
 <tr>
@@ -331,7 +754,7 @@ AK-AK1
 puniform-default
 </td>
 <td style="text-align:right;">
--6.157549
+-6.158
 </td>
 <td style="text-align:right;">
 11
@@ -340,7 +763,7 @@ puniform-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
--6.147872
+-6.148
 </td>
 </tr>
 <tr>
@@ -351,7 +774,7 @@ PETPEESE-default
 EK-default
 </td>
 <td style="text-align:right;">
--6.211830
+-6.212
 </td>
 <td style="text-align:right;">
 12
@@ -360,7 +783,7 @@ EK-default
 AK-AK2
 </td>
 <td style="text-align:right;">
--6.170960
+-6.171
 </td>
 </tr>
 <tr>
@@ -371,7 +794,7 @@ AK-AK2
 PET-default
 </td>
 <td style="text-align:right;">
--6.211909
+-6.212
 </td>
 <td style="text-align:right;">
 13
@@ -380,7 +803,7 @@ PET-default
 EK-default
 </td>
 <td style="text-align:right;">
--6.211830
+-6.212
 </td>
 </tr>
 <tr>
@@ -391,7 +814,7 @@ EK-default
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
--6.242546
+-6.243
 </td>
 <td style="text-align:right;">
 14
@@ -400,7 +823,7 @@ RoBMA-PSMA
 PET-default
 </td>
 <td style="text-align:right;">
--6.211909
+-6.212
 </td>
 </tr>
 <tr>
@@ -411,7 +834,7 @@ PET-default
 SM-3PSM
 </td>
 <td style="text-align:right;">
--6.246415
+-6.246
 </td>
 <td style="text-align:right;">
 15
@@ -420,7 +843,7 @@ SM-3PSM
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
--6.237676
+-6.238
 </td>
 </tr>
 <tr>
@@ -431,7 +854,7 @@ RoBMA-PSMA
 SM-4PSM
 </td>
 <td style="text-align:right;">
--6.324835
+-6.325
 </td>
 <td style="text-align:right;">
 16
@@ -440,7 +863,7 @@ SM-4PSM
 SM-3PSM
 </td>
 <td style="text-align:right;">
--6.239860
+-6.240
 </td>
 </tr>
 <tr>
@@ -451,7 +874,7 @@ SM-3PSM
 WILS-default
 </td>
 <td style="text-align:right;">
--6.367291
+-6.367
 </td>
 <td style="text-align:right;">
 17
@@ -460,7 +883,7 @@ WILS-default
 SM-4PSM
 </td>
 <td style="text-align:right;">
--6.326713
+-6.327
 </td>
 </tr>
 <tr>
@@ -471,7 +894,7 @@ SM-4PSM
 puniform-star
 </td>
 <td style="text-align:right;">
--31.112811
+-31.113
 </td>
 <td style="text-align:right;">
 18
@@ -480,7 +903,7 @@ puniform-star
 WILS-default
 </td>
 <td style="text-align:right;">
--6.367280
+-6.367
 </td>
 </tr>
 <tr>
@@ -500,7 +923,7 @@ NA
 puniform-star
 </td>
 <td style="text-align:right;">
--31.112811
+-31.113
 </td>
 </tr>
 </tbody>
@@ -552,7 +975,7 @@ Value
 PEESE-default
 </td>
 <td style="text-align:right;">
-6.295667
+6.296
 </td>
 <td style="text-align:right;">
 1
@@ -561,7 +984,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-6.295667
+6.296
 </td>
 </tr>
 <tr>
@@ -572,7 +995,7 @@ PEESE-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-6.295713
+6.296
 </td>
 <td style="text-align:right;">
 2
@@ -581,7 +1004,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-6.295713
+6.296
 </td>
 </tr>
 <tr>
@@ -592,7 +1015,7 @@ WAAPWLS-default
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-6.301360
+6.301
 </td>
 <td style="text-align:right;">
 3
@@ -601,7 +1024,7 @@ RoBMA-PSMA
 trimfill-default
 </td>
 <td style="text-align:right;">
-6.302522
+6.303
 </td>
 </tr>
 <tr>
@@ -612,7 +1035,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-6.302453
+6.302
 </td>
 <td style="text-align:right;">
 4
@@ -621,7 +1044,7 @@ trimfill-default
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-6.303814
+6.304
 </td>
 </tr>
 <tr>
@@ -632,7 +1055,7 @@ RoBMA-PSMA
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-6.304359
+6.304
 </td>
 <td style="text-align:right;">
 5
@@ -641,7 +1064,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-6.304359
+6.304
 </td>
 </tr>
 <tr>
@@ -652,7 +1075,7 @@ PETPEESE-default
 FMA-default
 </td>
 <td style="text-align:right;">
-6.310354
+6.310
 </td>
 <td style="text-align:right;">
 6
@@ -661,7 +1084,7 @@ FMA-default
 FMA-default
 </td>
 <td style="text-align:right;">
-6.310354
+6.310
 </td>
 </tr>
 <tr>
@@ -672,7 +1095,7 @@ FMA-default
 WLS-default
 </td>
 <td style="text-align:right;">
-6.310354
+6.310
 </td>
 <td style="text-align:right;">
 6
@@ -681,7 +1104,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-6.310354
+6.310
 </td>
 </tr>
 <tr>
@@ -692,7 +1115,7 @@ WLS-default
 EK-default
 </td>
 <td style="text-align:right;">
-6.324590
+6.325
 </td>
 <td style="text-align:right;">
 8
@@ -701,7 +1124,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-6.324590
+6.325
 </td>
 </tr>
 <tr>
@@ -712,7 +1135,7 @@ EK-default
 PET-default
 </td>
 <td style="text-align:right;">
-6.324655
+6.325
 </td>
 <td style="text-align:right;">
 9
@@ -721,7 +1144,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-6.324655
+6.325
 </td>
 </tr>
 <tr>
@@ -732,7 +1155,7 @@ PET-default
 RMA-default
 </td>
 <td style="text-align:right;">
-6.339559
+6.340
 </td>
 <td style="text-align:right;">
 10
@@ -741,7 +1164,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-6.339559
+6.340
 </td>
 </tr>
 <tr>
@@ -752,7 +1175,7 @@ RMA-default
 mean-default
 </td>
 <td style="text-align:right;">
-6.406146
+6.406
 </td>
 <td style="text-align:right;">
 11
@@ -761,7 +1184,7 @@ mean-default
 AK-AK1
 </td>
 <td style="text-align:right;">
-6.401917
+6.402
 </td>
 </tr>
 <tr>
@@ -772,7 +1195,7 @@ AK-AK1
 AK-AK1
 </td>
 <td style="text-align:right;">
-6.412337
+6.412
 </td>
 <td style="text-align:right;">
 12
@@ -781,7 +1204,7 @@ AK-AK1
 mean-default
 </td>
 <td style="text-align:right;">
-6.406146
+6.406
 </td>
 </tr>
 <tr>
@@ -792,7 +1215,7 @@ mean-default
 SM-3PSM
 </td>
 <td style="text-align:right;">
-6.429933
+6.430
 </td>
 <td style="text-align:right;">
 13
@@ -801,7 +1224,7 @@ SM-3PSM
 AK-AK2
 </td>
 <td style="text-align:right;">
-6.420311
+6.420
 </td>
 </tr>
 <tr>
@@ -812,7 +1235,7 @@ AK-AK2
 WILS-default
 </td>
 <td style="text-align:right;">
-6.437155
+6.437
 </td>
 <td style="text-align:right;">
 14
@@ -821,7 +1244,7 @@ WILS-default
 SM-3PSM
 </td>
 <td style="text-align:right;">
-6.421061
+6.421
 </td>
 </tr>
 <tr>
@@ -832,7 +1255,7 @@ SM-3PSM
 pcurve-default
 </td>
 <td style="text-align:right;">
-6.465721
+6.466
 </td>
 <td style="text-align:right;">
 15
@@ -841,7 +1264,7 @@ pcurve-default
 WILS-default
 </td>
 <td style="text-align:right;">
-6.437149
+6.437
 </td>
 </tr>
 <tr>
@@ -852,7 +1275,7 @@ WILS-default
 SM-4PSM
 </td>
 <td style="text-align:right;">
-6.557343
+6.557
 </td>
 <td style="text-align:right;">
 16
@@ -861,7 +1284,7 @@ SM-4PSM
 pcurve-default
 </td>
 <td style="text-align:right;">
-6.442468
+6.442
 </td>
 </tr>
 <tr>
@@ -872,7 +1295,7 @@ pcurve-default
 puniform-default
 </td>
 <td style="text-align:right;">
-6.734436
+6.734
 </td>
 <td style="text-align:right;">
 17
@@ -881,7 +1304,7 @@ puniform-default
 SM-4PSM
 </td>
 <td style="text-align:right;">
-6.571095
+6.571
 </td>
 </tr>
 <tr>
@@ -892,7 +1315,7 @@ SM-4PSM
 puniform-star
 </td>
 <td style="text-align:right;">
-154.901308
+154.901
 </td>
 <td style="text-align:right;">
 18
@@ -901,7 +1324,7 @@ puniform-star
 puniform-default
 </td>
 <td style="text-align:right;">
-6.667192
+6.667
 </td>
 </tr>
 <tr>
@@ -921,7 +1344,7 @@ NA
 puniform-star
 </td>
 <td style="text-align:right;">
-154.901308
+154.901
 </td>
 </tr>
 </tbody>
@@ -973,7 +1396,7 @@ Value
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.6094020
+0.609
 </td>
 <td style="text-align:right;">
 1
@@ -982,7 +1405,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.6063380
+0.606
 </td>
 </tr>
 <tr>
@@ -993,7 +1416,7 @@ RoBMA-PSMA
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.5795831
+0.580
 </td>
 <td style="text-align:right;">
 2
@@ -1002,7 +1425,7 @@ SM-4PSM
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.5775336
+0.578
 </td>
 </tr>
 <tr>
@@ -1013,7 +1436,7 @@ SM-4PSM
 puniform-star
 </td>
 <td style="text-align:right;">
-0.5631789
+0.563
 </td>
 <td style="text-align:right;">
 3
@@ -1022,7 +1445,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.5631789
+0.563
 </td>
 </tr>
 <tr>
@@ -1033,7 +1456,7 @@ puniform-star
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.5525369
+0.553
 </td>
 <td style="text-align:right;">
 4
@@ -1042,7 +1465,7 @@ SM-3PSM
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.5473336
+0.547
 </td>
 </tr>
 <tr>
@@ -1053,7 +1476,7 @@ SM-3PSM
 AK-AK1
 </td>
 <td style="text-align:right;">
-0.4843809
+0.484
 </td>
 <td style="text-align:right;">
 5
@@ -1062,7 +1485,7 @@ AK-AK1
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.5278513
+0.528
 </td>
 </tr>
 <tr>
@@ -1073,7 +1496,7 @@ AK-AK2
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.4780926
+0.478
 </td>
 <td style="text-align:right;">
 6
@@ -1082,7 +1505,7 @@ WAAPWLS-default
 AK-AK1
 </td>
 <td style="text-align:right;">
-0.4833815
+0.483
 </td>
 </tr>
 <tr>
@@ -1093,7 +1516,7 @@ AK-AK1
 puniform-default
 </td>
 <td style="text-align:right;">
-0.4650950
+0.465
 </td>
 <td style="text-align:right;">
 7
@@ -1102,7 +1525,7 @@ puniform-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.4780926
+0.478
 </td>
 </tr>
 <tr>
@@ -1113,7 +1536,7 @@ WAAPWLS-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.4554315
+0.455
 </td>
 <td style="text-align:right;">
 8
@@ -1122,7 +1545,7 @@ EK-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.4652846
+0.465
 </td>
 </tr>
 <tr>
@@ -1133,7 +1556,7 @@ puniform-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.4405759
+0.441
 </td>
 <td style="text-align:right;">
 9
@@ -1142,7 +1565,7 @@ PET-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.4554315
+0.455
 </td>
 </tr>
 <tr>
@@ -1153,7 +1576,7 @@ EK-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.4168491
+0.417
 </td>
 <td style="text-align:right;">
 10
@@ -1162,7 +1585,7 @@ PETPEESE-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.4405759
+0.441
 </td>
 </tr>
 <tr>
@@ -1173,7 +1596,7 @@ PET-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.4153480
+0.415
 </td>
 <td style="text-align:right;">
 11
@@ -1182,7 +1605,7 @@ trimfill-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.4168491
+0.417
 </td>
 </tr>
 <tr>
@@ -1193,7 +1616,7 @@ PETPEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.3887778
+0.389
 </td>
 <td style="text-align:right;">
 12
@@ -1202,7 +1625,7 @@ PEESE-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.4149833
+0.415
 </td>
 </tr>
 <tr>
@@ -1213,7 +1636,7 @@ trimfill-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.3310213
+0.331
 </td>
 <td style="text-align:right;">
 13
@@ -1222,7 +1645,7 @@ WLS-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.3887778
+0.389
 </td>
 </tr>
 <tr>
@@ -1233,7 +1656,7 @@ PEESE-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.3093566
+0.309
 </td>
 <td style="text-align:right;">
 14
@@ -1242,7 +1665,7 @@ RMA-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.3310213
+0.331
 </td>
 </tr>
 <tr>
@@ -1253,7 +1676,7 @@ WLS-default
 FMA-default
 </td>
 <td style="text-align:right;">
-0.2566426
+0.257
 </td>
 <td style="text-align:right;">
 15
@@ -1262,7 +1685,7 @@ FMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.3093565
+0.309
 </td>
 </tr>
 <tr>
@@ -1273,7 +1696,7 @@ RMA-default
 mean-default
 </td>
 <td style="text-align:right;">
-0.2245389
+0.225
 </td>
 <td style="text-align:right;">
 16
@@ -1282,7 +1705,7 @@ mean-default
 FMA-default
 </td>
 <td style="text-align:right;">
-0.2566426
+0.257
 </td>
 </tr>
 <tr>
@@ -1293,7 +1716,7 @@ FMA-default
 WILS-default
 </td>
 <td style="text-align:right;">
-0.2007062
+0.201
 </td>
 <td style="text-align:right;">
 17
@@ -1302,7 +1725,7 @@ WILS-default
 mean-default
 </td>
 <td style="text-align:right;">
-0.2245389
+0.225
 </td>
 </tr>
 <tr>
@@ -1322,7 +1745,7 @@ NA
 WILS-default
 </td>
 <td style="text-align:right;">
-0.2007239
+0.201
 </td>
 </tr>
 <tr>
@@ -1394,7 +1817,7 @@ Value
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.1638090
+0.164
 </td>
 <td style="text-align:right;">
 1
@@ -1403,7 +1826,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.1706696
+0.171
 </td>
 </tr>
 <tr>
@@ -1414,7 +1837,7 @@ RoBMA-PSMA
 PET-default
 </td>
 <td style="text-align:right;">
-0.3386579
+0.339
 </td>
 <td style="text-align:right;">
 2
@@ -1423,7 +1846,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.3386579
+0.339
 </td>
 </tr>
 <tr>
@@ -1434,7 +1857,7 @@ PET-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.3387632
+0.339
 </td>
 <td style="text-align:right;">
 3
@@ -1443,7 +1866,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.3387632
+0.339
 </td>
 </tr>
 <tr>
@@ -1454,7 +1877,7 @@ EK-default
 puniform-star
 </td>
 <td style="text-align:right;">
-0.3532456
+0.353
 </td>
 <td style="text-align:right;">
 4
@@ -1463,7 +1886,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.3532456
+0.353
 </td>
 </tr>
 <tr>
@@ -1474,7 +1897,7 @@ puniform-star
 puniform-default
 </td>
 <td style="text-align:right;">
-0.4959251
+0.496
 </td>
 <td style="text-align:right;">
 5
@@ -1483,7 +1906,7 @@ puniform-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.4949094
+0.495
 </td>
 </tr>
 <tr>
@@ -1494,7 +1917,7 @@ puniform-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.5361988
+0.536
 </td>
 <td style="text-align:right;">
 6
@@ -1503,7 +1926,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.5361988
+0.536
 </td>
 </tr>
 <tr>
@@ -1514,7 +1937,7 @@ WAAPWLS-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.5516170
+0.552
 </td>
 <td style="text-align:right;">
 7
@@ -1523,7 +1946,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.5516170
+0.552
 </td>
 </tr>
 <tr>
@@ -1534,7 +1957,7 @@ PETPEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.5941520
+0.594
 </td>
 <td style="text-align:right;">
 8
@@ -1543,7 +1966,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.5941520
+0.594
 </td>
 </tr>
 <tr>
@@ -1554,7 +1977,7 @@ PEESE-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.6397416
+0.640
 </td>
 <td style="text-align:right;">
 9
@@ -1563,7 +1986,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.6397690
+0.640
 </td>
 </tr>
 <tr>
@@ -1574,7 +1997,7 @@ trimfill-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.6552690
+0.655
 </td>
 <td style="text-align:right;">
 10
@@ -1583,7 +2006,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.6552690
+0.655
 </td>
 </tr>
 <tr>
@@ -1594,7 +2017,7 @@ WLS-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.6576199
+0.658
 </td>
 <td style="text-align:right;">
 11
@@ -1603,7 +2026,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.6576199
+0.658
 </td>
 </tr>
 <tr>
@@ -1614,7 +2037,7 @@ RMA-default
 mean-default
 </td>
 <td style="text-align:right;">
-0.6850819
+0.685
 </td>
 <td style="text-align:right;">
 12
@@ -1623,7 +2046,7 @@ mean-default
 mean-default
 </td>
 <td style="text-align:right;">
-0.6850819
+0.685
 </td>
 </tr>
 <tr>
@@ -1634,7 +2057,7 @@ mean-default
 FMA-default
 </td>
 <td style="text-align:right;">
-0.7618626
+0.762
 </td>
 <td style="text-align:right;">
 13
@@ -1643,7 +2066,7 @@ FMA-default
 FMA-default
 </td>
 <td style="text-align:right;">
-0.7618626
+0.762
 </td>
 </tr>
 <tr>
@@ -1815,7 +2238,7 @@ Value
 FMA-default
 </td>
 <td style="text-align:right;">
-0.9934485
+0.993
 </td>
 <td style="text-align:right;">
 1
@@ -1824,7 +2247,7 @@ FMA-default
 FMA-default
 </td>
 <td style="text-align:right;">
-0.9934485
+0.993
 </td>
 </tr>
 <tr>
@@ -1835,7 +2258,7 @@ FMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.9869038
+0.987
 </td>
 <td style="text-align:right;">
 2
@@ -1844,7 +2267,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.9869038
+0.987
 </td>
 </tr>
 <tr>
@@ -1855,7 +2278,7 @@ RMA-default
 mean-default
 </td>
 <td style="text-align:right;">
-0.9844322
+0.984
 </td>
 <td style="text-align:right;">
 3
@@ -1864,7 +2287,7 @@ mean-default
 mean-default
 </td>
 <td style="text-align:right;">
-0.9844322
+0.984
 </td>
 </tr>
 <tr>
@@ -1875,7 +2298,7 @@ mean-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.9842615
+0.984
 </td>
 <td style="text-align:right;">
 4
@@ -1884,7 +2307,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.9842615
+0.984
 </td>
 </tr>
 <tr>
@@ -1895,7 +2318,7 @@ WLS-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.9800630
+0.980
 </td>
 <td style="text-align:right;">
 5
@@ -1904,7 +2327,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.9800718
+0.980
 </td>
 </tr>
 <tr>
@@ -1915,7 +2338,7 @@ trimfill-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.9605407
+0.961
 </td>
 <td style="text-align:right;">
 6
@@ -1924,7 +2347,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.9605407
+0.961
 </td>
 </tr>
 <tr>
@@ -1935,7 +2358,7 @@ PEESE-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.9320461
+0.932
 </td>
 <td style="text-align:right;">
 7
@@ -1944,7 +2367,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.9320461
+0.932
 </td>
 </tr>
 <tr>
@@ -1955,7 +2378,7 @@ WAAPWLS-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.9285556
+0.929
 </td>
 <td style="text-align:right;">
 8
@@ -1964,7 +2387,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.9285556
+0.929
 </td>
 </tr>
 <tr>
@@ -1975,7 +2398,7 @@ PETPEESE-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.9123227
+0.912
 </td>
 <td style="text-align:right;">
 9
@@ -1984,7 +2407,7 @@ puniform-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.9126301
+0.913
 </td>
 </tr>
 <tr>
@@ -1995,7 +2418,7 @@ puniform-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.8773767
+0.877
 </td>
 <td style="text-align:right;">
 10
@@ -2004,7 +2427,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.8773767
+0.877
 </td>
 </tr>
 <tr>
@@ -2015,7 +2438,7 @@ EK-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.8772575
+0.877
 </td>
 <td style="text-align:right;">
 11
@@ -2024,7 +2447,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.8772575
+0.877
 </td>
 </tr>
 <tr>
@@ -2035,7 +2458,7 @@ PET-default
 puniform-star
 </td>
 <td style="text-align:right;">
-0.7758997
+0.776
 </td>
 <td style="text-align:right;">
 12
@@ -2044,7 +2467,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.7758997
+0.776
 </td>
 </tr>
 <tr>
@@ -2055,7 +2478,7 @@ puniform-star
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.6858904
+0.686
 </td>
 <td style="text-align:right;">
 13
@@ -2064,7 +2487,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.6898943
+0.690
 </td>
 </tr>
 <tr>
@@ -2216,30 +2639,30 @@ on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-1" role="tabpanel" aria-labelledby="type-i-error-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 </div>
 </div>
@@ -2269,30 +2692,30 @@ combine multiple different methods.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-2" role="tabpanel" aria-labelledby="type-i-error-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
 </div>
 </div>
