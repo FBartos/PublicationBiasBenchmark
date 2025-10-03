@@ -59,7 +59,7 @@ method.RMA <- function(method_name, data, settings) {
   # - only data needs to be added to the call
 
   # Dispatch single vs. multilevel settings
-  if (is.null(study_ids)) {
+  if (is.null(study_ids) || length(unique(study_ids)) == nrow(data)) {
 
     settings$yi  <- effect_sizes
     settings$sei <- standard_errors

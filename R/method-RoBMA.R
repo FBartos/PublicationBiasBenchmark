@@ -121,7 +121,12 @@ method.RoBMA <- function(method_name, data, settings) {
 
     output_scale  <- "none"
   }
-  RoBMA_call$study_ids <- study_ids
+
+  if (is.null(study_ids) || length(unique(study_ids)) == nrow(data)) {
+    RoBMA_call$study_ids <- NULL
+  } else {
+    RoBMA_call$study_ids <- study_ids
+  }
 
   # Call the model
   RoBMA_model    <- do.call(RoBMA::RoBMA, RoBMA_call)

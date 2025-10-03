@@ -60,8 +60,8 @@ method.FMA <- function(method_name, data, settings) {
   # Call the model
   fma_model <- do.call(metafor::rma.uni, settings)
 
-  # Add cluster robust standard errrors for multilevel settings
-  if (is.null(study_ids)) {
+  # Dispatch single vs. multilevel settings
+  if (is.null(study_ids) || length(unique(study_ids)) == nrow(data)) {
 
     fma_est   <- fma_model
 
