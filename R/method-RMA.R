@@ -72,6 +72,16 @@ method.RMA <- function(method_name, data, settings) {
     rma_model <- do.call(metafor::rma.uni, settings)
     rma_est   <- rma_model
 
+    # get tau estimates
+    taus <- try(stats::confint(rma_model))
+    if (inherits(taus, "try-error")) {
+      tau_ci_lower <- NA
+      tau_ci_upper <- NA
+    } else {
+      tau_ci_lower <- taus$random["tau","ci.lb"]
+      tau_ci_upper <- taus$random["tau","ci.ub"]
+    }
+
   } else {
 
     settings$yi  <- effect_sizes
@@ -98,6 +108,16 @@ method.RMA <- function(method_name, data, settings) {
       rma_est <- rma_model
     }
 
+    # skip tau estimation as it often takes 30+ minutes
+    # taus <- try(stats::confint(rma_model, tau2 = 1))
+    # if (inherits(taus, "try-error")) {
+      tau_ci_lower <- NA
+      tau_ci_upper <- NA
+    # } else {
+    #   tau_ci_lower <- taus$random["tau","ci.lb"]
+    #   tau_ci_upper <- taus$random["tau","ci.ub"]
+    # }
+
   }
 
 
@@ -110,14 +130,6 @@ method.RMA <- function(method_name, data, settings) {
 
   tau_estimate <- sqrt(rma_model$tau2)
   tau_p_value  <- rma_model$QEp
-  taus <- try(stats::confint(rma_model))
-  if (inherits(taus, "try-error")) {
-    tau_ci_lower <- NA
-    tau_ci_upper <- NA
-  } else {
-    tau_ci_lower <- taus$random["tau","ci.lb"]
-    tau_ci_upper <- taus$random["tau","ci.ub"]
-  }
 
   convergence <- TRUE
   note        <- NA
