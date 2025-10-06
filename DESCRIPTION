@@ -50,6 +50,7 @@ Suggests:
     kableExtra,
     DT,
     ggplot2,
+    scales,
     ggdist
 RdMacros: Rdpack
 URL: https://github.com/FBartos/PublicationBiasBenchmark, https://fbartos.github.io/PublicationBiasBenchmark/

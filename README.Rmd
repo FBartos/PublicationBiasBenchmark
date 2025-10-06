@@ -136,9 +136,9 @@ boxplot(convergence ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1
 boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.25), data = df, xlab = "RMSE")
 boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.25, 0.25), data = df, xlab = "Bias")
 abline(v = 0, lty = 3)
-boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df, xlab = "CI Coverage")
+boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df, xlab = "95% CI Coverage")
 abline(v = 0.95, lty = 3)
-boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data = df[df$H0,], xlab = "Type I Error")
+boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data = df[df$H0,], xlab = "Type I Error Rate")
 abline(v = 0.05, lty = 3)
 boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df[!df$H0,], xlab = "Power")
 ```

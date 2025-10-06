@@ -20,6 +20,7 @@ library(PublicationBiasBenchmark)
 PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
 library(ggplot2)
 library(ggdist)
+library(scales)
 dgm_name <- "no_bias"
 # retrieve all measures across all conditions and measures
 download_dgm_measures(dgm_name, path = path)
@@ -84,7 +85,7 @@ for (measure in c("Bias")) {
 create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, reference_line = NULL, title_text = NULL) {
   # Generate colors for methods (using a color palette)
   n_methods <- length(unique(data$label))
-  method_colors <- rainbow(n_methods, alpha = 0.7)
+  method_colors <- hcl.colors(n = n_methods, "Batlow", alpha = 0.7)
   names(method_colors) <- unique(data$label)
   
   # Cap values at axis limits if ylim_range is provided
@@ -132,12 +133,13 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
       panel.grid.minor = element_blank(),
       plot.title = element_text(size = 10),
       axis.text.y = element_text(size = 8)
-    ) +
-    coord_flip()
+    )
   
   # Set y-axis limits if provided
   if (!is.null(ylim_range)) {
-    p <- p + ylim(ylim_range)
+    p <- p + coord_flip(ylim = ylim_range)
+  } else {
+    p <- p + coord_flip()
   }
   
   return(p)
@@ -189,7 +191,7 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-### CI Coverage
+### 95% CI Coverage
 
 ```{r echo=FALSE} 
 tb_coverage <- data.frame(
@@ -210,7 +212,7 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-### Type I Error
+### Type I Error Rate
 
 ```{r echo=FALSE} 
 tb_error <- data.frame(
@@ -374,7 +376,8 @@ Note that the methods might differ in convergence rate and are therefore not com
 ### Convergence
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(df, "convergence", "Convergence", ylim_range = c(0, 1))
+create_raincloud_plot(df, "convergence", "Convergence", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
 ```
 
 ### Bias
@@ -393,34 +396,37 @@ create_raincloud_plot(df, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_line
 
 Values larger than 0.5 are visualized as 0.5.
 
-### CI Coverage
+### 95% CI Coverage
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(df, "coverage", "CI Coverage", ylim_range = c(0, 1), reference_line = 0.95)
+create_raincloud_plot(df, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95)  +
+  scale_y_continuous(labels = scales::percent)
 ```
 
-### Type I Error
+### Type I Error Rate
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(df[df$H0,], "power", "Type I Error", ylim_range = c(0, 1), reference_line = 0.05)
+create_raincloud_plot(df[df$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
+  scale_y_continuous(labels = scales::percent)
 ```
 
 ### Power
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(df[!df$H0,], "power", "Power", ylim_range = c(0, 1))
+create_raincloud_plot(df[!df$H0,], "power", "Power", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
 ```
 
 
 ## By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
 
-The results below incorporate method replacement. If method fails to converge, its results is replaced by a simpler method. See TODO for details of the method replacement specification.
-Note that these results combine do not correspond to "pure" method performance as they might combine multiple different methods.
+The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 
 ### Convergence
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(dfr, "convergence", "Convergence", ylim_range = c(0, 1))
+create_raincloud_plot(dfr, "convergence", "Convergence", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
 ```
 
 ### Bias
@@ -439,20 +445,32 @@ create_raincloud_plot(dfr, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_lin
 
 Values larger than 0.5 are visualized as 0.5.
 
-### CI Coverage
+### 95% CI Coverage
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(dfr, "coverage", "CI Coverage", ylim_range = c(0, 1), reference_line = 0.95)
+create_raincloud_plot(dfr, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95) +
+  scale_y_continuous(labels = scales::percent)
 ```
 
-### Type I Error
+### Type I Error Rate
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(dfr[dfr$H0,], "power", "Type I Error", ylim_range = c(0, 1), reference_line = 0.05)
+create_raincloud_plot(dfr[dfr$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
+  scale_y_continuous(labels = scales::percent)
 ```
 
 ### Power
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE} 
-create_raincloud_plot(dfr[!dfr$H0,], "power", "Power", ylim_range = c(0, 1))
+create_raincloud_plot(dfr[!dfr$H0,], "power", "Power", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+## sessionInfo
+
+This report was compiled on `r paste0(format(Sys.time(), "%a %b %d %X %Y"), " (", Sys.timezone(), ")")` using the following computational environment
+
+```{r}
+sessionInfo()
 ```
