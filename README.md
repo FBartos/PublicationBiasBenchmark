@@ -47,7 +47,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ``` r
 library(PublicationBiasBenchmark)
-#> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
+#> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
 #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
 #> 
 #> Attaching package: 'PublicationBiasBenchmark'
@@ -128,17 +128,16 @@ df$label <- with(df, paste0(method, " (", method_setting, ")"))
 df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
 
 par(mfrow = c(3, 2))
-
 par(mar = c(4, 10, 1, 1))
-boxplot(convergence ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df, xlab = "Convergence")
-boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.25), data = df, xlab = "RMSE")
+boxplot(convergence*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(20, 100), data = df, xlab = "Convergence (%)")
+boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.6), data = df, xlab = "RMSE")
 boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.25, 0.25), data = df, xlab = "Bias")
 abline(v = 0, lty = 3)
-boxplot(coverage ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df, xlab = "CI Coverage")
-abline(v = 0.95, lty = 3)
-boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.5), data = df[df$H0,], xlab = "Type I Error")
-abline(v = 0.05, lty = 3)
-boxplot(power ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0.5, 1), data = df[!df$H0,], xlab = "Power")
+boxplot(coverage*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(30, 100), data = df, xlab = "95% CI Coverage (%)")
+abline(v = 95, lty = 3)
+boxplot(power*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 40), data = df[df$H0,], xlab = "Type I Error Rate (%)")
+abline(v = 5, lty = 3)
+boxplot(power*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(10, 100), data = df[!df$H0,], xlab = "Power (%)")
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
