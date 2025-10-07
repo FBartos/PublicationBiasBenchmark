@@ -150,7 +150,7 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   # Keep the same order as in Hong and Reed 2021
   simulationType  <- "Cohens_d"
   effectSize_List <- c(0, 0.50)
-  sigH_List       <- c(0, 0.625, 0.125, 0.25, 0.50)
+  sigH_List       <- c(0, 0.0625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(5,10,20,40,80)
   param1 <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
@@ -167,7 +167,7 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
 
   simulationType  <- "Cohens_d"
   effectSize_List <- c(0, 0.50)
-  sigH_List       <- c(0, 0.625, 0.125, 0.25, 0.50)
+  sigH_List       <- c(0, 0.0625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(100,200,400,800)
   param3          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
