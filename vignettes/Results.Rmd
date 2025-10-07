@@ -15,10 +15,5 @@ dgm_names <- c("Stanley2017", "Carter2019")
 ```{r, child='common/results-main.Rmd'}
 ```
 
-## sessionInfo
-
-This report was compiled on `r paste0(format(Sys.time(), "%a %b %d %X %Y"), " (", Sys.timezone(), ")")` using the following computational environment
-
-```{r}
-sessionInfo()
+```{r, child='common/results-sessionInfo.Rmd'}
 ```

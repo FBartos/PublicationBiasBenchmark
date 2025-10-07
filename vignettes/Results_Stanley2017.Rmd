@@ -1,15 +1,15 @@
 ---
-title: "Results: No bias"
+title: "Results: Stanley 2017"
 author: František Bartoš
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Results: No bias}
+  %\VignetteIndexEntry{Results: Stanley (2017)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
-dgm_names <- "no_bias"
+dgm_names <- "Stanley2017"
 ```
 
 ```{r, child='common/results-main.Rmd'}

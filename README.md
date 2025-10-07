@@ -8,7 +8,7 @@ README
 **PublicationBiasBenchmark** is an R package for benchmarking
 publication bias correction methods through simulation studies. It
 provides:  
-- Predefined data generating models from the literature  
+- Predefined data generating mechanisms from the literature  
 - Functions for running meta-analytic methods on simulated data  
 - Pre-simulated datasets and pre-computed results for reproducible
 benchmarks  
@@ -36,6 +36,26 @@ A BibTeX entry is given by
 }
 ```
 
+An overview of the benchmark results is available as Articles at the
+GitHub Pages:
+
+- [Overall
+  Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html)
+- [Stanley
+  2017](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2019.html)
+- [Carter
+  2019](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
+
+Contributor guidelines for extending the package with data generating
+mechanisms and methods are available at:
+
+- [How to add a new data generating
+  mechanisms](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
+- [How to add a new
+  method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
+
+The rest of this file overviews the main features of the package.
+
 ## Installation
 
 ``` r
@@ -45,18 +65,15 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-``` r
-library(PublicationBiasBenchmark)
-#> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
-#> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
-#> 
-#> Attaching package: 'PublicationBiasBenchmark'
-#> The following object is masked from 'package:stats':
-#> 
-#>     power
-```
+    #> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
+    #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
+    #> 
+    #> Attaching package: 'PublicationBiasBenchmark'
+    #> The following object is masked from 'package:stats':
+    #> 
+    #>     power
 
-### Simulating From Existing Data Generating Models
+### Simulating From Existing Data Generating Mechanisms
 
 ``` r
 
@@ -201,7 +218,7 @@ run_method("RMA", df)
   measures of a given method, condition, and repetition from the
   pre-downloaded OSF repository.
 
-### Available DGM Models
+### Available Data Generating Mechanisms
 
 See `methods("dgm")` for the full list:
 

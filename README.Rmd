@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 # PublicationBiasBenchmark
 
 **PublicationBiasBenchmark** is an R package for benchmarking publication bias correction methods through simulation studies. It provides:  
-- Predefined data generating models from the literature  
+- Predefined data generating mechanisms from the literature  
 - Functions for running meta-analytic methods on simulated data  
 - Pre-simulated datasets and pre-computed results for reproducible benchmarks  
 - Tools for visualizing and comparing method performance
@@ -41,6 +41,20 @@ A BibTeX entry is given by
 }
 ```
 
+An overview of the benchmark results is available as Articles at the GitHub Pages:
+
+ - [Overall Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html)
+ - [Stanley 2017](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2019.html)
+ - [Carter 2019](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
+ 
+ 
+Contributor guidelines for extending the package with data generating mechanisms and methods are available at:
+
+ - [How to add a new data generating mechanisms](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
+ - [How to add a new method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
+
+The rest of this file overviews the main features of the package.
+
 ## Installation
 
 ```{r, eval = FALSE}
@@ -49,11 +63,11 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 ```
 
 ## Usage
-```{r}
+```{r echo=FALSE}
 library(PublicationBiasBenchmark)
 ```
 
-### Simulating From Existing Data Generating Models
+### Simulating From Existing Data Generating Mechanisms
 
 ```r
 
@@ -186,7 +200,7 @@ run_method("RMA", df)
 - `download_dgm_measures()`: Downloads pre-computed performance measures from the OSF repository.
 - `retrieve_dgm_measures()`: Retrieves the pre-computed performance measures of a given method, condition, and repetition from the pre-downloaded OSF repository.
 
-### Available DGM Models
+### Available Data Generating Mechanisms
 
 See `methods("dgm")` for the full list:
 
