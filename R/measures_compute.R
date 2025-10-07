@@ -417,6 +417,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 #' performance measures.
 #'
 #' @param measures Character vector of measures to compute. If NULL, computes all standard measures.
+#' @param verbose Print detailed progress of the calculation.
 #' @inheritParams compute_single_measure
 #' @inheritParams download_dgm_datasets
 #'

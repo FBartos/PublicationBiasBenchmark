@@ -29,6 +29,8 @@ compare_measures(
 
 \item{measures}{Character vector of measures to compute. If NULL, computes all standard measures.}
 
+\item{verbose}{Print detailed progress of the calculation.}
+
 \item{estimate_col}{Character string specifying the column name containing parameter estimates. Default is "estimate"}
 
 \item{true_effect_col}{Character string specifying the column name in conditions data frame containing true effect sizes. Default is "mean_effect"}

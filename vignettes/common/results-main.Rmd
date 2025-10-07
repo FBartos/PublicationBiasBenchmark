@@ -1,0 +1,396 @@
+---
+title: "results-main"
+output: html_document
+---
+
+```{r, include = FALSE}
+# use pre-local results if compiled locally
+if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
+  path <- "C:/R-Packages/PublicationBiasBenchmark/resources"
+} else { 
+  path <- NULL
+}
+
+library(PublicationBiasBenchmark)
+PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
+library(ggplot2)
+library(ggdist)
+library(scales)
+
+results_conditional_list <- list()
+results_replacement_list <- list()
+for (dgm_name in dgm_names) {
+  
+  # retrieve all measures across all conditions and measures
+  download_dgm_measures(dgm_name, path = path)
+  temp_conditional <- retrieve_dgm_measures(dgm_name, path = path)
+  temp_replacement <- retrieve_dgm_measures(dgm_name, replacement = TRUE, path = path)  
+  
+  # retrieve conditions
+  conditions <- dgm_conditions(dgm_name)
+  
+  # add labels
+  temp_conditional$label <- with(temp_conditional, paste0(method, " (", method_setting, ")"))
+  temp_replacement$label <- with(temp_replacement, paste0(method, " (", method_setting, ")"))
+  method_labels <- unique(temp_conditional$label)
+  
+  # distinguish between H0 and H1
+  temp_conditional$H0 <- temp_conditional$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+  temp_replacement$H0 <- temp_replacement$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+  
+  results_conditional_list[[dgm_name]] <- temp_conditional
+  results_replacement_list[[dgm_name]] <- temp_replacement
+}
+
+results_conditional <- do.call(rbind, results_conditional_list)
+results_replacement <- do.call(rbind, results_conditional_list)
+
+
+# compute average performance
+tables_conditional <- do.call(rbind, lapply(method_labels, function(ml) with(results_conditional[results_conditional$label == ml,],
+ data.frame(
+    "Method"      = unique(method),
+    "Setting"     = unique(method_setting),
+    "Convergence" = mean(convergence),
+    "Bias"        = mean(bias),
+    "RMSE"        = mean(rmse),
+    "Coverage"    = mean(coverage),
+    "Error"       = mean(power[H0]),
+    "Power"       = mean(power[!H0])
+  ))
+))
+tables_replacement <- do.call(rbind, lapply(method_labels, function(ml) with(results_replacement[results_replacement$label == ml,],
+ data.frame(
+    "Method"      = unique(method),
+    "Setting"     = unique(method_setting),
+    "Convergence" = mean(convergence),
+    "Bias"        = mean(bias),
+    "RMSE"        = mean(rmse),
+    "Coverage"    = mean(coverage),
+    "Error"       = mean(power[H0]),
+    "Power"       = mean(power[!H0])
+  ))
+))
+
+# add ranks
+rankings_conditional <- tables_conditional
+rankings_replacement <- tables_replacement
+for (measure in c("RMSE", "Error")) {
+  rankings_conditional[[measure]] <- rank(tables_conditional[[measure]], ties.method = "min")
+  rankings_replacement[[measure]] <- rank(tables_replacement[[measure]], ties.method = "min")
+}
+for (measure in c("Convergence", "Coverage", "Power")) {
+  rankings_conditional[[measure]] <- rank(-tables_conditional[[measure]], ties.method = "min")
+  rankings_replacement[[measure]] <- rank(-tables_replacement[[measure]], ties.method = "min")
+}
+for (measure in c("Bias")) {
+  rankings_conditional[[measure]] <- rank(abs(tables_conditional[[measure]]), ties.method = "min")
+  rankings_replacement[[measure]] <- rank(abs(tables_replacement[[measure]]), ties.method = "min")
+}
+tables_conditional[["combined"]] <- rowMeans(tables_conditional[, c("RMSE", "Error", "Bias", "Coverage", "Power")])
+tables_replacement[["combined"]] <- rowMeans(tables_replacement[, c("RMSE", "Error", "Bias", "Coverage", "Power")])
+
+rankings_conditional[["combined"]] <- rank(tables_conditional[["combined"]], ties.method = "min")
+rankings_replacement[["combined"]] <- rank(tables_replacement[["combined"]], ties.method = "min")
+
+# Create raincloud plot function
+create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, reference_line = NULL, title_text = NULL) {
+  # Generate colors for methods (using a color palette)
+  n_methods     <- length(unique(data$label))
+  method_colors <- hcl.colors(n = n_methods, "Batlow", alpha = 0.7)
+  names(method_colors) <- unique(data$label)
+  
+  # Cap values at axis limits if ylim_range is provided
+  if (!is.null(ylim_range)) {
+    data[[y_var]] <- pmax(ylim_range[1], pmin(ylim_range[2], data[[y_var]]))
+  }
+  
+  p <- ggplot(data, aes(x = label, y = .data[[y_var]], fill = label, color = label)) +
+    ggdist::stat_halfeye(
+      adjust = 0.5,
+      width = 0.6,
+      .width = 0,
+      justification = -0.2,
+      point_colour = NA,
+      alpha = 0.7
+    ) +
+    geom_boxplot(
+      width = 0.15,
+      outlier.shape = NA,
+      alpha = 0.7
+    ) +
+    geom_point(
+      position = position_jitter(width = 0.05, height = 0),
+      size = 1,
+      alpha = 0.3
+    ) +
+    scale_fill_manual(values = method_colors) +
+    scale_color_manual(values = method_colors) +
+    labs(
+      x = "",
+      y = y_label,
+      title = title_text
+    )
+  
+  # Add reference line if provided
+  if (!is.null(reference_line)) {
+    p <- p + geom_hline(yintercept = reference_line, linetype = "dashed", alpha = 0.7)
+  }
+  
+  p <- p + 
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(size = 10),
+      axis.text.y = element_text(size = 8)
+    )
+  
+  # Set y-axis limits if provided
+  if (!is.null(ylim_range)) {
+    p <- p + coord_flip(ylim = ylim_range)
+  } else {
+    p <- p + coord_flip()
+  }
+  
+  return(p)
+}
+
+```
+
+## Average Performance {.tabset .tabset-fade .tabset-pills}
+
+### Combined
+
+```{r echo=FALSE}
+tables_conditional_combined <- data.frame(
+  Rank_Convergence   = rankings_conditional$combined[order(rankings_conditional$combined)],
+  Method_Convergence = paste0(rankings_conditional$Method, "-", rankings_conditional$Setting)[order(rankings_conditional$combined)],
+  Value_Convergence  = tables_conditional$combined[order(rankings_conditional$combined)],
+  Rank_Replacement   = rankings_replacement$combined[order(rankings_replacement$combined)],
+  Method_Replacement = paste0(rankings_replacement$Method, "-", rankings_replacement$Setting)[order(rankings_replacement$combined)],
+  Value_Replacement  = tables_replacement$combined[order(rankings_replacement$combined)]
+)
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_combined, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+
+```
+
+
+### Bias
+
+```{r echo=FALSE} 
+tables_conditional_bias <- data.frame(
+  Rank_Convergence   = rankings_conditional$Bias[order(rankings_conditional$Bias)],
+  Method_Convergence = paste0(rankings_conditional$Method, "-", rankings_conditional$Setting)[order(rankings_conditional$Bias)],
+  Value_Convergence  = tables_conditional$Bias[order(rankings_conditional$Bias)],
+  Rank_Replacement   = rankings_replacement$Bias[order(rankings_replacement$Bias)],
+  Method_Replacement = paste0(rankings_replacement$Method, "-", rankings_replacement$Setting)[order(rankings_replacement$Bias)],
+  Value_Replacement  = tables_replacement$Bias[order(rankings_replacement$Bias)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_bias, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### RMSE
+
+```{r echo=FALSE} 
+tables_conditional_rmse <- data.frame(
+  Rank_Convergence   = rankings_conditional$RMSE[order(rankings_conditional$RMSE)],
+  Method_Convergence = paste0(rankings_conditional$Method, "-", rankings_conditional$Setting)[order(rankings_conditional$RMSE)],
+  Value_Convergence  = tables_conditional$RMSE[order(rankings_conditional$RMSE)],
+  Rank_Replacement   = rankings_replacement$RMSE[order(rankings_replacement$RMSE)],
+  Method_Replacement = paste0(rankings_replacement$Method, "-", rankings_replacement$Setting)[order(rankings_replacement$RMSE)],
+  Value_Replacement  = tables_replacement$RMSE[order(rankings_replacement$RMSE)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_rmse, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### 95% CI Coverage
+
+```{r echo=FALSE} 
+tables_conditional_coverage <- data.frame(
+  Rank_Convergence   = rankings_conditional$Coverage[order(rankings_conditional$Coverage)],
+  Method_Convergence = paste0(rankings_conditional$Method, "-", rankings_conditional$Setting)[order(rankings_conditional$Coverage)],
+  Value_Convergence  = tables_conditional$Coverage[order(rankings_conditional$Coverage)],
+  Rank_Replacement   = rankings_replacement$Coverage[order(rankings_replacement$Coverage)],
+  Method_Replacement = paste0(rankings_replacement$Method, "-", rankings_replacement$Setting)[order(rankings_replacement$Coverage)],
+  Value_Replacement  = tables_replacement$Coverage[order(rankings_replacement$Coverage)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_coverage, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### Type I Error Rate
+
+```{r echo=FALSE} 
+tables_conditional_error <- data.frame(
+  Rank_Convergence   = rankings_conditional$Error[order(rankings_conditional$Error)],
+  Method_Convergence = paste0(rankings_conditional$Method, "-", rankings_conditional$Setting)[order(rankings_conditional$Error)],
+  Value_Convergence  = tables_conditional$Error[order(rankings_conditional$Error)],
+  Rank_Replacement   = rankings_replacement$Error[order(rankings_replacement$Error)],
+  Method_Replacement = paste0(rankings_replacement$Method, "-", rankings_replacement$Setting)[order(rankings_replacement$Error)],
+  Value_Replacement  = tables_replacement$Error[order(rankings_replacement$Error)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_error, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### Power
+
+```{r echo=FALSE} 
+tables_conditional_power <- data.frame(
+  Rank_Convergence   = rankings_conditional$Power[order(rankings_conditional$Power)],
+  Method_Convergence = paste0(rankings_conditional$Method, "-", rankings_conditional$Setting)[order(rankings_conditional$Power)],
+  Value_Convergence  = tables_conditional$Power[order(rankings_conditional$Power)],
+  Rank_Replacement   = rankings_replacement$Power[order(rankings_replacement$Power)],
+  Method_Replacement = paste0(rankings_replacement$Method, "-", rankings_replacement$Setting)[order(rankings_replacement$Power)],
+  Value_Replacement  = tables_replacement$Power[order(rankings_replacement$Power)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_power, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+
+## By-Condition Performance (Conditional) {.tabset .tabset-fade .tabset-pills}
+
+The results below are conditional on convergence. 
+Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+
+### Convergence
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_conditional, "convergence", "Convergence", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Bias
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_conditional, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0)
+```
+
+Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively.
+
+### RMSE
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_conditional, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_line = 0)
+```
+
+Values larger than 0.5 are visualized as 0.5.
+
+### 95% CI Coverage
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_conditional, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Type I Error Rate
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_conditional[results_conditional$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Power
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_conditional[!results_conditional$H0,], "power", "Power", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+## By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
+
+The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+
+
+### Convergence
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_replacement, "convergence", "Convergence", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Bias
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_replacement, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0)
+```
+
+Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively.
+
+### RMSE
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_replacement, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_line = 0)
+```
+
+Values larger than 0.5 are visualized as 0.5.
+
+### 95% CI Coverage
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_replacement, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Type I Error Rate
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_replacement[results_replacement$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Power
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE} 
+create_raincloud_plot(results_replacement[!results_replacement$H0,], "power", "Power", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```
+

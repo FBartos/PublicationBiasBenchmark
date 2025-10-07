@@ -36,6 +36,8 @@ compute_measures(
 
 \item{measures}{Character vector of measures to compute. If NULL, computes all standard measures.}
 
+\item{verbose}{Print detailed progress of the calculation.}
+
 \item{power_test_type}{Character vector specifying the test type for power computation:
 "p_value" (default) or "bayes_factor" for each method. If a single value is provided, it is
 repeated for all methods.}

@@ -9,6 +9,7 @@
 #'
 #' @inheritParams download_dgm_datasets
 #' @inheritParams compute_single_measure
+#' @inheritParams compute_measures
 #'
 #' @return Data frame with pairwise comparison scores in long format (method_a, method_b, score)
 #'
