@@ -202,7 +202,9 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
           }
 
           # Update the main results
-          method_results[method_results$condition_id == condition, ] <- condition_results[match(method_results$repetition_id[method_results$condition_id == condition], condition_results$repetition_id), ]
+          method_results[method_results$condition_id == condition, ] <- condition_results[
+            match(method_results$repetition_id[method_results$condition_id == condition], condition_results$repetition_id),
+            colnames(condition_results)[colnames(condition_results) %in% colnames(method_results)]]
         }
       }
     }
