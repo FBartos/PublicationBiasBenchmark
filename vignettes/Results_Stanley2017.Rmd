@@ -8,8 +8,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Complete Results
-
 ```{r, include = FALSE}
 # Local/Remote pathing with nested child paths is extremely buggy. This function makes sure that all paths are properly set
 child_path <- function(x) {
@@ -37,24 +35,32 @@ child_path <- function(x) {
 ```
 
 ```{r, include = FALSE}
-dgm_names <- "Stanley2017"
+dgm_names    <- "Stanley2017"
+common_scale <- FALSE
 ```
 
 ```{r, child = child_path("_results-raincloudplot.Rmd")}
 ```
 ```{r, child = child_path("_results-functions.Rmd")}
 ```
+
+## Complete Results
+
 ```{r, child = child_path("_results-main.Rmd")}
+```
+
+```{r, include = FALSE}
+common_scale <- TRUE
 ```
 
 ## Subset: Standardized Mean Differences 
 
-## Average Performance {.tabset .tabset-fade .tabset-pills}
+### Average Performance {.tabset .tabset-fade .tabset-pills}
 
 ```{r, include = FALSE}
 # compute average performance
-this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],])
-this_tables_replacement <- make_table_summary(results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],])
+this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
+this_tables_replacement <- make_table_summary(results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
 
 # add ranks
 this_rankings_conditional <- make_rank_summary(this_tables_conditional)
@@ -64,7 +70,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 ```
 
 
-## By-Condition Performance (Conditional) {.tabset .tabset-fade .tabset-pills}
+### By-Condition Performance (Conditional) {.tabset .tabset-fade .tabset-pills}
 
 The results below are conditional on convergence. 
 Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
@@ -76,7 +82,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 ```
 
 
-## By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
+### By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
 
 The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 
@@ -89,12 +95,12 @@ The results below incorporate method replacement to handle non-convergence. If a
 
 ## Subset: Log Odd Rations
 
-## Average Performance {.tabset .tabset-fade .tabset-pills}
+### Average Performance {.tabset .tabset-fade .tabset-pills}
 
 ```{r, include = FALSE}
 # compute average performance
-this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],])
-this_tables_replacement <- make_table_summary(results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],])
+this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
+this_tables_replacement <- make_table_summary(results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
 
 # add ranks
 this_rankings_conditional <- make_rank_summary(this_tables_conditional)
@@ -104,7 +110,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 ```
 
 
-## By-Condition Performance (Conditional) {.tabset .tabset-fade .tabset-pills}
+### By-Condition Performance (Conditional) {.tabset .tabset-fade .tabset-pills}
 
 The results below are conditional on convergence. 
 Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
@@ -116,7 +122,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 ```
 
 
-## By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
+### By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
 
 The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 

@@ -14,7 +14,7 @@ if (!exists("dgm_names")) {
 ```
 
 
-### Combined
+#### Combined
 
 ```{r echo=FALSE}
 
@@ -28,7 +28,7 @@ tables_conditional_combined <- data.frame(
 )
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tables_conditional_combined, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             col.names = c("Rank", "Method", "Mean Rank", "Rank", "Method", "Mean Rank"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
@@ -38,7 +38,9 @@ kbl_table
 ```
 
 
-### Bias
+#### Bias
+
+`r if (!common_scale) "Methods are compared using the average of repetition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)."`
 
 ```{r echo=FALSE} 
 tables_conditional_bias <- data.frame(
@@ -52,7 +54,7 @@ tables_conditional_bias <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tables_conditional_bias, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
@@ -60,7 +62,9 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-### RMSE
+#### RMSE
+
+`r if (!common_scale) "Methods are compared using the average of repetition-wise ranks. Direct comparison using the average rmse is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)."`
 
 ```{r echo=FALSE} 
 tables_conditional_rmse <- data.frame(
@@ -82,7 +86,7 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-### 95% CI Coverage
+#### 95% CI Coverage
 
 ```{r echo=FALSE} 
 tables_conditional_coverage <- data.frame(
@@ -104,7 +108,7 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-### Type I Error Rate
+#### Type I Error Rate
 
 ```{r echo=FALSE} 
 tables_conditional_error <- data.frame(
@@ -126,7 +130,7 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-### Power
+#### Power
 
 ```{r echo=FALSE} 
 tables_conditional_power <- data.frame(

@@ -14,20 +14,20 @@ if (!exists("dgm_names")) {
 ```
 
 ```{r, include = FALSE}
-make_table_summary <- function(results) {
+make_table_summary <- function(results, common_scale = TRUE) {
   
-   table_summary <- do.call(rbind, lapply(unique(results$label), function(ml) with(results[results$label == ml,],
-     data.frame(
-        "Method"      = unique(method),
-        "Setting"     = unique(method_setting),
-        "Convergence" = mean(convergence),
-        "Bias"        = mean(bias),
-        "RMSE"        = mean(rmse),
-        "Coverage"    = mean(coverage),
-        "Error"       = mean(power[H0]),
-        "Power"       = mean(power[!H0])
-      ))
-  ))
+  table_summary <- do.call(rbind, lapply(unique(results$label), function(ml) with(results[results$label == ml,],
+    data.frame(
+      "Method"      = unique(method),
+      "Setting"     = unique(method_setting),
+      "Convergence" = mean(convergence),
+      "Bias"        = if (common_scale) mean(bias) else mean(bias_rank),
+      "RMSE"        = if (common_scale) mean(rmse) else mean(rmse_rank),
+      "Coverage"    = mean(coverage),
+      "Error"       = mean(power[H0]),
+      "Power"       = mean(power[!H0])
+    ))
+  ))  
   
   table_summary[["combined"]] <- rowMeans(table_summary[, c("RMSE", "Error", "Bias", "Coverage", "Power")])
   return(table_summary)
@@ -37,16 +37,16 @@ make_rank_summary  <- function(table_summary) {
   rank_summary <- table_summary
 
   for (measure in c("RMSE", "Error")) {
-    rank_summary[[measure]] <- rank(table_summary[[measure]], ties.method = "min")
+    rank_summary[[measure]]  <- rank(table_summary[[measure]], ties.method = "min")
   }
   for (measure in c("Convergence", "Coverage", "Power")) {
-    rank_summary[[measure]] <- rank(-table_summary[[measure]], ties.method = "min")
+    rank_summary[[measure]]  <- rank(-table_summary[[measure]], ties.method = "min")
   }
   for (measure in c("Bias")) {
-    rank_summary[[measure]] <- rank(abs(table_summary[[measure]]), ties.method = "min")
+    rank_summary[[measure]]  <- rank(abs(table_summary[[measure]]), ties.method = "min")
   }
 
-  rank_summary[["combined"]]  <- rank(table_summary[["combined"]], ties.method = "min")
+  rank_summary[["combined"]] <- rank(table_summary[["combined"]], ties.method = "min")
 
   return(rank_summary)
 }

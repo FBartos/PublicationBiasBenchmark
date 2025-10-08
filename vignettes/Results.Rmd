@@ -35,13 +35,17 @@ child_path <- function(x) {
 ```
 
 ```{r, include = FALSE}
-dgm_names <- c("Stanley2017", "Carter2019")
+dgm_names    <- c("Stanley2017", "Carter2019")
+common_scale <- FALSE
 ```
 
 ```{r, child = child_path("_results-raincloudplot.Rmd")}
 ```
 ```{r, child = child_path("_results-functions.Rmd")}
 ```
+
+## Complete Results
+
 ```{r, child = child_path("_results-main.Rmd")}
 ```
 

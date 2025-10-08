@@ -1,3 +1,24 @@
 url: https://fbartos.github.io/PublicationBiasBenchmark/
 template:
   bootstrap: 5
+
+navbar:
+  structure:
+    left: [intro, reference, results, tutorials, news]
+  components:
+    results:
+      text: Results
+      menu:
+      - text: Overall
+        href: articles/Results.html
+      - text: Stanley2017
+        href: articles/Results_Stanley2017.html
+      - text: Carter2019
+        href: articles/Results_Carter2019.html
+    tutorials:
+      text: Extending the Benchmark
+      menu:
+      - text: Adding New DGMs
+        href: articles/Adding_New_DGMs.html
+      - text: Adding New Methods
+        href: articles/Adding_New_Methods.html

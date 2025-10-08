@@ -35,13 +35,17 @@ child_path <- function(x) {
 ```
 
 ```{r, include = FALSE}
-dgm_names <- "no_bias"
+dgm_names    <- "no_bias"
+common_scale <- TRUE
 ```
 
 ```{r, child = child_path("_results-raincloudplot.Rmd")}
 ```
 ```{r, child = child_path("_results-functions.Rmd")}
 ```
+
+## Complete Results
+
 ```{r, child = child_path("_results-main.Rmd")}
 ```
 
