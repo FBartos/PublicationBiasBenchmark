@@ -4,11 +4,6 @@ output: html_document
 ---
 
 ```{r, include = FALSE}
-
-
-```
-
-```{r, include = FALSE}
 # This is a child document meant to be included in other Rmd files
 # Exit if being knit directly (not as a child)
 if (!exists("dgm_names")) {

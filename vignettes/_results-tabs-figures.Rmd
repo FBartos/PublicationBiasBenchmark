@@ -24,18 +24,18 @@ create_raincloud_plot(this_results, "convergence", "Convergence", ylim_range = c
 #### Bias
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods"} 
-create_raincloud_plot(this_results, "bias", "Bias", ylim_range = if (common_scale) c(-0.5, 0.5), reference_line = if (common_scale) 0)
+create_raincloud_plot(this_results, if (common_scale) "bias" else "bias_rank", if (common_scale) "Bias" else "Rank(Bias)" , ylim_range = if (common_scale) c(-0.5, 0.5), reference_line = if (common_scale) 0)
 ```
 
-`r if (!common_scale) "Methods are compared using the average of repetition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
+`r if (!common_scale) "Methods are compared using repetition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
 
 #### RMSE
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods"} 
-create_raincloud_plot(this_results, "rmse", "RMSE", ylim_range = if (common_scale) c(0, 0.5), reference_line = if (common_scale) 0)
+create_raincloud_plot(this_results, if (common_scale) "rmse" else "rmse_rank",  if (common_scale) "RMSE" else "Rank(RMSE)", ylim_range = if (common_scale) c(0, 0.5), reference_line = if (common_scale) 0)
 ```
 
-`r if (!common_scale) "Methods are compared using the average of repetition-wise ranks. Direct comparison using the average rmse is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)." else "Values larger than 0.5 are visualized as 0.5."`
+`r if (!common_scale) "Methods are compared using repetition-wise ranks. Direct comparison using the average rmse is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)." else "Values larger than 0.5 are visualized as 0.5."`
 
 #### 95% CI Coverage
 

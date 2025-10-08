@@ -36,7 +36,7 @@ child_path <- function(x) {
 
 ```{r, include = FALSE}
 dgm_names    <- "no_bias"
-common_scale <- TRUE
+common_scale <- FALSE
 ```
 
 ```{r, child = child_path("_results-raincloudplot.Rmd")}
