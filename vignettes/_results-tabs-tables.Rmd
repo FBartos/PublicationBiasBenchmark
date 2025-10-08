@@ -1,0 +1,149 @@
+---
+title: "results-tabs"
+output: html_document
+---
+
+```{r, include = FALSE}
+# This is a child document meant to be included in other Rmd files
+# Exit if being knit directly (not as a child)
+if (!exists("dgm_names")) {
+  message("This is a helper file that should be included as a child in other Rmd documents.")
+  message("It requires 'dgm_names' to be defined in the parent document.")
+  knitr::knit_exit()
+}
+```
+
+
+### Combined
+
+```{r echo=FALSE}
+
+tables_conditional_combined <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$combined[order(this_rankings_conditional$combined)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$combined)],
+  Value_Convergence  = this_tables_conditional$combined[order(this_rankings_conditional$combined)],
+  Rank_Replacement   = this_rankings_replacement$combined[order(this_rankings_replacement$combined)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$combined)],
+  Value_Replacement  = this_tables_replacement$combined[order(this_rankings_replacement$combined)]
+)
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_combined, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+
+```
+
+
+### Bias
+
+```{r echo=FALSE} 
+tables_conditional_bias <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Bias[order(this_rankings_conditional$Bias)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Bias)],
+  Value_Convergence  = this_tables_conditional$Bias[order(this_rankings_conditional$Bias)],
+  Rank_Replacement   = this_rankings_replacement$Bias[order(this_rankings_replacement$Bias)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Bias)],
+  Value_Replacement  = this_tables_replacement$Bias[order(this_rankings_replacement$Bias)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_bias, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### RMSE
+
+```{r echo=FALSE} 
+tables_conditional_rmse <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$RMSE[order(this_rankings_conditional$RMSE)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$RMSE)],
+  Value_Convergence  = this_tables_conditional$RMSE[order(this_rankings_conditional$RMSE)],
+  Rank_Replacement   = this_rankings_replacement$RMSE[order(this_rankings_replacement$RMSE)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$RMSE)],
+  Value_Replacement  = this_tables_replacement$RMSE[order(this_rankings_replacement$RMSE)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_rmse, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### 95% CI Coverage
+
+```{r echo=FALSE} 
+tables_conditional_coverage <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Coverage[order(this_rankings_conditional$Coverage)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Coverage)],
+  Value_Convergence  = this_tables_conditional$Coverage[order(this_rankings_conditional$Coverage)],
+  Rank_Replacement   = this_rankings_replacement$Coverage[order(this_rankings_replacement$Coverage)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Coverage)],
+  Value_Replacement  = this_tables_replacement$Coverage[order(this_rankings_replacement$Coverage)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_coverage, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### Type I Error Rate
+
+```{r echo=FALSE} 
+tables_conditional_error <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Error[order(this_rankings_conditional$Error)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Error)],
+  Value_Convergence  = this_tables_conditional$Error[order(this_rankings_conditional$Error)],
+  Rank_Replacement   = this_rankings_replacement$Error[order(this_rankings_replacement$Error)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Error)],
+  Value_Replacement  = this_tables_replacement$Error[order(this_rankings_replacement$Error)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_error, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+### Power
+
+```{r echo=FALSE} 
+tables_conditional_power <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Power[order(this_rankings_conditional$Power)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Power)],
+  Value_Convergence  = this_tables_conditional$Power[order(this_rankings_conditional$Power)],
+  Rank_Replacement   = this_rankings_replacement$Power[order(this_rankings_replacement$Power)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Power)],
+  Value_Replacement  = this_tables_replacement$Power[order(this_rankings_replacement$Power)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_power, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```

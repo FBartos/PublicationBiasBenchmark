@@ -6,10 +6,6 @@ vignette: >
   %\VignetteIndexEntry{Results: All}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-resource_files:
-  - _results-main.Rmd
-  - _results-tabs.Rmd
-  - _results-sessionInfo.Rmd
 ---
 
 ```{r, include=FALSE}
@@ -42,8 +38,12 @@ child_path <- function(x) {
 dgm_names <- c("Stanley2017", "Carter2019")
 ```
 
+```{r, child = child_path("_results-raincloudplot.Rmd")}
+```
+```{r, child = child_path("_results-functions.Rmd")}
+```
 ```{r, child = child_path("_results-main.Rmd")}
 ```
 
-```{r, child = child_path("_results-tabs.Rmd")}
+```{r, child = child_path("_results-sessionInfo.Rmd")}
 ```
