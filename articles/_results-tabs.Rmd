@@ -1,0 +1,59 @@
+---
+title: "results-tabs"
+output: html_document
+---
+
+```{r, include = FALSE}
+# This is a child document meant to be included in other Rmd files
+# Exit if being knit directly (not as a child)
+if (!exists("dgm_names")) {
+  message("This is a helper file that should be included as a child in other Rmd documents.")
+  message("It requires 'dgm_names' to be defined in the parent document.")
+  knitr::knit_exit()
+}
+```
+
+
+### Convergence
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing convergence rates across different methods"} 
+create_raincloud_plot(this_results, "convergence", "Convergence", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Bias
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods"} 
+create_raincloud_plot(this_results, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0)
+```
+
+Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively.
+
+### RMSE
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods"} 
+create_raincloud_plot(this_results, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_line = 0)
+```
+
+Values larger than 0.5 are visualized as 0.5.
+
+### 95% CI Coverage
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval coverage across different methods"} 
+create_raincloud_plot(this_results, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Type I Error Rate
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing Type I Error rates across different methods"} 
+create_raincloud_plot(this_results[this_results$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+### Power
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing statistical power across different methods"} 
+create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_range = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent)
+```

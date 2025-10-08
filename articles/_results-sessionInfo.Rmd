@@ -1,0 +1,22 @@
+---
+title: "results-sessionInfo"
+output: html_document
+---
+
+```{r, include = FALSE}
+# This is a child document meant to be included in other Rmd files
+# Exit if being knit directly (not as a child)
+if (!exists("dgm_names")) {
+  message("This is a helper file that should be included as a child in other Rmd documents.")
+  knitr::knit_exit()
+}
+```
+
+## Session Info
+
+This report was compiled on `r paste0(format(Sys.time(), "%a %b %d %X %Y"), " (", Sys.timezone(), ")")` using the following computational environment
+
+```{r}
+sessionInfo()
+```
+
