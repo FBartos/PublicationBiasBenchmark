@@ -29,7 +29,6 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-results" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Results</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-results">
@@ -45,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -520,10 +520,10 @@ NA
 </div>
 <div class="fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
-<p>Methods are compared using the average of repetition-wise ranks.
-Direct comparison using the average bias is not possible because the
-data generating mechanisms differ in the outcome scale. See a
-DGM-specific results (or subresults).</p>
+<p>Methods are compared using repetition-wise ranks. Direct comparison
+using the average bias is not possible because the data generating
+mechanisms differ in the outcome scale. See a DGM-specific results (or
+subresults).</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -945,10 +945,10 @@ mean-default
 </div>
 <div class="fade tab-pane" id="rmse" role="tabpanel" aria-labelledby="rmse-tab">
 
-<p>Methods are compared using the average of repetition-wise ranks.
-Direct comparison using the average rmse is not possible because the
-data generating mechanisms differ in the outcome scale. See a
-DGM-specific results (or subresults).</p>
+<p>Methods are compared using repetition-wise ranks. Direct comparison
+using the average rmse is not possible because the data generating
+mechanisms differ in the outcome scale. See a DGM-specific results (or
+subresults).</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -971,7 +971,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Value
+Mean Rank
 </th>
 <th style="text-align:right;">
 Rank
@@ -980,7 +980,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Value
+Mean Rank
 </th>
 </tr>
 </thead>
@@ -2657,35 +2657,35 @@ on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-50-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-53-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
-<p>Methods are compared using the average of repetition-wise ranks.
-Direct comparison using the average bias is not possible because the
-data generating mechanisms differ in the outcome scale. See a
-DGM-specific results (or subresults).</p>
+<p><img src="Results_files/figure-html/unnamed-chunk-51-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p>Methods are compared using repetition-wise ranks. Direct comparison
+using the average bias is not possible because the data generating
+mechanisms differ in the outcome scale. See a DGM-specific results (or
+subresults).</p>
 </div>
 <div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-54-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
-<p>Methods are compared using the average of repetition-wise ranks.
-Direct comparison using the average rmse is not possible because the
-data generating mechanisms differ in the outcome scale. See a
-DGM-specific results (or subresults).</p>
+<p><img src="Results_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p>Methods are compared using repetition-wise ranks. Direct comparison
+using the average rmse is not possible because the data generating
+mechanisms differ in the outcome scale. See a DGM-specific results (or
+subresults).</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-55-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-53-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-1" role="tabpanel" aria-labelledby="type-i-error-rate-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-56-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-54-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-57-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-55-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
 </div>
 </div>
@@ -2717,35 +2717,35 @@ the method replacement specification.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-67-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-65-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-68-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
-<p>Methods are compared using the average of repetition-wise ranks.
-Direct comparison using the average bias is not possible because the
-data generating mechanisms differ in the outcome scale. See a
-DGM-specific results (or subresults).</p>
+<p><img src="Results_files/figure-html/unnamed-chunk-66-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p>Methods are compared using repetition-wise ranks. Direct comparison
+using the average bias is not possible because the data generating
+mechanisms differ in the outcome scale. See a DGM-specific results (or
+subresults).</p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-69-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
-<p>Methods are compared using the average of repetition-wise ranks.
-Direct comparison using the average rmse is not possible because the
-data generating mechanisms differ in the outcome scale. See a
-DGM-specific results (or subresults).</p>
+<p><img src="Results_files/figure-html/unnamed-chunk-67-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p>Methods are compared using repetition-wise ranks. Direct comparison
+using the average rmse is not possible because the data generating
+mechanisms differ in the outcome scale. See a DGM-specific results (or
+subresults).</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-70-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-68-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-2" role="tabpanel" aria-labelledby="type-i-error-rate-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-71-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-69-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
 
-<p><img src="Results_files/figure-html/unnamed-chunk-72-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_files/figure-html/unnamed-chunk-70-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
 </div>
 </div>
@@ -2753,7 +2753,7 @@ DGM-specific results (or subresults).</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Wed Oct 08 14:31:12 2025 (UTC) using the
+<p>This report was compiled on Wed Oct 08 15:01:34 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
