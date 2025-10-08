@@ -31,14 +31,18 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New Data Generating Mechanisms</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-results" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Results</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-results">
+<li><a class="dropdown-item" href="../articles/Results.html">Overall</a></li>
+    <li><a class="dropdown-item" href="../articles/Results_Stanley2017.html">Stanley2017</a></li>
+    <li><a class="dropdown-item" href="../articles/Results_Carter2019.html">Carter2019</a></li>
+  </ul>
+</li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-extending-the-benchmark" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Extending the Benchmark</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-extending-the-benchmark">
+<li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New DGMs</a></li>
     <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
-    <li><a class="dropdown-item" href="../articles/Results_Carter2019.html">Results: Carter 2019</a></li>
-    <li><a class="dropdown-item" href="../articles/Results_no_bias.html">Results: No bias</a></li>
-    <li><a class="dropdown-item" href="../articles/Results_Stanley2017.html">Results: Stanley 2017</a></li>
-    <li><a class="dropdown-item" href="../articles/Results.html">Results: All</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -72,9 +76,12 @@ Bartoš</h4>
 
     
     
-<div class="section level2 tabset tabset-fade tabset-pills">
-<h2 class="tabset tabset-fade tabset-pills" id="average-performance">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance"></a>
+<div class="section level2">
+<h2 id="complete-results">Complete Results<a class="anchor" aria-label="anchor" href="#complete-results"></a>
 </h2>
+<div class="section level3 tabset tabset-fade tabset-pills">
+<h3 class="tabset tabset-fade tabset-pills" id="average-performance">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance"></a>
+</h3>
 
 
 
@@ -114,7 +121,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Value
+Mean Rank
 </th>
 <th style="text-align:right;">
 Rank
@@ -123,7 +130,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Value
+Mean Rank
 </th>
 </tr>
 </thead>
@@ -2618,10 +2625,10 @@ NA
 </div>
 </div>
 </div>
-<div class="section level2 tabset tabset-fade tabset-pills">
-<h2 class="tabset tabset-fade tabset-pills" id="by-condition-performance-conditional">By-Condition Performance
+<div class="section level3 tabset tabset-fade tabset-pills">
+<h3 class="tabset tabset-fade tabset-pills" id="by-condition-performance-conditional">By-Condition Performance
 (Conditional)<a class="anchor" aria-label="anchor" href="#by-condition-performance-conditional"></a>
-</h2>
+</h3>
 <p>The results below are conditional on convergence. Note that the
 methods might differ in convergence rate and are therefore not compared
 on the same data sets.</p>
@@ -2642,37 +2649,37 @@ on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-51-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-53-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-53-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-54-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-54-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-55-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-1" role="tabpanel" aria-labelledby="type-i-error-rate-1-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-55-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-56-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-56-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-57-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
 </div>
 </div>
-<div class="section level2 tabset tabset-fade tabset-pills">
-<h2 class="tabset tabset-fade tabset-pills" id="by-condition-performance-replacement">By-Condition Performance
+<div class="section level3 tabset tabset-fade tabset-pills">
+<h3 class="tabset tabset-fade tabset-pills" id="by-condition-performance-replacement">By-Condition Performance
 (Replacement)<a class="anchor" aria-label="anchor" href="#by-condition-performance-replacement"></a>
-</h2>
+</h3>
 <p>The results below incorporate method replacement to handle
 non-convergence. If a method fails to converge, its results are replaced
 with the results from a simpler method This emulates what a data analyst
@@ -2697,37 +2704,38 @@ the method replacement specification.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-66-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-67-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-67-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-68-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-68-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-69-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-69-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-70-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-2" role="tabpanel" aria-labelledby="type-i-error-rate-2-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-70-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-71-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
 
-<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-71-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Carter2019_files/figure-html/unnamed-chunk-72-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+</div>
 </div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Wed Oct 08 12:53:52 2025 (UTC) using the
+<p>This report was compiled on Wed Oct 08 14:27:31 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
