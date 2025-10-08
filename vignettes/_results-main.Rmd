@@ -4,6 +4,32 @@ output: html_document
 ---
 
 ```{r, include = FALSE}
+# Local/Remote pathing with nested child paths is extremely buggy. This function makes sure that all paths are properly set
+child_path <- function(x) {
+  # Try to get the package name safely
+  pkg <- tryCatch(utils::packageName(), error = function(e) NULL)
+  if (is.null(pkg) || length(pkg) != 1 || is.na(pkg) || !nzchar(pkg)) {
+    pkg <- tryCatch(desc::desc_get("Package")[[1]], error = function(e) NA_character_)
+  }
+  if (is.null(pkg) || is.na(pkg) || !nzchar(pkg)) {
+    pkg <- basename(rprojroot::find_package_root_file())
+  }
+
+  # First try the installed vignettes dir (works when pkgdown builds from an installed copy)
+  p <- tryCatch(system.file("vignettes", x, package = pkg), error = function(e) "")
+  if (!is.character(p) || length(p) != 1 || !nzchar(p)) p <- ""
+
+  # Fallback to the source tree
+  if (!nzchar(p)) {
+    p <- file.path(rprojroot::find_package_root_file(), "vignettes", x)
+  }
+
+  normalizePath(p, winslash = "/", mustWork = TRUE)
+}
+
+```
+
+```{r, include = FALSE}
 # This is a child document meant to be included in other Rmd files
 # Exit if being knit directly (not as a child)
 if (!exists("dgm_names")) {
@@ -11,7 +37,10 @@ if (!exists("dgm_names")) {
   message("It requires 'dgm_names' to be defined in the parent document.")
   knitr::knit_exit()
 }
+```
 
+  
+```{r, include = FALSE}
 # use pre-local results if compiled locally
 if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
   path <- "C:/R-Packages/PublicationBiasBenchmark/resources"
@@ -51,7 +80,7 @@ for (dgm_name in dgm_names) {
 }
 
 results_conditional <- do.call(rbind, results_conditional_list)
-results_replacement <- do.call(rbind, results_conditional_list)
+results_replacement <- do.call(rbind, results_replacement_list)
 
 
 # compute average performance
@@ -308,48 +337,10 @@ kbl_table
 The results below are conditional on convergence. 
 Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
 
-### Convergence
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing convergence rates across different methods"} 
-create_raincloud_plot(results_conditional, "convergence", "Convergence", ylim_range = c(0, 1)) +
-  scale_y_continuous(labels = scales::percent)
+```{r, include = FALSE}
+  this_results <- results_conditional
 ```
-
-### Bias
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods"} 
-create_raincloud_plot(results_conditional, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0)
-```
-
-Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively.
-
-### RMSE
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods"} 
-create_raincloud_plot(results_conditional, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_line = 0)
-```
-
-Values larger than 0.5 are visualized as 0.5.
-
-### 95% CI Coverage
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval coverage across different methods"} 
-create_raincloud_plot(results_conditional, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95) +
-  scale_y_continuous(labels = scales::percent)
-```
-
-### Type I Error Rate
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing Type I Error rates across different methods"} 
-create_raincloud_plot(results_conditional[results_conditional$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
-  scale_y_continuous(labels = scales::percent)
-```
-
-### Power
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing statistical power across different methods"} 
-create_raincloud_plot(results_conditional[!results_conditional$H0,], "power", "Power", ylim_range = c(0, 1)) +
-  scale_y_continuous(labels = scales::percent)
+```{r, child = child_path("_results-tabs.Rmd")}
 ```
 
 
@@ -357,48 +348,8 @@ create_raincloud_plot(results_conditional[!results_conditional$H0,], "power", "P
 
 The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 
-
-### Convergence
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing convergence rates across different methods with replacement"} 
-create_raincloud_plot(results_replacement, "convergence", "Convergence", ylim_range = c(0, 1)) +
-  scale_y_continuous(labels = scales::percent)
+```{r, include = FALSE}
+  this_results <- results_replacement
 ```
-
-### Bias
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods with replacement"} 
-create_raincloud_plot(results_replacement, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0)
+```{r, child = child_path("_results-tabs.Rmd")}
 ```
-
-Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively.
-
-### RMSE
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing RMSE across different methods with replacement"} 
-create_raincloud_plot(results_replacement, "rmse", "RMSE", ylim_range = c(0, 0.5), reference_line = 0)
-```
-
-Values larger than 0.5 are visualized as 0.5.
-
-### 95% CI Coverage
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval coverage across different methods with replacement"} 
-create_raincloud_plot(results_replacement, "coverage", "95% CI Coverage", ylim_range = c(0, 1), reference_line = 0.95) +
-  scale_y_continuous(labels = scales::percent)
-```
-
-### Type I Error Rate
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing Type I Error rates across different methods with replacement"} 
-create_raincloud_plot(results_replacement[results_replacement$H0,], "power", "Type I Error Rate", ylim_range = c(0, 1), reference_line = 0.05) +
-  scale_y_continuous(labels = scales::percent)
-```
-
-### Power
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing statistical power across different methods with replacement"} 
-create_raincloud_plot(results_replacement[!results_replacement$H0,], "power", "Power", ylim_range = c(0, 1)) +
-  scale_y_continuous(labels = scales::percent)
-```
-

@@ -9,11 +9,37 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+# Local/Remote pathing with nested child paths is extremely buggy. This function makes sure that all paths are properly set
+child_path <- function(x) {
+  # Try to get the package name safely
+  pkg <- tryCatch(utils::packageName(), error = function(e) NULL)
+  if (is.null(pkg) || length(pkg) != 1 || is.na(pkg) || !nzchar(pkg)) {
+    pkg <- tryCatch(desc::desc_get("Package")[[1]], error = function(e) NA_character_)
+  }
+  if (is.null(pkg) || is.na(pkg) || !nzchar(pkg)) {
+    pkg <- basename(rprojroot::find_package_root_file())
+  }
+
+  # First try the installed vignettes dir (works when pkgdown builds from an installed copy)
+  p <- tryCatch(system.file("vignettes", x, package = pkg), error = function(e) "")
+  if (!is.character(p) || length(p) != 1 || !nzchar(p)) p <- ""
+
+  # Fallback to the source tree
+  if (!nzchar(p)) {
+    p <- file.path(rprojroot::find_package_root_file(), "vignettes", x)
+  }
+
+  normalizePath(p, winslash = "/", mustWork = TRUE)
+}
+
+```
+
+```{r, include = FALSE}
 dgm_names <- "Carter2019"
 ```
 
-```{r, child='common/_results-main.Rmd'}
+```{r, child = child_path("_results-main.Rmd")}
 ```
 
-```{r, child='common/_results-sessionInfo.Rmd'}
+```{r, child = child_path("_results-tabs.Rmd")}
 ```
