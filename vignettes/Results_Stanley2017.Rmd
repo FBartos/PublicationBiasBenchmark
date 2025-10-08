@@ -12,8 +12,8 @@ vignette: >
 dgm_names <- "Stanley2017"
 ```
 
-```{r, child='common/results-main.Rmd'}
+```{r, child='common/_results-main.Rmd'}
 ```
 
-```{r, child='common/results-sessionInfo.Rmd'}
+```{r, child='common/_results-sessionInfo.Rmd'}
 ```

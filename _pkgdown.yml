@@ -1,9 +1,3 @@
 url: https://fbartos.github.io/PublicationBiasBenchmark/
 template:
   bootstrap: 5
-
-articles:
-- title: ~
-  contents:
-  - "!vignettes/common"
-
