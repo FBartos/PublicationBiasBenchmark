@@ -35,7 +35,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New Data Generating Mechanisms</a></li>
     <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
+    <li><a class="dropdown-item" href="../articles/Results_Carter2019.html">Results: Carter 2019</a></li>
     <li><a class="dropdown-item" href="../articles/Results_no_bias.html">Results: No bias</a></li>
+    <li><a class="dropdown-item" href="../articles/Results_Stanley2017.html">Results: Stanley 2017</a></li>
     <li><a class="dropdown-item" href="../articles/Results.html">Results</a></li>
   </ul>
 </li>
@@ -56,12 +58,7 @@
 
 
 <script src="Results_no_bias_files/kePrint-0.0.1/kePrint.js"></script><link href="Results_no_bias_files/lightable-0.0.1/lightable.css" rel="stylesheet">
-<link href="Results_no_bias_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-<script src="Results_no_bias_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="Results_no_bias_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="Results_no_bias_files/datatables-binding-0.34.0/datatables.js"></script><link href="Results_no_bias_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="Results_no_bias_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="Results_no_bias_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="Results_no_bias_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
-<script src="Results_no_bias_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Results: No bias</h1>
@@ -83,15 +80,398 @@ Bartoš</h4>
 
 
 
+
 <ul class="nav nav-pills" id="average-performance" role="tablist">
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias" id="bias-tab" type="button" role="tab" aria-controls="bias" aria-selected="true" class="active nav-link">Bias</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#combined" id="combined-tab" type="button" role="tab" aria-controls="combined" aria-selected="true" class="active nav-link">Combined</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias" id="bias-tab" type="button" role="tab" aria-controls="bias" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse" id="rmse-tab" type="button" role="tab" aria-controls="rmse" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage" id="ci-coverage-tab" type="button" role="tab" aria-controls="ci-coverage" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate" id="type-i-error-rate-tab" type="button" role="tab" aria-controls="type-i-error-rate" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power" id="power-tab" type="button" role="tab" aria-controls="power" aria-selected="false" class="nav-link">Power</button></li>
 </ul>
 <div class="tab-content">
-<div class="active show fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
+<div class="active show fade tab-pane" id="combined" role="tabpanel" aria-labelledby="combined-tab">
+
+<table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Condition
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Replacement
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+RoBMA-PSMA
+</td>
+<td style="text-align:right;">
+0.304
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+RoBMA-PSMA
+</td>
+<td style="text-align:right;">
+0.304
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+PETPEESE-default
+</td>
+<td style="text-align:right;">
+0.344
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+PETPEESE-default
+</td>
+<td style="text-align:right;">
+0.344
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+PET-default
+</td>
+<td style="text-align:right;">
+0.347
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+PET-default
+</td>
+<td style="text-align:right;">
+0.347
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+EK-default
+</td>
+<td style="text-align:right;">
+0.352
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+EK-default
+</td>
+<td style="text-align:right;">
+0.352
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+WILS-default
+</td>
+<td style="text-align:right;">
+0.355
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+WILS-default
+</td>
+<td style="text-align:right;">
+0.355
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+PEESE-default
+</td>
+<td style="text-align:right;">
+0.366
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+PEESE-default
+</td>
+<td style="text-align:right;">
+0.366
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+WAAPWLS-default
+</td>
+<td style="text-align:right;">
+0.377
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+WAAPWLS-default
+</td>
+<td style="text-align:right;">
+0.377
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+puniform-star
+</td>
+<td style="text-align:right;">
+0.389
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+puniform-star
+</td>
+<td style="text-align:right;">
+0.389
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+SM-3PSM
+</td>
+<td style="text-align:right;">
+0.389
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+SM-3PSM
+</td>
+<td style="text-align:right;">
+0.389
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+WLS-default
+</td>
+<td style="text-align:right;">
+0.401
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+WLS-default
+</td>
+<td style="text-align:right;">
+0.401
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+trimfill-default
+</td>
+<td style="text-align:right;">
+0.403
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+trimfill-default
+</td>
+<td style="text-align:right;">
+0.403
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+RMA-default
+</td>
+<td style="text-align:right;">
+0.404
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+RMA-default
+</td>
+<td style="text-align:right;">
+0.404
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+puniform-default
+</td>
+<td style="text-align:right;">
+0.493
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+puniform-default
+</td>
+<td style="text-align:right;">
+0.493
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+AK-AK1
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+AK-AK1
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+AK-AK2
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+AK-AK2
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+pcurve-default
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+pcurve-default
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+SM-4PSM
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+SM-4PSM
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
@@ -137,36 +517,36 @@ Value
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
--0.0010980
+-0.001
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:left;">
-SM-3PSM
-</td>
-<td style="text-align:right;">
-0.0010135
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-SM-3PSM
-</td>
-<td style="text-align:right;">
-0.0015532
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
--0.0010980
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+SM-3PSM
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+SM-3PSM
+</td>
+<td style="text-align:right;">
+0.002
 </td>
 </tr>
 <tr>
@@ -177,36 +557,36 @@ WAAPWLS-default
 RMA-default
 </td>
 <td style="text-align:right;">
--0.0029640
+-0.003
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-SM-4PSM
-</td>
-<td style="text-align:right;">
-0.0013717
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-WLS-default
-</td>
-<td style="text-align:right;">
--0.0030503
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
 RMA-default
 </td>
 <td style="text-align:right;">
--0.0029640
+-0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+WLS-default
+</td>
+<td style="text-align:right;">
+-0.003
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+WLS-default
+</td>
+<td style="text-align:right;">
+-0.003
 </td>
 </tr>
 <tr>
@@ -217,16 +597,16 @@ RMA-default
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.0031160
+0.003
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-WLS-default
+SM-4PSM
 </td>
 <td style="text-align:right;">
--0.0030503
+0.003
 </td>
 </tr>
 <tr>
@@ -237,7 +617,7 @@ WLS-default
 puniform-star
 </td>
 <td style="text-align:right;">
-0.0035780
+0.004
 </td>
 <td style="text-align:right;">
 6
@@ -246,7 +626,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.0035780
+0.004
 </td>
 </tr>
 <tr>
@@ -257,7 +637,7 @@ puniform-star
 PEESE-default
 </td>
 <td style="text-align:right;">
--0.0041343
+-0.004
 </td>
 <td style="text-align:right;">
 7
@@ -266,7 +646,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
--0.0041343
+-0.004
 </td>
 </tr>
 <tr>
@@ -277,7 +657,7 @@ PEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
--0.0044870
+-0.004
 </td>
 <td style="text-align:right;">
 8
@@ -286,7 +666,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
--0.0044870
+-0.004
 </td>
 </tr>
 <tr>
@@ -297,7 +677,7 @@ PETPEESE-default
 EK-default
 </td>
 <td style="text-align:right;">
--0.0074985
+-0.007
 </td>
 <td style="text-align:right;">
 9
@@ -306,7 +686,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
--0.0074985
+-0.007
 </td>
 </tr>
 <tr>
@@ -317,7 +697,7 @@ EK-default
 PET-default
 </td>
 <td style="text-align:right;">
--0.0074985
+-0.007
 </td>
 <td style="text-align:right;">
 9
@@ -326,7 +706,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
--0.0074985
+-0.007
 </td>
 </tr>
 <tr>
@@ -337,7 +717,7 @@ PET-default
 trimfill-default
 </td>
 <td style="text-align:right;">
--0.0166649
+-0.017
 </td>
 <td style="text-align:right;">
 11
@@ -346,7 +726,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
--0.0166649
+-0.017
 </td>
 </tr>
 <tr>
@@ -357,7 +737,7 @@ trimfill-default
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.0186002
+0.019
 </td>
 <td style="text-align:right;">
 12
@@ -366,7 +746,7 @@ AK-AK2
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.0186002
+0.019
 </td>
 </tr>
 <tr>
@@ -377,7 +757,7 @@ AK-AK2
 WILS-default
 </td>
 <td style="text-align:right;">
--0.0309626
+-0.031
 </td>
 <td style="text-align:right;">
 13
@@ -386,7 +766,7 @@ WILS-default
 WILS-default
 </td>
 <td style="text-align:right;">
--0.0309626
+-0.031
 </td>
 </tr>
 <tr>
@@ -397,36 +777,36 @@ WILS-default
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
--0.0356814
+-0.036
 </td>
 <td style="text-align:right;">
 14
 </td>
 <td style="text-align:left;">
-puniform-default
-</td>
-<td style="text-align:right;">
--0.0351918
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:left;">
-AK-AK1
-</td>
-<td style="text-align:right;">
-0.0360356
-</td>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:left;">
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
--0.0356814
+-0.036
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+AK-AK1
+</td>
+<td style="text-align:right;">
+0.036
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+AK-AK1
+</td>
+<td style="text-align:right;">
+0.036
 </td>
 </tr>
 <tr>
@@ -437,16 +817,16 @@ RoBMA-PSMA
 puniform-default
 </td>
 <td style="text-align:right;">
--0.1484548
+-0.148
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-AK-AK1
+puniform-default
 </td>
 <td style="text-align:right;">
-0.0360356
+-0.148
 </td>
 </tr>
 <tr>
@@ -457,7 +837,7 @@ AK-AK1
 pcurve-default
 </td>
 <td style="text-align:right;">
-3.8499397
+3.850
 </td>
 <td style="text-align:right;">
 17
@@ -466,7 +846,7 @@ pcurve-default
 pcurve-default
 </td>
 <td style="text-align:right;">
-3.1562531
+3.850
 </td>
 </tr>
 </tbody>
@@ -518,7 +898,7 @@ Value
 WLS-default
 </td>
 <td style="text-align:right;">
-0.0448352
+0.045
 </td>
 <td style="text-align:right;">
 1
@@ -527,7 +907,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.0448352
+0.045
 </td>
 </tr>
 <tr>
@@ -538,7 +918,7 @@ WLS-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.0449151
+0.045
 </td>
 <td style="text-align:right;">
 2
@@ -547,7 +927,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.0449151
+0.045
 </td>
 </tr>
 <tr>
@@ -558,7 +938,7 @@ RMA-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.0538304
+0.054
 </td>
 <td style="text-align:right;">
 3
@@ -567,7 +947,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.0538304
+0.054
 </td>
 </tr>
 <tr>
@@ -578,7 +958,7 @@ trimfill-default
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.0540589
+0.054
 </td>
 <td style="text-align:right;">
 4
@@ -587,7 +967,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.0540589
+0.054
 </td>
 </tr>
 <tr>
@@ -598,7 +978,7 @@ RoBMA-PSMA
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.0560085
+0.056
 </td>
 <td style="text-align:right;">
 5
@@ -607,7 +987,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.0560085
+0.056
 </td>
 </tr>
 <tr>
@@ -618,7 +998,7 @@ WAAPWLS-default
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.0641341
+0.064
 </td>
 <td style="text-align:right;">
 6
@@ -627,7 +1007,7 @@ SM-3PSM
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.0634115
+0.064
 </td>
 </tr>
 <tr>
@@ -638,7 +1018,7 @@ SM-3PSM
 WILS-default
 </td>
 <td style="text-align:right;">
-0.0673185
+0.067
 </td>
 <td style="text-align:right;">
 7
@@ -647,7 +1027,7 @@ WILS-default
 WILS-default
 </td>
 <td style="text-align:right;">
-0.0673185
+0.067
 </td>
 </tr>
 <tr>
@@ -658,7 +1038,7 @@ WILS-default
 puniform-star
 </td>
 <td style="text-align:right;">
-0.0685002
+0.069
 </td>
 <td style="text-align:right;">
 8
@@ -667,7 +1047,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.0685002
+0.069
 </td>
 </tr>
 <tr>
@@ -678,7 +1058,7 @@ puniform-star
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.0890598
+0.089
 </td>
 <td style="text-align:right;">
 9
@@ -687,7 +1067,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.0890598
+0.089
 </td>
 </tr>
 <tr>
@@ -698,7 +1078,7 @@ PEESE-default
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.0942375
+0.094
 </td>
 <td style="text-align:right;">
 10
@@ -707,7 +1087,7 @@ SM-4PSM
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.0900811
+0.094
 </td>
 </tr>
 <tr>
@@ -718,7 +1098,7 @@ SM-4PSM
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.1302975
+0.130
 </td>
 <td style="text-align:right;">
 11
@@ -727,7 +1107,7 @@ AK-AK2
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.1302975
+0.130
 </td>
 </tr>
 <tr>
@@ -738,7 +1118,7 @@ AK-AK2
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.1419706
+0.142
 </td>
 <td style="text-align:right;">
 12
@@ -747,7 +1127,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.1419706
+0.142
 </td>
 </tr>
 <tr>
@@ -758,7 +1138,7 @@ PETPEESE-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.1728335
+0.173
 </td>
 <td style="text-align:right;">
 13
@@ -767,7 +1147,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.1728335
+0.173
 </td>
 </tr>
 <tr>
@@ -778,7 +1158,7 @@ EK-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.1728335
+0.173
 </td>
 <td style="text-align:right;">
 13
@@ -787,7 +1167,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.1728335
+0.173
 </td>
 </tr>
 <tr>
@@ -798,36 +1178,36 @@ PET-default
 AK-AK1
 </td>
 <td style="text-align:right;">
-0.7131087
+0.713
 </td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-puniform-default
-</td>
-<td style="text-align:right;">
-0.5713818
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:left;">
-puniform-default
-</td>
-<td style="text-align:right;">
-0.8857012
-</td>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:left;">
 AK-AK1
 </td>
 <td style="text-align:right;">
-0.7131087
+0.713
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+puniform-default
+</td>
+<td style="text-align:right;">
+0.886
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+puniform-default
+</td>
+<td style="text-align:right;">
+0.886
 </td>
 </tr>
 <tr>
@@ -838,7 +1218,7 @@ AK-AK1
 pcurve-default
 </td>
 <td style="text-align:right;">
-3.8499397
+3.850
 </td>
 <td style="text-align:right;">
 17
@@ -847,7 +1227,7 @@ pcurve-default
 pcurve-default
 </td>
 <td style="text-align:right;">
-3.4117258
+3.850
 </td>
 </tr>
 </tbody>
@@ -899,7 +1279,7 @@ Value
 AK-AK1
 </td>
 <td style="text-align:right;">
-0.9673029
+0.967
 </td>
 <td style="text-align:right;">
 1
@@ -908,7 +1288,7 @@ AK-AK1
 AK-AK1
 </td>
 <td style="text-align:right;">
-0.9673029
+0.967
 </td>
 </tr>
 <tr>
@@ -919,7 +1299,7 @@ AK-AK1
 puniform-star
 </td>
 <td style="text-align:right;">
-0.9541162
+0.954
 </td>
 <td style="text-align:right;">
 2
@@ -928,7 +1308,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.9541162
+0.954
 </td>
 </tr>
 <tr>
@@ -939,7 +1319,7 @@ puniform-star
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.9512500
+0.951
 </td>
 <td style="text-align:right;">
 3
@@ -948,7 +1328,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.9512500
+0.951
 </td>
 </tr>
 <tr>
@@ -959,7 +1339,7 @@ RoBMA-PSMA
 RMA-default
 </td>
 <td style="text-align:right;">
-0.9487500
+0.949
 </td>
 <td style="text-align:right;">
 4
@@ -968,7 +1348,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.9487500
+0.949
 </td>
 </tr>
 <tr>
@@ -979,7 +1359,7 @@ RMA-default
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.9389480
+0.939
 </td>
 <td style="text-align:right;">
 5
@@ -988,7 +1368,7 @@ SM-3PSM
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.9400000
+0.939
 </td>
 </tr>
 <tr>
@@ -999,7 +1379,7 @@ SM-3PSM
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.9375000
+0.938
 </td>
 <td style="text-align:right;">
 6
@@ -1008,7 +1388,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.9375000
+0.938
 </td>
 </tr>
 <tr>
@@ -1019,7 +1399,7 @@ PETPEESE-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.9362500
+0.936
 </td>
 <td style="text-align:right;">
 7
@@ -1028,7 +1408,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.9362500
+0.936
 </td>
 </tr>
 <tr>
@@ -1039,7 +1419,7 @@ EK-default
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.9332550
+0.933
 </td>
 <td style="text-align:right;">
 8
@@ -1048,7 +1428,7 @@ SM-4PSM
 SM-4PSM
 </td>
 <td style="text-align:right;">
-0.9335431
+0.933
 </td>
 </tr>
 <tr>
@@ -1059,7 +1439,7 @@ SM-4PSM
 WLS-default
 </td>
 <td style="text-align:right;">
-0.9225000
+0.922
 </td>
 <td style="text-align:right;">
 9
@@ -1068,7 +1448,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.9225000
+0.922
 </td>
 </tr>
 <tr>
@@ -1079,7 +1459,7 @@ WLS-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.9187500
+0.919
 </td>
 <td style="text-align:right;">
 10
@@ -1088,7 +1468,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.9187500
+0.919
 </td>
 </tr>
 <tr>
@@ -1099,7 +1479,7 @@ PEESE-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.9125000
+0.912
 </td>
 <td style="text-align:right;">
 11
@@ -1108,7 +1488,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.9125000
+0.912
 </td>
 </tr>
 <tr>
@@ -1119,7 +1499,7 @@ PET-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.9087500
+0.909
 </td>
 <td style="text-align:right;">
 12
@@ -1128,7 +1508,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.9087500
+0.909
 </td>
 </tr>
 <tr>
@@ -1139,7 +1519,7 @@ WAAPWLS-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.8825000
+0.883
 </td>
 <td style="text-align:right;">
 13
@@ -1148,7 +1528,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.8825000
+0.883
 </td>
 </tr>
 <tr>
@@ -1159,7 +1539,7 @@ trimfill-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.8368219
+0.837
 </td>
 <td style="text-align:right;">
 14
@@ -1168,7 +1548,7 @@ puniform-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.8424621
+0.837
 </td>
 </tr>
 <tr>
@@ -1179,7 +1559,7 @@ puniform-default
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.8332986
+0.833
 </td>
 <td style="text-align:right;">
 15
@@ -1188,7 +1568,7 @@ AK-AK2
 AK-AK2
 </td>
 <td style="text-align:right;">
-0.8332986
+0.833
 </td>
 </tr>
 <tr>
@@ -1199,7 +1579,7 @@ AK-AK2
 WILS-default
 </td>
 <td style="text-align:right;">
-0.7762500
+0.776
 </td>
 <td style="text-align:right;">
 16
@@ -1208,7 +1588,7 @@ WILS-default
 WILS-default
 </td>
 <td style="text-align:right;">
-0.7762500
+0.776
 </td>
 </tr>
 <tr>
@@ -1280,7 +1660,7 @@ Value
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.0000000
+0.000
 </td>
 <td style="text-align:right;">
 1
@@ -1289,7 +1669,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.0000
+0.000
 </td>
 </tr>
 <tr>
@@ -1300,7 +1680,7 @@ RoBMA-PSMA
 puniform-star
 </td>
 <td style="text-align:right;">
-0.0400000
+0.040
 </td>
 <td style="text-align:right;">
 2
@@ -1309,7 +1689,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.0400
+0.040
 </td>
 </tr>
 <tr>
@@ -1320,7 +1700,7 @@ puniform-star
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.0489080
+0.049
 </td>
 <td style="text-align:right;">
 3
@@ -1329,7 +1709,7 @@ SM-3PSM
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.0475
+0.049
 </td>
 </tr>
 <tr>
@@ -1340,7 +1720,7 @@ SM-3PSM
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.0525000
+0.052
 </td>
 <td style="text-align:right;">
 4
@@ -1349,7 +1729,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.0525
+0.052
 </td>
 </tr>
 <tr>
@@ -1360,7 +1740,7 @@ PETPEESE-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.0525000
+0.053
 </td>
 <td style="text-align:right;">
 5
@@ -1369,7 +1749,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.0525
+0.053
 </td>
 </tr>
 <tr>
@@ -1380,7 +1760,7 @@ RMA-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.0575000
+0.058
 </td>
 <td style="text-align:right;">
 6
@@ -1389,7 +1769,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.0575
+0.058
 </td>
 </tr>
 <tr>
@@ -1400,7 +1780,7 @@ WAAPWLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.0575000
+0.058
 </td>
 <td style="text-align:right;">
 6
@@ -1409,7 +1789,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.0575
+0.058
 </td>
 </tr>
 <tr>
@@ -1420,7 +1800,7 @@ WLS-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.0600000
+0.060
 </td>
 <td style="text-align:right;">
 8
@@ -1429,7 +1809,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.0600
+0.060
 </td>
 </tr>
 <tr>
@@ -1440,36 +1820,36 @@ PEESE-default
 WILS-default
 </td>
 <td style="text-align:right;">
-0.0675000
+0.068
 </td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:left;">
-SM-4PSM
-</td>
-<td style="text-align:right;">
-0.0650
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-SM-4PSM
-</td>
-<td style="text-align:right;">
-0.0684571
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
 WILS-default
 </td>
 <td style="text-align:right;">
-0.0675
+0.068
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+SM-4PSM
+</td>
+<td style="text-align:right;">
+0.068
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+SM-4PSM
+</td>
+<td style="text-align:right;">
+0.068
 </td>
 </tr>
 <tr>
@@ -1480,7 +1860,7 @@ WILS-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.0700000
+0.070
 </td>
 <td style="text-align:right;">
 11
@@ -1489,7 +1869,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.0700
+0.070
 </td>
 </tr>
 <tr>
@@ -1500,7 +1880,7 @@ EK-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.0700000
+0.070
 </td>
 <td style="text-align:right;">
 11
@@ -1509,7 +1889,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.0700
+0.070
 </td>
 </tr>
 <tr>
@@ -1520,7 +1900,7 @@ PET-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.1250000
+0.125
 </td>
 <td style="text-align:right;">
 13
@@ -1529,7 +1909,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.1250
+0.125
 </td>
 </tr>
 <tr>
@@ -1540,7 +1920,7 @@ trimfill-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.1497917
+0.150
 </td>
 <td style="text-align:right;">
 14
@@ -1549,7 +1929,7 @@ puniform-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.1400
+0.150
 </td>
 </tr>
 <tr>
@@ -1661,7 +2041,7 @@ Value
 WLS-default
 </td>
 <td style="text-align:right;">
-0.9825000
+0.982
 </td>
 <td style="text-align:right;">
 1
@@ -1670,7 +2050,7 @@ WLS-default
 WLS-default
 </td>
 <td style="text-align:right;">
-0.9825
+0.982
 </td>
 </tr>
 <tr>
@@ -1681,7 +2061,7 @@ WLS-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.9750000
+0.975
 </td>
 <td style="text-align:right;">
 2
@@ -1690,7 +2070,7 @@ RMA-default
 RMA-default
 </td>
 <td style="text-align:right;">
-0.9750
+0.975
 </td>
 </tr>
 <tr>
@@ -1701,7 +2081,7 @@ RMA-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.9700000
+0.970
 </td>
 <td style="text-align:right;">
 3
@@ -1710,7 +2090,7 @@ trimfill-default
 trimfill-default
 </td>
 <td style="text-align:right;">
-0.9700
+0.970
 </td>
 </tr>
 <tr>
@@ -1721,7 +2101,7 @@ trimfill-default
 WILS-default
 </td>
 <td style="text-align:right;">
-0.8950000
+0.895
 </td>
 <td style="text-align:right;">
 4
@@ -1730,7 +2110,7 @@ WILS-default
 WILS-default
 </td>
 <td style="text-align:right;">
-0.8950
+0.895
 </td>
 </tr>
 <tr>
@@ -1741,7 +2121,7 @@ WILS-default
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.8911856
+0.891
 </td>
 <td style="text-align:right;">
 5
@@ -1750,7 +2130,7 @@ SM-3PSM
 SM-3PSM
 </td>
 <td style="text-align:right;">
-0.8925
+0.891
 </td>
 </tr>
 <tr>
@@ -1761,7 +2141,7 @@ SM-3PSM
 puniform-star
 </td>
 <td style="text-align:right;">
-0.8775000
+0.877
 </td>
 <td style="text-align:right;">
 6
@@ -1770,7 +2150,7 @@ puniform-star
 puniform-star
 </td>
 <td style="text-align:right;">
-0.8775
+0.877
 </td>
 </tr>
 <tr>
@@ -1781,7 +2161,7 @@ puniform-star
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.8650000
+0.865
 </td>
 <td style="text-align:right;">
 7
@@ -1790,7 +2170,7 @@ WAAPWLS-default
 WAAPWLS-default
 </td>
 <td style="text-align:right;">
-0.8650
+0.865
 </td>
 </tr>
 <tr>
@@ -1801,7 +2181,7 @@ WAAPWLS-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.7675000
+0.767
 </td>
 <td style="text-align:right;">
 8
@@ -1810,7 +2190,7 @@ PEESE-default
 PEESE-default
 </td>
 <td style="text-align:right;">
-0.7675
+0.767
 </td>
 </tr>
 <tr>
@@ -1821,7 +2201,7 @@ PEESE-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.7389394
+0.739
 </td>
 <td style="text-align:right;">
 9
@@ -1830,7 +2210,7 @@ puniform-default
 puniform-default
 </td>
 <td style="text-align:right;">
-0.7400
+0.739
 </td>
 </tr>
 <tr>
@@ -1841,7 +2221,7 @@ puniform-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.5950000
+0.595
 </td>
 <td style="text-align:right;">
 10
@@ -1850,7 +2230,7 @@ PETPEESE-default
 PETPEESE-default
 </td>
 <td style="text-align:right;">
-0.5950
+0.595
 </td>
 </tr>
 <tr>
@@ -1861,7 +2241,7 @@ PETPEESE-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.5875000
+0.588
 </td>
 <td style="text-align:right;">
 11
@@ -1870,7 +2250,7 @@ EK-default
 EK-default
 </td>
 <td style="text-align:right;">
-0.5875
+0.588
 </td>
 </tr>
 <tr>
@@ -1881,7 +2261,7 @@ EK-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.5875000
+0.588
 </td>
 <td style="text-align:right;">
 11
@@ -1890,7 +2270,7 @@ PET-default
 PET-default
 </td>
 <td style="text-align:right;">
-0.5875
+0.588
 </td>
 </tr>
 <tr>
@@ -1901,7 +2281,7 @@ PET-default
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.5500000
+0.550
 </td>
 <td style="text-align:right;">
 13
@@ -1910,7 +2290,7 @@ RoBMA-PSMA
 RoBMA-PSMA
 </td>
 <td style="text-align:right;">
-0.5500
+0.550
 </td>
 </tr>
 <tr>
@@ -1999,59 +2379,6 @@ NA
 </div>
 </div>
 <div class="section level2 tabset tabset-fade tabset-pills">
-<h2 class="tabset tabset-fade tabset-pills" id="average-performance-tables">Average Performance
-Tables<a class="anchor" aria-label="anchor" href="#average-performance-tables"></a>
-</h2>
-
-
-
-
-<ul class="nav nav-pills" id="average-performance-tables" role="tablist">
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#measures-conditional" id="measures-conditional-tab" type="button" role="tab" aria-controls="measures-conditional" aria-selected="true" class="active nav-link">Measures (Conditional)</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ranks-conditional" id="ranks-conditional-tab" type="button" role="tab" aria-controls="ranks-conditional" aria-selected="false" class="nav-link">Ranks (Conditional)</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#measures-replacement" id="measures-replacement-tab" type="button" role="tab" aria-controls="measures-replacement" aria-selected="false" class="nav-link">Measures (Replacement)</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ranks-replacement" id="ranks-replacement-tab" type="button" role="tab" aria-controls="ranks-replacement" aria-selected="false" class="nav-link">Ranks (Replacement)</button></li>
-</ul>
-<div class="tab-content">
-<div class="active show fade tab-pane" id="measures-conditional" role="tabpanel" aria-labelledby="measures-conditional-tab">
-
-<p>The results below are conditional on convergence. Note that the
-methods might differ in convergence rate and are therefore not compared
-on the same data sets.</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"],["AK","AK","EK","pcurve","PEESE","PET","PETPEESE","puniform","puniform","RMA","RoBMA","SM","SM","trimfill","WAAPWLS","WILS","WLS"],["AK1","AK2","default","default","default","default","default","default","star","default","PSMA","3PSM","4PSM","default","default","default","default"],[1,1,1,0.8275,1,1,1,0.8275,1,1,1,0.9662500000000001,0.9125,1,1,1,1],[0.03603556917659644,0.01860016301089485,-0.007498522368888684,3.84993974725793,-0.004134271126933292,-0.007498522368888684,-0.004487030823081994,-0.1484547878182765,0.00357800338706909,-0.002964031991684074,-0.0356814480783346,0.001553179831605064,0.003116043189900309,-0.01666488608949694,-0.001098000556192446,-0.03096259605243498,-0.003050265642712673],[0.7131086612267397,0.1302975280611251,0.1728335322355496,3.84993974725793,0.0890597646261802,0.1728335322355496,0.1419706231464296,0.8857012142744748,0.06850020444102321,0.04491506271819846,0.05405891684500977,0.06413408929976372,0.0942375373624058,0.05383041020026246,0.05600848816096365,0.06731850795489341,0.04483518145672932],[0.9673029205094423,0.8332986111111111,0.93625,null,0.9187500000000001,0.9125,0.9375,0.8368218842560948,0.9541161616161618,0.94875,0.95125,0.9389480388671644,0.9332550261599017,0.8825000000000001,0.9087499999999999,0.77625,0.9225],[null,null,0.07000000000000001,null,0.06,0.07000000000000001,0.0525,0.1497916666666667,0.04,0.0525,0,0.0489080459770115,0.06845705294335437,0.125,0.0575,0.0675,0.0575],[null,null,0.5875,null,0.7675,0.5875,0.595,0.738939393939394,0.8774999999999999,0.975,0.55,0.8911855670103093,null,0.97,0.865,0.895,0.9824999999999999]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Method<\/th>\n      <th>Setting<\/th>\n      <th>Convergence<\/th>\n      <th>Bias<\/th>\n      <th>RMSE<\/th>\n      <th>Coverage<\/th>\n      <th>Error<\/th>\n      <th>Power<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":-1,"responsive":true,"deferRender":true,"scrollX":true,"autoWidth":false,"columnDefs":[{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":7,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":8,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"width":"100px","targets":"_all"},{"className":"dt-right","targets":[3,4,5,6,7,8]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Method","targets":1},{"name":"Setting","targets":2},{"name":"Convergence","targets":3},{"name":"Bias","targets":4},{"name":"RMSE","targets":5},{"name":"Coverage","targets":6},{"name":"Error","targets":7},{"name":"Power","targets":8}],"initComplete":"function(settings, json) {\n  setTimeout(function() {\n    $(this.api().table().container()).trigger('resize');\n  }, 100);\n}","order":[],"orderClasses":false,"lengthMenu":[-1,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render","options.initComplete"],"jsHooks":[]}</script>
-</div>
-<div class="fade tab-pane" id="ranks-conditional" role="tabpanel" aria-labelledby="ranks-conditional-tab">
-
-<p>The results below are conditional on convergence. Note that the
-methods might differ in convergence rate and are therefore not compared
-on the same data sets.</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"],["AK","AK","EK","pcurve","PEESE","PET","PETPEESE","puniform","puniform","RMA","RoBMA","SM","SM","trimfill","WAAPWLS","WILS","WLS"],["AK1","AK2","default","default","default","default","default","default","star","default","PSMA","3PSM","4PSM","default","default","default","default"],[1,1,1,16,1,1,1,16,1,1,1,14,15,1,1,1,1],[15,12,9,17,7,9,8,16,6,3,14,2,5,11,1,13,4],[15,11,13,17,9,13,12,16,8,2,4,6,10,3,5,7,1],[1,15,7,17,10,11,6,14,2,4,3,5,8,13,12,16,9],[15,16,11,17,8,11,4,14,2,5,1,3,10,13,6,9,6],[14,15,11,16,8,11,10,9,6,2,13,5,17,3,7,4,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Method<\/th>\n      <th>Setting<\/th>\n      <th>Convergence<\/th>\n      <th>Bias<\/th>\n      <th>RMSE<\/th>\n      <th>Coverage<\/th>\n      <th>Error<\/th>\n      <th>Power<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":-1,"responsive":true,"deferRender":true,"scrollX":true,"autoWidth":false,"columnDefs":[{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":7,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":8,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"width":"100px","targets":"_all"},{"className":"dt-right","targets":[3,4,5,6,7,8]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Method","targets":1},{"name":"Setting","targets":2},{"name":"Convergence","targets":3},{"name":"Bias","targets":4},{"name":"RMSE","targets":5},{"name":"Coverage","targets":6},{"name":"Error","targets":7},{"name":"Power","targets":8}],"initComplete":"function(settings, json) {\n  setTimeout(function() {\n    $(this.api().table().container()).trigger('resize');\n  }, 100);\n}","order":[],"orderClasses":false,"lengthMenu":[-1,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render","options.initComplete"],"jsHooks":[]}</script>
-</div>
-<div class="fade tab-pane" id="measures-replacement" role="tabpanel" aria-labelledby="measures-replacement-tab">
-
-<p>The results below incorporate method replacement. If method fails to
-converge, its results is replaced by a simpler method. See TODO for
-details of the method replacement specification. Note that these results
-combine do not correspond to “pure” method performance as they might
-combine multiple different methods.</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"],["AK","AK","EK","pcurve","PEESE","PET","PETPEESE","puniform","puniform","RMA","RoBMA","SM","SM","trimfill","WAAPWLS","WILS","WLS"],["AK1","AK2","default","default","default","default","default","default","star","default","PSMA","3PSM","4PSM","default","default","default","default"],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0.03603556917659644,0.01860016301089485,-0.007498522368888684,3.156253103667892,-0.004134271126933292,-0.007498522368888684,-0.004487030823081994,-0.03519180732336833,0.00357800338706909,-0.002964031991684074,-0.0356814480783346,0.001013452544062405,0.001371664589313215,-0.01666488608949694,-0.001098000556192446,-0.03096259605243498,-0.003050265642712673],[0.7131086612267397,0.1302975280611251,0.1728335322355496,3.411725793113119,0.0890597646261802,0.1728335322355496,0.1419706231464296,0.5713817727736937,0.06850020444102321,0.04491506271819846,0.05405891684500977,0.06341146652463583,0.09008113950654925,0.05383041020026246,0.05600848816096365,0.06731850795489341,0.04483518145672932],[0.9673029205094423,0.8332986111111111,0.93625,null,0.9187500000000001,0.9125,0.9375,0.8424621212121213,0.9541161616161618,0.94875,0.95125,0.9399999999999999,0.9335430605592726,0.8825000000000001,0.9087499999999999,0.77625,0.9225],[null,null,0.07000000000000001,null,0.06,0.07000000000000001,0.0525,0.14,0.04,0.0525,0,0.0475,0.065,0.125,0.0575,0.0675,0.0575],[null,null,0.5875,null,0.7675,0.5875,0.595,0.74,0.8774999999999999,0.975,0.55,0.8925,null,0.97,0.865,0.895,0.9824999999999999]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Method<\/th>\n      <th>Setting<\/th>\n      <th>Convergence<\/th>\n      <th>Bias<\/th>\n      <th>RMSE<\/th>\n      <th>Coverage<\/th>\n      <th>Error<\/th>\n      <th>Power<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":-1,"responsive":true,"deferRender":true,"scrollX":true,"autoWidth":false,"columnDefs":[{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":7,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"targets":8,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 3, 3, \",\", \".\", null);\n  }"},{"width":"100px","targets":"_all"},{"className":"dt-right","targets":[3,4,5,6,7,8]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Method","targets":1},{"name":"Setting","targets":2},{"name":"Convergence","targets":3},{"name":"Bias","targets":4},{"name":"RMSE","targets":5},{"name":"Coverage","targets":6},{"name":"Error","targets":7},{"name":"Power","targets":8}],"initComplete":"function(settings, json) {\n  setTimeout(function() {\n    $(this.api().table().container()).trigger('resize');\n  }, 100);\n}","order":[],"orderClasses":false,"lengthMenu":[-1,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render","options.initComplete"],"jsHooks":[]}</script>
-</div>
-<div class="fade tab-pane" id="ranks-replacement" role="tabpanel" aria-labelledby="ranks-replacement-tab">
-
-<p>The results below incorporate method replacement. If method fails to
-converge, its results is replaced by a simpler method. See TODO for
-details of the method replacement specification. Note that these results
-combine do not correspond to “pure” method performance as they might
-combine multiple different methods.</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"],["AK","AK","EK","pcurve","PEESE","PET","PETPEESE","puniform","puniform","RMA","RoBMA","SM","SM","trimfill","WAAPWLS","WILS","WLS"],["AK1","AK2","default","default","default","default","default","default","star","default","PSMA","3PSM","4PSM","default","default","default","default"],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[16,12,9,17,7,9,8,14,6,4,15,1,3,11,2,13,5],[16,11,13,17,9,13,12,15,8,2,4,6,10,3,5,7,1],[1,15,7,17,10,11,6,14,2,4,3,5,8,13,12,16,9],[15,16,11,17,8,11,4,14,2,5,1,3,9,13,6,10,6],[14,15,11,16,8,11,10,9,6,2,13,5,17,3,7,4,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Method<\/th>\n      <th>Setting<\/th>\n      <th>Convergence<\/th>\n      <th>Bias<\/th>\n      <th>RMSE<\/th>\n      <th>Coverage<\/th>\n      <th>Error<\/th>\n      <th>Power<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":-1,"responsive":true,"deferRender":true,"scrollX":true,"autoWidth":false,"columnDefs":[{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":7,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"targets":8,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 1, 3, \",\", \".\", null);\n  }"},{"width":"100px","targets":"_all"},{"className":"dt-right","targets":[3,4,5,6,7,8]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Method","targets":1},{"name":"Setting","targets":2},{"name":"Convergence","targets":3},{"name":"Bias","targets":4},{"name":"RMSE","targets":5},{"name":"Coverage","targets":6},{"name":"Error","targets":7},{"name":"Power","targets":8}],"initComplete":"function(settings, json) {\n  setTimeout(function() {\n    $(this.api().table().container()).trigger('resize');\n  }, 100);\n}","order":[],"orderClasses":false,"lengthMenu":[-1,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render","options.initComplete"],"jsHooks":[]}</script>
-</div>
-</div>
-</div>
-<div class="section level2 tabset tabset-fade tabset-pills">
 <h2 class="tabset tabset-fade tabset-pills" id="by-condition-performance-conditional">By-Condition Performance
 (Conditional)<a class="anchor" aria-label="anchor" href="#by-condition-performance-conditional"></a>
 </h2>
@@ -2075,30 +2402,30 @@ on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-13-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-14-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-15-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-16-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-1" role="tabpanel" aria-labelledby="type-i-error-rate-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-17-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-18-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
 </div>
 </div>
@@ -2130,37 +2457,37 @@ the method replacement specification.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-19-1.png" alt="Raincloud plot showing convergence rates across different methods with replacement" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-20-1.png" alt="Raincloud plot showing bias across different methods with replacement" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-21-1.png" alt="Raincloud plot showing RMSE across different methods with replacement" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-22-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods with replacement" width="700"></p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-2" role="tabpanel" aria-labelledby="type-i-error-rate-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-23-1.png" alt="Raincloud plot showing Type I Error rates across different methods with replacement" width="700"></p>
 </div>
 <div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-24-1.png" alt="Raincloud plot showing statistical power across different methods with replacement" width="700"></p>
 </div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="sessioninfo">sessionInfo<a class="anchor" aria-label="anchor" href="#sessioninfo"></a>
+<h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Tue Oct 07 09:58:40 2025 (UTC) using the
+<p>This report was compiled on Wed Oct 08 07:48:54 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -2196,22 +2523,21 @@ following computational environment</p>
 <span><span class="co">## [10] RColorBrewer_1.1-3   pkgload_1.4.1        fastmap_1.2.0       </span></span>
 <span><span class="co">## [13] jsonlite_2.0.0       pkgbuild_1.4.8       sessioninfo_1.2.3   </span></span>
 <span><span class="co">## [16] crul_1.6.0           urltools_1.7.3.1     httr_1.4.7          </span></span>
-<span><span class="co">## [19] purrr_1.1.0          crosstalk_1.2.2      viridisLite_0.4.2   </span></span>
-<span><span class="co">## [22] textshaping_1.0.3    jquerylib_0.1.4      cli_3.6.5           </span></span>
-<span><span class="co">## [25] rlang_1.1.6          triebeard_0.4.1      ellipsis_0.3.2      </span></span>
-<span><span class="co">## [28] remotes_2.5.0        withr_3.0.2          cachem_1.1.0        </span></span>
-<span><span class="co">## [31] yaml_2.3.10          tools_4.5.1          memoise_2.0.1       </span></span>
-<span><span class="co">## [34] DT_0.34.0            kableExtra_1.4.0     curl_7.0.0          </span></span>
-<span><span class="co">## [37] vctrs_0.6.5          R6_2.6.1             lifecycle_1.0.4     </span></span>
-<span><span class="co">## [40] stringr_1.5.2        fs_1.6.6             htmlwidgets_1.6.4   </span></span>
-<span><span class="co">## [43] ragg_1.5.0           pkgconfig_2.0.3      desc_1.4.3          </span></span>
-<span><span class="co">## [46] osfr_0.2.9           pkgdown_2.1.3        bslib_0.9.0         </span></span>
-<span><span class="co">## [49] pillar_1.11.1        gtable_0.3.6         glue_1.8.0          </span></span>
-<span><span class="co">## [52] Rcpp_1.1.0           systemfonts_1.3.1    xfun_0.53           </span></span>
-<span><span class="co">## [55] tibble_3.3.0         rstudioapi_0.17.1    knitr_1.50          </span></span>
-<span><span class="co">## [58] farver_2.1.2         htmltools_0.5.8.1    labeling_0.4.3      </span></span>
-<span><span class="co">## [61] svglite_2.2.1        rmarkdown_2.30       compiler_4.5.1      </span></span>
-<span><span class="co">## [64] S7_0.2.0             distributional_0.5.0</span></span></code></pre>
+<span><span class="co">## [19] purrr_1.1.0          viridisLite_0.4.2    textshaping_1.0.3   </span></span>
+<span><span class="co">## [22] jquerylib_0.1.4      cli_3.6.5            rlang_1.1.6         </span></span>
+<span><span class="co">## [25] triebeard_0.4.1      ellipsis_0.3.2       remotes_2.5.0       </span></span>
+<span><span class="co">## [28] withr_3.0.2          cachem_1.1.0         yaml_2.3.10         </span></span>
+<span><span class="co">## [31] tools_4.5.1          memoise_2.0.1        kableExtra_1.4.0    </span></span>
+<span><span class="co">## [34] curl_7.0.0           vctrs_0.6.5          R6_2.6.1            </span></span>
+<span><span class="co">## [37] lifecycle_1.0.4      stringr_1.5.2        fs_1.6.6            </span></span>
+<span><span class="co">## [40] htmlwidgets_1.6.4    ragg_1.5.0           pkgconfig_2.0.3     </span></span>
+<span><span class="co">## [43] desc_1.4.3           osfr_0.2.9           pkgdown_2.1.3       </span></span>
+<span><span class="co">## [46] bslib_0.9.0          pillar_1.11.1        gtable_0.3.6        </span></span>
+<span><span class="co">## [49] glue_1.8.0           Rcpp_1.1.0           systemfonts_1.3.1   </span></span>
+<span><span class="co">## [52] xfun_0.53            tibble_3.3.0         rstudioapi_0.17.1   </span></span>
+<span><span class="co">## [55] knitr_1.50           farver_2.1.2         htmltools_0.5.8.1   </span></span>
+<span><span class="co">## [58] labeling_0.4.3       svglite_2.2.1        rmarkdown_2.30      </span></span>
+<span><span class="co">## [61] compiler_4.5.1       S7_0.2.0             distributional_0.5.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
