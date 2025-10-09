@@ -9,7 +9,8 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-source("_functions.R")
+this_dir <- dirname(knitr::current_input(dir = TRUE))
+source(file.path(this_dir, "_functions.R"))
 dgm_names    <- "no_bias"
 common_scale <- FALSE
 ```
