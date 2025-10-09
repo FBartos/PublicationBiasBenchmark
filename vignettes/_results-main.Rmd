@@ -4,32 +4,6 @@ output: html_document
 ---
 
 ```{r, include = FALSE}
-# Local/Remote pathing with nested child paths is extremely buggy. This function makes sure that all paths are properly set
-child_path <- function(x) {
-  # Try to get the package name safely
-  pkg <- tryCatch(utils::packageName(), error = function(e) NULL)
-  if (is.null(pkg) || length(pkg) != 1 || is.na(pkg) || !nzchar(pkg)) {
-    pkg <- tryCatch(desc::desc_get("Package")[[1]], error = function(e) NA_character_)
-  }
-  if (is.null(pkg) || is.na(pkg) || !nzchar(pkg)) {
-    pkg <- basename(rprojroot::find_package_root_file())
-  }
-
-  # First try the installed vignettes dir (works when pkgdown builds from an installed copy)
-  p <- tryCatch(system.file("vignettes", x, package = pkg), error = function(e) "")
-  if (!is.character(p) || length(p) != 1 || !nzchar(p)) p <- ""
-
-  # Fallback to the source tree
-  if (!nzchar(p)) {
-    p <- file.path(rprojroot::find_package_root_file(), "vignettes", x)
-  }
-
-  normalizePath(p, winslash = "/", mustWork = TRUE)
-}
-
-```
-
-```{r, include = FALSE}
 # This is a child document meant to be included in other Rmd files
 # Exit if being knit directly (not as a child)
 if (!exists("dgm_names")) {
@@ -112,6 +86,8 @@ rankings_conditional <- make_rank_summary(tables_conditional)
 rankings_replacement <- make_rank_summary(tables_replacement)
 ```
 
+`r paste0(generic_overview(dgm_names, results_conditional)) `
+
 ### Average Performance {.tabset .tabset-fade .tabset-pills}
 
 ```{r, include = FALSE}
@@ -122,7 +98,6 @@ this_tables_replacement   <- tables_replacement
 ```
 ```{r, child = child_path("_results-tabs-tables.Rmd")}
 ```
-
 
 ### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
 

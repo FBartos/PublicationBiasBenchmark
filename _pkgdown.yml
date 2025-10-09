@@ -11,9 +11,13 @@ navbar:
       menu:
       - text: Overall
         href: articles/Results.html
-      - text: Stanley2017
+      - text: Stanley (2017)
         href: articles/Results_Stanley2017.html
-      - text: Carter2019
+      - text: Alinaghi (2018)
+        href: articles/Results_Alinaghi2018.html
+      - text: Bom (2019)
+        href: articles/Results_Bom2019.html
+      - text: Carter (2019)
         href: articles/Results_Carter2019.html
     tutorials:
       text: Extending the Benchmark

@@ -1,16 +1,16 @@
 ---
-title: "Results: Overall"
+title: "Results: Bom (2019)"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Results: Overall}
+  %\VignetteIndexEntry{Results: Bom (2019)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
 source("_functions.R")
-dgm_names    <- c("Stanley2017", "Alinaghi2018", "Bom2019", "Carter2019")
-common_scale <- FALSE
+dgm_names    <- "Bom2019"
+common_scale <- TRUE
 ```
 
 ## Complete Results

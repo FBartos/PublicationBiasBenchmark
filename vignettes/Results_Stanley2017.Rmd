@@ -1,6 +1,5 @@
 ---
-title: "Results: Stanley 2017"
-author: František Bartoš
+title: "Results: Stanley (2017)"
 output: html_document
 vignette: >
   %\VignetteIndexEntry{Results: Stanley (2017)}
@@ -8,39 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-# Local/Remote pathing with nested child paths is extremely buggy. This function makes sure that all paths are properly set
-child_path <- function(x) {
-  # Try to get the package name safely
-  pkg <- tryCatch(utils::packageName(), error = function(e) NULL)
-  if (is.null(pkg) || length(pkg) != 1 || is.na(pkg) || !nzchar(pkg)) {
-    pkg <- tryCatch(desc::desc_get("Package")[[1]], error = function(e) NA_character_)
-  }
-  if (is.null(pkg) || is.na(pkg) || !nzchar(pkg)) {
-    pkg <- basename(rprojroot::find_package_root_file())
-  }
-
-  # First try the installed vignettes dir (works when pkgdown builds from an installed copy)
-  p <- tryCatch(system.file("vignettes", x, package = pkg), error = function(e) "")
-  if (!is.character(p) || length(p) != 1 || !nzchar(p)) p <- ""
-
-  # Fallback to the source tree
-  if (!nzchar(p)) {
-    p <- file.path(rprojroot::find_package_root_file(), "vignettes", x)
-  }
-
-  normalizePath(p, winslash = "/", mustWork = TRUE)
-}
-```
-
-```{r, include = FALSE}
+```{r, include=FALSE}
+source("_functions.R")
 dgm_names    <- "Stanley2017"
 common_scale <- FALSE
-```
-
-```{r, child = child_path("_results-raincloudplot.Rmd")}
-```
-```{r, child = child_path("_results-functions.Rmd")}
 ```
 
 ## Complete Results
@@ -53,6 +23,8 @@ common_scale <- TRUE
 ```
 
 ## Subset: Standardized Mean Difference Effect Sizes
+
+`r paste0(generic_overview(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],])) `
 
 ### Average Performance {.tabset .tabset-fade .tabset-pills}
 
@@ -93,6 +65,8 @@ The results below incorporate method replacement to handle non-convergence. If a
 
 
 ## Subset: Log Odd Ratio Effect Sizes
+
+`r paste0(generic_overview(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],])) `
 
 ### Average Performance {.tabset .tabset-fade .tabset-pills}
 
