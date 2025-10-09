@@ -20,6 +20,10 @@
 \alias{power_mcse}
 \alias{mean_ci_width}
 \alias{mean_ci_width_mcse}
+\alias{positive_likelihood_ratio}
+\alias{positive_likelihood_ratio_mcse}
+\alias{negative_likelihood_ratio}
+\alias{negative_likelihood_ratio_mcse}
 \alias{mean_generic_statistic}
 \alias{mean_generic_statistic_mcse}
 \title{Performance Measures and Monte Carlo Standard Errors}
@@ -63,6 +67,14 @@ mean_ci_width_mcse(ci_upper, ci_lower)
 mean_generic_statistic(G)
 
 mean_generic_statistic_mcse(G)
+
+positive_likelihood_ratio(tp, fp, fn, tn)
+
+positive_likelihood_ratio_mcse(tp, fp, fn, tn)
+
+negative_likelihood_ratio(tp, fp, fn, tn)
+
+negative_likelihood_ratio_mcse(tp, fp, fn, tn)
 }
 \arguments{
 \item{theta_hat}{Vector of parameter estimates from simulations}
@@ -85,7 +97,10 @@ Each MCSE function returns a numeric value representing the Monte Carlo standard
 A comprehensive set of functions for computing performance measures and their
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
-\insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}. Also see
+\insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}.
+Positive and negative likelihood ratios are defined in
+\insertCite{huang2023relative;textual}{PublicationBiasBenchmark} and
+\insertCite{deeks2004diagnostic;textual}{PublicationBiasBenchmark}. Also see
 \insertCite{morris2019using;textual}{PublicationBiasBenchmark} for additional
 details. Bias and relative bias were modified to account for possibly different
 true values across repetitions.
@@ -103,6 +118,8 @@ The package provides the following performance measures and their corresponding 
 \item \code{coverage(ci_lower, ci_upper, theta)}: Coverage probability
 \item \code{power(test_rejects_h0)}: Statistical power
 \item \code{mean_ci_width(ci_upper, ci_lower)}: Mean confidence interval width
+\item \code{positive_likelihood_ratio(tp, fp, fn, tn)}: Log positive likelihood ratio
+\item \code{negative_likelihood_ratio(tp, fp, fn, tn)}: Log negative likelihood ratio
 \item \code{mean_generic_statistic(G)}: Mean of any generic statistic
 }
 }

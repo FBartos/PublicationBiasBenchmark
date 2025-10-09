@@ -4,7 +4,10 @@
 #' A comprehensive set of functions for computing performance measures and their
 #' Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 #' based on definitions from Table 3 in
-#' \insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}. Also see
+#' \insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}.
+#' Positive and negative likelihood ratios are defined in
+#' \insertCite{huang2023relative;textual}{PublicationBiasBenchmark} and
+#' \insertCite{deeks2004diagnostic;textual}{PublicationBiasBenchmark}. Also see
 #' \insertCite{morris2019using;textual}{PublicationBiasBenchmark} for additional
 #' details. Bias and relative bias were modified to account for possibly different
 #' true values across repetitions.
@@ -13,6 +16,8 @@
 #' @aliases bias bias_mcse relative_bias relative_bias_mcse mse mse_mcse rmse rmse_mcse
 #' @aliases empirical_variance empirical_variance_mcse empirical_se empirical_se_mcse
 #' @aliases coverage coverage_mcse power power_mcse mean_ci_width mean_ci_width_mcse
+#' @aliases positive_likelihood_ratio positive_likelihood_ratio_mcse
+#' @aliases negative_likelihood_ratio negative_likelihood_ratio_mcse
 #' @aliases mean_generic_statistic mean_generic_statistic_mcse
 #'
 #' @details
@@ -28,6 +33,8 @@
 #'   \item \code{coverage(ci_lower, ci_upper, theta)}: Coverage probability
 #'   \item \code{power(test_rejects_h0)}: Statistical power
 #'   \item \code{mean_ci_width(ci_upper, ci_lower)}: Mean confidence interval width
+#'   \item \code{positive_likelihood_ratio(tp, fp, fn, tn)}: Log positive likelihood ratio
+#'   \item \code{negative_likelihood_ratio(tp, fp, fn, tn)}: Log negative likelihood ratio
 #'   \item \code{mean_generic_statistic(G)}: Mean of any generic statistic
 #' }
 #'
@@ -257,6 +264,34 @@ mean_generic_statistic_mcse <- function(G) {
   n_sim <- length(G)
   S_G_sq <- S_G_squared(G)
   sqrt(S_G_sq / n_sim)
+}
+
+#' @rdname measures
+#' @export
+positive_likelihood_ratio <- function(tp, fp, fn, tn) {
+  power <- tp/(tp + fn)
+  t1er <- fp/(fp + tn)
+  log(power)-log(t1er)
+}
+
+#' @rdname measures
+#' @export
+positive_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
+  sqrt(1/tp - 1/(tp + fn) + 1/fp - 1/(fp + tn))
+}
+
+#' @rdname measures
+#' @export
+negative_likelihood_ratio <- function(tp, fp, fn, tn) {
+  power <- tp/(tp + fn)
+  t1er <- fp/(fp + tn)
+  log1p(-power)-log1p(-t1er)
+}
+
+#' @rdname measures
+#' @export
+negative_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
+  sqrt(1/tn - 1/(tp + fn) + 1/fn - 1/(fp + tn))
 }
 
 

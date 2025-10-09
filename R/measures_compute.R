@@ -210,7 +210,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     # Precompute H0 rejection
     # this needs to be done before merging potential method replacement because they
     # might use different power_test_type and power_threshold values
-    if (measure_name == "power") {
+    if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
       if (power_test_type[i] == "p_value") {
         test_statistic <- method_results[[p_value_col]]
         reject_h0      <- test_statistic < power_threshold_p_value
@@ -227,48 +227,64 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
       # Select the condition results
       method_condition_results <- method_results[method_results$condition_id == condition,,drop = FALSE]
 
+      # Select the matching null condition when likelihood ratio is requested
+      if (measure_name %in% c("positive_likelihood_ratio", "negative_likelihood_ratio")) {
+
+        this_condition <- conditions[conditions$condition_id == condition,,drop=FALSE]
+
+        # Do not compute for true null hypothesis
+        if (this_condition[[true_effect_col]] == 0)
+          next
+
+        # Find the matching null hypothesis
+        this_null_condition <- this_condition
+        this_null_condition[[true_effect_col]] <- 0
+        null_conditions        <- conditions[conditions[[true_effect_col]] == 0,,drop=FALSE]
+        this_null_condition_id <- NA
+        for (j in 1:nrow(null_conditions)) {
+          if (all(null_conditions[j,colnames(null_conditions) != "condition_id",drop=FALSE] == this_null_condition[,colnames(this_null_condition) != "condition_id",drop=FALSE])) {
+            this_null_condition_id <- null_conditions[j,"condition_id"]
+          }
+        }
+
+        if (is.na(this_null_condition_id))
+          stop("The matching null hypothesis condition was not found")
+
+        # select the null condition results
+        method_condition_results_null <- method_results[method_results$condition_id == this_null_condition_id,,drop = FALSE]
+
+        # Replace results in case of missingness
+        method_name <- paste0(this_method, "-", this_method_setting)
+        if (!all(method_condition_results_null[[convergence_col]]) && !is.null(method_replacements)) {
+          method_condition_results_null <- method_condition_results_replacement(
+            method_condition_results    = method_condition_results_null,
+            method_name                 = method_name,
+            method_replacements         = method_replacements,
+            n_repetitions               = n_repetitions,
+            condition                   = this_null_condition_id,
+            convergence_col             = convergence_col,
+            method_replacements_results = method_replacements_results,
+            measure_name                = measure_name
+          )
+        }
+
+      }
+
       # Replace results in case of missingness
-      replaced     <- FALSE
+      replaced    <- FALSE
       method_name <- paste0(this_method, "-", this_method_setting)
       if (!all(method_condition_results[[convergence_col]]) && !is.null(method_replacements)) {
-
-        if (is.null(method_replacements[[method_name]]))
-          stop(paste0("No method replacements specified for method-method_setting combination ", method_name))
-
-        # Subset converged results
-        method_condition_results <- method_condition_results[method_condition_results[[convergence_col]],,drop = FALSE]
-
-        # Find missing repetitions
-        repetitions_all     <- 1:n_repetitions
-        repetitions_missing <- repetitions_all[!repetitions_all %in% method_condition_results[["repetition_id"]][method_condition_results[[convergence_col]]]]
-
-        # Fill in the missing repetitions
-        replaced <- NULL
-        replacement_spec <- method_replacements[[method_name]]
-
-        for (j in seq_along(replacement_spec$method)){
-
-          # Break if all missing repetitions are replaced
-          if (length(repetitions_missing) == 0)
-            break
-
-          # Get replacement method info
-          replacement_method  <- replacement_spec$method[j]
-          replacement_setting <- replacement_spec$method_setting[j]
-          replacement_key     <- paste0(replacement_method, "-", replacement_setting)
-
-          # Find missing repetitions
-          temp_replacement <- method_replacements_results[[method_name]][[replacement_key]]
-          temp_replacement <- temp_replacement[temp_replacement$condition_id == condition & temp_replacement[[convergence_col]],,drop=FALSE]
-          temp_replacement <- temp_replacement[temp_replacement[["repetition_id"]] %in% repetitions_missing,,drop=FALSE]
-
-          # Store information about replacement
-          replaced <- paste0(replaced, paste0(paste0(replacement_key,"=",nrow(temp_replacement))), sep = ";")
-
-          # Merge and update
-          method_condition_results <- safe_rbind(list(method_condition_results, temp_replacement))
-          repetitions_missing      <- repetitions_all[!repetitions_all %in% method_condition_results[["repetition_id"]][method_condition_results[[convergence_col]]]]
-        }
+        method_condition_results <- method_condition_results_replacement(
+          method_condition_results    = method_condition_results,
+          method_name                 = method_name,
+          method_replacements         = method_replacements,
+          n_repetitions               = n_repetitions,
+          condition                   = condition,
+          convergence_col             = convergence_col,
+          method_replacements_results = method_replacements_results,
+          measure_name                 = measure_name
+        )
+        replaced <- attr(method_condition_results, "replaced")
       }
 
       # Create result holder
@@ -384,12 +400,35 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 
         } else {
 
+          test_rejects_h0 <- test_rejects_h0[valid_idx]
           result_df[[measure_col_name]] <- measure_fun(test_rejects_h0 = test_rejects_h0)
           result_df[[mcse_col_name]]    <- measure_mcse_fun(test_rejects_h0 = test_rejects_h0)
 
         }
 
         result_df[["n_valid"]] <- sum(valid_idx)
+
+      } else if (measure_name %in% c("positive_likelihood_ratio", "negative_likelihood_ratio")) {
+
+        test_rejects_h0_null <- method_condition_results_null[["h0_rejected"]]
+        test_rejects_h0_alt  <- method_condition_results[["h0_rejected"]]
+        valid_idx_null <- !is.na(test_rejects_h0_null)
+        valid_idx_alt  <- !is.na(test_rejects_h0_alt)
+
+        if (sum(valid_idx_null) == 0 || sum(valid_idx_alt) == 0) {
+
+          warning(paste("No valid h0 rejection indicators for method", this_method, "method_setting", this_method_setting, "condition", condition, "- setting values to NA"), immediate. = TRUE)
+          result_df[[measure_col_name]] <- NA
+          result_df[[mcse_col_name]]    <- NA
+
+        } else {
+
+          test_rejects_h0_null <- test_rejects_h0_null[valid_idx_null]
+          test_rejects_h0_alt  <- test_rejects_h0_alt[valid_idx_alt]
+          result_df[[measure_col_name]] <- measure_fun(tp = sum(test_rejects_h0_alt), fp = sum(test_rejects_h0_null), fn = sum(!test_rejects_h0_alt), tn = sum(!test_rejects_h0_null))
+          result_df[[mcse_col_name]]    <- measure_mcse_fun(tp = sum(test_rejects_h0_alt), fp = sum(test_rejects_h0_null), fn = sum(!test_rejects_h0_alt), tn = sum(!test_rejects_h0_null))
+
+        }
 
       }
 
@@ -406,6 +445,55 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   }
 
   return(new_results)
+}
+
+method_condition_results_replacement <- function(method_condition_results, method_name,
+                                                 method_replacements, n_repetitions,
+                                                 condition, convergence_col,
+                                                 method_replacements_results, measure_name) {
+
+  if (is.null(method_replacements[[method_name]]))
+    stop(paste0("No method replacements specified for method-method_setting combination ", method_name))
+
+  # Subset converged results
+  method_condition_results <- method_condition_results[method_condition_results[[convergence_col]],,drop = FALSE]
+
+  # Find missing repetitions
+  repetitions_all     <- 1:n_repetitions
+  repetitions_missing <- repetitions_all[!repetitions_all %in% method_condition_results[["repetition_id"]][method_condition_results[[convergence_col]]]]
+
+  # Fill in the missing repetitions
+  replaced         <- NULL
+  replacement_spec <- method_replacements[[method_name]]
+
+  for (j in seq_along(replacement_spec$method)){
+
+    # Break if all missing repetitions are replaced
+    if (length(repetitions_missing) == 0)
+      break
+
+    # Get replacement method info
+    replacement_method  <- replacement_spec$method[j]
+    replacement_setting <- replacement_spec$method_setting[j]
+    replacement_key     <- paste0(replacement_method, "-", replacement_setting)
+
+    # Find missing repetitions
+    temp_replacement <- method_replacements_results[[method_name]][[replacement_key]]
+    temp_replacement <- temp_replacement[temp_replacement$condition_id == condition & temp_replacement[[convergence_col]],,drop=FALSE]
+    temp_replacement <- temp_replacement[temp_replacement[["repetition_id"]] %in% repetitions_missing,,drop=FALSE]
+
+    # Store information about replacement
+    replaced <- paste0(replaced, paste0(paste0(replacement_key,"=",nrow(temp_replacement))), sep = ";")
+
+    # Merge and update
+    method_condition_results <- safe_rbind(list(method_condition_results, temp_replacement))
+    repetitions_missing      <- repetitions_all[!repetitions_all %in% method_condition_results[["repetition_id"]][method_condition_results[[convergence_col]]]]
+  }
+
+  # store the replacement information
+  attr(method_condition_results, "replaced") <- replaced
+
+  return(method_condition_results)
 }
 
 #' Compute Multiple Performance measures for a DGM
@@ -444,20 +532,23 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
   # Define all available measures if not specified
   if (is.null(measures))
     measures <- c("bias", "relative_bias", "mse", "rmse", "empirical_variance",
-                  "empirical_se", "coverage", "power", "mean_ci_width", "convergence")
+                  "empirical_se", "coverage", "power", "mean_ci_width", "convergence",
+                  "positive_likelihood_ratio", "negative_likelihood_ratio")
 
   # Define measure functions
   measure_functions <- list(
-    bias               = list(fun = bias,               mcse_fun = bias_mcse),
-    relative_bias      = list(fun = relative_bias,      mcse_fun = relative_bias_mcse),
-    mse                = list(fun = mse,                mcse_fun = mse_mcse),
-    rmse               = list(fun = rmse,               mcse_fun = rmse_mcse),
-    empirical_variance = list(fun = empirical_variance, mcse_fun = empirical_variance_mcse),
-    empirical_se       = list(fun = empirical_se,       mcse_fun = empirical_se_mcse),
-    coverage           = list(fun = coverage,           mcse_fun = coverage_mcse),
-    power              = list(fun = power,              mcse_fun = power_mcse),
-    mean_ci_width      = list(fun = mean_ci_width,      mcse_fun = mean_ci_width_mcse),
-    convergence        = list(fun = power,              mcse_fun = power_mcse)
+    bias                        = list(fun = bias,                      mcse_fun = bias_mcse),
+    relative_bias               = list(fun = relative_bias,             mcse_fun = relative_bias_mcse),
+    mse                         = list(fun = mse,                       mcse_fun = mse_mcse),
+    rmse                        = list(fun = rmse,                      mcse_fun = rmse_mcse),
+    empirical_variance          = list(fun = empirical_variance,        mcse_fun = empirical_variance_mcse),
+    empirical_se                = list(fun = empirical_se,              mcse_fun = empirical_se_mcse),
+    coverage                    = list(fun = coverage,                  mcse_fun = coverage_mcse),
+    power                       = list(fun = power,                     mcse_fun = power_mcse),
+    mean_ci_width               = list(fun = mean_ci_width,             mcse_fun = mean_ci_width_mcse),
+    convergence                 = list(fun = power,                     mcse_fun = power_mcse),
+    positive_likelihood_ratio   = list(fun = positive_likelihood_ratio, mcse_fun = positive_likelihood_ratio_mcse),
+    negative_likelihood_ratio   = list(fun = negative_likelihood_ratio, mcse_fun = negative_likelihood_ratio_mcse)
   )
 
   # Ensure output directory exists
@@ -494,7 +585,7 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     measure_result <- compute_single_measure(
       dgm_name                  = dgm_name,
       measure_name              = measure,
-      method                     = method,
+      method                    = method,
       method_setting            = method_setting,
       conditions                = conditions,
       measure_fun               = measure_functions[[measure]]$fun,
