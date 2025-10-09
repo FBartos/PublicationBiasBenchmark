@@ -51,7 +51,9 @@ Suggests:
     DT,
     ggplot2,
     scales,
-    ggdist
+    ggdist,
+    rprojroot,
+    desc
 RdMacros: Rdpack
 URL: https://github.com/FBartos/PublicationBiasBenchmark, https://fbartos.github.io/PublicationBiasBenchmark/
 BugReports: https://github.com/FBartos/PublicationBiasBenchmark/issues

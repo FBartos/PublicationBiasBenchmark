@@ -36,8 +36,8 @@ A BibTeX entry is given by
 }
 ```
 
-An overview of the benchmark results is available as Articles at the
-GitHub Pages:
+Overviews of the benchmark results are available as articles on the
+package website:
 
 - [Overall
   Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html)
@@ -50,7 +50,7 @@ Contributor guidelines for extending the package with data generating
 mechanisms and methods are available at:
 
 - [How to add a new data generating
-  mechanisms](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
+  mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
 - [How to add a new
   method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
 
@@ -65,7 +65,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-    #> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
+    #> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
     #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
     #> 
     #> Attaching package: 'PublicationBiasBenchmark'
@@ -76,7 +76,6 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 ### Simulating From Existing Data Generating Mechanisms
 
 ``` r
-
 # Obtain a data.frame with pre-defined conditions
 dgm_conditions("Stanley2017")
 
@@ -87,10 +86,9 @@ df <- simulate_dgm("Stanley2017", 2)
 run_method("RMA", df)
 ```
 
-### Use Pre-Simulated Datasets
+### Using Pre-Simulated Datasets
 
 ``` r
-
 # download the pre-simulated datasets
 # the default settings downloads the datasets to the `resources` directory, use
 # PublicationBiasBenchmark.options(simulation_directory = "/path/")
@@ -101,10 +99,9 @@ download_dgm_datasets("no_bias")
 retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 ```
 
-### Use Pre-Computed Results
+### Using Pre-Computed Results
 
 ``` r
-
 # download the pre-computed results
 download_dgm_results("no_bias")
 
@@ -115,10 +112,9 @@ retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id 
 retrieve_dgm_results("no_bias")
 ```
 
-### Use Pre-Computed Measures
+### Using Pre-Computed Measures
 
 ``` r
-
 # download the pre-computed measures
 download_dgm_measures("no_bias")
 
@@ -129,7 +125,7 @@ retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id 
 retrieve_dgm_measures("no_bias")
 ```
 
-### Visualize Precomputed Results
+### Visualizing Pre-Computed Results
 
 ``` r
 # retrieve all measures across all conditions and measures
@@ -159,10 +155,9 @@ boxplot(power*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(10, 100)
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-### Simulating From Existing DGM With Custom Settings
+### Simulating From an Existing DGM With Custom Settings
 
 ``` r
-
 # define sim setting
 sim_settings <- list(
   n_studies     = 100,
@@ -264,8 +259,8 @@ Monte Carlo standard errors/
 
 ### DGM OSF Repositories
 
-All DGM are linked within the OSF repository (<https://osf.io/exf3m/>)
-and contain the following elements:
+All DGMs are linked to the OSF repository (<https://osf.io/exf3m/>) and
+contain the following elements:
 
 - `data` : folder containing by-condition simulated datasets for all
   repetitions

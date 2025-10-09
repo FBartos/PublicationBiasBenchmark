@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
 ```
 
 
-This vignette explains how to add new publication bias correction methods to the `PublicationBiasBenchmark` package. 
-We'll use the PET (Precision-Effect Test) method as an example.
+This vignette explains how to add new publication bias correction methods to the `PublicationBiasBenchmark` package. In the following, we will use the PET (Precision-Effect Test) method as an example.
 
 ## Overview
 
@@ -33,16 +32,15 @@ All three functions must be implemented in a single file named `method-{METHOD_N
 
 For a method called "PET", you need to create a file named `R/method-PET.R` containing three functions:
 
-- `method.PET()` - The main implementation
-- `method_settings.PET()` - Available settings/configurations
-- `method_extra_columns.PET()` - Additional result columns
+- `method.PET()`: The main implementation
+- `method_settings.PET()`: Available settings/configurations
+- `method_extra_columns.PET()`: Additional result columns
 
 The naming pattern is crucial for the package's S3 method dispatch system to work correctly.
 
 ## 1. Main Method Function: `method.{METHOD_NAME}()`
 
-This is the core function that implements your statistical method. 
-Here's the PET implementation as an example:
+This is the core function that implements your statistical method. Here is the PET implementation as an example:
 
 ```{r, eval=FALSE}
 #' @title PET (Precision-Effect Test) Method
@@ -121,13 +119,6 @@ method.PET <- function(method_name, data, settings = NULL) {
 - `data`: Data frame with `yi` (effect sizes), `sei` (standard errors), and `ni` (sample sizes).
 - `settings`: Optional list of method-specific settings
 
-Some data generating mechanisms may provide additional information in the `data` argument. 
-If your method can utilize this information, you should implement additional input check and dispatch logic.
-Those additional columns might include:
-
- - `study_id`: Unique identifier for each study/cluster (in the presence of multilevel/clustered data)
- - `es_type`: Type of standardized effect size (e.g., "SMD", "logOR", "none")
-
 **Output:**
 Must return a data frame with these **required columns**:
 
@@ -166,10 +157,7 @@ method_settings.PET <- function(method_name) {
 }
 ```
 
-The selected settings are passed to your main function as the `settings` parameter.
-There, the main function can use these settings to adjust its behavior.
-Once defined, these settings cannot be changed retrospectively to ensure reproducibility
-and continuity of the benchmark.
+The selected settings are passed to your main function as the `settings` parameter. There, the main function can use these settings to adjust its behavior. Once defined, these settings cannot be changed retrospectively to ensure reproducibility and continuity of the benchmark.
 
 For an example of a method that defines several settings we can examine the random effects meta-analysis (RMA) method:
 
@@ -200,15 +188,13 @@ method_extra_columns.PET <- function(method_name) {
   c("bias_coefficient", "bias_p_value")
 }
 ```
-The column names must match exactly the additional columns that your main function returns.
-These columns will be included in the final output data frame alongside the required columns 
-and guarantee that the results can be merged in case the method fails with an error.
+The column names must match exactly the additional columns that your main function returns. These columns will be included in the final output data frame alongside the required columns and guarantee that the results can be merged in case the method fails with an error.
 
 Use `character(0)` or `c()` if your method has no extra columns
 
 ## Using Your New Method
 
-Once implemented, your method can be used through the unified interface:
+Once implemented, your method can be used through a unified interface:
 
 ```{r, eval=FALSE}
 # Create example data

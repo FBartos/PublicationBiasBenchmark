@@ -27,7 +27,7 @@ create_raincloud_plot(this_results, "convergence", "Convergence", ylim_range = c
 create_raincloud_plot(this_results, if (common_scale) "bias" else "bias_rank", if (common_scale) "Bias" else "Rank(Bias)" , ylim_range = if (common_scale) c(-0.5, 0.5), reference_line = if (common_scale) 0)
 ```
 
-`r if (!common_scale) "Methods are compared using repetition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
 
 #### RMSE
 
@@ -35,7 +35,7 @@ create_raincloud_plot(this_results, if (common_scale) "bias" else "bias_rank", i
 create_raincloud_plot(this_results, if (common_scale) "rmse" else "rmse_rank",  if (common_scale) "RMSE" else "Rank(RMSE)", ylim_range = if (common_scale) c(0, 0.5), reference_line = if (common_scale) 0)
 ```
 
-`r if (!common_scale) "Methods are compared using repetition-wise ranks. Direct comparison using the average rmse is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)." else "Values larger than 0.5 are visualized as 0.5."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
 
 #### 95% CI Coverage
 

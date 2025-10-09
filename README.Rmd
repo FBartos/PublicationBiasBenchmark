@@ -41,7 +41,7 @@ A BibTeX entry is given by
 }
 ```
 
-An overview of the benchmark results is available as Articles at the GitHub Pages:
+Overviews of the benchmark results are available as articles on the package website:
 
  - [Overall Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html)
  - [Stanley 2017](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2019.html)
@@ -50,7 +50,7 @@ An overview of the benchmark results is available as Articles at the GitHub Page
  
 Contributor guidelines for extending the package with data generating mechanisms and methods are available at:
 
- - [How to add a new data generating mechanisms](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
+ - [How to add a new data generating mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
  - [How to add a new method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
 
 The rest of this file overviews the main features of the package.
@@ -63,6 +63,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 ```
 
 ## Usage
+
 ```{r echo=FALSE}
 library(PublicationBiasBenchmark)
 ```
@@ -70,7 +71,6 @@ library(PublicationBiasBenchmark)
 ### Simulating From Existing Data Generating Mechanisms
 
 ```r
-
 # Obtain a data.frame with pre-defined conditions
 dgm_conditions("Stanley2017")
 
@@ -79,14 +79,12 @@ df <- simulate_dgm("Stanley2017", 2)
 
 # fit a method
 run_method("RMA", df)
-
 ```
 
 
-### Use Pre-Simulated Datasets
+### Using Pre-Simulated Datasets
 
 ```r 
-
 # download the pre-simulated datasets
 # the default settings downloads the datasets to the `resources` directory, use
 # PublicationBiasBenchmark.options(simulation_directory = "/path/")
@@ -95,13 +93,11 @@ download_dgm_datasets("no_bias")
 
 # retrieve first repetition of first condition from the downloaded datasets
 retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
-
 ```
 
-### Use Pre-Computed Results
+### Using Pre-Computed Results
 
 ```r 
-
 # download the pre-computed results
 download_dgm_results("no_bias")
 
@@ -113,10 +109,9 @@ retrieve_dgm_results("no_bias")
 
 ```
 
-### Use Pre-Computed Measures
+### Using Pre-Computed Measures
 
 ```r 
-
 # download the pre-computed measures
 download_dgm_measures("no_bias")
 
@@ -125,10 +120,9 @@ retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id 
 
 # retrieve all measures across all conditions and measures
 retrieve_dgm_measures("no_bias")
-
 ```
 
-### Visualize Precomputed Results
+### Visualizing Pre-Computed Results
 
 ```{r fig.height = 12, dpi = 320}
 # retrieve all measures across all conditions and measures
@@ -157,10 +151,9 @@ boxplot(power*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(10, 100)
 ```
 
 
-### Simulating From Existing DGM With Custom Settings
+### Simulating From an Existing DGM With Custom Settings
 
 ```r
-
 # define sim setting
 sim_settings <- list(
   n_studies     = 100,
@@ -183,6 +176,7 @@ run_method("RMA", df)
 ### Key Functions
 
 #### Data Generating Mechanisms
+
 - `simulate_dgm()`: Generates simulated data according to specified data generating model and settings.
 - `dgm_conditions()`: Lists prespecified conditions of the data generating mechanism.
 - `validate_dgm_setting()`: Validates (custom) setting of the data generating mechanism.
@@ -190,12 +184,14 @@ run_method("RMA", df)
 - `retrieve_dgm_dataset()`: Retrieves the pre-simulated dataset of a given condition and repetition from downloaded from the pre-downloaded OSF repository.
 
 #### Method Estimation And Results
+
 - `run_method()`: Estimates method on a supplied data according to the specified settings.
 - `method_settings()`: Lists prespecified settings of the method.
 - `download_dgm_results()`: Downloads pre-computed results from the OSF repository.
 - `retrieve_dgm_results()`: Retrieves the pre-computed results of a given method, condition, and repetition from the pre-downloaded OSF repository.
 
 #### Performance measures And Results
+
 - `bias()`, `bias_mcse()`, etc.: Functions to compute performance measures and their Monte Carlo standard errors.
 - `download_dgm_measures()`: Downloads pre-computed performance measures from the OSF repository.
 - `retrieve_dgm_measures()`: Retrieves the pre-computed performance measures of a given method, condition, and repetition from the pre-downloaded OSF repository.
@@ -237,7 +233,8 @@ See `methods("method")` for the full list:
 See `?measures` for the full list of performance measures and their Monte Carlo standard errors/
 
 ### DGM OSF Repositories
-All DGM are linked within the OSF repository (<https://osf.io/exf3m/>) and contain the following elements:
+
+All DGMs are linked to the OSF repository (<https://osf.io/exf3m/>) and contain the following elements:
 
 - `data` : folder containing by-condition simulated datasets for all repetitions
 - `results` : folder containing by-method results for all conditions * repetitions

@@ -30,7 +30,7 @@ tables_conditional_combined <- data.frame(
 kbl_table <- kableExtra::kbl(tables_conditional_combined, 
                              col.names = c("Rank", "Method", "Mean Rank", "Rank", "Method", "Mean Rank"),
                              digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on convergence" = 3, "Replacement if non-convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
@@ -40,7 +40,7 @@ kbl_table
 
 #### Bias
 
-`r if (!common_scale) "Methods are compared using repetition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_bias <- data.frame(
@@ -56,7 +56,7 @@ tables_conditional_bias <- data.frame(
 kbl_table <- kableExtra::kbl(tables_conditional_bias, 
                              col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
                              digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on convergence" = 3, "Replacement if non-convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
@@ -64,7 +64,7 @@ kbl_table
 
 #### RMSE
 
-`r if (!common_scale) "Methods are compared using repetition-wise ranks. Direct comparison using the average rmse is not possible because the data generating mechanisms differ in the outcome scale. See a DGM-specific results (or subresults)."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_rmse <- data.frame(
@@ -80,7 +80,7 @@ tables_conditional_rmse <- data.frame(
 kbl_table <- kableExtra::kbl(tables_conditional_rmse, 
                              col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
                              digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on convergence" = 3, "Replacement if non-convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
@@ -102,7 +102,7 @@ tables_conditional_coverage <- data.frame(
 kbl_table <- kableExtra::kbl(tables_conditional_coverage, 
                              col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
                              digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on convergence" = 3, "Replacement if non-convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
@@ -124,7 +124,7 @@ tables_conditional_error <- data.frame(
 kbl_table <- kableExtra::kbl(tables_conditional_error, 
                              col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
                              digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on convergence" = 3, "Replacement if non-convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
@@ -146,7 +146,7 @@ tables_conditional_power <- data.frame(
 kbl_table <- kableExtra::kbl(tables_conditional_power, 
                              col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
                              digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Condition" = 3, "Replacement" = 3))
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on convergence" = 3, "Replacement if non-convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table

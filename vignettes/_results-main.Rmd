@@ -124,10 +124,9 @@ this_tables_replacement   <- tables_replacement
 ```
 
 
-### By-Condition Performance (Conditional) {.tabset .tabset-fade .tabset-pills}
+### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below are conditional on convergence. 
-Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+The results below are conditional on method convergence. Note that the methods might differ in convergence rate and are therefore not necessarily compared on the same data sets.
 
 ```{r, include = FALSE}
 this_results <- results_conditional
@@ -136,9 +135,9 @@ this_results <- results_conditional
 ```
 
 
-### By-Condition Performance (Replacement) {.tabset .tabset-fade .tabset-pills}
+### By-Condition Performance (Replacement in Case of Non-Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 
 ```{r, include = FALSE}
 this_results <- results_replacement
