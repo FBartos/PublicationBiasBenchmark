@@ -3,6 +3,11 @@
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
 Siepe et al. (2024)
+.
+Positive and negative likelihood ratios are defined in
+Huang and Trinquart (2023)
+ and
+Deeks and Altman (2004)
 . Also see
 Morris et al. (2019)
  for additional
@@ -11,6 +16,11 @@ true values across repetitions."><meta property="og:description" content="A comp
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
 Siepe et al. (2024)
+.
+Positive and negative likelihood ratios are defined in
+Huang and Trinquart (2023)
+ and
+Deeks and Altman (2004)
 . Also see
 Morris et al. (2019)
  for additional
@@ -67,6 +77,11 @@ true values across repetitions."></head><body>
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
 Siepe et al. (2024)
+.
+Positive and negative likelihood ratios are defined in
+Huang and Trinquart (2023)
+ and
+Deeks and Altman (2004)
 . Also see
 Morris et al. (2019)
  for additional
@@ -114,7 +129,15 @@ true values across repetitions.</p>
 <span></span>
 <span><span class="fu">mean_generic_statistic</span><span class="op">(</span><span class="va">G</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">mean_generic_statistic_mcse</span><span class="op">(</span><span class="va">G</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">mean_generic_statistic_mcse</span><span class="op">(</span><span class="va">G</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">positive_likelihood_ratio</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">positive_likelihood_ratio_mcse</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">negative_likelihood_ratio</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">negative_likelihood_ratio_mcse</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -162,6 +185,8 @@ Each MCSE function returns a numeric value representing the Monte Carlo standard
 <li><p><code>coverage(ci_lower, ci_upper, theta)</code>: Coverage probability</p></li>
 <li><p><code>power(test_rejects_h0)</code>: Statistical power</p></li>
 <li><p><code>mean_ci_width(ci_upper, ci_lower)</code>: Mean confidence interval width</p></li>
+<li><p><code>positive_likelihood_ratio(tp, fp, fn, tn)</code>: Log positive likelihood ratio</p></li>
+<li><p><code>negative_likelihood_ratio(tp, fp, fn, tn)</code>: Log negative likelihood ratio</p></li>
 <li><p><code>mean_generic_statistic(G)</code>: Mean of any generic statistic</p></li>
 </ul></div>
 
