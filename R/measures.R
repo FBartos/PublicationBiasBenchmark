@@ -269,6 +269,10 @@ mean_generic_statistic_mcse <- function(G) {
 #' @rdname measures
 #' @export
 positive_likelihood_ratio <- function(tp, fp, fn, tn) {
+  if(tp == 0) tp <- 0.5
+  if(fp == 0) fp <- 0.5
+  if(tn == 0) tn <- 0.5
+  if(fn == 0) fn <- 0.5
   power <- tp/(tp + fn)
   t1er <- fp/(fp + tn)
   log(power)-log(t1er)
@@ -277,12 +281,20 @@ positive_likelihood_ratio <- function(tp, fp, fn, tn) {
 #' @rdname measures
 #' @export
 positive_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
+  if(tp == 0) tp <- 0.5
+  if(fp == 0) fp <- 0.5
+  if(tn == 0) tn <- 0.5
+  if(fn == 0) fn <- 0.5
   sqrt(1/tp - 1/(tp + fn) + 1/fp - 1/(fp + tn))
 }
 
 #' @rdname measures
 #' @export
 negative_likelihood_ratio <- function(tp, fp, fn, tn) {
+  if(tp == 0) tp <- 0.5
+  if(fp == 0) fp <- 0.5
+  if(tn == 0) tn <- 0.5
+  if(fn == 0) fn <- 0.5
   power <- tp/(tp + fn)
   t1er <- fp/(fp + tn)
   log1p(-power)-log1p(-t1er)
@@ -291,6 +303,10 @@ negative_likelihood_ratio <- function(tp, fp, fn, tn) {
 #' @rdname measures
 #' @export
 negative_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
+  if(tp == 0) tp <- 0.5
+  if(fp == 0) fp <- 0.5
+  if(tn == 0) tn <- 0.5
+  if(fn == 0) fn <- 0.5
   sqrt(1/tn - 1/(tp + fn) + 1/fn - 1/(fp + tn))
 }
 
