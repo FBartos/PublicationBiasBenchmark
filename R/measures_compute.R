@@ -241,8 +241,9 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
         this_null_condition[[true_effect_col]] <- 0
         null_conditions        <- conditions[conditions[[true_effect_col]] == 0,,drop=FALSE]
         this_null_condition_id <- NA
+        colnames_to_check      <- colnames(null_conditions)[colnames(null_conditions) != "condition_id"]
         for (j in 1:nrow(null_conditions)) {
-          if (all(null_conditions[j,colnames(null_conditions) != "condition_id",drop=FALSE] == this_null_condition[,colnames(this_null_condition) != "condition_id",drop=FALSE])) {
+          if (isTRUE(all.equal(unlist(unname(null_conditions[j,colnames_to_check])), unlist(unname(this_null_condition[,colnames_to_check]))))) {
             this_null_condition_id <- null_conditions[j,"condition_id"]
           }
         }
