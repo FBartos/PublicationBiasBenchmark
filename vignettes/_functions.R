@@ -49,29 +49,32 @@ make_table_summary <- function(results, common_scale = TRUE) {
            "Bias"        = if (common_scale) mean(bias, na.rm = TRUE) else mean(bias_rank, na.rm = TRUE),
            "RMSE"        = if (common_scale) mean(rmse, na.rm = TRUE) else mean(rmse_rank, na.rm = TRUE),
            "Coverage"    = mean(coverage, na.rm = TRUE),
+           "CI_width"    = mean(mean_ci_width, na.rm = TRUE),
            "Error"       = mean(power[H0], na.rm = TRUE),
-           "Power"       = mean(power[!H0], na.rm = TRUE)
+           "Power"       = mean(power[!H0], na.rm = TRUE),
+           "neg_LR"      = mean(negative_likelihood_ratio[!H0], na.rm = TRUE),
+           "pos_LR"      = mean(positive_likelihood_ratio[!H0], na.rm = TRUE)
          ))
   ))
 
-  table_summary[["combined"]] <- rowMeans(table_summary[, c("RMSE", "Error", "Bias", "Coverage", "Power")])
   return(table_summary)
 }
 make_rank_summary  <- function(table_summary) {
 
   rank_summary <- table_summary
 
-  for (measure in c("RMSE", "Error")) {
+  for (measure in c("RMSE", "Error", "CI_width", "neg_LR")) {
     rank_summary[[measure]]  <- rank(table_summary[[measure]], ties.method = "min", na.last = TRUE)
   }
-  for (measure in c("Convergence", "Coverage", "Power")) {
+  for (measure in c("Convergence", "Coverage", "Power", "pos_LR")) {
     rank_summary[[measure]]  <- rank(-table_summary[[measure]], ties.method = "min", na.last = TRUE)
   }
   for (measure in c("Bias")) {
     rank_summary[[measure]]  <- rank(abs(table_summary[[measure]]), ties.method = "min", na.last = TRUE)
   }
 
-  rank_summary[["combined"]] <- rank(table_summary[["combined"]], ties.method = "min", na.last = TRUE)
+  rank_summary[["combined_value"]] <- rowMeans(rank_summary[, c("Bias", "RMSE", "Coverage", "CI_width", "Power", "Error", "neg_LR", "pos_LR")])
+  rank_summary[["combined_rank"]]  <- rank(rank_summary[["combined_value"]], ties.method = "min", na.last = TRUE)
 
   return(rank_summary)
 }

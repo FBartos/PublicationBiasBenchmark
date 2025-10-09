@@ -158,7 +158,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
         )
 
         # Precompute H0 rejection
-        if (measure_name == "power") {
+        if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
           if ("power_test_type" %in% names(replacement_spec)) {
             if (length(replacement_spec$power_test_type) == 1) {
               replacement_power_test_type <- replacement_spec$power_test_type[1]
@@ -264,6 +264,9 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
             n_repetitions               = n_repetitions,
             condition                   = this_null_condition_id,
             convergence_col             = convergence_col,
+            estimate_col                = estimate_col,
+            ci_lower_col                = ci_lower_col,
+            ci_upper_col                = ci_upper_col,
             method_replacements_results = method_replacements_results,
             measure_name                = measure_name
           )
@@ -282,6 +285,9 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
           n_repetitions               = n_repetitions,
           condition                   = condition,
           convergence_col             = convergence_col,
+          estimate_col                = estimate_col,
+          ci_lower_col                = ci_lower_col,
+          ci_upper_col                = ci_upper_col,
           method_replacements_results = method_replacements_results,
           measure_name                 = measure_name
         )
@@ -431,6 +437,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 
         }
 
+        result_df[["n_valid"]] <- sum(c(valid_idx_null, valid_idx_alt))
+
       }
 
       measure_out[[key]] <- result_df
@@ -450,7 +458,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 
 method_condition_results_replacement <- function(method_condition_results, method_name,
                                                  method_replacements, n_repetitions,
-                                                 condition, convergence_col,
+                                                 condition, convergence_col, estimate_col, ci_lower_col, ci_upper_col,
                                                  method_replacements_results, measure_name) {
 
   if (is.null(method_replacements[[method_name]]))
@@ -458,6 +466,16 @@ method_condition_results_replacement <- function(method_condition_results, metho
 
   # Subset converged results
   method_condition_results <- method_condition_results[method_condition_results[[convergence_col]],,drop = FALSE]
+
+  # Remove results with missing critical columns (i.e., NAs despite convergence)
+  if (measure_name %in% c("convergence", "bias", "relative_bias", "mse", "rmse", "empirical_variance", "empirical_se")) {
+    method_condition_results <- method_condition_results[!is.na(method_condition_results[[estimate_col]]),,drop = FALSE]
+  } else if (measure_name %in% c("coverage", "mean_ci_width")) {
+    method_condition_results <- method_condition_results[!is.na(method_condition_results[[ci_lower_col]]),,drop = FALSE]
+    method_condition_results <- method_condition_results[!is.na(method_condition_results[[ci_upper_col]]),,drop = FALSE]
+  } else if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
+    method_condition_results <- method_condition_results[!is.na(method_condition_results[["h0_rejected"]]),,drop = FALSE]
+  }
 
   # Find missing repetitions
   repetitions_all     <- 1:n_repetitions
@@ -482,6 +500,16 @@ method_condition_results_replacement <- function(method_condition_results, metho
     temp_replacement <- method_replacements_results[[method_name]][[replacement_key]]
     temp_replacement <- temp_replacement[temp_replacement$condition_id == condition & temp_replacement[[convergence_col]],,drop=FALSE]
     temp_replacement <- temp_replacement[temp_replacement[["repetition_id"]] %in% repetitions_missing,,drop=FALSE]
+
+    # Remove results with missing critical columns (i.e., NAs despite convergence)
+    if (measure_name %in% c("convergence", "bias", "relative_bias", "mse", "rmse", "empirical_variance", "empirical_se")) {
+      temp_replacement <- temp_replacement[!is.na(temp_replacement[[estimate_col]]),,drop = FALSE]
+    } else if (measure_name %in% c("coverage", "mean_ci_width")) {
+      temp_replacement <- temp_replacement[!is.na(temp_replacement[[ci_lower_col]]),,drop = FALSE]
+      temp_replacement <- temp_replacement[!is.na(temp_replacement[[ci_upper_col]]),,drop = FALSE]
+    } else if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
+      temp_replacement <- temp_replacement[!is.na(temp_replacement[["h0_rejected"]]),,drop = FALSE]
+    }
 
     # Store information about replacement
     replaced <- paste0(replaced, paste0(paste0(replacement_key,"=",nrow(temp_replacement))), sep = ";")

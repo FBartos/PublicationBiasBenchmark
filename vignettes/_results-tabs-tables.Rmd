@@ -15,30 +15,6 @@ if (!exists("dgm_names")) {
 
 Method performance measures are aggregated across all simulated conditions to provide an overall impression of method performance. However, keep in mind that a method with a high overall ranking is not necessarily the "best" method for a particular application. To select a suitable method for your application, consider also non-aggregated performance measures in conditions most relevant to your application. (TODO: add links to non-aggregated data exploration tool)
 
-#### Combined
-
-A combined method rank is the mean method rank across all performance measures.  
-
-```{r echo=FALSE}
-tables_conditional_combined <- data.frame(
-  Rank_Convergence   = this_rankings_conditional$combined[order(this_rankings_conditional$combined)],
-  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$combined)],
-  Value_Convergence  = this_tables_conditional$combined[order(this_rankings_conditional$combined)],
-  Rank_Replacement   = this_rankings_replacement$combined[order(this_rankings_replacement$combined)],
-  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$combined)],
-  Value_Replacement  = this_tables_replacement$combined[order(this_rankings_replacement$combined)]
-)
-# Create table with two-level headers
-kbl_table <- kableExtra::kbl(tables_conditional_combined, 
-                             col.names = c("Rank", "Method", "Mean Rank", "Rank", "Method", "Mean Rank"),
-                             digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
-kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
-
-kbl_table
-```
-
-
 #### Bias
 
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
@@ -109,6 +85,30 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+
+#### CI Width
+
+```{r echo=FALSE} 
+tables_conditional_CI_width <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$CI_width[order(this_rankings_conditional$CI_width)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$CI_width)],
+  Value_Convergence  = this_tables_conditional$CI_width[order(this_rankings_conditional$CI_width)],
+  Rank_Replacement   = this_rankings_replacement$CI_width[order(this_rankings_replacement$CI_width)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$CI_width)],
+  Value_Replacement  = this_tables_replacement$CI_width[order(this_rankings_replacement$CI_width)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_CI_width, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+
 #### Type I Error Rate
 
 ```{r echo=FALSE} 
@@ -146,6 +146,80 @@ tables_conditional_power <- data.frame(
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tables_conditional_power, 
                              col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+
+#### Positive Likelihood Ratio
+
+This measure indicates how much a significant test result changes the odds of H1 versus H0.
+
+```{r echo=FALSE} 
+tables_conditional_pos_LR <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$pos_LR[order(this_rankings_conditional$pos_LR)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$pos_LR)],
+  Value_Convergence  = this_tables_conditional$pos_LR[order(this_rankings_conditional$pos_LR)],
+  Rank_Replacement   = this_rankings_replacement$pos_LR[order(this_rankings_replacement$pos_LR)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$pos_LR)],
+  Value_Replacement  = this_tables_replacement$pos_LR[order(this_rankings_replacement$pos_LR)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_pos_LR, 
+                             col.names = c("Rank", "Method", "Log Value", "Rank", "Method", "Log Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+
+#### Negative Likelihood Ratio
+
+This measure indicates how much a non-significant test result changes the odds of H1 versus H0.
+
+
+```{r echo=FALSE} 
+tables_conditional_neg_LR <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$neg_LR[order(this_rankings_conditional$neg_LR)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$neg_LR)],
+  Value_Convergence  = this_tables_conditional$neg_LR[order(this_rankings_conditional$neg_LR)],
+  Rank_Replacement   = this_rankings_replacement$neg_LR[order(this_rankings_replacement$neg_LR)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$neg_LR)],
+  Value_Replacement  = this_tables_replacement$neg_LR[order(this_rankings_replacement$neg_LR)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_neg_LR, 
+                             col.names = c("Rank", "Method", "Log Value", "Rank", "Method", "Log Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+#### Combined
+
+A combined method rank is the mean method rank across all performance measures.  
+
+```{r echo=FALSE}
+tables_conditional_combined <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$combined_rank[order(this_rankings_conditional$combined_rank)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$combined_rank)],
+  Value_Convergence  = this_rankings_conditional$combined_value[order(this_rankings_conditional$combined_rank)],
+  Rank_Replacement   = this_rankings_replacement$combined_rank[order(this_rankings_replacement$combined_rank)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$combined_rank)],
+  Value_Replacement  = this_rankings_replacement$combined_value[order(this_rankings_replacement$combined_rank)]
+)
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_combined, 
+                             col.names = c("Rank", "Method", "Mean Rank", "Rank", "Method", "Mean Rank"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)

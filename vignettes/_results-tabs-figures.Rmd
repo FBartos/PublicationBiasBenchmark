@@ -44,6 +44,13 @@ create_raincloud_plot(this_results, "coverage", "95% CI Coverage", ylim_range = 
   scale_y_continuous(labels = scales::percent)
 ```
 
+#### CI Width
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
+create_raincloud_plot(this_results, "mean_ci_width", "CI Width")
+```
+
+
 #### Type I Error Rate
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing Type I Error rates across different methods"} 
@@ -56,4 +63,16 @@ create_raincloud_plot(this_results[this_results$H0,], "power", "Type I Error Rat
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing statistical power across different methods"} 
 create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_range = c(0, 1)) +
   scale_y_continuous(labels = scales::percent)
+```
+
+#### "Positive Likelihood Ratio"
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing positive likelihood ratio across different methods"} 
+create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Positive Likelihood Ratio")
+```
+
+#### Negative Likelihood Ratio
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing negative likelihood ratio across different methods"} 
+create_raincloud_plot(this_results[!this_results$H0,], "negative_likelihood_ratio", "Negative Likelihood Ratio")
 ```

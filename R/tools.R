@@ -2,6 +2,14 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) 
 
 safe_rbind <- function(df_list) {
 
+  # Remove empty data.frames
+  nrows   <- sapply(df_list, nrow)
+
+  if (all(nrows) == 0)
+    return(df_list[[1]])
+
+  df_list <- df_list[nrows > 0]
+
   if (length(df_list) == 1)
     return(df_list[[1]])
 
@@ -43,7 +51,7 @@ safe_merge <- function(df_list) {
       colnames(df_temp)[colnames(df_temp) %in% c("replaced", "n_valid")], "_", colnames(df_temp)[2]
     )
 
-    df_out <- merge(df_out, df_temp, by = "merge_id")
+    df_out <- merge(df_out, df_temp, by = "merge_id", all.x = TRUE, all.y = TRUE)
   }
 
   df_out[["merge_id"]] <- NULL
