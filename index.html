@@ -87,7 +87,7 @@
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/FBartos/PublicationBiasBenchmark},</span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="dt">note</span> = {Working paper}</span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>}</span></code></pre></div>
-<p>An overview of the benchmark results is available as Articles at the GitHub Pages:</p>
+<p>Overviews of the benchmark results are available as articles on the package website:</p>
 <ul>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html">Overall Results</a></li>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2019.html">Stanley 2017</a></li>
@@ -95,7 +95,7 @@
 </ul>
 <p>Contributor guidelines for extending the package with data generating mechanisms and methods are available at:</p>
 <ul>
-<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html">How to add a new data generating mechanisms</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html">How to add a new data generating mechanism</a></li>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html">How to add a new method</a></li>
 </ul>
 <p>The rest of this file overviews the main features of the package.</p>
@@ -109,7 +109,7 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Attaching package: 'PublicationBiasBenchmark'</span></span>
@@ -120,8 +120,7 @@
 <h3 id="simulating-from-existing-data-generating-mechanisms">Simulating From Existing Data Generating Mechanisms<a class="anchor" aria-label="anchor" href="#simulating-from-existing-data-generating-mechanisms"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Obtain a data.frame with pre-defined conditions</span></span>
+<code class="sourceCode R"><span><span class="co"># Obtain a data.frame with pre-defined conditions</span></span>
 <span><span class="fu"><a href="reference/dgm_conditions.html">dgm_conditions</a></span><span class="op">(</span><span class="st">"Stanley2017"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># simulate the data from the second condition</span></span>
@@ -131,11 +130,10 @@
 <span><span class="fu"><a href="reference/run_method.html">run_method</a></span><span class="op">(</span><span class="st">"RMA"</span>, <span class="va">df</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="use-pre-simulated-datasets">Use Pre-Simulated Datasets<a class="anchor" aria-label="anchor" href="#use-pre-simulated-datasets"></a>
+<h3 id="using-pre-simulated-datasets">Using Pre-Simulated Datasets<a class="anchor" aria-label="anchor" href="#using-pre-simulated-datasets"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># download the pre-simulated datasets</span></span>
+<code class="sourceCode R"><span><span class="co"># download the pre-simulated datasets</span></span>
 <span><span class="co"># the default settings downloads the datasets to the `resources` directory, use</span></span>
 <span><span class="co"># PublicationBiasBenchmark.options(simulation_directory = "/path/")</span></span>
 <span><span class="co"># to change the settings</span></span>
@@ -145,11 +143,10 @@
 <span><span class="fu"><a href="reference/retrieve_dgm_dataset.html">retrieve_dgm_dataset</a></span><span class="op">(</span><span class="st">"no_bias"</span>, condition_id <span class="op">=</span> <span class="fl">1</span>, repetition_id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="use-pre-computed-results">Use Pre-Computed Results<a class="anchor" aria-label="anchor" href="#use-pre-computed-results"></a>
+<h3 id="using-pre-computed-results">Using Pre-Computed Results<a class="anchor" aria-label="anchor" href="#using-pre-computed-results"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># download the pre-computed results</span></span>
+<code class="sourceCode R"><span><span class="co"># download the pre-computed results</span></span>
 <span><span class="fu"><a href="reference/download_dgm.html">download_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># retrieve results the first repetition of first condition of RMA from the downloaded results</span></span>
@@ -159,11 +156,10 @@
 <span><span class="fu"><a href="reference/retrieve_dgm_results.html">retrieve_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="use-pre-computed-measures">Use Pre-Computed Measures<a class="anchor" aria-label="anchor" href="#use-pre-computed-measures"></a>
+<h3 id="using-pre-computed-measures">Using Pre-Computed Measures<a class="anchor" aria-label="anchor" href="#using-pre-computed-measures"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># download the pre-computed measures</span></span>
+<code class="sourceCode R"><span><span class="co"># download the pre-computed measures</span></span>
 <span><span class="fu"><a href="reference/download_dgm.html">download_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># retrieve measures of bias the first condition of RMA from the downloaded results</span></span>
@@ -173,7 +169,7 @@
 <span><span class="fu"><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="visualize-precomputed-results">Visualize Precomputed Results<a class="anchor" aria-label="anchor" href="#visualize-precomputed-results"></a>
+<h3 id="visualizing-pre-computed-results">Visualizing Pre-Computed Results<a class="anchor" aria-label="anchor" href="#visualizing-pre-computed-results"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># retrieve all measures across all conditions and measures</span></span>
@@ -202,11 +198,10 @@
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 <div class="section level3">
-<h3 id="simulating-from-existing-dgm-with-custom-settings">Simulating From Existing DGM With Custom Settings<a class="anchor" aria-label="anchor" href="#simulating-from-existing-dgm-with-custom-settings"></a>
+<h3 id="simulating-from-an-existing-dgm-with-custom-settings">Simulating From an Existing DGM With Custom Settings<a class="anchor" aria-label="anchor" href="#simulating-from-an-existing-dgm-with-custom-settings"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># define sim setting</span></span>
+<code class="sourceCode R"><span><span class="co"># define sim setting</span></span>
 <span><span class="va">sim_settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  n_studies     <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  mean_effect   <span class="op">=</span> <span class="fl">0.3</span>,</span>
@@ -336,7 +331,7 @@
 <div class="section level3">
 <h3 id="dgm-osf-repositories">DGM OSF Repositories<a class="anchor" aria-label="anchor" href="#dgm-osf-repositories"></a>
 </h3>
-<p>All DGM are linked within the OSF repository (<a href="https://osf.io/exf3m/" class="external-link uri">https://osf.io/exf3m/</a>) and contain the following elements:</p>
+<p>All DGMs are linked to the OSF repository (<a href="https://osf.io/exf3m/" class="external-link uri">https://osf.io/exf3m/</a>) and contain the following elements:</p>
 <ul>
 <li>
 <code>data</code> : folder containing by-condition simulated datasets for all repetitions</li>

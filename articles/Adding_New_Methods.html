@@ -77,8 +77,9 @@ Bartoš</h4>
     
     
 <p>This vignette explains how to add new publication bias correction
-methods to the <code>PublicationBiasBenchmark</code> package. We’ll use
-the PET (Precision-Effect Test) method as an example.</p>
+methods to the <code>PublicationBiasBenchmark</code> package. In the
+following, we will use the PET (Precision-Effect Test) method as an
+example.</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -106,12 +107,12 @@ directory.</p>
 <code>R/method-PET.R</code> containing three functions:</p>
 <ul>
 <li>
-<code><a href="../reference/method.PET.html">method.PET()</a></code> - The main implementation</li>
+<code><a href="../reference/method.PET.html">method.PET()</a></code>: The main implementation</li>
 <li>
-<code>method_settings.PET()</code> - Available
+<code>method_settings.PET()</code>: Available
 settings/configurations</li>
 <li>
-<code>method_extra_columns.PET()</code> - Additional result
+<code>method_extra_columns.PET()</code>: Additional result
 columns</li>
 </ul>
 <p>The naming pattern is crucial for the package’s S3 method dispatch
@@ -121,7 +122,7 @@ system to work correctly.</p>
 <h2 id="main-method-function-method-method_name">1. Main Method Function: <code>method.{METHOD_NAME}()</code><a class="anchor" aria-label="anchor" href="#main-method-function-method-method_name"></a>
 </h2>
 <p>This is the core function that implements your statistical method.
-Here’s the PET implementation as an example:</p>
+Here is the PET implementation as an example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' @title PET (Precision-Effect Test) Method</span></span>
 <span><span class="co">#'</span></span>
@@ -203,18 +204,6 @@ sizes).</li>
 <li>
 <code>settings</code>: Optional list of method-specific
 settings</li>
-</ul>
-<p>Some data generating mechanisms may provide additional information in
-the <code>data</code> argument. If your method can utilize this
-information, you should implement additional input check and dispatch
-logic. Those additional columns might include:</p>
-<ul>
-<li>
-<code>study_id</code>: Unique identifier for each study/cluster (in
-the presence of multilevel/clustered data)</li>
-<li>
-<code>es_type</code>: Type of standardized effect size (e.g., “SMD”,
-“logOR”, “none”)</li>
 </ul>
 <p><strong>Output:</strong> Must return a data frame with these
 <strong>required columns</strong>:</p>
@@ -313,7 +302,7 @@ no extra columns</p>
 <div class="section level2">
 <h2 id="using-your-new-method">Using Your New Method<a class="anchor" aria-label="anchor" href="#using-your-new-method"></a>
 </h2>
-<p>Once implemented, your method can be used through the unified
+<p>Once implemented, your method can be used through a unified
 interface:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create example data</span></span>

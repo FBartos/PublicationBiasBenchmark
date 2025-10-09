@@ -82,6 +82,13 @@ Bartoš</h4>
 <div class="section level3 tabset tabset-fade tabset-pills">
 <h3 class="tabset tabset-fade tabset-pills" id="average-performance">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance"></a>
 </h3>
+<p>Method performance measures are aggregated across all simulated
+conditions to provide an overall impression of method performance.
+However, keep in mind that a method with a high overall ranking is not
+necessarily the “best” method for a particular application. To select a
+suitable method for your application, consider also non-aggregated
+performance measures in conditions most relevant to your application.
+(TODO: add links to non-aggregated data exploration tool)</p>
 
 
 
@@ -99,17 +106,19 @@ Bartoš</h4>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="combined" role="tabpanel" aria-labelledby="combined-tab">
 
+<p>A combined method rank is the mean method rank across all performance
+measures.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Condition
+Conditional on convergence
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Replacement
+Replacement if non-convergence
 </div>
 </th>
 </tr>
@@ -480,21 +489,22 @@ NA
 </div>
 <div class="fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
-<p>Methods are compared using repetition-wise ranks. Direct comparison
+<p>Methods are compared using condition-wise ranks. Direct comparison
 using the average bias is not possible because the data generating
-mechanisms differ in the outcome scale. See a DGM-specific results (or
-subresults).</p>
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of bias values on the corresponding
+outcome scale.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Condition
+Conditional on convergence
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Replacement
+Replacement if non-convergence
 </div>
 </th>
 </tr>
@@ -865,21 +875,22 @@ pcurve-default
 </div>
 <div class="fade tab-pane" id="rmse" role="tabpanel" aria-labelledby="rmse-tab">
 
-<p>Methods are compared using repetition-wise ranks. Direct comparison
-using the average rmse is not possible because the data generating
-mechanisms differ in the outcome scale. See a DGM-specific results (or
-subresults).</p>
+<p>Methods are compared using condition-wise ranks. Direct comparison
+using the average RMSE is not possible because the data generating
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of RMSE values on the corresponding
+outcome scale.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Condition
+Conditional on convergence
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Replacement
+Replacement if non-convergence
 </div>
 </th>
 </tr>
@@ -1255,12 +1266,12 @@ pcurve-default
 <tr>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Condition
+Conditional on convergence
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Replacement
+Replacement if non-convergence
 </div>
 </th>
 </tr>
@@ -1636,12 +1647,12 @@ NA
 <tr>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Condition
+Conditional on convergence
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Replacement
+Replacement if non-convergence
 </div>
 </th>
 </tr>
@@ -2017,12 +2028,12 @@ NA
 <tr>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Condition
+Conditional on convergence
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Replacement
+Replacement if non-convergence
 </div>
 </th>
 </tr>
@@ -2394,19 +2405,19 @@ NA
 </div>
 </div>
 <div class="section level3 tabset tabset-fade tabset-pills">
-<h3 class="tabset tabset-fade tabset-pills" id="by-condition-performance-conditional">By-Condition Performance
-(Conditional)<a class="anchor" aria-label="anchor" href="#by-condition-performance-conditional"></a>
+<h3 class="tabset tabset-fade tabset-pills" id="by-condition-performance-conditional-on-method-convergence">By-Condition Performance
+(Conditional on Method Convergence)<a class="anchor" aria-label="anchor" href="#by-condition-performance-conditional-on-method-convergence"></a>
 </h3>
-<p>The results below are conditional on convergence. Note that the
-methods might differ in convergence rate and are therefore not compared
-on the same data sets.</p>
+<p>The results below are conditional on method convergence. Note that
+the methods might differ in convergence rate and are therefore not
+necessarily compared on the same data sets.</p>
 
 
 
 
 
 
-<ul class="nav nav-pills" id="by-condition-performance-conditional" role="tablist">
+<ul class="nav nav-pills" id="by-condition-performance-conditional-on-method-convergence" role="tablist">
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#convergence" id="convergence-tab" type="button" role="tab" aria-controls="convergence" aria-selected="true" class="active nav-link">Convergence</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-1" id="bias-1-tab" type="button" role="tab" aria-controls="bias-1" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-1" id="rmse-1-tab" type="button" role="tab" aria-controls="rmse-1" aria-selected="false" class="nav-link">RMSE</button></li>
@@ -2422,18 +2433,20 @@ on the same data sets.</p>
 <div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
 
 <p><img src="Results_no_bias_files/figure-html/unnamed-chunk-51-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
-<p>Methods are compared using repetition-wise ranks. Direct comparison
+<p>Methods are compared using condition-wise ranks. Direct comparison
 using the average bias is not possible because the data generating
-mechanisms differ in the outcome scale. See a DGM-specific results (or
-subresults).</p>
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of bias values on the corresponding
+outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
 
 <p><img src="Results_no_bias_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
-<p>Methods are compared using repetition-wise ranks. Direct comparison
-using the average rmse is not possible because the data generating
-mechanisms differ in the outcome scale. See a DGM-specific results (or
-subresults).</p>
+<p>Methods are compared using condition-wise ranks. Direct comparison
+using the average RMSE is not possible because the data generating
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of RMSE values on the corresponding
+outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
 
@@ -2450,23 +2463,24 @@ subresults).</p>
 </div>
 </div>
 <div class="section level3 tabset tabset-fade tabset-pills">
-<h3 class="tabset tabset-fade tabset-pills" id="by-condition-performance-replacement">By-Condition Performance
-(Replacement)<a class="anchor" aria-label="anchor" href="#by-condition-performance-replacement"></a>
+<h3 class="tabset tabset-fade tabset-pills" id="by-condition-performance-replacement-in-case-of-non-convergence">By-Condition Performance
+(Replacement in Case of Non-Convergence)<a class="anchor" aria-label="anchor" href="#by-condition-performance-replacement-in-case-of-non-convergence"></a>
 </h3>
 <p>The results below incorporate method replacement to handle
 non-convergence. If a method fails to converge, its results are replaced
-with the results from a simpler method This emulates what a data analyst
-may do in practice in case a method does not converge. However, note
-that these results do not correspond to “pure” method performance as
-they might combine multiple different methods. See TODO for details of
-the method replacement specification.</p>
+with the results from a simpler method (e.g., random-effects
+meta-analysis without publication bias adjustment). This emulates what a
+data analyst may do in practice in case a method does not converge.
+However, note that these results do not correspond to “pure” method
+performance as they might combine multiple different methods. See TODO
+for details of the method replacement specification.</p>
 
 
 
 
 
 
-<ul class="nav nav-pills" id="by-condition-performance-replacement" role="tablist">
+<ul class="nav nav-pills" id="by-condition-performance-replacement-in-case-of-non-convergence" role="tablist">
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#convergence-1" id="convergence-1-tab" type="button" role="tab" aria-controls="convergence-1" aria-selected="true" class="active nav-link">Convergence</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-2" id="bias-2-tab" type="button" role="tab" aria-controls="bias-2" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-2" id="rmse-2-tab" type="button" role="tab" aria-controls="rmse-2" aria-selected="false" class="nav-link">RMSE</button></li>
@@ -2482,18 +2496,20 @@ the method replacement specification.</p>
 <div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
 
 <p><img src="Results_no_bias_files/figure-html/unnamed-chunk-66-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
-<p>Methods are compared using repetition-wise ranks. Direct comparison
+<p>Methods are compared using condition-wise ranks. Direct comparison
 using the average bias is not possible because the data generating
-mechanisms differ in the outcome scale. See a DGM-specific results (or
-subresults).</p>
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of bias values on the corresponding
+outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
 <p><img src="Results_no_bias_files/figure-html/unnamed-chunk-67-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
-<p>Methods are compared using repetition-wise ranks. Direct comparison
-using the average rmse is not possible because the data generating
-mechanisms differ in the outcome scale. See a DGM-specific results (or
-subresults).</p>
+<p>Methods are compared using condition-wise ranks. Direct comparison
+using the average RMSE is not possible because the data generating
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of RMSE values on the corresponding
+outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
@@ -2513,7 +2529,7 @@ subresults).</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Wed Oct 08 14:58:47 2025 (UTC) using the
+<p>This report was compiled on Thu Oct 09 07:49:18 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

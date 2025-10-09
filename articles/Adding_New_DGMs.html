@@ -77,8 +77,8 @@ Bartoš</h4>
     
     
 <p>This vignette explains how to add new data generating mechanisms
-(DGMs) to the <code>PublicationBiasBenchmark</code> package. We’ll use
-the <code>no_bias</code> DGM as an example.</p>
+(DGMs) to the <code>PublicationBiasBenchmark</code> package. In the
+following, we will use the <code>no_bias</code> DGM as an example.</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -86,7 +86,7 @@ the <code>no_bias</code> DGM as an example.</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Main DGM function</strong>: Implements the data generation
-process</li>
+mechanism</li>
 <li>
 <strong>Validation function</strong>: Validates input parameters and
 settings<br>
@@ -105,13 +105,13 @@ conditions</li>
 <code>R/dgm-no_bias.R</code> containing three functions:</p>
 <ul>
 <li>
-<code><a href="../reference/dgm.no_bias.html">dgm.no_bias()</a></code> - The main data generation
+<code><a href="../reference/dgm.no_bias.html">dgm.no_bias()</a></code>: The main data generation
 implementation</li>
 <li>
-<code>validate_dgm_setting.no_bias()</code> - Parameter
+<code>validate_dgm_setting.no_bias()</code>: Parameter
 validation</li>
 <li>
-<code>dgm_conditions.no_bias()</code> - Pre-defined conditions</li>
+<code>dgm_conditions.no_bias()</code>: Pre-defined conditions</li>
 </ul>
 <p>The naming pattern is crucial for the package’s S3 method dispatch
 system to work correctly.</p>
@@ -120,7 +120,7 @@ system to work correctly.</p>
 <h2 id="main-dgm-function-dgm-dgm_name">1. Main DGM Function: <code>dgm.{DGM_NAME}()</code><a class="anchor" aria-label="anchor" href="#main-dgm-function-dgm-dgm_name"></a>
 </h2>
 <p>This is the core function that implements your data generating
-mechanism. Here’s the <code>no_bias</code> implementation as an
+mechanism. Here is the <code>no_bias</code> implementation as an
 example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' @title Normal Unbiased Data Generating Model</span></span>
@@ -294,7 +294,7 @@ ensure reproducibility and continuity of the benchmark.</p>
 <div class="section level2">
 <h2 id="using-your-new-dgm">Using Your New DGM<a class="anchor" aria-label="anchor" href="#using-your-new-dgm"></a>
 </h2>
-<p>Once implemented, your DGM can be used through the unified
+<p>Once implemented, your DGM can be used through a unified
 interface:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use with custom settings</span></span>
