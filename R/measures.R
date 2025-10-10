@@ -327,9 +327,12 @@ negative_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
 interval_score <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 
   score <- rep(NA, length(ci_lower))
-  score[theta < ci_lower] <- (ci_upper - ci_lower) + (2/alpha) * (ci_lower - theta)
-  score[theta > ci_upper] <- (ci_upper - ci_lower) + (2/alpha) * (theta - ci_upper)
-  score[ci_lower <= theta & theta <= ci_upper] <- (ci_upper - ci_lower)
+  theta_lower <- theta < ci_lower
+  theta_higer <- theta > ci_upper
+  theta_cover <- ci_lower <= theta & theta <= ci_upper
+  score[theta_lower] <- (ci_upper[theta_lower] - ci_lower[theta_lower]) + (2/alpha) * (ci_lower[theta_lower] - theta[theta_lower])
+  score[theta_higer] <- (ci_upper[theta_higer] - ci_lower[theta_higer]) + (2/alpha) * (theta[theta_higer] - ci_upper[theta_higer])
+  score[theta_cover] <- (ci_upper[theta_cover] - ci_lower[theta_cover])
 
   mean(score)
 }
@@ -339,9 +342,12 @@ interval_score <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 interval_score_mcse <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 
   score <- rep(NA, length(ci_lower))
-  score[theta < ci_lower] <- (ci_upper - ci_lower) + (2/alpha) * (ci_lower - theta)
-  score[theta > ci_upper] <- (ci_upper - ci_lower) + (2/alpha) * (theta - ci_upper)
-  score[ci_lower <= theta & theta <= ci_upper] <- (ci_upper - ci_lower)
+  theta_lower <- theta < ci_lower
+  theta_higer <- theta > ci_upper
+  theta_cover <- ci_lower <= theta & theta <= ci_upper
+  score[theta_lower] <- (ci_upper[theta_lower] - ci_lower[theta_lower]) + (2/alpha) * (ci_lower[theta_lower] - theta[theta_lower])
+  score[theta_higer] <- (ci_upper[theta_higer] - ci_lower[theta_higer]) + (2/alpha) * (theta[theta_higer] - ci_upper[theta_higer])
+  score[theta_cover] <- (ci_upper[theta_cover] - ci_lower[theta_cover])
 
   mean_generic_statistic_mcse(score)
 }
