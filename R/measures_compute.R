@@ -364,7 +364,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 
         result_df[["n_valid"]] <- sum(valid_idx)
 
-      } else if (measure_name %in% c("coverage", "mean_ci_width")) {
+      } else if (measure_name %in% c("coverage", "mean_ci_width", "interval_score")) {
 
         ci_lower  <- method_condition_results[[ci_lower_col]]
         ci_upper  <- method_condition_results[[ci_upper_col]]
@@ -376,7 +376,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
           result_df[[measure_col_name]] <- NA
           result_df[[mcse_col_name]]    <- NA
 
-        } else if (measure_name == "coverage") {
+        } else if (measure_name %in% c("coverage", "interval_score")) {
 
           ci_lower <- ci_lower[valid_idx]
           ci_upper <- ci_upper[valid_idx]
@@ -391,6 +391,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
           result_df[[mcse_col_name]]    <- measure_mcse_fun(ci_lower = ci_lower, ci_upper = ci_upper)
 
         }
+
+        interval_score
 
         result_df[["n_valid"]] <- sum(valid_idx)
 
@@ -470,7 +472,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
   # Remove results with missing critical columns (i.e., NAs despite convergence)
   if (measure_name %in% c("convergence", "bias", "relative_bias", "mse", "rmse", "empirical_variance", "empirical_se")) {
     method_condition_results <- method_condition_results[!is.na(method_condition_results[[estimate_col]]),,drop = FALSE]
-  } else if (measure_name %in% c("coverage", "mean_ci_width")) {
+  } else if (measure_name %in% c("coverage", "mean_ci_width", "interval_score")) {
     method_condition_results <- method_condition_results[!is.na(method_condition_results[[ci_lower_col]]),,drop = FALSE]
     method_condition_results <- method_condition_results[!is.na(method_condition_results[[ci_upper_col]]),,drop = FALSE]
   } else if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
@@ -504,7 +506,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
     # Remove results with missing critical columns (i.e., NAs despite convergence)
     if (measure_name %in% c("convergence", "bias", "relative_bias", "mse", "rmse", "empirical_variance", "empirical_se")) {
       temp_replacement <- temp_replacement[!is.na(temp_replacement[[estimate_col]]),,drop = FALSE]
-    } else if (measure_name %in% c("coverage", "mean_ci_width")) {
+    } else if (measure_name %in% c("coverage", "mean_ci_width", "interval_score")) {
       temp_replacement <- temp_replacement[!is.na(temp_replacement[[ci_lower_col]]),,drop = FALSE]
       temp_replacement <- temp_replacement[!is.na(temp_replacement[[ci_upper_col]]),,drop = FALSE]
     } else if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
@@ -561,7 +563,7 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
   # Define all available measures if not specified
   if (is.null(measures))
     measures <- c("bias", "relative_bias", "mse", "rmse", "empirical_variance",
-                  "empirical_se", "coverage", "power", "mean_ci_width", "convergence",
+                  "empirical_se", "coverage", "power", "mean_ci_width", "interval_score", "convergence",
                   "positive_likelihood_ratio", "negative_likelihood_ratio")
 
   # Define measure functions
@@ -573,8 +575,9 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     empirical_variance          = list(fun = empirical_variance,        mcse_fun = empirical_variance_mcse),
     empirical_se                = list(fun = empirical_se,              mcse_fun = empirical_se_mcse),
     coverage                    = list(fun = coverage,                  mcse_fun = coverage_mcse),
-    power                       = list(fun = power,                     mcse_fun = power_mcse),
     mean_ci_width               = list(fun = mean_ci_width,             mcse_fun = mean_ci_width_mcse),
+    interval_score              = list(fun = interval_score,            mcse_fun = interval_score_mcse),
+    power                       = list(fun = power,                     mcse_fun = power_mcse),
     convergence                 = list(fun = power,                     mcse_fun = power_mcse),
     positive_likelihood_ratio   = list(fun = positive_likelihood_ratio, mcse_fun = positive_likelihood_ratio_mcse),
     negative_likelihood_ratio   = list(fun = negative_likelihood_ratio, mcse_fun = negative_likelihood_ratio_mcse)

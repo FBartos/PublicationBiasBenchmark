@@ -16,10 +16,12 @@
 \alias{empirical_se_mcse}
 \alias{coverage}
 \alias{coverage_mcse}
-\alias{power}
-\alias{power_mcse}
 \alias{mean_ci_width}
 \alias{mean_ci_width_mcse}
+\alias{interval_score}
+\alias{interval_score_mcse}
+\alias{power}
+\alias{power_mcse}
 \alias{positive_likelihood_ratio}
 \alias{positive_likelihood_ratio_mcse}
 \alias{negative_likelihood_ratio}
@@ -75,6 +77,10 @@ positive_likelihood_ratio_mcse(tp, fp, fn, tn)
 negative_likelihood_ratio(tp, fp, fn, tn)
 
 negative_likelihood_ratio_mcse(tp, fp, fn, tn)
+
+interval_score(ci_lower, ci_upper, theta, alpha = 0.05)
+
+interval_score_mcse(ci_lower, ci_upper, theta, alpha = 0.05)
 }
 \arguments{
 \item{theta_hat}{Vector of parameter estimates from simulations}
@@ -88,6 +94,8 @@ negative_likelihood_ratio_mcse(tp, fp, fn, tn)
 \item{test_rejects_h0}{Logical vector indicating whether statistical tests reject the null hypothesis}
 
 \item{G}{Vector of generic statistics from simulations}
+
+\item{alpha}{Numeric indicating the 1 - coverage level for interval_score calculation}
 }
 \value{
 Each metric function returns a numeric value representing the performance measure.
@@ -97,7 +105,8 @@ Each MCSE function returns a numeric value representing the Monte Carlo standard
 A comprehensive set of functions for computing performance measures and their
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
-\insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}.
+\insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}. Winkler
+interval score is defined in \insertCite{winkler1972decision;textual}{PublicationBiasBenchmark}.
 Positive and negative likelihood ratios are defined in
 \insertCite{huang2023relative;textual}{PublicationBiasBenchmark} and
 \insertCite{deeks2004diagnostic;textual}{PublicationBiasBenchmark}. Also see
@@ -116,8 +125,9 @@ The package provides the following performance measures and their corresponding 
 \item \code{empirical_variance(theta_hat)}: Empirical variance
 \item \code{empirical_se(theta_hat)}: Empirical standard error
 \item \code{coverage(ci_lower, ci_upper, theta)}: Coverage probability
-\item \code{power(test_rejects_h0)}: Statistical power
 \item \code{mean_ci_width(ci_upper, ci_lower)}: Mean confidence interval width
+\item \code{interval_score(ci_lower, ci_upper, theta, alpha)}: interval_score
+\item \code{power(test_rejects_h0)}: Statistical power
 \item \code{positive_likelihood_ratio(tp, fp, fn, tn)}: Log positive likelihood ratio
 \item \code{negative_likelihood_ratio(tp, fp, fn, tn)}: Log negative likelihood ratio
 \item \code{mean_generic_statistic(G)}: Mean of any generic statistic

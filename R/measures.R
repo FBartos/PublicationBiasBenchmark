@@ -4,7 +4,8 @@
 #' A comprehensive set of functions for computing performance measures and their
 #' Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 #' based on definitions from Table 3 in
-#' \insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}.
+#' \insertCite{siepe2024simulation;textual}{PublicationBiasBenchmark}. Winkler
+#' interval score is defined in \insertCite{winkler1972decision;textual}{PublicationBiasBenchmark}.
 #' Positive and negative likelihood ratios are defined in
 #' \insertCite{huang2023relative;textual}{PublicationBiasBenchmark} and
 #' \insertCite{deeks2004diagnostic;textual}{PublicationBiasBenchmark}. Also see
@@ -15,7 +16,8 @@
 #' @name measures
 #' @aliases bias bias_mcse relative_bias relative_bias_mcse mse mse_mcse rmse rmse_mcse
 #' @aliases empirical_variance empirical_variance_mcse empirical_se empirical_se_mcse
-#' @aliases coverage coverage_mcse power power_mcse mean_ci_width mean_ci_width_mcse
+#' @aliases coverage coverage_mcse mean_ci_width mean_ci_width_mcse interval_score interval_score_mcse
+#' @aliases power power_mcse
 #' @aliases positive_likelihood_ratio positive_likelihood_ratio_mcse
 #' @aliases negative_likelihood_ratio negative_likelihood_ratio_mcse
 #' @aliases mean_generic_statistic mean_generic_statistic_mcse
@@ -31,8 +33,9 @@
 #'   \item \code{empirical_variance(theta_hat)}: Empirical variance
 #'   \item \code{empirical_se(theta_hat)}: Empirical standard error
 #'   \item \code{coverage(ci_lower, ci_upper, theta)}: Coverage probability
-#'   \item \code{power(test_rejects_h0)}: Statistical power
 #'   \item \code{mean_ci_width(ci_upper, ci_lower)}: Mean confidence interval width
+#'   \item \code{interval_score(ci_lower, ci_upper, theta, alpha)}: interval_score
+#'   \item \code{power(test_rejects_h0)}: Statistical power
 #'   \item \code{positive_likelihood_ratio(tp, fp, fn, tn)}: Log positive likelihood ratio
 #'   \item \code{negative_likelihood_ratio(tp, fp, fn, tn)}: Log negative likelihood ratio
 #'   \item \code{mean_generic_statistic(G)}: Mean of any generic statistic
@@ -43,6 +46,7 @@
 #' @param ci_lower Vector of lower confidence interval bounds
 #' @param ci_upper Vector of upper confidence interval bounds
 #' @param test_rejects_h0 Logical vector indicating whether statistical tests reject the null hypothesis
+#' @param alpha Numeric indicating the 1 - coverage level for interval_score calculation
 #' @param G Vector of generic statistics from simulations
 #'
 #' @return
@@ -316,6 +320,30 @@ negative_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
     fn <- fn + 0.5
   }
   sqrt(1/tn - 1/(tp + fn) + 1/fn - 1/(fp + tn))
+}
+
+#' @rdname measures
+#' @export
+interval_score <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
+
+  score <- rep(NA, length(ci_lower))
+  score[theta < ci_lower] <- (ci_upper - ci_lower) + (2/alpha) * (ci_lower - theta)
+  score[theta > ci_upper] <- (ci_upper - ci_lower) + (2/alpha) * (theta - ci_upper)
+  score[ci_lower <= theta & theta <= ci_upper] <- (ci_upper - ci_lower)
+
+  mean(score)
+}
+
+#' @rdname measures
+#' @export
+interval_score_mcse <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
+
+  score <- rep(NA, length(ci_lower))
+  score[theta < ci_lower] <- (ci_upper - ci_lower) + (2/alpha) * (ci_lower - theta)
+  score[theta > ci_upper] <- (ci_upper - ci_lower) + (2/alpha) * (theta - ci_upper)
+  score[ci_lower <= theta & theta <= ci_upper] <- (ci_upper - ci_lower)
+
+  mean_generic_statistic_mcse(score)
 }
 
 
