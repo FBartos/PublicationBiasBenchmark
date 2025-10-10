@@ -18,6 +18,8 @@
 #'   \item{environment}{Type of the simulation environment. One of \code{"FE"},
 #'                      \code{"RE"}, or \code{"PRE"}.}
 #'   \item{mean_effect}{Mean effect}
+#'   \item{bias}{Type of publication bias. One of \code{"none"}, \code{"positive"},
+#'   and \code{"significant"}.}
 #' }
 #'
 #' @details
@@ -56,7 +58,7 @@
 #'   \item{sei}{standard error}
 #'   \item{ni}{sample size}
 #'   \item{study_id}{study identifier}
-#'   \item{es_id}{effect size identifier}
+#'   \item{es_type}{effect size type}
 #' }
 #'
 #' @references
@@ -69,9 +71,11 @@ dgm.Alinaghi2018 <- function(dgm_name, settings) {
   # Extract settings
   environment   <- settings[["environment"]]
   mean_effect   <- settings[["mean_effect"]]
+  bias          <- settings[["bias"]]
 
   # Simulate data sets
   df <- .HongAndReed2021_Alinaghi2018_MetaStudy(environment, mean_effect)
+  df <- .HongAndReed2021_Alinaghi2018_ARBias(df, environment, bias)
 
   # Create result data frame
   data <- data.frame(
@@ -79,7 +83,7 @@ dgm.Alinaghi2018 <- function(dgm_name, settings) {
    sei      = df$se,
    ni       = df$obs,
    study_id = df$StdID,
-   es_id    = df$EstID
+   es_type  = "none"
   )
 
   return(data)
@@ -97,12 +101,15 @@ validate_dgm_setting.Alinaghi2018 <- function(dgm_name, settings) {
   # Extract settings
   environment   <- settings[["environment"]]
   mean_effect   <- settings[["mean_effect"]]
+  bias          <- settings[["bias"]]
 
   # Validate settings
   if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("FE", "RE", "PRE"))
     stop("'environment' must be a string with one of the following values: 'FE', 'RE', 'PRE'")
   if (length(mean_effect) != 1 || !is.numeric(mean_effect) || is.na(mean_effect))
     stop("'mean_effect' must be numeric")
+  if (!length(bias) == 1 || !is.character(bias) || !bias %in% c("none", "positive", "significant"))
+    stop("'bias' must be a string with one of the following values: 'none', 'positive', 'significant'")
 
   return(invisible(TRUE))
 }
@@ -113,11 +120,13 @@ dgm_conditions.Alinaghi2018 <- function(dgm_name) {
   # Keep the same order as in Hong and Reed 2021
   environment <- c("RE", "PRE", "FE")
   mean_effect <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
+  bias        <- c("none", "positive", "significant")
 
-  settings <- as.data.frame(matrix(NA, nrow = (length(environment)*length(mean_effect)), ncol=3))
-  colnames(settings)   <- c("environment", "mean_effect", "condition_id")
-  settings$environment <- sort(rep(environment, length(mean_effect)))
-  settings$mean_effect <- rep(mean_effect, length(environment))
+  settings <- as.data.frame(expand.grid(
+    environment = environment,
+    mean_effect = mean_effect,
+    bias        = bias
+  ))
 
   # attach setting id
   settings$condition_id <- 1:nrow(settings)
@@ -236,13 +245,13 @@ dgm_conditions.Alinaghi2018 <- function(dgm_name) {
   }
   if(bias!='none'){
     if(type=='PRE'){
-      if(bias=='Sig'){
+      if(bias=='significant'){
         MetaData<-subset(MetaData, ((MetaData$nSig>=0.7)| (MetaData$rnd<0.1)));
       }else{
         MetaData<-subset(MetaData, ((MetaData$nPos>=0.7)| (MetaData$rnd<0.1)));
       }
     }else{
-      if(bias=='Sig'){
+      if(bias=='significant'){
         MetaData<-subset(MetaData, ((MetaData$Sig==1)   | (MetaData$rnd<0.1)));
       }else{
         MetaData<-subset(MetaData, ((MetaData$effect>0) | (MetaData$rnd<0.1)));

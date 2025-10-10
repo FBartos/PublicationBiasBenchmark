@@ -13,6 +13,8 @@
 \item{environment}{Type of the simulation environment. One of \code{"FE"},
 \code{"RE"}, or \code{"PRE"}.}
 \item{mean_effect}{Mean effect}
+\item{bias}{Type of publication bias. One of \code{"none"}, \code{"positive"},
+and \code{"significant"}.}
 }}
 }
 \value{
@@ -21,7 +23,7 @@ Data frame with \describe{
 \item{sei}{standard error}
 \item{ni}{sample size}
 \item{study_id}{study identifier}
-\item{es_id}{effect size identifier}
+\item{es_type}{effect size type}
 }
 }
 \description{
