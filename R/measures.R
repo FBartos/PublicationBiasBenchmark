@@ -326,6 +326,9 @@ negative_likelihood_ratio_mcse <- function(tp, fp, fn, tn) {
 #' @export
 interval_score <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 
+  if (length(theta) == 1) # allow for different thetas across samples
+    theta <- rep(theta, length(ci_lower))
+
   score <- rep(NA, length(ci_lower))
   theta_lower <- theta < ci_lower
   theta_higer <- theta > ci_upper
@@ -340,6 +343,9 @@ interval_score <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 #' @rdname measures
 #' @export
 interval_score_mcse <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
+
+  if (length(theta) == 1) # allow for different thetas across samples
+    theta <- rep(theta, length(ci_lower))
 
   score <- rep(NA, length(ci_lower))
   theta_lower <- theta < ci_lower

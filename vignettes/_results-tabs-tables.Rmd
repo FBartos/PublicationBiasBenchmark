@@ -100,6 +100,29 @@ tables_conditional_CI_width <- data.frame(
 
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tables_conditional_CI_width, 
+                             col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+
+#### Interval Score
+
+```{r echo=FALSE} 
+tables_conditional_interval_score <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$interval_score[order(this_rankings_conditional$interval_score)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$interval_score)],
+  Value_Convergence  = this_tables_conditional$interval_score[order(this_rankings_conditional$interval_score)],
+  Rank_Replacement   = this_rankings_replacement$interval_score[order(this_rankings_replacement$interval_score)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$interval_score)],
+  Value_Replacement  = this_tables_replacement$interval_score[order(this_rankings_replacement$interval_score)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_interval_score, 
                              col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))

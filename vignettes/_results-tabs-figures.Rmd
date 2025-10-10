@@ -47,9 +47,14 @@ create_raincloud_plot(this_results, "coverage", "95% CI Coverage", ylim_range = 
 #### CI Width
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
-create_raincloud_plot(this_results, "mean_ci_width", "CI Width")
+create_raincloud_plot(this_results, "mean_ci_width", if (common_scale) "CI Width" else "Rank(CI Width)")
 ```
 
+#### Interval Score
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
+create_raincloud_plot(this_results, "interval_score", "Interval Score")
+```
 
 #### Type I Error Rate
 
@@ -65,7 +70,7 @@ create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_ra
   scale_y_continuous(labels = scales::percent)
 ```
 
-#### "Positive Likelihood Ratio"
+#### Positive Likelihood Ratio
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing positive likelihood ratio across different methods"} 
 create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Positive Likelihood Ratio")
