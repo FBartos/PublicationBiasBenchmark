@@ -3,6 +3,8 @@
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
 Siepe et al. (2024)
+. Winkler
+interval score is defined in Winkler (1972)
 .
 Positive and negative likelihood ratios are defined in
 Huang and Trinquart (2023)
@@ -16,6 +18,8 @@ true values across repetitions."><meta property="og:description" content="A comp
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
 Siepe et al. (2024)
+. Winkler
+interval score is defined in Winkler (1972)
 .
 Positive and negative likelihood ratios are defined in
 Huang and Trinquart (2023)
@@ -77,6 +81,8 @@ true values across repetitions."></head><body>
 Monte Carlo Standard Errors (MCSE) for simulation studies. All functions are
 based on definitions from Table 3 in
 Siepe et al. (2024)
+. Winkler
+interval score is defined in Winkler (1972)
 .
 Positive and negative likelihood ratios are defined in
 Huang and Trinquart (2023)
@@ -137,7 +143,11 @@ true values across repetitions.</p>
 <span></span>
 <span><span class="fu">negative_likelihood_ratio</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">negative_likelihood_ratio_mcse</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">negative_likelihood_ratio_mcse</span><span class="op">(</span><span class="va">tp</span>, <span class="va">fp</span>, <span class="va">fn</span>, <span class="va">tn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">interval_score</span><span class="op">(</span><span class="va">ci_lower</span>, <span class="va">ci_upper</span>, <span class="va">theta</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">interval_score_mcse</span><span class="op">(</span><span class="va">ci_lower</span>, <span class="va">ci_upper</span>, <span class="va">theta</span>, alpha <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -167,6 +177,10 @@ true values across repetitions.</p>
 <dt id="arg-g">G<a class="anchor" aria-label="anchor" href="#arg-g"></a></dt>
 <dd><p>Vector of generic statistics from simulations</p></dd>
 
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dd><p>Numeric indicating the 1 - coverage level for interval_score calculation</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -183,8 +197,9 @@ Each MCSE function returns a numeric value representing the Monte Carlo standard
 <li><p><code>empirical_variance(theta_hat)</code>: Empirical variance</p></li>
 <li><p><code>empirical_se(theta_hat)</code>: Empirical standard error</p></li>
 <li><p><code>coverage(ci_lower, ci_upper, theta)</code>: Coverage probability</p></li>
-<li><p><code>power(test_rejects_h0)</code>: Statistical power</p></li>
 <li><p><code>mean_ci_width(ci_upper, ci_lower)</code>: Mean confidence interval width</p></li>
+<li><p><code>interval_score(ci_lower, ci_upper, theta, alpha)</code>: interval_score</p></li>
+<li><p><code>power(test_rejects_h0)</code>: Statistical power</p></li>
 <li><p><code>positive_likelihood_ratio(tp, fp, fn, tn)</code>: Log positive likelihood ratio</p></li>
 <li><p><code>negative_likelihood_ratio(tp, fp, fn, tn)</code>: Log negative likelihood ratio</p></li>
 <li><p><code>mean_generic_statistic(G)</code>: Mean of any generic statistic</p></li>

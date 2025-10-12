@@ -843,34 +843,88 @@ Generating Mechanism (DGM).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1        10           0 none none                    0            1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dgm_conditions</span><span class="op">(</span><span class="st">"Alinaghi2018"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    environment mean_effect condition_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           FE         0.0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           FE         0.5            2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           FE         1.0            3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           FE         1.5            4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           FE         2.0            5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           FE         2.5            6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           FE         3.0            7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8           FE         3.5            8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9           FE         4.0            9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10         PRE         0.0           10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11         PRE         0.5           11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12         PRE         1.0           12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         PRE         1.5           13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14         PRE         2.0           14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15         PRE         2.5           15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         PRE         3.0           16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17         PRE         3.5           17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18         PRE         4.0           18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19          RE         0.0           19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20          RE         0.5           20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21          RE         1.0           21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22          RE         1.5           22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23          RE         2.0           23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24          RE         2.5           24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25          RE         3.0           25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26          RE         3.5           26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27          RE         4.0           27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    environment mean_effect        bias condition_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           RE         0.0        none            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          PRE         0.0        none            2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3           FE         0.0        none            3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           RE         0.5        none            4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          PRE         0.5        none            5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           FE         0.5        none            6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7           RE         1.0        none            7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          PRE         1.0        none            8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9           FE         1.0        none            9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10          RE         1.5        none           10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11         PRE         1.5        none           11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12          FE         1.5        none           12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13          RE         2.0        none           13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14         PRE         2.0        none           14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15          FE         2.0        none           15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16          RE         2.5        none           16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17         PRE         2.5        none           17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18          FE         2.5        none           18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19          RE         3.0        none           19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20         PRE         3.0        none           20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21          FE         3.0        none           21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22          RE         3.5        none           22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23         PRE         3.5        none           23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24          FE         3.5        none           24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25          RE         4.0        none           25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26         PRE         4.0        none           26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27          FE         4.0        none           27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28          RE         0.0    positive           28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29         PRE         0.0    positive           29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30          FE         0.0    positive           30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31          RE         0.5    positive           31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32         PRE         0.5    positive           32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33          FE         0.5    positive           33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34          RE         1.0    positive           34</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35         PRE         1.0    positive           35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36          FE         1.0    positive           36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37          RE         1.5    positive           37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38         PRE         1.5    positive           38</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39          FE         1.5    positive           39</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40          RE         2.0    positive           40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41         PRE         2.0    positive           41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42          FE         2.0    positive           42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43          RE         2.5    positive           43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44         PRE         2.5    positive           44</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45          FE         2.5    positive           45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46          RE         3.0    positive           46</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47         PRE         3.0    positive           47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48          FE         3.0    positive           48</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49          RE         3.5    positive           49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50         PRE         3.5    positive           50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51          FE         3.5    positive           51</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52          RE         4.0    positive           52</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53         PRE         4.0    positive           53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54          FE         4.0    positive           54</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55          RE         0.0 significant           55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56         PRE         0.0 significant           56</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57          FE         0.0 significant           57</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58          RE         0.5 significant           58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59         PRE         0.5 significant           59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60          FE         0.5 significant           60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61          RE         1.0 significant           61</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62         PRE         1.0 significant           62</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63          FE         1.0 significant           63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64          RE         1.5 significant           64</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65         PRE         1.5 significant           65</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66          FE         1.5 significant           66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67          RE         2.0 significant           67</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68         PRE         2.0 significant           68</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69          FE         2.0 significant           69</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70          RE         2.5 significant           70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71         PRE         2.5 significant           71</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72          FE         2.5 significant           72</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73          RE         3.0 significant           73</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74         PRE         3.0 significant           74</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75          FE         3.0 significant           75</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76          RE         3.5 significant           76</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77         PRE         3.5 significant           77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78          FE         3.5 significant           78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79          RE         4.0 significant           79</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80         PRE         4.0 significant           80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81          FE         4.0 significant           81</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dgm_conditions</span><span class="op">(</span><span class="st">"Stanley2017"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     mean_effect effect_heterogeneity bias n_studies environment</span>
