@@ -19,5 +19,90 @@ common_scale <- FALSE
 ```{r, child = child_path("_results-main.Rmd")}
 ```
 
+## Subset: Publication Bias Present
+
+`r paste0(generic_overview(dgm_names, results_conditional[results_conditional$bias_present,]))`
+
+### Average Performance {.tabset .tabset-fade .tabset-pills}
+
+```{r, include = FALSE}
+# compute average performance
+this_tables_conditional <- make_table_summary(results_conditional[results_conditional$bias_present,], common_scale = FALSE)
+this_tables_replacement <- make_table_summary(results_replacement[results_replacement$bias_present,], common_scale = FALSE)
+
+# add ranks
+this_rankings_conditional <- make_rank_summary(this_tables_conditional)
+this_rankings_replacement <- make_rank_summary(this_tables_replacement)
+```
+```{r, child = child_path("_results-tabs-tables.Rmd")}
+```
+
+
+### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
+
+The results below are conditional on method convergence. 
+Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+
+```{r, include = FALSE}
+  this_results <- results_conditional[results_conditional$bias_present,]
+```
+```{r, child = child_path("_results-tabs-figures.Rmd")}
+```
+
+
+### By-Condition Performance (Replacement in Case of Non-Convergence) {.tabset .tabset-fade .tabset-pills}
+
+The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+
+```{r, include = FALSE}
+  this_results <- results_replacement[results_replacement$bias_present,]
+```
+```{r, child = child_path("_results-tabs-figures.Rmd")}
+```
+
+
+## Subset: Publication Bias Absent
+
+`r paste0(generic_overview(dgm_names, results_conditional[!results_conditional$bias_present,])) `
+
+### Average Performance {.tabset .tabset-fade .tabset-pills}
+
+```{r, include = FALSE}
+# compute average performance
+this_tables_conditional <- make_table_summary(results_conditional[!results_conditional$bias_present,], common_scale = FALSE)
+this_tables_replacement <- make_table_summary(results_replacement[!results_replacement$bias_present,], common_scale = FALSE)
+
+# add ranks
+this_rankings_conditional <- make_rank_summary(this_tables_conditional)
+this_rankings_replacement <- make_rank_summary(this_tables_replacement)
+```
+```{r, child = child_path("_results-tabs-tables.Rmd")}
+```
+
+
+### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
+
+The results below are conditional on method convergence. 
+Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+
+```{r, include = FALSE}
+  this_results <- results_conditional[!results_conditional$bias_present,]
+```
+```{r, child = child_path("_results-tabs-figures.Rmd")}
+```
+
+
+### By-Condition Performance (Replacement in Case of Non-Convergence) {.tabset .tabset-fade .tabset-pills}
+
+The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+
+```{r, include = FALSE}
+  this_results <- results_replacement[!results_replacement$bias_present,]
+```
+```{r, child = child_path("_results-tabs-figures.Rmd")}
+```
+
+
 ```{r, child = child_path("_results-sessionInfo.Rmd")}
 ```
+

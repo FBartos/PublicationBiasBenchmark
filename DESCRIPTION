@@ -39,6 +39,7 @@ Imports:
     numDeriv,
     pwr,
     sandwich,
+    clubSandwich,
     lmtest,
     puniform,
     RoBMA,

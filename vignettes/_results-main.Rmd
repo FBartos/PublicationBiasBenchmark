@@ -50,6 +50,21 @@ for (dgm_name in dgm_names) {
   temp_conditional$H0 <- temp_conditional$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
   temp_replacement$H0 <- temp_replacement$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
   
+  # distinguish between publication bias present / absent (for the overall results only)
+  if (dgm_name == "Stanley2017") {
+    temp_conditional$bias_present <- temp_conditional$condition_id %in% conditions$condition_id[conditions$bias != 0]
+    temp_replacement$bias_present <- temp_replacement$condition_id %in% conditions$condition_id[conditions$bias != 0]
+  } else if (dgm_name == "Alinaghi2018") {
+    temp_conditional$bias_present <- temp_conditional$condition_id %in% conditions$condition_id[conditions$bias != "none"]
+    temp_replacement$bias_present <- temp_replacement$condition_id %in% conditions$condition_id[conditions$bias != "none"]
+  } else if (dgm_name == "Bom2019") {
+    temp_conditional$bias_present <- temp_conditional$condition_id %in% conditions$condition_id[conditions$bias != 0]
+    temp_replacement$bias_present <- temp_replacement$condition_id %in% conditions$condition_id[conditions$bias != 0]
+  } else if (dgm_name == "Carter2019") {
+    temp_conditional$bias_present <- temp_conditional$condition_id %in% conditions$condition_id[conditions$bias != "none"]
+    temp_replacement$bias_present <- temp_replacement$condition_id %in% conditions$condition_id[conditions$bias != "none"]
+  } 
+  
   if (!common_scale) {
     # add rmse and bias ranks (can be reused by the subsequent computations)
     temp_conditional$bias_rank <- NA

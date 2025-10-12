@@ -32,7 +32,7 @@ common_scale <- TRUE
 ```{r, include = FALSE}
 # compute average performance
 this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
-this_tables_replacement <- make_table_summary(results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
+this_tables_replacement <- make_table_summary(results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
 
 # add ranks
 this_rankings_conditional <- make_rank_summary(this_tables_conditional)
@@ -59,7 +59,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 
 ```{r, include = FALSE}
-  this_results <- results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],]
+  this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],]
 ```
 ```{r, child = child_path("_results-tabs-figures.Rmd")}
 ```
@@ -74,7 +74,7 @@ The results below incorporate method replacement to handle non-convergence. If a
 ```{r, include = FALSE}
 # compute average performance
 this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
-this_tables_replacement <- make_table_summary(results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
+this_tables_replacement <- make_table_summary(results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
 
 # add ranks
 this_rankings_conditional <- make_rank_summary(this_tables_conditional)
@@ -101,7 +101,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
 
 ```{r, include = FALSE}
-  this_results <- results_replacement[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],]
+  this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],]
 ```
 ```{r, child = child_path("_results-tabs-figures.Rmd")}
 ```

@@ -53,8 +53,9 @@ create_raincloud_plot(this_results, "mean_ci_width", if (common_scale) "CI Width
 #### Interval Score
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
-create_raincloud_plot(this_results, "interval_score", "Interval Score")
+create_raincloud_plot(this_results, "interval_score", "Interval Score", ylim_range = c(0, 100))
 ```
+
 
 #### Type I Error Rate
 
