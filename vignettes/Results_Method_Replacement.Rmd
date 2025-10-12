@@ -1,0 +1,84 @@
+---
+title: "Method Replacement Strategy"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Method Replacement Strategy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+To handle cases where methods fail to converge, a method replacement strategy is implemented. This approach emulates what a data analyst might do in practice: if a sophisticated method fails to converge, they fall back to a simpler, more robust method. The replacement is applied sequentially: if the first replacement method also fails, the next method in the sequence is tried, and so on.
+
+This strategy allows method performance to be evaluated in a more realistic scenario where non-convergence is handled pragmatically. However, it should be noted that results with replacement no longer reflect "pure" method performance, as they may combine estimates from multiple different methods.
+
+## Replacement Specification
+
+The table below shows the replacement sequence for each method. When a method fails to converge, the methods in the "Replacement Sequence" column are applied in order until convergence is achieved or all replacement options are exhausted. An em-dash `—` indicates no replacement (the method is assumed to always converge). 
+
+```{r, echo = FALSE}
+library(knitr)
+
+# Define the replacement strategy
+replacement_df <- data.frame(
+  Method = c(
+    "mean (default)",
+    "FMA (default)",
+    "RMA (default)",
+    "PET (default)",
+    "PEESE (default)",
+    "PETPEESE (default)",
+    "WLS (default)",
+    "WILS (default)",
+    "WAAPWLS (default)",
+    "trimfill (default)",
+    "SM (3PSM)",
+    "SM (4PSM)",
+    "puniform (default)",
+    "puniform (star)",
+    "pcurve (default)",
+    "EK (default)",
+    "AK (AK1)",
+    "AK (AK2)",
+    "RoBMA (PSMA)"
+  ),
+  `Replacement Sequence` = c(
+    "—",
+    "—",
+    "FMA (default)",
+    "WLS (default) → FMA (default)",
+    "WLS (default) → FMA (default)",
+    "WLS (default) → FMA (default)",
+    "FMA (default)",
+    "WLS (default) → FMA (default)",
+    "WLS (default) → FMA (default)",
+    "RMA (default) → FMA (default)",
+    "RMA (default) → FMA (default)",
+    "SM (3PSM) → RMA (default) → FMA (default)",
+    "RMA (default) → FMA (default)",
+    "RMA (default) → FMA (default)",
+    "RMA (default) → FMA (default)",
+    "WLS (default) → FMA (default)",
+    "RMA (default) → FMA (default)",
+    "AK (AK1) → RMA (default) → FMA (default)",
+    "RMA (default) → FMA (default)"
+  ),
+  check.names = FALSE
+)
+
+kable(replacement_df, align = c("l", "l"))
+```
+
+The choice of replacement methods is based on:
+
+1. **Similarity**: Replacement methods should be conceptually similar to the original method when possible.
+2. **Robustness**: Simpler methods are generally more robust to convergence issues.
+3. **Practicality**: The sequence reflects what applied researchers might reasonably do when faced with convergence failures.

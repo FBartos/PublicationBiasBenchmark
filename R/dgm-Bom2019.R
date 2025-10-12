@@ -13,8 +13,6 @@
 #'
 #' @param dgm_name DGM name (automatically passed)
 #' @param settings List containing \describe{
-#'   \item{environment}{Type of the simulation environment. One of
-#'                      \code{"LogOR"} or \code{"Cohens_d"}.}
 #'   \item{mean_effect}{Mean effect}
 #'   \item{effect_heterogeneity}{Mean effect heterogeneity}
 #'   \item{bias}{Proportion of studies affected by publication bias}
@@ -52,6 +50,7 @@
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
 #'   \item{ni}{sample size}
+#'   \item{es_type}{effect size type}
 #' }
 #'
 #' @references
@@ -62,7 +61,6 @@
 dgm.Bom2019 <- function(dgm_name, settings) {
 
   # Extract settings
-  environment          <- settings[["environment"]]
   mean_effect          <- settings[["mean_effect"]]
   effect_heterogeneity <- settings[["effect_heterogeneity"]]
   bias                 <- settings[["bias"]]
@@ -78,9 +76,10 @@ dgm.Bom2019 <- function(dgm_name, settings) {
 
   # Create result data frame
   data <- data.frame(
-    yi   = df[,"y"],
-    sei  = df[,"al_se"],
-    ni   = df[,"obs"] * 2
+    yi      = df[,"y"],
+    sei     = df[,"al_se"],
+    ni      = df[,"obs"] * 2,
+    es_type = "none"
   )
 
   return(data)
@@ -90,13 +89,12 @@ dgm.Bom2019 <- function(dgm_name, settings) {
 validate_dgm_setting.Bom2019 <- function(dgm_name, settings) {
 
   # Check that all required settings are specified
-  required_params <- c("environment", "mean_effect", "effect_heterogeneity", "bias", "n_studies", "sample_sizes")
+  required_params <- c("mean_effect", "effect_heterogeneity", "bias", "n_studies", "sample_sizes")
   missing_params <- setdiff(required_params, names(settings))
   if (length(missing_params) > 0)
     stop("Missing required settings: ", paste(missing_params, collapse = ", "))
 
   # Extract settings
-  environment          <- settings[["environment"]]
   mean_effect          <- settings[["mean_effect"]]
   effect_heterogeneity <- settings[["effect_heterogeneity"]]
   bias                 <- settings[["bias"]]
@@ -108,8 +106,6 @@ validate_dgm_setting.Bom2019 <- function(dgm_name, settings) {
     sample_sizes <- sample_sizes[[1]]
 
   # Validate settings
-  if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("LogOR", "Cohens_d"))
-    stop("'environment' must be a string with one of the following values: 'LogOR', 'Cohens_d'")
   if (length(mean_effect) != 1 || !is.numeric(mean_effect) || is.na(mean_effect))
     stop("'mean_effect' must be numeric")
   if (length(effect_heterogeneity) != 1 || !is.numeric(effect_heterogeneity) || is.na(effect_heterogeneity) || effect_heterogeneity < 0)

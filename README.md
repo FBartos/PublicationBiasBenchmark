@@ -42,9 +42,13 @@ package website:
 - [Overall
   Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html)
 - [Stanley
-  2017](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2019.html)
+  (2017)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2017.html)
+- [Alinaghi
+  (2018)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Alinaghi2018.html)
+- [Bom
+  (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Bom2019.html)
 - [Carter
-  2019](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
+  (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
 
 Contributor guidelines for extending the package with data generating
 mechanisms and methods are available at:
@@ -65,7 +69,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-    #> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
+    #> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
     #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
     #> 
     #> Attaching package: 'PublicationBiasBenchmark'

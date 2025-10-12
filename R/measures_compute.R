@@ -91,7 +91,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   }
 
   # Validate power test type
-  if (!any(power_test_type %in% c("p_value", "bayes_factor")))
+  if (!all(power_test_type %in% c("p_value", "bayes_factor")))
     stop("power_test_type must be either 'p_value' or 'bayes_factor'")
   if (length(power_test_type) != 1 && length(power_test_type) != length(method))
     stop("power_test_type must be either a single value or have the same length as method")

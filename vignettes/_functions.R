@@ -149,7 +149,7 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
   return(p)
 }
 ### Texts ----
-generic_overview <- function(dgm_names, results) {
+generic_overview_text   <- function(dgm_names, results) {
 
   if (length(dgm_names) == 1) {
     dgm_names <- paste0(dgm_names, " data generating mechanism")
@@ -168,4 +168,19 @@ generic_overview <- function(dgm_names, results) {
     )
 
   return(text)
+}
+conditional_text        <- function() {
+  paste(
+    'The results below are conditional on method convergence.',
+    'Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.'
+  )
+}
+method_replacement_text <- function() {
+  paste(
+    'The results below incorporate method replacement to handle non-convergence.',
+    'If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment).',
+    'This emulates what a data analyst may do in practice in case a method does not converge.',
+    'However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods.',
+    'See [Method Replacement Strategy](Results_Method_Replacement.html) for details of the method replacement specification.'
+  )
 }

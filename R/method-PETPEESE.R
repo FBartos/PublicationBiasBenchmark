@@ -51,7 +51,7 @@ method.PETPEESE <- function(method_name, data, settings) {
   pet_model <- stats::lm(effect_sizes ~ standard_errors, weights = 1/standard_errors^2)
 
   # Extract PET's effect size test p-value
-  PET_pval <- summary(pet_model)$coefficients["standard_errors", "Pr(>|t|)"]
+  PET_pval <- summary(pet_model)$coefficients["(Intercept)", "Pr(>|t|)"]
 
   if (PET_pval > settings[["conditional_alpha"]]) {
     petpeese_model  <- pet_model

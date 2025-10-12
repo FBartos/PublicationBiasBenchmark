@@ -22,7 +22,7 @@ common_scale <- TRUE
 
 ## Subset: Fixed Effects
 
-`r paste0(generic_overview(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "FE"],])) `
+`r paste0(generic_overview_text(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "FE"],])) `
 
 ### Average Performance {.tabset .tabset-fade .tabset-pills}
 
@@ -41,8 +41,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 
 ### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below are conditional on method convergence. 
-Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+`r paste0(conditional_text())`
 
 ```{r, include = FALSE}
   this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "FE"],]
@@ -53,7 +52,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 
 ### By-Condition Performance (Replacement in Case of Non-Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+`r paste0(method_replacement_text())`
 
 ```{r, include = FALSE}
   this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "FE"],]
@@ -63,7 +62,7 @@ The results below incorporate method replacement to handle non-convergence. If a
 
 ## Subset: Random Effects
 
-`r paste0(generic_overview(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "RE"],])) `
+`r paste0(generic_overview_text(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "RE"],])) `
 
 ### Average Performance {.tabset .tabset-fade .tabset-pills}
 
@@ -82,8 +81,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 
 ### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below are conditional on method convergence. 
-Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+`r paste0(conditional_text())`
 
 ```{r, include = FALSE}
   this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "RE"],]
@@ -94,7 +92,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 
 ### By-Condition Performance (Replacement in Case of Non-Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+`r paste0(method_replacement_text())`
 
 ```{r, include = FALSE}
   this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "RE"],]
@@ -104,7 +102,7 @@ The results below incorporate method replacement to handle non-convergence. If a
 
 ## Subset: Panel Random Effects
 
-`r paste0(generic_overview(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "PRE"],])) `
+`r paste0(generic_overview_text(dgm_names, results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "PRE"],])) `
 
 ### Average Performance {.tabset .tabset-fade .tabset-pills}
 
@@ -123,8 +121,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 
 ### By-Condition Performance (Conditional on Method Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below are conditional on method convergence. 
-Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
+`r paste0(conditional_text())`
 
 ```{r, include = FALSE}
   this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "PRE"],]
@@ -135,7 +132,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 
 ### By-Condition Performance (Replacement in Case of Non-Convergence) {.tabset .tabset-fade .tabset-pills}
 
-The results below incorporate method replacement to handle non-convergence. If a method fails to converge, its results are replaced with the results from a simpler method (e.g., random-effects meta-analysis without publication bias adjustment). This emulates what a data analyst may do in practice in case a method does not converge. However, note that these results do not correspond to "pure" method performance as they might combine multiple different methods. See TODO for details of the method replacement specification.
+`r paste0(method_replacement_text())`
 
 ```{r, include = FALSE}
   this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "PRE"],]

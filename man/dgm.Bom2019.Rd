@@ -10,8 +10,6 @@
 \item{dgm_name}{DGM name (automatically passed)}
 
 \item{settings}{List containing \describe{
-\item{environment}{Type of the simulation environment. One of
-\code{"LogOR"} or \code{"Cohens_d"}.}
 \item{mean_effect}{Mean effect}
 \item{effect_heterogeneity}{Mean effect heterogeneity}
 \item{bias}{Proportion of studies affected by publication bias}
@@ -26,6 +24,7 @@ Data frame with \describe{
 \item{yi}{effect size}
 \item{sei}{standard error}
 \item{ni}{sample size}
+\item{es_type}{effect size type}
 }
 }
 \description{

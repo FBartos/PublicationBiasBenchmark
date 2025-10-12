@@ -19,6 +19,8 @@ navbar:
         href: articles/Results_Bom2019.html
       - text: Carter (2019)
         href: articles/Results_Carter2019.html
+      - text: Method Replacement
+        href: articles/Results_Method_Replacement.html
     tutorials:
       text: Extending the Benchmark
       menu:

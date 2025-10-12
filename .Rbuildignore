@@ -11,3 +11,5 @@ README.html
 ^docs$
 ^pkgdown$
 ^\.github$
+^vignettes/Results.*\.Rmd$
+^vignettes/_results-.*\.Rmd$

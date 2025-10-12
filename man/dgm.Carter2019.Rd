@@ -24,6 +24,7 @@ Data frame with \describe{
 \item{yi}{effect size}
 \item{sei}{standard error}
 \item{ni}{sample size}
+\item{es_type}{effect size type}
 }
 }
 \description{

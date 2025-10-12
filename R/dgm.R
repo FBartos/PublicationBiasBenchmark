@@ -35,6 +35,8 @@ simulate_dgm <- function(dgm_name, settings) {
     settings <- get_dgm_condition(dgm_name, settings)
     settings <- as.list(settings)
     settings <- settings[names(settings) != "condition_id"]
+  } else {
+    validate_dgm_setting(dgm_name, settings)
   }
 
   # Call the DGM with the pre-specified settings

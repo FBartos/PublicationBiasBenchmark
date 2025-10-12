@@ -54,6 +54,7 @@
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
 #'   \item{ni}{sample size}
+#'   \item{es_type}{effect size type}
 #' }
 #'
 #' @references
@@ -75,9 +76,10 @@ dgm.Carter2019 <- function(dgm_name, settings) {
 
   # Create result data frame
   data <- data.frame(
-    yi   = df[,"d"],
-    sei  = df[,"se"],
-    ni   = df[,"N"]
+    yi      = df[,"d"],
+    sei     = df[,"se"],
+    ni      = df[,"N"],
+    es_type = "SMD"
   )
 
   return(data)
