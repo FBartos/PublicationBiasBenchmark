@@ -1,4 +1,4 @@
-#' @title Bom and Rachinger 2019 Data Generating Model
+#' @title Bom and Rachinger (2019) Data-Generating Mechanism
 #'
 #' @description
 #' Simulates univariate regression environments to estimate the effect of
@@ -8,7 +8,7 @@
 #'
 #' The description and code is based on
 #' \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
-#' The data generating model was introduced in
+#' The data-generating mechanism was introduced in
 #' \insertCite{bom2019kinked;textual}{PublicationBiasBenchmark}.
 #'
 #' @param dgm_name DGM name (automatically passed)
@@ -159,7 +159,7 @@ dgm_conditions.Bom2019 <- function(dgm_name) {
 # (https://osf.io/pr4mb/)
 
 ###################################
-## Primary Study Data Generation
+## Primary Study Data-Generation
 ###################################
 .HongAndReed2021_Bom2019_dgp <-function(al1, sigh, obs){
   x1=stats::runif(obs, min = 100, max = 200);
@@ -169,7 +169,7 @@ dgm_conditions.Bom2019 <- function(dgm_name) {
   return (as.data.frame(cbind(z, x1 ,matrix(al1+al2, nrow=obs, ncol=1))))
 }
 ###################################
-## PMeta Analysis Data Generation
+## Meta Analysis Data-Generation
 ###################################
 .HongAndReed2021_Bom2019_MetaStudy <- function(al1, sigh, ssize, Bias, obsList){
   output =  matrix(0, nrow=ssize, ncol=6);

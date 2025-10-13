@@ -65,7 +65,7 @@ Invisible list of computed comparison data frames
 }
 \description{
 This is a high-level wrapper function that computes multiple pairwise comparison
-measures for a Data Generating Mechanism (DGM) and saves the results to CSV files.
+measures for a Data-Generating Mechanism (DGM) and saves the results to CSV files.
 It provides a clean and extensible interface for comparing method performance.
 }
 \examples{

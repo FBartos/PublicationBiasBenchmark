@@ -2,7 +2,7 @@
 % Please edit documentation in R/dgm.R
 \name{simulate_dgm}
 \alias{simulate_dgm}
-\title{Simulate From Data Generating Mechanism}
+\title{Simulate From Data-Generating Mechanism}
 \usage{
 simulate_dgm(dgm_name, settings)
 }
@@ -16,7 +16,7 @@ numeric condition_id}
 A data frame containing the generated data with standardized structure
 }
 \description{
-This function provides a unified interface to various data generating
+This function provides a unified interface to various data-generating
 mechanisms for simulation studies. The specific DGM is determined by
 the first argument.
 }

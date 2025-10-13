@@ -1,9 +1,9 @@
 ---
-title: "Adding New Data Generating Mechanisms"
+title: "Adding New Data-Generating Mechanisms"
 author: František Bartoš
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Adding New Data Generating Mechanisms}
+  %\VignetteIndexEntry{Adding New Data-Generating Mechanisms}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,13 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette explains how to add new data generating mechanisms (DGMs) to the `PublicationBiasBenchmark` package. In the following, we will use the `no_bias` DGM as an example.
+This vignette explains how to add new data-generating mechanisms (DGMs) to the `PublicationBiasBenchmark` package. In the following, we will use the `no_bias` DGM as an example.
 
 ## Overview
 
 Each DGM in the package consists of three key components:
 
-1. **Main DGM function**: Implements the data generation mechanism
+1. **Main DGM function**: Implements the data-generating mechanism
 2. **Validation function**: Validates input parameters and settings  
 3. **Conditions function**: Defines pre-specified conditions
 
@@ -31,7 +31,7 @@ All three functions must be implemented in a single file named `dgm-{DGM_NAME}.R
 
 For a DGM called "no_bias", you need to create a file named `R/dgm-no_bias.R` containing three functions:
 
-- `dgm.no_bias()`: The main data generation implementation
+- `dgm.no_bias()`: The main data-generating mechanism implementation
 - `validate_dgm_setting.no_bias()`: Parameter validation
 - `dgm_conditions.no_bias()`: Pre-defined conditions
 
@@ -39,13 +39,13 @@ The naming pattern is crucial for the package's S3 method dispatch system to wor
 
 ## 1. Main DGM Function: `dgm.{DGM_NAME}()`
 
-This is the core function that implements your data generating mechanism. Here is the `no_bias` implementation as an example:
+This is the core function that implements your data-generating mechanism. Here is the `no_bias` implementation as an example:
 
 ```{r, eval=FALSE}
-#' @title Normal Unbiased Data Generating Model
+#' @title Normal Unbiased Data-Generating Mechanism
 #'
 #' @description
-#' An example data generating model to simulate effect sizes without
+#' An example data-generating mechanism to simulate effect sizes without
 #' publication bias.
 #'
 #' @param dgm_name DGM name (automatically passed)

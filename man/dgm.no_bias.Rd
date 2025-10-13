@@ -2,7 +2,7 @@
 % Please edit documentation in R/dgm-no_bias.R
 \name{dgm.no_bias}
 \alias{dgm.no_bias}
-\title{Normal Unbiased Data Generating Model}
+\title{Normal Unbiased Data-Generating Mechanism}
 \usage{
 \method{dgm}{no_bias}(dgm_name, settings)
 }
@@ -23,7 +23,7 @@ Data frame with \describe{
 }
 }
 \description{
-An example data generating model to simulate effect sizes without
+An example data-generating mechanism to simulate effect sizes without
 publication bias.
 }
 \details{

@@ -64,7 +64,7 @@ in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 Data frame with pairwise comparison scores in long format (method_a, method_b, score)
 }
 \description{
-This function provides pairwise comparison of method for Data Generating
+This function provides pairwise comparison of method for Data-Generating
 Mechanisms (DGMs). It compares method performance on a condition-by-condition
 basis using estimates. For each pair of method, if method A has an estimate
 closer to the true value than method B, it gets a score of 1, if further it

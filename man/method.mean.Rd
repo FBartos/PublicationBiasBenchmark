@@ -18,7 +18,6 @@ Data frame with mean results
 }
 \description{
 Implements the unweighted mean method. I.e., the mean of observed effect sizes.
-All of the computations are based on a one-sample t-test.
 }
 \details{
 The following settings are implemented \describe{

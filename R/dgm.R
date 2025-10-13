@@ -1,7 +1,7 @@
-#' @title Simulate From Data Generating Mechanism
+#' @title Simulate From Data-Generating Mechanism
 #'
 #' @description
-#' This function provides a unified interface to various data generating
+#' This function provides a unified interface to various data-generating
 #' mechanisms for simulation studies. The specific DGM is determined by
 #' the first argument.
 #'

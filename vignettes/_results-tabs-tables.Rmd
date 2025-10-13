@@ -17,7 +17,7 @@ Method performance measures are aggregated across all simulated conditions to pr
 
 #### Bias
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_bias <- data.frame(
@@ -41,7 +41,7 @@ kbl_table
 
 #### RMSE
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_rmse <- data.frame(
@@ -86,7 +86,7 @@ kbl_table
 ```
 
 
-#### CI Width
+#### 95% CI Width
 
 ```{r echo=FALSE} 
 tables_conditional_CI_width <- data.frame(
@@ -177,9 +177,9 @@ kbl_table
 ```
 
 
-#### Positive Likelihood Ratio
+#### Log Positive Likelihood Ratio
 
-This measure indicates how much a significant test result changes the odds of H1 versus H0.
+The positive likelihood ratio indicates how much a significant test result changes the odds of H1 versus H0.
 
 ```{r echo=FALSE} 
 tables_conditional_pos_LR <- data.frame(
@@ -202,9 +202,9 @@ kbl_table
 ```
 
 
-#### Negative Likelihood Ratio
+#### Log Negative Likelihood Ratio
 
-This measure indicates how much a non-significant test result changes the odds of H1 versus H0.
+The negative likelihood ratio indicates how much a non-significant test result changes the odds of H1 versus H0.
 
 
 ```{r echo=FALSE} 

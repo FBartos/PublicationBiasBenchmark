@@ -95,7 +95,7 @@ Data frame with computed measures and MCSEs
 }
 \description{
 This function provides a modular and extensible way to compute performance
-measures (PM) for Data Generating Mechanisms (DGMs). It handles different types
+measures (PM) for Data-Generating Mechanisms (DGMs). It handles different types
 of measures and automatically determines the required arguments for each measure
 function.
 }

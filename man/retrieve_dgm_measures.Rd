@@ -35,7 +35,7 @@ A data.frame
 }
 \description{
 This function returns pre-computed performance measures for a specified
-Data Generating Mechanism (DGM). The pre-computed measures must be already stored
+Data-Generating Mechanism (DGM). The pre-computed measures must be already stored
 locally. See \code{\link[=download_dgm_measures]{download_dgm_measures()}} function for more guidance.
 }
 \examples{

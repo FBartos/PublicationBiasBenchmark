@@ -2,7 +2,7 @@
 % Please edit documentation in R/dgm-Bom2019.R
 \name{dgm.Bom2019}
 \alias{dgm.Bom2019}
-\title{Bom and Rachinger 2019 Data Generating Model}
+\title{Bom and Rachinger (2019) Data-Generating Mechanism}
 \usage{
 \method{dgm}{Bom2019}(dgm_name, settings)
 }
@@ -35,7 +35,7 @@ is randomly distributed with mean zero and variance σ2_h.
 
 The description and code is based on
 \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
-The data generating model was introduced in
+The data-generating mechanism was introduced in
 \insertCite{bom2019kinked;textual}{PublicationBiasBenchmark}.
 }
 \details{

@@ -8,7 +8,7 @@ README
 **PublicationBiasBenchmark** is an R package for benchmarking
 publication bias correction methods through simulation studies. It
 provides:  
-- Predefined data generating mechanisms from the literature  
+- Predefined data-generating mechanisms from the literature  
 - Functions for running meta-analytic methods on simulated data  
 - Pre-simulated datasets and pre-computed results for reproducible
 benchmarks  
@@ -50,10 +50,10 @@ package website:
 - [Carter
   (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
 
-Contributor guidelines for extending the package with data generating
+Contributor guidelines for extending the package with data-generating
 mechanisms and methods are available at:
 
-- [How to add a new data generating
+- [How to add a new data-generating
   mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
 - [How to add a new
   method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
@@ -69,7 +69,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-    #> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
+    #> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
     #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
     #> 
     #> Attaching package: 'PublicationBiasBenchmark'
@@ -77,7 +77,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
     #> 
     #>     power
 
-### Simulating From Existing Data Generating Mechanisms
+### Simulating From Existing Data-Generating Mechanisms
 
 ``` r
 # Obtain a data.frame with pre-defined conditions
@@ -182,14 +182,14 @@ run_method("RMA", df)
 
 ### Key Functions
 
-#### Data Generating Mechanisms
+#### Data-Generating Mechanisms
 
-- `simulate_dgm()`: Generates simulated data according to specified data
-  generating model and settings.
-- `dgm_conditions()`: Lists prespecified conditions of the data
-  generating mechanism.
-- `validate_dgm_setting()`: Validates (custom) setting of the data
-  generating mechanism.
+- `simulate_dgm()`: Generates simulated data according to specified
+  data-generating mechanism and settings.
+- `dgm_conditions()`: Lists prespecified conditions of the
+  data-generating mechanism.
+- `validate_dgm_setting()`: Validates (custom) setting of the
+  data-generating mechanism.
 - `download_dgm_datasets()`: Downloads pre-simulated datasets from the
   OSF repository.
 - `retrieve_dgm_dataset()`: Retrieves the pre-simulated dataset of a
@@ -217,7 +217,7 @@ run_method("RMA", df)
   measures of a given method, condition, and repetition from the
   pre-downloaded OSF repository.
 
-### Available Data Generating Mechanisms
+### Available Data-Generating Mechanisms
 
 See `methods("dgm")` for the full list:
 

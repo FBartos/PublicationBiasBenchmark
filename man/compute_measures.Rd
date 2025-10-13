@@ -89,7 +89,7 @@ Invisible list of computed measures data frames
 }
 \description{
 This is a high-level wrapper function that computes multiple performance
-measures for a Data Generating Mechanism (DGM) and saves the results to CSV files.
+measures for a Data-Generating Mechanism (DGM) and saves the results to CSV files.
 It provides a clean and extensible interface for computing standard simulation
 performance measures.
 }

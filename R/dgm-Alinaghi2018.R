@@ -1,7 +1,7 @@
-#' @title Alinaghi and Reed 2018 Data Generating Model
+#' @title Alinaghi and Reed (2018) Data-Generating Mechansim
 #'
 #' @description
-#' This data generating model simulates univariate regression studies where a variable X
+#' This data-generating mechanism simulates univariate regression studies where a variable X
 #' affects a continuous outcome Y. Each study estimates the coefficient of X, which consists
 #' of a fixed component (α1) representing the overall mean effect, and a random component
 #' that varies across studies but is constant within each study. In the "Random Effects"
@@ -10,7 +10,7 @@
 #'
 #' The description and code is based on
 #' \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
-#' The data generating model was introduced in
+#' The data-generating mechanism was introduced in
 #' \insertCite{alinaghi2018meta;textual}{PublicationBiasBenchmark}.
 #'
 #' @param dgm_name DGM name (automatically passed)
@@ -23,7 +23,7 @@
 #' }
 #'
 #' @details
-#' This data generating model is based on Alinaghi & Reed (2018), who study univariate
+#' This data-generating mechanism is based on Alinaghi & Reed (2018), who study univariate
 #' regression models where a variable X affects a continuous variable Y. The parameter
 #' of interest is the coefficient on X. In the "Random Effects" environment, each study
 #' produces one estimate, and the population effect differs across studies. The coefficient
@@ -179,7 +179,7 @@ dgm_conditions.Alinaghi2018 <- function(dgm_name) {
 
 
 ##############################
-## Meta Analysis Data Generation
+## Meta Analysis Data-Generation
 #######################################################
 .HongAndReed2021_Alinaghi2018_CollectingData<- function(type, alpha){
   if(type=='PRE'){

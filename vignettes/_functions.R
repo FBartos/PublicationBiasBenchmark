@@ -152,17 +152,17 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
 generic_overview_text   <- function(dgm_names, results) {
 
   if (length(dgm_names) == 1) {
-    dgm_names <- paste0(dgm_names, " data generating mechanism")
+    dgm_names <- paste0(dgm_names, " data-generating mechanism")
   } else if (length(dgm_names) == 2) {
-    dgm_names <- paste0(paste0(dgm_names, collapse = " and "), " data generating mechanisms")
+    dgm_names <- paste0(paste0(dgm_names, collapse = " and "), " data-generating mechanisms")
   } else if (length(dgm_names) > 2) {
-    dgm_names <- paste0(paste0(dgm_names[-length(dgm_names)], collapse = ", "), ", and ", dgm_names[length(dgm_names)], " data generating mechanisms")
+    dgm_names <- paste0(paste0(dgm_names[-length(dgm_names)], collapse = ", "), ", and ", dgm_names[length(dgm_names)], " data-generating mechanisms")
   }
 
   n_conditions <- length(unique(paste0(results$dgm_name, "-", results$condition_id)))
 
   text <- sprintf(
-    "These results are based on %1$s with the total of %2$i conditions.",
+    "These results are based on %1$s with a total of %2$i conditions.",
     dgm_names,
     n_conditions
     )

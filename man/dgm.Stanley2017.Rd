@@ -2,7 +2,7 @@
 % Please edit documentation in R/dgm-Stanley2017.R
 \name{dgm.Stanley2017}
 \alias{dgm.Stanley2017}
-\title{Stanley, Doucouliagos, and Ioannidis 2017 Data Generating Model}
+\title{Stanley, Doucouliagos, and Ioannidis (2017) Data-Generating Mechanism}
 \usage{
 \method{dgm}{Stanley2017}(dgm_name, settings)
 }
@@ -42,7 +42,7 @@ statistical significance and sign.
 
 The description and code is based on
 \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
-The data generating model was introduced in
+The data-generating mechanism was introduced in
 \insertCite{stanley2017finding;textual}{PublicationBiasBenchmark}.
 }
 \details{

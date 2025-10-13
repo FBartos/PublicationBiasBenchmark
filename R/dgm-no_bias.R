@@ -1,7 +1,7 @@
-#' @title Normal Unbiased Data Generating Model
+#' @title Normal Unbiased Data-Generating Mechanism
 #'
 #' @description
-#' An example data generating model to simulate effect sizes without
+#' An example data-generating mechanism to simulate effect sizes without
 #' publication bias.
 #'
 #' @param dgm_name DGM name (automatically passed)

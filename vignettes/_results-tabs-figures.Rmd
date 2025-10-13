@@ -27,7 +27,7 @@ create_raincloud_plot(this_results, "convergence", "Convergence", ylim_range = c
 create_raincloud_plot(this_results, if (common_scale) "bias" else "bias_rank", if (common_scale) "Bias" else "Rank(Bias)" , ylim_range = if (common_scale) c(-0.5, 0.5), reference_line = if (common_scale) 0)
 ```
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
 
 #### RMSE
 
@@ -35,7 +35,7 @@ create_raincloud_plot(this_results, if (common_scale) "bias" else "bias_rank", i
 create_raincloud_plot(this_results, if (common_scale) "rmse" else "rmse_rank",  if (common_scale) "RMSE" else "Rank(RMSE)", ylim_range = if (common_scale) c(0, 0.5), reference_line = if (common_scale) 0)
 ```
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
 
 #### 95% CI Coverage
 
@@ -44,10 +44,10 @@ create_raincloud_plot(this_results, "coverage", "95% CI Coverage", ylim_range = 
   scale_y_continuous(labels = scales::percent)
 ```
 
-#### CI Width
+#### 95% CI Width
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
-create_raincloud_plot(this_results, if (common_scale) "mean_ci_width" else "mean_ci_width_rank", if (common_scale) "CI Width" else "Rank(CI Width)")
+create_raincloud_plot(this_results, if (common_scale) "mean_ci_width" else "mean_ci_width_rank", if (common_scale) "95% CI Width" else "Rank(95% CI Width)")
 ```
 
 #### Interval Score
@@ -71,14 +71,14 @@ create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_ra
   scale_y_continuous(labels = scales::percent)
 ```
 
-#### Positive Likelihood Ratio
+#### Log Positive Likelihood Ratio
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing positive likelihood ratio across different methods"} 
-create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Positive Likelihood Ratio")
+create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Log Positive Likelihood Ratio")
 ```
 
-#### Negative Likelihood Ratio
+#### Log Negative Likelihood Ratio
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing negative likelihood ratio across different methods"} 
-create_raincloud_plot(this_results[!this_results$H0,], "negative_likelihood_ratio", "Negative Likelihood Ratio")
+create_raincloud_plot(this_results[!this_results$H0,], "negative_likelihood_ratio", "Log Negative Likelihood Ratio")
 ```

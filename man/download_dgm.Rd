@@ -41,7 +41,7 @@ Defaults to \code{TRUE}.}
 \code{TRUE} if the download was successful, otherwise an error is raised.
 }
 \description{
-This function downloads datasets of a specified Data Generating Mechanism (DGM).
+This function downloads datasets of a specified Data-Generating Mechanism (DGM).
 All data are located at \url{https://osf.io/exf3m/}.
 }
 \examples{

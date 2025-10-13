@@ -2,7 +2,7 @@
 #'
 #' @description
 #' This function provides a modular and extensible way to compute performance
-#' measures (PM) for Data Generating Mechanisms (DGMs). It handles different types
+#' measures (PM) for Data-Generating Mechanisms (DGMs). It handles different types
 #' of measures and automatically determines the required arguments for each measure
 #' function.
 #'
@@ -531,7 +531,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
 #'
 #' @description
 #' This is a high-level wrapper function that computes multiple performance
-#' measures for a Data Generating Mechanism (DGM) and saves the results to CSV files.
+#' measures for a Data-Generating Mechanism (DGM) and saves the results to CSV files.
 #' It provides a clean and extensible interface for computing standard simulation
 #' performance measures.
 #'

@@ -1,7 +1,7 @@
 #' Compare method with a Single Measure for a DGM
 #'
 #' @description
-#' This function provides pairwise comparison of method for Data Generating
+#' This function provides pairwise comparison of method for Data-Generating
 #' Mechanisms (DGMs). It compares method performance on a condition-by-condition
 #' basis using estimates. For each pair of method, if method A has an estimate
 #' closer to the true value than method B, it gets a score of 1, if further it
@@ -303,7 +303,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 #'
 #' @description
 #' This is a high-level wrapper function that computes multiple pairwise comparison
-#' measures for a Data Generating Mechanism (DGM) and saves the results to CSV files.
+#' measures for a Data-Generating Mechanism (DGM) and saves the results to CSV files.
 #' It provides a clean and extensible interface for comparing method performance.
 #'
 #' @inheritParams download_dgm_datasets

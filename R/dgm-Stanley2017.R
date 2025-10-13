@@ -1,4 +1,4 @@
-#' @title Stanley, Doucouliagos, and Ioannidis 2017 Data Generating Model
+#' @title Stanley, Doucouliagos, and Ioannidis (2017) Data-Generating Mechanism
 #'
 #' @description
 #' Simulates two scenarios for meta-analysis studies investigating the effect
@@ -13,7 +13,7 @@
 #'
 #' The description and code is based on
 #' \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
-#' The data generating model was introduced in
+#' The data-generating mechanism was introduced in
 #' \insertCite{stanley2017finding;textual}{PublicationBiasBenchmark}.
 #'
 #' @param dgm_name DGM name (automatically passed)
@@ -227,8 +227,7 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   return(c(TreatmentEffect,sigH, round(log(((.1+TreatmentEffect)/(.9-TreatmentEffect) )/(.1/.9)),2), LogOR, LogORse, LogORci, (LogORci[1]>0), primaryObs))
 }
 ###################################
-## Meta Analysis Data Generation ##
-## Meta Analysis Data Generation ##
+## Meta Analysis Data-Generation ##
 #################################################################
 .HongAndReed2021_Stanley2017_MetaStudy_LogOR <- function(effect, sigH, m, bias, PrimaryN){
   MetaStudyData<-matrix(0,nrow=m, ncol=10)
@@ -271,8 +270,7 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   return(c(TreatmentEffect,sigH,TreatmentEffect,estimatedCohen_d,stdErr_Cohen_d,cohen_ci,(cohen_t>1.96),primaryObs))
 }
 ###################################
-## Meta Analysis Data Generation ##
-## Meta Analysis Data Generation ##
+## Meta Analysis Data-Generation ##
 #################################################################
 .HongAndReed2021_Stanley2017_MetaStudy_Cohen_d <- function(effect, sigH, m, bias, PrimaryN){
   MetaStudyData<-matrix(0,nrow=m, ncol=10)

@@ -1,7 +1,7 @@
-#' @title Carter et al 2019 Data Generating Model
+#' @title Carter et al. (2019) Data-Generating Mechanism
 #'
 #' @description
-#' This data generating model simulates primary studies estimating treatment
+#' This data-generating mechanism simulates primary studies estimating treatment
 #' effects using Cohen's d. The observed effect size is modeled as a fixed mean
 #' plus random heterogeneity across studies, with sample sizes varying to
 #' generate differences in standard errors. The simulation introduces
@@ -14,7 +14,7 @@
 #'
 #' The description and code is based on
 #' \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
-#' The data generating model was introduced in
+#' The data-generating mechanism was introduced in
 #' \insertCite{carter2019correcting;textual}{PublicationBiasBenchmark}.
 #'
 #' @param dgm_name DGM name (automatically passed)

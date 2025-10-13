@@ -1,7 +1,7 @@
 #' @title Download Datasets of a DGM
 #'
 #' @description
-#' This function downloads datasets of a specified Data Generating Mechanism (DGM).
+#' This function downloads datasets of a specified Data-Generating Mechanism (DGM).
 #' All data are located at \url{https://osf.io/exf3m/}.
 #'
 #' @param dgm_name Character string specifying the name of the DGM dataset to download.
@@ -246,7 +246,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "defa
 #'
 #' @description
 #' This function returns pre-computed performance measures for a specified
-#' Data Generating Mechanism (DGM). The pre-computed measures must be already stored
+#' Data-Generating Mechanism (DGM). The pre-computed measures must be already stored
 #' locally. See [download_dgm_measures()] function for more guidance.
 #'
 #' @inheritParams dgm
