@@ -37,20 +37,12 @@
 #' If multiple elements are specified within the vectors, these replacements are applied consecutively
 #' in case the previous replacements also failed to converge.
 #' Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.
-#' @param n_repetitions Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.
+#' @param n_repetitions Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.
 #' @param overwrite Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist
 #' @param ... Additional arguments passed to measure functions
 #' @inheritParams download_dgm_datasets
 #'
-#' @return Data frame with computed measures and MCSEs
-#'
-#' @examples
-#' \dontrun{
-#' # Get conditions for a DGM
-#' conditions <- dgm_conditions("no_bias")
-#'
-#'
-#' }
+#' @return TRUE upon successfully computation of the results file
 #'
 #' @export
 compute_single_measure <- function(dgm_name, measure_name, method, method_setting, conditions,
@@ -110,24 +102,33 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   if (is.null(path))
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
   output_folder <- file.path(path, dgm_name, "measures")
+  output_file   <- file.path(output_folder, file_name)
 
-  if (!overwrite) {
-    output_file <- file.path(output_folder, file_name)
-    if (file.exists(output_file)) {
-      existing_results <- utils::read.csv(output_file, stringsAsFactors = FALSE)
+  if (!overwrite && file.exists(output_file)) {
+    # Load the existing file and only attach results for the missing selected methods if overwrite is FALSE
+    existing_results <- utils::read.csv(output_file)
 
-      # Check which method-method_setting combinations already have results
-      existing_combinations <- paste0(existing_results$method, "-", existing_results$method_setting)
-      current_combinations  <- paste0(method, "-", method_setting)
+    # Check which method-method_setting combinations already have results
+    existing_combinations <- unique(paste0(existing_results$method, "-", existing_results$method_setting))
+    current_combinations  <- paste0(method, "-", method_setting)
 
-      # Find indices of combinations that need to be computed
-      methods_to_compute <- which(!current_combinations %in% existing_combinations)
+    # Find indices of combinations that need to be computed
+    methods_to_compute <- which(!current_combinations %in% existing_combinations)
 
-      if (length(methods_to_compute) == 0) {
-        # All combinations already computed, return existing results for these combinations
-        return(existing_results[existing_combinations %in% current_combinations, ])
-      }
+    if (length(methods_to_compute) == 0) {
+      # All combinations already
+      return(invisible(TRUE))
     }
+  } else if (overwrite && file.exists(output_file)) {
+    # Load the existing file and overwrite the results for the selected methods if overwrite is TRUE
+    existing_results <- utils::read.csv(output_file)
+
+    # Remove results for methods to be computed
+    current_combinations  <- paste0(method, "-", method_setting)
+    existing_results      <- existing_results[!paste0(existing_results$method, "-", existing_results$method_setting) %in% current_combinations,]
+
+  } else {
+    existing_results <- NULL
   }
 
   measure_out <- list()
@@ -455,7 +456,10 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     new_results <- safe_rbind(list(new_results, existing_results))
   }
 
-  return(new_results)
+  # Save results
+  utils::write.csv(new_results, file = output_file, row.names = FALSE)
+
+  return(invisible(TRUE))
 }
 
 method_condition_results_replacement <- function(method_condition_results, method_name,
@@ -540,7 +544,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
 #' @inheritParams compute_single_measure
 #' @inheritParams download_dgm_datasets
 #'
-#' @return Invisible list of computed measures data frames
+#' @return TRUE upon successfully computation of the results file
 #'
 #' @examples
 #' \dontrun{
@@ -559,7 +563,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
 #' # With method replacements for non-converged results
 #' method_replacements <- list(
 #'   "RMA-default" = list(method = "FMA", method_setting = "default"),
-#'   "PET-default" = list(method = c("WLS", "FMA"), 
+#'   "PET-default" = list(method = c("WLS", "FMA"),
 #'                        method_setting = c("default", "default"))
 #' )
 #'
@@ -581,10 +585,6 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                              method_replacements = NULL, n_repetitions = 1000,
                              overwrite = FALSE, conditions = NULL, path = NULL) {
-
-  # Most input validation is done in compute_single_measure
-  if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
   # Define all available measures if not specified
   if (is.null(measures))
@@ -609,38 +609,15 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     negative_likelihood_ratio   = list(fun = negative_likelihood_ratio, mcse_fun = negative_likelihood_ratio_mcse)
   )
 
-  # Ensure output directory exists
-  output_folder <- file.path(path, dgm_name, "measures")
-  if (!dir.exists(output_folder))
-    dir.create(output_folder, recursive = TRUE)
-
   # Compute each measure
-  results <- list()
-
   for (measure in measures) {
 
     if (!measure %in% names(measure_functions))
       stop(paste0("Unknown measure: ", measure, ". Skipping."))
 
-    # Specify file name
-    file_name   <- paste0(measure, if (is.null(method_replacements) || length(method_replacements) == 0) ".csv" else "-replacement.csv")
-    output_file <- file.path(output_folder, file_name)
+    cat("Computing", measure, "...\n")
 
-    # If overwrite is TRUE, remove existing file to start fresh
-    if (overwrite && file.exists(output_file)) {
-      if (verbose)
-        cat("Overwriting existing", measure, "results at", output_file, "\n")
-      file.remove(output_file)
-    }
-
-    if (verbose) {
-      if (file.exists(output_file) && !overwrite)
-        cat("Computing missing", measure, "results...\n")
-      else
-        cat("Computing", measure, "...\n")
-    }
-
-    measure_result <- compute_single_measure(
+    compute_single_measure(
       dgm_name                  = dgm_name,
       measure_name              = measure,
       method                    = method,
@@ -664,14 +641,9 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       path                      = path
     )
 
-    # Save results (measure_result already contains combined existing + new results if applicable)
-    utils::write.csv(measure_result, file = output_file, row.names = FALSE)
-
     if (verbose)
-      cat("Saved", measure, "results to", output_file, "\n")
-
-    results[[measure]] <- measure_result
+      cat("Saved", measure, "\n")
   }
 
-  return(invisible(results))
+  return(invisible(TRUE))
 }
