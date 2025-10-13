@@ -66,7 +66,7 @@ method.mean <- function(method_name, data, settings) {
 method_settings.mean <- function(method_name) {
 
   settings <- list(
-    "default" = list(method = "FE", test = "t")
+    "default" = list()
   )
 
   return(settings)
