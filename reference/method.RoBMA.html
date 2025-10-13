@@ -132,33 +132,18 @@ three-level specification whenever <code>"study_ids"</code> are supplied with th
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate some example data</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Generate some example data</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  yi      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">0.4</span>, <span class="fl">0.25</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  sei     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.15</span>, <span class="fl">0.08</span>, <span class="fl">0.12</span>, <span class="fl">0.09</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  es_type <span class="op">=</span> <span class="st">"SMD"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Apply PET method</span></span></span>
+<span class="r-in"><span><span class="co"># Apply RoBMA method</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_method.html">run_method</a></span><span class="op">(</span><span class="st">"RoBMA"</span>, <span class="va">data</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: runjags</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: mvtnorm</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   method   estimate standard_error ci_lower  ci_upper p_value        BF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  RoBMA 0.07245329             NA        0 0.2827614      NA 0.7532874</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   convergence note tau_estimate tau_ci_lower tau_ci_upper    tau_BF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        TRUE TRUE   0.04087817            0     0.252459 0.4609204</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                               bias_SM_coefficient</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1, 0.91543706489259, 0.831569767534035, 0.804442561500065, 0.814358728230785, 0.847369579189188</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                           bias_SM_coefficient_ci_lower</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1, 0.189202106868124, 0.0413680937549003, 0.0211984484761842, 0.0217220354856666, 0.0223131588475772</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   bias_SM_coefficient_ci_upper                 bias_PP_coefficient</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1, 1, 1, 1, 1, 1 0.695002655675012, 3.60584982099692</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   bias_PP_coefficient_ci_lower      bias_PP_coefficient_ci_upper  bias_BF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                         0, 0 2.9168083740665, 22.8263307590521 5.263982</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   method_setting</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        default</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
