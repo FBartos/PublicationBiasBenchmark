@@ -2,7 +2,6 @@
 #'
 #' @description
 #' Implements the unweighted mean method. I.e., the mean of observed effect sizes.
-#' All of the computations are based on a one-sample t-test.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes)
@@ -34,6 +33,7 @@ method.mean <- function(method_name, data, settings) {
 
   # Extract data
   effect_sizes    <- data$yi
+  standard_errors <- data$sei
 
   # Check input
   if (length(effect_sizes) < 1)
@@ -41,10 +41,10 @@ method.mean <- function(method_name, data, settings) {
 
   # Extract results
   estimate     <- mean(effect_sizes)
-  estimate_se  <- sd(effect_sizes) / sqrt(length(effect_sizes))
-  estimate_lci <- estimate + estimate_se * stats::qt(0.025, length(effect_sizes) - 1)
-  estimate_uci <- estimate + estimate_se * stats::qt(0.975, length(effect_sizes) - 1)
-  estimate_p   <- stats::pt(-abs(estimate/estimate_se), df = length(effect_sizes) - 1) * 2
+  estimate_se  <- sqrt(sum(standard_errors^2)) / length(effect_sizes)
+  estimate_lci <- estimate + estimate_se * stats::qnorm(0.025)
+  estimate_uci <- estimate + estimate_se * stats::qnorm(0.975)
+  estimate_p   <- stats::pnorm(-abs(estimate/estimate_se)) * 2
 
   convergence <- TRUE
   note        <- NA
