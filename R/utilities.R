@@ -1,4 +1,8 @@
 
+#' @importFrom Rdpack reprompt
+#' @keywords internal
+"_PACKAGE"
+
 ### create environment to store package settings
 #' @title Options for the PublicationBiasBenchmark package
 #'

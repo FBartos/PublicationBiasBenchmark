@@ -30,6 +30,7 @@
 #' result <- run_method("FMA", data)
 #' print(result)
 #'
+#' @importFrom clubSandwich vcovCR
 #' @export
 method.FMA <- function(method_name, data, settings) {
 

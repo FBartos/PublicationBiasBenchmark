@@ -34,6 +34,7 @@
 #' result <- run_method("RMA", data)
 #' print(result)
 #'
+#' @importFrom clubSandwich vcovCR
 #' @export
 method.RMA <- function(method_name, data, settings) {
 
