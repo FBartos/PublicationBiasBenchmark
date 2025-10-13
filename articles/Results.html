@@ -81,7 +81,7 @@
 <h2 id="complete-results">Complete Results<a class="anchor" aria-label="anchor" href="#complete-results"></a>
 </h2>
 <p>These results are based on Stanley2017, Alinaghi2018, Bom2019, and
-Carter2019 data generating mechanisms with the total of 1665
+Carter2019 data-generating mechanisms with a total of 1665
 conditions.</p>
 <div class="section level3 tabset tabset-fade tabset-pills">
 <h3 class="tabset tabset-fade tabset-pills" id="average-performance">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance"></a>
@@ -107,19 +107,19 @@ performance measures in conditions most relevant to your application.
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias" id="bias-tab" type="button" role="tab" aria-controls="bias" aria-selected="true" class="active nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse" id="rmse-tab" type="button" role="tab" aria-controls="rmse" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage" id="ci-coverage-tab" type="button" role="tab" aria-controls="ci-coverage" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width" id="ci-width-tab" type="button" role="tab" aria-controls="ci-width" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width" id="ci-width-tab" type="button" role="tab" aria-controls="ci-width" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score" id="interval-score-tab" type="button" role="tab" aria-controls="interval-score" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate" id="type-i-error-rate-tab" type="button" role="tab" aria-controls="type-i-error-rate" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power" id="power-tab" type="button" role="tab" aria-controls="power" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio" id="positive-likelihood-ratio-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio" id="negative-likelihood-ratio-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio" id="log-positive-likelihood-ratio-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio" id="log-negative-likelihood-ratio-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#combined" id="combined-tab" type="button" role="tab" aria-controls="combined" aria-selected="false" class="nav-link">Combined</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -545,7 +545,7 @@ mean-default
 <div class="fade tab-pane" id="rmse" role="tabpanel" aria-labelledby="rmse-tab">
 
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -3073,10 +3073,10 @@ NaN
 </tbody>
 </table>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio" role="tabpanel" aria-labelledby="positive-likelihood-ratio-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-tab">
 
-<p>This measure indicates how much a significant test result changes the
-odds of H1 versus H0.</p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -3496,10 +3496,10 @@ NaN
 </tbody>
 </table>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio" role="tabpanel" aria-labelledby="negative-likelihood-ratio-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-tab">
 
-<p>This measure indicates how much a non-significant test result changes
-the odds of H1 versus H0.</p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -4366,12 +4366,12 @@ compared on the same data sets.</p>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-1" id="bias-1-tab" type="button" role="tab" aria-controls="bias-1" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-1" id="rmse-1-tab" type="button" role="tab" aria-controls="rmse-1" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-1" id="ci-coverage-1-tab" type="button" role="tab" aria-controls="ci-coverage-1" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-1" id="ci-width-1-tab" type="button" role="tab" aria-controls="ci-width-1" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-1" id="ci-width-1-tab" type="button" role="tab" aria-controls="ci-width-1" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-1" id="interval-score-1-tab" type="button" role="tab" aria-controls="interval-score-1" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-1" id="type-i-error-rate-1-tab" type="button" role="tab" aria-controls="type-i-error-rate-1" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-1" id="power-1-tab" type="button" role="tab" aria-controls="power-1" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-1" id="positive-likelihood-ratio-1-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-1" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-1" id="negative-likelihood-ratio-1-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-1" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-1" id="log-positive-likelihood-ratio-1-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-1" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-1" id="log-negative-likelihood-ratio-1-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-1" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
@@ -4382,7 +4382,7 @@ compared on the same data sets.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-56-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -4391,7 +4391,7 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-57-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -4416,11 +4416,11 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-62-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-1" role="tabpanel" aria-labelledby="positive-likelihood-ratio-1-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-1" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-1-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-63-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-1" role="tabpanel" aria-labelledby="negative-likelihood-ratio-1-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-1" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-1-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-64-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
 </div>
@@ -4453,12 +4453,12 @@ for details of the method replacement specification.</p>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-2" id="bias-2-tab" type="button" role="tab" aria-controls="bias-2" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-2" id="rmse-2-tab" type="button" role="tab" aria-controls="rmse-2" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-2" id="ci-coverage-2-tab" type="button" role="tab" aria-controls="ci-coverage-2" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-2" id="ci-width-2-tab" type="button" role="tab" aria-controls="ci-width-2" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-2" id="ci-width-2-tab" type="button" role="tab" aria-controls="ci-width-2" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-2" id="interval-score-2-tab" type="button" role="tab" aria-controls="interval-score-2" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-2" id="type-i-error-rate-2-tab" type="button" role="tab" aria-controls="type-i-error-rate-2" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-2" id="power-2-tab" type="button" role="tab" aria-controls="power-2" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-2" id="positive-likelihood-ratio-2-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-2" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-2" id="negative-likelihood-ratio-2-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-2" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-2" id="log-positive-likelihood-ratio-2-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-2" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-2" id="log-negative-likelihood-ratio-2-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-2" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
@@ -4469,7 +4469,7 @@ for details of the method replacement specification.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-79-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -4478,7 +4478,7 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-80-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -4503,11 +4503,11 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-85-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-2" role="tabpanel" aria-labelledby="positive-likelihood-ratio-2-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-2" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-2-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-86-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-2" role="tabpanel" aria-labelledby="negative-likelihood-ratio-2-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-2" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-2-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-87-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
 </div>
@@ -4518,7 +4518,7 @@ outcome scale.</p>
 <h2 id="subset-publication-bias-present">Subset: Publication Bias Present<a class="anchor" aria-label="anchor" href="#subset-publication-bias-present"></a>
 </h2>
 <p>These results are based on Stanley2017, Alinaghi2018, Bom2019, and
-Carter2019 data generating mechanisms with the total of 1143
+Carter2019 data-generating mechanisms with a total of 1143
 conditions.</p>
 <div class="section level3 tabset tabset-fade tabset-pills">
 <h3 class="tabset tabset-fade tabset-pills" id="average-performance-1">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance-1"></a>
@@ -4544,19 +4544,19 @@ performance measures in conditions most relevant to your application.
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-3" id="bias-3-tab" type="button" role="tab" aria-controls="bias-3" aria-selected="true" class="active nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-3" id="rmse-3-tab" type="button" role="tab" aria-controls="rmse-3" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-3" id="ci-coverage-3-tab" type="button" role="tab" aria-controls="ci-coverage-3" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-3" id="ci-width-3-tab" type="button" role="tab" aria-controls="ci-width-3" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-3" id="ci-width-3-tab" type="button" role="tab" aria-controls="ci-width-3" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-3" id="interval-score-3-tab" type="button" role="tab" aria-controls="interval-score-3" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-3" id="type-i-error-rate-3-tab" type="button" role="tab" aria-controls="type-i-error-rate-3" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-3" id="power-3-tab" type="button" role="tab" aria-controls="power-3" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-3" id="positive-likelihood-ratio-3-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-3" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-3" id="negative-likelihood-ratio-3-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-3" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-3" id="log-positive-likelihood-ratio-3-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-3" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-3" id="log-negative-likelihood-ratio-3-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-3" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#combined-1" id="combined-1-tab" type="button" role="tab" aria-controls="combined-1" aria-selected="false" class="nav-link">Combined</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="bias-3" role="tabpanel" aria-labelledby="bias-3-tab">
 
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -4982,7 +4982,7 @@ mean-default
 <div class="fade tab-pane" id="rmse-3" role="tabpanel" aria-labelledby="rmse-3-tab">
 
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -7510,10 +7510,10 @@ NaN
 </tbody>
 </table>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-3" role="tabpanel" aria-labelledby="positive-likelihood-ratio-3-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-3" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-3-tab">
 
-<p>This measure indicates how much a significant test result changes the
-odds of H1 versus H0.</p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -7933,10 +7933,10 @@ NaN
 </tbody>
 </table>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-3" role="tabpanel" aria-labelledby="negative-likelihood-ratio-3-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-3" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-3-tab">
 
-<p>This measure indicates how much a non-significant test result changes
-the odds of H1 versus H0.</p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -8803,12 +8803,12 @@ compared on the same data sets.</p>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-4" id="bias-4-tab" type="button" role="tab" aria-controls="bias-4" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-4" id="rmse-4-tab" type="button" role="tab" aria-controls="rmse-4" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-4" id="ci-coverage-4-tab" type="button" role="tab" aria-controls="ci-coverage-4" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-4" id="ci-width-4-tab" type="button" role="tab" aria-controls="ci-width-4" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-4" id="ci-width-4-tab" type="button" role="tab" aria-controls="ci-width-4" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-4" id="interval-score-4-tab" type="button" role="tab" aria-controls="interval-score-4" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-4" id="type-i-error-rate-4-tab" type="button" role="tab" aria-controls="type-i-error-rate-4" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-4" id="power-4-tab" type="button" role="tab" aria-controls="power-4" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-4" id="positive-likelihood-ratio-4-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-4" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-4" id="negative-likelihood-ratio-4-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-4" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-4" id="log-positive-likelihood-ratio-4-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-4" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-4" id="log-negative-likelihood-ratio-4-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-4" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-2" role="tabpanel" aria-labelledby="convergence-2-tab">
@@ -8819,7 +8819,7 @@ compared on the same data sets.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-125-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -8828,7 +8828,7 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-126-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -8853,11 +8853,11 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-131-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-4" role="tabpanel" aria-labelledby="positive-likelihood-ratio-4-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-4" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-4-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-132-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-4" role="tabpanel" aria-labelledby="negative-likelihood-ratio-4-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-4" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-4-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-133-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
 </div>
@@ -8890,12 +8890,12 @@ for details of the method replacement specification.</p>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-5" id="bias-5-tab" type="button" role="tab" aria-controls="bias-5" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-5" id="rmse-5-tab" type="button" role="tab" aria-controls="rmse-5" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-5" id="ci-coverage-5-tab" type="button" role="tab" aria-controls="ci-coverage-5" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-5" id="ci-width-5-tab" type="button" role="tab" aria-controls="ci-width-5" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-5" id="ci-width-5-tab" type="button" role="tab" aria-controls="ci-width-5" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-5" id="interval-score-5-tab" type="button" role="tab" aria-controls="interval-score-5" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-5" id="type-i-error-rate-5-tab" type="button" role="tab" aria-controls="type-i-error-rate-5" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-5" id="power-5-tab" type="button" role="tab" aria-controls="power-5" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-5" id="positive-likelihood-ratio-5-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-5" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-5" id="negative-likelihood-ratio-5-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-5" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-5" id="log-positive-likelihood-ratio-5-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-5" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-5" id="log-negative-likelihood-ratio-5-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-5" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-3" role="tabpanel" aria-labelledby="convergence-3-tab">
@@ -8906,7 +8906,7 @@ for details of the method replacement specification.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-148-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -8915,7 +8915,7 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-149-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -8940,11 +8940,11 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-154-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-5" role="tabpanel" aria-labelledby="positive-likelihood-ratio-5-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-5" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-5-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-155-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-5" role="tabpanel" aria-labelledby="negative-likelihood-ratio-5-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-5" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-5-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-156-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
 </div>
@@ -8955,7 +8955,7 @@ outcome scale.</p>
 <h2 id="subset-publication-bias-absent">Subset: Publication Bias Absent<a class="anchor" aria-label="anchor" href="#subset-publication-bias-absent"></a>
 </h2>
 <p>These results are based on Stanley2017, Alinaghi2018, Bom2019, and
-Carter2019 data generating mechanisms with the total of 522
+Carter2019 data-generating mechanisms with a total of 522
 conditions.</p>
 <div class="section level3 tabset tabset-fade tabset-pills">
 <h3 class="tabset tabset-fade tabset-pills" id="average-performance-2">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance-2"></a>
@@ -8981,19 +8981,19 @@ performance measures in conditions most relevant to your application.
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-6" id="bias-6-tab" type="button" role="tab" aria-controls="bias-6" aria-selected="true" class="active nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-6" id="rmse-6-tab" type="button" role="tab" aria-controls="rmse-6" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-6" id="ci-coverage-6-tab" type="button" role="tab" aria-controls="ci-coverage-6" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-6" id="ci-width-6-tab" type="button" role="tab" aria-controls="ci-width-6" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-6" id="ci-width-6-tab" type="button" role="tab" aria-controls="ci-width-6" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-6" id="interval-score-6-tab" type="button" role="tab" aria-controls="interval-score-6" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-6" id="type-i-error-rate-6-tab" type="button" role="tab" aria-controls="type-i-error-rate-6" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-6" id="power-6-tab" type="button" role="tab" aria-controls="power-6" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-6" id="positive-likelihood-ratio-6-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-6" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-6" id="negative-likelihood-ratio-6-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-6" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-6" id="log-positive-likelihood-ratio-6-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-6" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-6" id="log-negative-likelihood-ratio-6-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-6" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#combined-2" id="combined-2-tab" type="button" role="tab" aria-controls="combined-2" aria-selected="false" class="nav-link">Combined</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="bias-6" role="tabpanel" aria-labelledby="bias-6-tab">
 
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -9419,7 +9419,7 @@ WILS-default
 <div class="fade tab-pane" id="rmse-6" role="tabpanel" aria-labelledby="rmse-6-tab">
 
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -11947,10 +11947,10 @@ NaN
 </tbody>
 </table>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-6" role="tabpanel" aria-labelledby="positive-likelihood-ratio-6-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-6" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-6-tab">
 
-<p>This measure indicates how much a significant test result changes the
-odds of H1 versus H0.</p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -12370,10 +12370,10 @@ NaN
 </tbody>
 </table>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-6" role="tabpanel" aria-labelledby="negative-likelihood-ratio-6-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-6" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-6-tab">
 
-<p>This measure indicates how much a non-significant test result changes
-the odds of H1 versus H0.</p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -13240,12 +13240,12 @@ compared on the same data sets.</p>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-7" id="bias-7-tab" type="button" role="tab" aria-controls="bias-7" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-7" id="rmse-7-tab" type="button" role="tab" aria-controls="rmse-7" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-7" id="ci-coverage-7-tab" type="button" role="tab" aria-controls="ci-coverage-7" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-7" id="ci-width-7-tab" type="button" role="tab" aria-controls="ci-width-7" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-7" id="ci-width-7-tab" type="button" role="tab" aria-controls="ci-width-7" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-7" id="interval-score-7-tab" type="button" role="tab" aria-controls="interval-score-7" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-7" id="type-i-error-rate-7-tab" type="button" role="tab" aria-controls="type-i-error-rate-7" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-7" id="power-7-tab" type="button" role="tab" aria-controls="power-7" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-7" id="positive-likelihood-ratio-7-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-7" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-7" id="negative-likelihood-ratio-7-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-7" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-7" id="log-positive-likelihood-ratio-7-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-7" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-7" id="log-negative-likelihood-ratio-7-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-7" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-4" role="tabpanel" aria-labelledby="convergence-4-tab">
@@ -13256,7 +13256,7 @@ compared on the same data sets.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-194-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -13265,7 +13265,7 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-195-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -13290,11 +13290,11 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-200-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-7" role="tabpanel" aria-labelledby="positive-likelihood-ratio-7-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-7" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-7-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-201-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-7" role="tabpanel" aria-labelledby="negative-likelihood-ratio-7-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-7" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-7-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-202-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
 </div>
@@ -13327,12 +13327,12 @@ for details of the method replacement specification.</p>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-8" id="bias-8-tab" type="button" role="tab" aria-controls="bias-8" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-8" id="rmse-8-tab" type="button" role="tab" aria-controls="rmse-8" aria-selected="false" class="nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-8" id="ci-coverage-8-tab" type="button" role="tab" aria-controls="ci-coverage-8" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-8" id="ci-width-8-tab" type="button" role="tab" aria-controls="ci-width-8" aria-selected="false" class="nav-link">CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-8" id="ci-width-8-tab" type="button" role="tab" aria-controls="ci-width-8" aria-selected="false" class="nav-link">95% CI Width</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-8" id="interval-score-8-tab" type="button" role="tab" aria-controls="interval-score-8" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-8" id="type-i-error-rate-8-tab" type="button" role="tab" aria-controls="type-i-error-rate-8" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-8" id="power-8-tab" type="button" role="tab" aria-controls="power-8" aria-selected="false" class="nav-link">Power</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#positive-likelihood-ratio-8" id="positive-likelihood-ratio-8-tab" type="button" role="tab" aria-controls="positive-likelihood-ratio-8" aria-selected="false" class="nav-link">Positive Likelihood Ratio</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#negative-likelihood-ratio-8" id="negative-likelihood-ratio-8-tab" type="button" role="tab" aria-controls="negative-likelihood-ratio-8" aria-selected="false" class="nav-link">Negative Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-8" id="log-positive-likelihood-ratio-8-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-8" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-8" id="log-negative-likelihood-ratio-8-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-8" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-5" role="tabpanel" aria-labelledby="convergence-5-tab">
@@ -13343,7 +13343,7 @@ for details of the method replacement specification.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-217-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
+using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of bias values on the corresponding
 outcome scale.</p>
@@ -13352,7 +13352,7 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-218-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
+using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
 subresults) to see the distribution of RMSE values on the corresponding
 outcome scale.</p>
@@ -13377,11 +13377,11 @@ outcome scale.</p>
 
 <p><img src="Results_files/figure-html/unnamed-chunk-223-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="positive-likelihood-ratio-8" role="tabpanel" aria-labelledby="positive-likelihood-ratio-8-tab">
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-8" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-8-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-224-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
 </div>
-<div class="fade tab-pane" id="negative-likelihood-ratio-8" role="tabpanel" aria-labelledby="negative-likelihood-ratio-8-tab">
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-8" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-8-tab">
 
 <p><img src="Results_files/figure-html/unnamed-chunk-225-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
 </div>
@@ -13391,7 +13391,7 @@ outcome scale.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Mon Oct 13 07:30:27 2025 (UTC) using the
+<p>This report was compiled on Mon Oct 13 08:15:27 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

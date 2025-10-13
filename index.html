@@ -73,7 +73,7 @@
 <h1 id="publicationbiasbenchmark">PublicationBiasBenchmark<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark"></a>
 </h1>
 <p><strong>PublicationBiasBenchmark</strong> is an R package for benchmarking publication bias correction methods through simulation studies. It provides:<br>
-- Predefined data generating mechanisms from the literature<br>
+- Predefined data-generating mechanisms from the literature<br>
 - Functions for running meta-analytic methods on simulated data<br>
 - Pre-simulated datasets and pre-computed results for reproducible benchmarks<br>
 - Tools for visualizing and comparing method performance</p>
@@ -98,9 +98,9 @@
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Bom2019.html">Bom (2019)</a></li>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html">Carter (2019)</a></li>
 </ul>
-<p>Contributor guidelines for extending the package with data generating mechanisms and methods are available at:</p>
+<p>Contributor guidelines for extending the package with data-generating mechanisms and methods are available at:</p>
 <ul>
-<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html">How to add a new data generating mechanism</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html">How to add a new data-generating mechanism</a></li>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html">How to add a new method</a></li>
 </ul>
 <p>The rest of this file overviews the main features of the package.</p>
@@ -114,7 +114,7 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Attaching package: 'PublicationBiasBenchmark'</span></span>
@@ -122,7 +122,7 @@
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;     power</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="simulating-from-existing-data-generating-mechanisms">Simulating From Existing Data Generating Mechanisms<a class="anchor" aria-label="anchor" href="#simulating-from-existing-data-generating-mechanisms"></a>
+<h3 id="simulating-from-existing-data-generating-mechanisms">Simulating From Existing Data-Generating Mechanisms<a class="anchor" aria-label="anchor" href="#simulating-from-existing-data-generating-mechanisms"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Obtain a data.frame with pre-defined conditions</span></span>
@@ -227,15 +227,15 @@
 <h3 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a>
 </h3>
 <div class="section level4">
-<h4 id="data-generating-mechanisms">Data Generating Mechanisms<a class="anchor" aria-label="anchor" href="#data-generating-mechanisms"></a>
+<h4 id="data-generating-mechanisms">Data-Generating Mechanisms<a class="anchor" aria-label="anchor" href="#data-generating-mechanisms"></a>
 </h4>
 <ul>
 <li>
-<code><a href="reference/simulate_dgm.html">simulate_dgm()</a></code>: Generates simulated data according to specified data generating model and settings.</li>
+<code><a href="reference/simulate_dgm.html">simulate_dgm()</a></code>: Generates simulated data according to specified data-generating mechanism and settings.</li>
 <li>
-<code><a href="reference/dgm_conditions.html">dgm_conditions()</a></code>: Lists prespecified conditions of the data generating mechanism.</li>
+<code><a href="reference/dgm_conditions.html">dgm_conditions()</a></code>: Lists prespecified conditions of the data-generating mechanism.</li>
 <li>
-<code><a href="reference/validate_dgm_setting.html">validate_dgm_setting()</a></code>: Validates (custom) setting of the data generating mechanism.</li>
+<code><a href="reference/validate_dgm_setting.html">validate_dgm_setting()</a></code>: Validates (custom) setting of the data-generating mechanism.</li>
 <li>
 <code><a href="reference/download_dgm.html">download_dgm_datasets()</a></code>: Downloads pre-simulated datasets from the OSF repository.</li>
 <li>
@@ -270,7 +270,7 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="available-data-generating-mechanisms">Available Data Generating Mechanisms<a class="anchor" aria-label="anchor" href="#available-data-generating-mechanisms"></a>
+<h3 id="available-data-generating-mechanisms">Available Data-Generating Mechanisms<a class="anchor" aria-label="anchor" href="#available-data-generating-mechanisms"></a>
 </h3>
 <p>See <code>methods("dgm")</code> for the full list:</p>
 <ul>

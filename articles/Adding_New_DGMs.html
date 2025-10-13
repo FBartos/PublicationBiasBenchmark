@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Adding New Data Generating Mechanisms • PublicationBiasBenchmark</title>
+<title>Adding New Data-Generating Mechanisms • PublicationBiasBenchmark</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Adding New Data Generating Mechanisms">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Adding New Data-Generating Mechanisms">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -68,7 +68,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Adding New Data Generating Mechanisms</h1>
+      <h1>Adding New Data-Generating Mechanisms</h1>
                         <h4 data-toc-skip class="author">František
 Bartoš</h4>
             
@@ -79,7 +79,7 @@ Bartoš</h4>
 
     
     
-<p>This vignette explains how to add new data generating mechanisms
+<p>This vignette explains how to add new data-generating mechanisms
 (DGMs) to the <code>PublicationBiasBenchmark</code> package. In the
 following, we will use the <code>no_bias</code> DGM as an example.</p>
 <div class="section level2">
@@ -88,7 +88,7 @@ following, we will use the <code>no_bias</code> DGM as an example.</p>
 <p>Each DGM in the package consists of three key components:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Main DGM function</strong>: Implements the data generation
+<strong>Main DGM function</strong>: Implements the data-generating
 mechanism</li>
 <li>
 <strong>Validation function</strong>: Validates input parameters and
@@ -108,7 +108,7 @@ conditions</li>
 <code>R/dgm-no_bias.R</code> containing three functions:</p>
 <ul>
 <li>
-<code><a href="../reference/dgm.no_bias.html">dgm.no_bias()</a></code>: The main data generation
+<code><a href="../reference/dgm.no_bias.html">dgm.no_bias()</a></code>: The main data-generating mechanism
 implementation</li>
 <li>
 <code>validate_dgm_setting.no_bias()</code>: Parameter
@@ -122,14 +122,14 @@ system to work correctly.</p>
 <div class="section level2">
 <h2 id="main-dgm-function-dgm-dgm_name">1. Main DGM Function: <code>dgm.{DGM_NAME}()</code><a class="anchor" aria-label="anchor" href="#main-dgm-function-dgm-dgm_name"></a>
 </h2>
-<p>This is the core function that implements your data generating
+<p>This is the core function that implements your data-generating
 mechanism. Here is the <code>no_bias</code> implementation as an
 example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#' @title Normal Unbiased Data Generating Model</span></span>
+<code class="sourceCode R"><span><span class="co">#' @title Normal Unbiased Data-Generating Mechanism</span></span>
 <span><span class="co">#'</span></span>
 <span><span class="co">#' @description</span></span>
-<span><span class="co">#' An example data generating model to simulate effect sizes without</span></span>
+<span><span class="co">#' An example data-generating mechanism to simulate effect sizes without</span></span>
 <span><span class="co">#' publication bias.</span></span>
 <span><span class="co">#'</span></span>
 <span><span class="co">#' @param dgm_name DGM name (automatically passed)</span></span>
