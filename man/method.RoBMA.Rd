@@ -45,6 +45,7 @@ three-level specification whenever \code{"study_ids"} are supplied with the data
 }
 }
 \examples{
+\dontrun{
 # Generate some example data
 data <- data.frame(
   yi      = c(0.2, 0.3, 0.1, 0.4, 0.25),
@@ -52,8 +53,8 @@ data <- data.frame(
   es_type = "SMD"
 )
 
-# Apply PET method
+# Apply RoBMA method
 result <- run_method("RoBMA", data)
 print(result)
-
+}
 }

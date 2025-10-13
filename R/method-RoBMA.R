@@ -36,6 +36,7 @@
 #'
 #'
 #' @examples
+#' \dontrun{
 #' # Generate some example data
 #' data <- data.frame(
 #'   yi      = c(0.2, 0.3, 0.1, 0.4, 0.25),
@@ -43,10 +44,10 @@
 #'   es_type = "SMD"
 #' )
 #'
-#' # Apply PET method
+#' # Apply RoBMA method
 #' result <- run_method("RoBMA", data)
 #' print(result)
-#'
+#' }
 #' @export
 method.RoBMA <- function(method_name, data, settings) {
 

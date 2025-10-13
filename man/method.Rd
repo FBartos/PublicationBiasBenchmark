@@ -16,5 +16,17 @@ containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.}
 }
 \description{
-Method Method
+S3 Method for defining methods. See \code{\link[=run_method]{run_method()}} for
+usage and further details.
+}
+\examples{
+
+data <- data.frame(
+  yi = c(0.2, 0.3, 0.1, 0.4),
+  sei = c(0.1, 0.15, 0.08, 0.12)
+)
+result <- run_method("RMA", data, "default")
+}
+\seealso{
+\code{\link[=run_method]{run_method()}}
 }

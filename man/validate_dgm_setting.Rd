@@ -26,7 +26,7 @@ validate_dgm_setting("Carter2019", list(mean_effect = 0,
                         QRP = "high", n_studies = 10))
 
 validate_dgm_setting("Alinaghi2018", list(environment = "FE",
-                        mean_effect = 0))
+                        mean_effect = 0, bias = "positive"))
 
 validate_dgm_setting("Stanley2017", list(environment = "Cohens_d",
                         mean_effect = 0,

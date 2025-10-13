@@ -13,3 +13,5 @@ README.html
 ^\.github$
 ^vignettes/Results.*\.Rmd$
 ^vignettes/_results-.*\.Rmd$
+^doc$
+^Meta$

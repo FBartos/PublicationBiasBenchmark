@@ -95,6 +95,14 @@ interval_score_mcse(ci_lower, ci_upper, theta, alpha = 0.05)
 
 \item{G}{Vector of generic statistics from simulations}
 
+\item{tp}{Numeric with the count of true positive hypothesis tests}
+
+\item{fp}{Numeric with the count of false positive hypothesis tests}
+
+\item{fn}{Numeric with the count of false negative hypothesis tests}
+
+\item{tn}{Numeric with the count of true negative hypothesis tests}
+
 \item{alpha}{Numeric indicating the 1 - coverage level for interval_score calculation}
 }
 \value{

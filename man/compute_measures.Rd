@@ -95,6 +95,32 @@ performance measures.
 }
 \examples{
 \dontrun{
+# Download DGM results
+dgm_name <- "no_bias"
+download_dgm_results(dgm_name)
+
+# Basic usage
+compute_measures(
+  dgm_name        = dgm_name,
+  method          = c("mean", "RMA", "PET"),
+  method_setting  = c("default", "default", "default"),
+  measures        = c("bias", "mse", "coverage")
+)
+
+# With method replacements for non-converged results
+method_replacements <- list(
+  "RMA-default" = list(method = "FMA", method_setting = "default"),
+  "PET-default" = list(method = c("WLS", "FMA"), 
+                       method_setting = c("default", "default"))
+)
+
+compute_measures(
+  dgm_name            = dgm_name,
+  method              = c("RMA", "PET"),
+  method_setting      = c("default", "default"),
+  method_replacements = method_replacements,
+  measures            = c("bias", "mse")
+)
 }
 
 }

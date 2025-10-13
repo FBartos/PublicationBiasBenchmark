@@ -13,9 +13,6 @@
 #'
 #' @return Data frame with pairwise comparison scores in long format (method_a, method_b, score)
 #'
-#' @examples
-#' \dontrun{
-#' }
 #'
 #' @export
 compare_single_measure <- function(dgm_name, measure_name, method, method_setting, conditions,
@@ -312,9 +309,6 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 #'
 #' @return Invisible list of computed comparison data frames
 #'
-#' @examples
-#' \dontrun{
-#' }
 #'
 #' @export
 compare_measures <- function(dgm_name, method, method_setting, measures = NULL, verbose = TRUE,

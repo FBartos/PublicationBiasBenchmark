@@ -3,19 +3,46 @@
 #' @description
 #' This function provides a unified interface to various data-generating
 #' mechanisms for simulation studies. The specific DGM is determined by
-#' the first argument.
+#' the first argument. See
+#' \href{../doc/Adding_New_DGMs.html}{\code{vignette("Adding_New_DGMs", package = "PublicationBiasBenchmark")}}
+#' for details of extending the package with new DGMs.
 #'
 #' @param dgm_name Character string specifying the DGM type
 #' @param settings List containing the required parameters for the DGM or
 #' numeric condition_id
 #'
+#' @section Output Structure:
+#' The returned data frame follows a standardized schema that downstream
+#' functions rely on. Across the currently implemented DGMs, the following
+#' columns are used:
+#' \itemize{
+#'   \item \code{yi} (numeric): The effect size estimate.
+#'   \item \code{sei} (numeric): Standard error of \code{yi}.
+#'   \item \code{ni} (integer): Total sample size for the estimate
+#'         (e.g., sum over groups where applicable).
+#'   \item \code{es_type} (character): Effect size type, used to disambiguate
+#'         the scale of \code{yi}. Currently used values are
+#'         \code{"SMD"} (standardized mean difference / Cohen's d),
+#'         \code{"logOR"} (log odds ratio), and \code{"none"}
+#'         (unspecified generic continuous coefficient).
+#'   \item \code{study_id} (integer/character, optional): Identifier of the
+#'         primary study/cluster when a DGM yields multiple estimates per study
+#'         (e.g., Alinaghi2018, PRE). If absent, each row is treated as an
+#'         independent study.
+#' }
+#'
+#'
 #' @return A data frame containing the generated data with standardized structure
 #'
 #' @examples
+#'
+#' simulate_dgm("Carter2019", 1)
+#'
 #' simulate_dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
 #'                        bias = "high", QRP = "high", n_studies = 10))
 #'
-#' simulate_dgm("Alinaghi2018", list(environment = "FE", mean_effect = 0))
+#' simulate_dgm("Alinaghi2018", list(environment = "FE", mean_effect = 0,
+#'                        bias = "positive"))
 #'
 #' simulate_dgm("Stanley2017", list(environment = "Cohens_d", mean_effect = 0,
 #'                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
@@ -44,8 +71,16 @@ simulate_dgm <- function(dgm_name, settings) {
 }
 
 #' @title DGM Method
-#' @inheritParams simulate_dgm
+#' @description
+#' S3 Method for defining data-generating mechanisms. See [simulate_dgm()] for
+#' usage and further details.
 #'
+#' @inheritParams simulate_dgm
+#' @inheritSection simulate_dgm Output Structure
+#' @seealso [simulate_dgm()]
+#' @examples
+#'
+#' simulate_dgm("Carter2019", 1)
 #' @export
 dgm <- function(dgm_name, settings) {
 
@@ -89,7 +124,7 @@ dgm.default <- function(dgm_name, settings) {
 #'                         QRP = "high", n_studies = 10))
 #'
 #' validate_dgm_setting("Alinaghi2018", list(environment = "FE",
-#'                         mean_effect = 0))
+#'                         mean_effect = 0, bias = "positive"))
 #'
 #' validate_dgm_setting("Stanley2017", list(environment = "Cohens_d",
 #'                         mean_effect = 0,

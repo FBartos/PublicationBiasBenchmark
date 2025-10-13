@@ -39,7 +39,7 @@ data <- data.frame(
   sei = c(0.1, 0.15, 0.08, 0.12, 0.09)
 )
 
-# Apply PEESE method
+# Apply PETPEESE method
 result <- run_method("PETPEESE", data)
 print(result)
 

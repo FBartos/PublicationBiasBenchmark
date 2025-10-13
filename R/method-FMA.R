@@ -67,6 +67,10 @@ method.FMA <- function(method_name, data, settings) {
 
   } else {
 
+    # Ensure clubSandwich is available for robust SE estimation
+    if (!requireNamespace("clubSandwich", quietly = TRUE))
+      stop("Package 'clubSandwich' is required for cluster-robust standard errors.")
+    
     fma_est    <- try(metafor::robust(fma_model, cluster = study_ids, clubSandwich = TRUE))
     if (inherits(fma_est, "try-error")) {
       fma_est <- try(metafor::robust(fma_model, cluster = study_ids, clubSandwich = FALSE))

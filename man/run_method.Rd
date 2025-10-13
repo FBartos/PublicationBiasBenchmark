@@ -21,6 +21,9 @@ A data frame with standardized method results
 \description{
 This function provides a unified interface to various publication bias
 correction methods. The specific method is determined by the first argument.
+See
+\href{../doc/Adding_New_Methods.html}{\code{vignette("Adding_New_Methods", package = "PublicationBiasBenchmark")}}
+for details of extending the package with new methods
 }
 \examples{
 # Example usage with PET method

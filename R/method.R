@@ -3,6 +3,9 @@
 #' @description
 #' This function provides a unified interface to various publication bias
 #' correction methods. The specific method is determined by the first argument.
+#' See
+#' \href{../doc/Adding_New_Methods.html}{\code{vignette("Adding_New_Methods", package = "PublicationBiasBenchmark")}}
+#' for details of extending the package with new methods
 #'
 #' @param method_name Character string specifying the method type
 #' @param data Data frame containing yi (effect sizes) and sei (standard errors)
@@ -55,8 +58,19 @@ run_method <- function(method_name, data, settings = NULL) {
 }
 
 #' @title Method Method
-#' @inheritParams run_method
+#' @description
+#' S3 Method for defining methods. See [run_method()] for
+#' usage and further details.
 #'
+#' @inheritParams run_method
+#' @seealso [run_method()]
+#' @examples
+#'
+#' data <- data.frame(
+#'   yi = c(0.2, 0.3, 0.1, 0.4),
+#'   sei = c(0.1, 0.15, 0.08, 0.12)
+#' )
+#' result <- run_method("RMA", data, "default")
 #' @export
 method <- function(method_name, data, settings) {
 
@@ -203,7 +217,7 @@ get_method_extra_columns <- function(method_name) {
 #' @rdname method_extra_columns
 #' @export
 method_extra_columns <- function(method_name) {
-  
+
   # Convert character to appropriate class for dispatch
   if (is.character(method_name)) {
     method_type <- structure(method_name, class = method_name)

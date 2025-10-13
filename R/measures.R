@@ -46,6 +46,10 @@
 #' @param ci_lower Vector of lower confidence interval bounds
 #' @param ci_upper Vector of upper confidence interval bounds
 #' @param test_rejects_h0 Logical vector indicating whether statistical tests reject the null hypothesis
+#' @param tp Numeric with the count of true positive hypothesis tests
+#' @param fp Numeric with the count of false positive hypothesis tests
+#' @param tn Numeric with the count of true negative hypothesis tests
+#' @param fn Numeric with the count of false negative hypothesis tests
 #' @param alpha Numeric indicating the 1 - coverage level for interval_score calculation
 #' @param G Vector of generic statistics from simulations
 #'

@@ -13,5 +13,35 @@ dgm(dgm_name, settings)
 numeric condition_id}
 }
 \description{
-DGM Method
+S3 Method for defining data-generating mechanisms. See \code{\link[=simulate_dgm]{simulate_dgm()}} for
+usage and further details.
+}
+\section{Output Structure}{
+
+The returned data frame follows a standardized schema that downstream
+functions rely on. Across the currently implemented DGMs, the following
+columns are used:
+\itemize{
+\item \code{yi} (numeric): The effect size estimate.
+\item \code{sei} (numeric): Standard error of \code{yi}.
+\item \code{ni} (integer): Total sample size for the estimate
+(e.g., sum over groups where applicable).
+\item \code{es_type} (character): Effect size type, used to disambiguate
+the scale of \code{yi}. Currently used values are
+\code{"SMD"} (standardized mean difference / Cohen's d),
+\code{"logOR"} (log odds ratio), and \code{"none"}
+(unspecified generic continuous coefficient).
+\item \code{study_id} (integer/character, optional): Identifier of the
+primary study/cluster when a DGM yields multiple estimates per study
+(e.g., Alinaghi2018, PRE). If absent, each row is treated as an
+independent study.
+}
+}
+
+\examples{
+
+simulate_dgm("Carter2019", 1)
+}
+\seealso{
+\code{\link[=simulate_dgm]{simulate_dgm()}}
 }

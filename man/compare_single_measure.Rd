@@ -70,8 +70,3 @@ basis using estimates. For each pair of method, if method A has an estimate
 closer to the true value than method B, it gets a score of 1, if further it
 gets 0, and if equal it gets 0.5.
 }
-\examples{
-\dontrun{
-}
-
-}

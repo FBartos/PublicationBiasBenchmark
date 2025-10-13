@@ -97,6 +97,11 @@ method.RMA <- function(method_name, data, settings) {
 
     # Call the model
     rma_model  <- do.call(metafor::rma.mv, settings)
+    
+    # Ensure clubSandwich is available for robust SE estimation
+    if (!requireNamespace("clubSandwich", quietly = TRUE))
+      stop("Package 'clubSandwich' is required for cluster-robust standard errors.")
+    
     rma_est    <- try(metafor::robust(rma_model, cluster = study_ids, clubSandwich = TRUE))
     if (inherits(rma_est, "try-error")) {
       rma_est <- try(metafor::robust(rma_model, cluster = study_ids, clubSandwich = FALSE))
