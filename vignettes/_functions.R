@@ -97,25 +97,43 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
     data[[y_var]] <- pmax(ylim_range[1], pmin(ylim_range[2], data[[y_var]]))
   }
 
-  p <- ggplot(data, aes(x = label, y = .data[[y_var]], fill = label, color = label)) +
-    ggdist::stat_halfeye(
-      adjust = 0.5,
-      width = 0.6,
-      .width = 0,
-      justification = -0.2,
-      point_colour = NA,
-      alpha = 0.7
-    ) +
-    geom_boxplot(
-      width = 0.15,
-      outlier.shape = NA,
-      alpha = 0.7
-    ) +
-    geom_point(
-      position = position_jitter(width = 0.05, height = 0),
-      size = 1,
-      alpha = 0.3
-    ) +
+  ## create slightly different plots for ordinary and rank variables
+  if (y_var %in% c("rmse_rank", "bias_rank", "mean_ci_width_rank", "interval_score_rank")) {
+    tab <- table(data$label, data[,y_var])
+    rank_props <- as.data.frame(prop.table(tab, margin = 1) * 100)
+    colnames(rank_props) <- c("label", y_var, "percentage")
+    rank_props[,y_var] <- as.numeric(as.character(rank_props[,y_var]))
+    p <- ggplot(data, aes(x = label, y = .data[[y_var]], fill = label, color = label)) +
+      geom_point(data = rank_props, aes(size = percentage)) +
+      geom_boxplot(
+        width = 0.6,
+        outlier.shape = NA,
+        alpha = 0.7,
+        median.linewidth = 1,
+        median.colour = "#000000CC"
+      )
+  } else {
+    p <- ggplot(data, aes(x = label, y = .data[[y_var]], fill = label, color = label)) +
+      ggdist::stat_halfeye(
+        adjust = 0.5,
+        width = 0.6,
+        .width = 0,
+        justification = -0.2,
+        point_colour = NA,
+        alpha = 0.7
+      ) +
+      geom_boxplot(
+        width = 0.15,
+        outlier.shape = NA,
+        alpha = 0.7
+      ) +
+      geom_point(
+        position = position_jitter(width = 0.05, height = 0),
+        size = 1,
+        alpha = 0.3
+      )
+  }
+  p <- p +
     scale_fill_manual(values = method_colors) +
     scale_color_manual(values = method_colors) +
     labs(
