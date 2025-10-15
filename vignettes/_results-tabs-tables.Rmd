@@ -13,7 +13,7 @@ if (!exists("dgm_names")) {
 }
 ```
 
-Method performance measures are aggregated across all simulated conditions to provide an overall impression of method performance. However, keep in mind that a method with a high overall ranking is not necessarily the "best" method for a particular application. To select a suitable method for your application, consider also non-aggregated performance measures in conditions most relevant to your application. (TODO: add links to non-aggregated data exploration tool)
+Method performance measures are aggregated across all simulated conditions to provide an overall impression of method performance. However, keep in mind that a method with a high overall ranking is not necessarily the "best" method for a particular application. To select a suitable method for your application, consider also non-aggregated performance measures in conditions most relevant to your application.
 
 #### Bias
 
