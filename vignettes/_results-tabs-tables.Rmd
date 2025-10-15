@@ -65,6 +65,8 @@ kbl_table
 
 #### 95% CI Coverage
 
+Coverage is the proportion of simulation runs in which the 95% confidence interval contained the true parameter value. Ideally, this value should be close to the nominal level of 0.95.
+
 ```{r echo=FALSE} 
 tables_conditional_coverage <- data.frame(
   Rank_Convergence   = this_rankings_conditional$Coverage[order(this_rankings_conditional$Coverage)],
@@ -87,6 +89,8 @@ kbl_table
 
 
 #### 95% CI Width
+
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average CI width is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of CI width values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_CI_width <- data.frame(
@@ -111,6 +115,8 @@ kbl_table
 
 #### Interval Score
 
+The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method.
+
 ```{r echo=FALSE} 
 tables_conditional_interval_score <- data.frame(
   Rank_Convergence   = this_rankings_conditional$interval_score[order(this_rankings_conditional$interval_score)],
@@ -134,6 +140,8 @@ kbl_table
 
 #### Type I Error Rate
 
+The Type I Error Rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
+
 ```{r echo=FALSE} 
 tables_conditional_error <- data.frame(
   Rank_Convergence   = this_rankings_conditional$Error[order(this_rankings_conditional$Error)],
@@ -155,6 +163,8 @@ kbl_table
 ```
 
 #### Power
+
+The Power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_power <- data.frame(
@@ -205,7 +215,6 @@ kbl_table
 #### Log Negative Likelihood Ratio
 
 The negative likelihood ratio indicates how much a non-significant test result changes the odds of H1 versus H0.
-
 
 ```{r echo=FALSE} 
 tables_conditional_neg_LR <- data.frame(
