@@ -90,8 +90,8 @@ conditions to provide an overall impression of method performance.
 However, keep in mind that a method with a high overall ranking is not
 necessarily the “best” method for a particular application. To select a
 suitable method for your application, consider also non-aggregated
-performance measures in conditions most relevant to your application.
-(TODO: add links to non-aggregated data exploration tool)</p>
+performance measures in conditions most relevant to your
+application.</p>
 
 
 
@@ -969,6 +969,9 @@ mean-default
 </div>
 <div class="fade tab-pane" id="ci-coverage" role="tabpanel" aria-labelledby="ci-coverage-tab">
 
+<p>Coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true parameter value. Ideally, this
+value should be close to the nominal level of 0.95.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -1390,6 +1393,11 @@ NaN
 </div>
 <div class="fade tab-pane" id="ci-width" role="tabpanel" aria-labelledby="ci-width-tab">
 
+<p>Methods are compared using condition-wise ranks. Direct comparison
+using the average CI width is not possible because the data-generating
+mechanisms differ in the outcome scale. See the DGM-specific results (or
+subresults) to see the distribution of CI width values on the
+corresponding outcome scale.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -1811,6 +1819,10 @@ NaN
 </div>
 <div class="fade tab-pane" id="interval-score" role="tabpanel" aria-labelledby="interval-score-tab">
 
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -2232,6 +2244,9 @@ NaN
 </div>
 <div class="fade tab-pane" id="type-i-error-rate" role="tabpanel" aria-labelledby="type-i-error-rate-tab">
 
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -2653,6 +2668,9 @@ NaN
 </div>
 <div class="fade tab-pane" id="power" role="tabpanel" aria-labelledby="power-tab">
 
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -4402,26 +4420,45 @@ outcome scale.</p>
 <div class="fade tab-pane" id="ci-width-1" role="tabpanel" aria-labelledby="ci-width-1-tab">
 
 <p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-60-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>Methods are compared using condition-wise ranks. Direct comparison
+using the average 95% CI width is not possible because the
+data-generating mechanisms differ in the outcome scale. See the
+DGM-specific results (or subresults) to see the distribution of 95% CI
+width values on the corresponding outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="interval-score-1" role="tabpanel" aria-labelledby="interval-score-1-tab">
 
 <p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-61-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-1" role="tabpanel" aria-labelledby="type-i-error-rate-1-tab">
 
 <p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-62-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 </div>
 <div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
 
 <p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-63-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio-1" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-1-tab">
 
 <p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-64-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio-1" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-1-tab">
 
 <p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-65-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 </div>
 </div>
 </div>
@@ -4462,11 +4499,11 @@ for details of the method replacement specification.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-79-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-80-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-80-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-81-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
 using the average bias is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
@@ -4475,7 +4512,7 @@ outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-81-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-82-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Methods are compared using condition-wise ranks. Direct comparison
 using the average RMSE is not possible because the data-generating
 mechanisms differ in the outcome scale. See the DGM-specific results (or
@@ -4484,31 +4521,50 @@ outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-82-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-83-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="ci-width-2" role="tabpanel" aria-labelledby="ci-width-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-83-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-84-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>Methods are compared using condition-wise ranks. Direct comparison
+using the average 95% CI width is not possible because the
+data-generating mechanisms differ in the outcome scale. See the
+DGM-specific results (or subresults) to see the distribution of 95% CI
+width values on the corresponding outcome scale.</p>
 </div>
 <div class="fade tab-pane" id="interval-score-2" role="tabpanel" aria-labelledby="interval-score-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-84-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-85-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-2" role="tabpanel" aria-labelledby="type-i-error-rate-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-85-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-86-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 </div>
 <div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-86-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-87-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio-2" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-87-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-88-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio-2" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-88-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-89-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 </div>
 </div>
 </div>
@@ -4526,8 +4582,8 @@ conditions to provide an overall impression of method performance.
 However, keep in mind that a method with a high overall ranking is not
 necessarily the “best” method for a particular application. To select a
 suitable method for your application, consider also non-aggregated
-performance measures in conditions most relevant to your application.
-(TODO: add links to non-aggregated data exploration tool)</p>
+performance measures in conditions most relevant to your
+application.</p>
 
 
 
@@ -5395,6 +5451,9 @@ puniform-star
 </div>
 <div class="fade tab-pane" id="ci-coverage-3" role="tabpanel" aria-labelledby="ci-coverage-3-tab">
 
+<p>Coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true parameter value. Ideally, this
+value should be close to the nominal level of 0.95.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -6237,6 +6296,10 @@ NaN
 </div>
 <div class="fade tab-pane" id="interval-score-3" role="tabpanel" aria-labelledby="interval-score-3-tab">
 
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -6658,6 +6721,9 @@ NaN
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-3" role="tabpanel" aria-labelledby="type-i-error-rate-3-tab">
 
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -7079,6 +7145,9 @@ NaN
 </div>
 <div class="fade tab-pane" id="power-3" role="tabpanel" aria-labelledby="power-3-tab">
 
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -8801,46 +8870,60 @@ compared on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-2" role="tabpanel" aria-labelledby="convergence-2-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-126-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-128-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-4" role="tabpanel" aria-labelledby="bias-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-127-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-129-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-4" role="tabpanel" aria-labelledby="rmse-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-128-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-130-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-4" role="tabpanel" aria-labelledby="ci-coverage-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-129-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-131-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="ci-width-4" role="tabpanel" aria-labelledby="ci-width-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-130-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-132-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="interval-score-4" role="tabpanel" aria-labelledby="interval-score-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-131-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-133-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-4" role="tabpanel" aria-labelledby="type-i-error-rate-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-132-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-134-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 </div>
 <div class="fade tab-pane" id="power-4" role="tabpanel" aria-labelledby="power-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-133-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-135-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio-4" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-134-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-136-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio-4" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-135-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-137-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 </div>
 </div>
 </div>
@@ -8881,46 +8964,60 @@ for details of the method replacement specification.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-3" role="tabpanel" aria-labelledby="convergence-3-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-149-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-152-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-5" role="tabpanel" aria-labelledby="bias-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-150-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-153-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-5" role="tabpanel" aria-labelledby="rmse-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-151-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-154-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-5" role="tabpanel" aria-labelledby="ci-coverage-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-152-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-155-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="ci-width-5" role="tabpanel" aria-labelledby="ci-width-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-153-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-156-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="interval-score-5" role="tabpanel" aria-labelledby="interval-score-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-154-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-157-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-5" role="tabpanel" aria-labelledby="type-i-error-rate-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-155-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-158-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 </div>
 <div class="fade tab-pane" id="power-5" role="tabpanel" aria-labelledby="power-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-156-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-159-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio-5" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-157-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-160-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio-5" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-158-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-161-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 </div>
 </div>
 </div>
@@ -8938,8 +9035,8 @@ conditions to provide an overall impression of method performance.
 However, keep in mind that a method with a high overall ranking is not
 necessarily the “best” method for a particular application. To select a
 suitable method for your application, consider also non-aggregated
-performance measures in conditions most relevant to your application.
-(TODO: add links to non-aggregated data exploration tool)</p>
+performance measures in conditions most relevant to your
+application.</p>
 
 
 
@@ -9807,6 +9904,9 @@ puniform-star
 </div>
 <div class="fade tab-pane" id="ci-coverage-6" role="tabpanel" aria-labelledby="ci-coverage-6-tab">
 
+<p>Coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true parameter value. Ideally, this
+value should be close to the nominal level of 0.95.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -10649,6 +10749,10 @@ NaN
 </div>
 <div class="fade tab-pane" id="interval-score-6" role="tabpanel" aria-labelledby="interval-score-6-tab">
 
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -11070,6 +11174,9 @@ NaN
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-6" role="tabpanel" aria-labelledby="type-i-error-rate-6-tab">
 
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -11491,6 +11598,9 @@ NaN
 </div>
 <div class="fade tab-pane" id="power-6" role="tabpanel" aria-labelledby="power-6-tab">
 
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -13213,46 +13323,60 @@ compared on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-4" role="tabpanel" aria-labelledby="convergence-4-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-195-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-199-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-7" role="tabpanel" aria-labelledby="bias-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-196-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-200-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-7" role="tabpanel" aria-labelledby="rmse-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-197-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-201-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-7" role="tabpanel" aria-labelledby="ci-coverage-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-198-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-202-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="ci-width-7" role="tabpanel" aria-labelledby="ci-width-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-199-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-203-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="interval-score-7" role="tabpanel" aria-labelledby="interval-score-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-200-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-204-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-7" role="tabpanel" aria-labelledby="type-i-error-rate-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-201-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-205-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 </div>
 <div class="fade tab-pane" id="power-7" role="tabpanel" aria-labelledby="power-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-202-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-206-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio-7" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-203-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-207-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio-7" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-7-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-204-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-208-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 </div>
 </div>
 </div>
@@ -13285,46 +13409,60 @@ compared on the same data sets.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-5" role="tabpanel" aria-labelledby="convergence-5-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-218-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-223-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="bias-8" role="tabpanel" aria-labelledby="bias-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-219-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-224-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and
 0.5 respectively.</p>
 </div>
 <div class="fade tab-pane" id="rmse-8" role="tabpanel" aria-labelledby="rmse-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-220-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-225-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
 <p>Values larger than 0.5 are visualized as 0.5.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-8" role="tabpanel" aria-labelledby="ci-coverage-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-221-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-226-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="ci-width-8" role="tabpanel" aria-labelledby="ci-width-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-222-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-227-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="interval-score-8" role="tabpanel" aria-labelledby="interval-score-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-223-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-228-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The Interval Score measures the accuracy of an uncertainty interval
+by combining its width and coverage. It penalizes intervals that are too
+broad or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-8" role="tabpanel" aria-labelledby="type-i-error-rate-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-224-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-229-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The Type I Error Rate is the proportion of simulation runs in which
+the null hypothesis was incorrectly rejected when it was true. Ideally,
+this value should be close to the nominal level of 0.05.</p>
 </div>
 <div class="fade tab-pane" id="power-8" role="tabpanel" aria-labelledby="power-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-225-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-230-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The Power is the proportion of simulation runs in which the null
+hypothesis was correctly rejected when the alternative hypothesis was
+true. A higher power indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio-8" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-226-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-231-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio indicates how much a significant test
+result changes the odds of H1 versus H0.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio-8" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-8-tab">
 
-<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-227-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p><img src="Results_Stanley2017_files/figure-html/unnamed-chunk-232-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio indicates how much a non-significant
+test result changes the odds of H1 versus H0.</p>
 </div>
 </div>
 </div>
@@ -13332,7 +13470,7 @@ compared on the same data sets.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Wed Oct 15 07:11:30 2025 (UTC) using the
+<p>This report was compiled on Wed Oct 15 08:27:42 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
