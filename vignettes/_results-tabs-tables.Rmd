@@ -15,6 +15,30 @@ if (!exists("dgm_names")) {
 
 Method performance measures are aggregated across all simulated conditions to provide an overall impression of method performance. However, keep in mind that a method with a high overall ranking is not necessarily the "best" method for a particular application. To select a suitable method for your application, consider also non-aggregated performance measures in conditions most relevant to your application.
 
+#### RMSE
+
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
+
+```{r echo=FALSE} 
+tables_conditional_rmse <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$RMSE[order(this_rankings_conditional$RMSE)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$RMSE)],
+  Value_Convergence  = this_tables_conditional$RMSE[order(this_rankings_conditional$RMSE)],
+  Rank_Replacement   = this_rankings_replacement$RMSE[order(this_rankings_replacement$RMSE)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$RMSE)],
+  Value_Replacement  = this_tables_replacement$RMSE[order(this_rankings_replacement$RMSE)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_rmse, 
+                             col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
 #### Bias
 
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
@@ -39,22 +63,22 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-#### RMSE
+#### Empirical SE
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
-tables_conditional_rmse <- data.frame(
-  Rank_Convergence   = this_rankings_conditional$RMSE[order(this_rankings_conditional$RMSE)],
-  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$RMSE)],
-  Value_Convergence  = this_tables_conditional$RMSE[order(this_rankings_conditional$RMSE)],
-  Rank_Replacement   = this_rankings_replacement$RMSE[order(this_rankings_replacement$RMSE)],
-  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$RMSE)],
-  Value_Replacement  = this_tables_replacement$RMSE[order(this_rankings_replacement$RMSE)]
+tables_conditional_Emp_se <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Emp_se[order(this_rankings_conditional$Emp_se)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Emp_se)],
+  Value_Convergence  = this_tables_conditional$Emp_se[order(this_rankings_conditional$Emp_se)],
+  Rank_Replacement   = this_rankings_replacement$Emp_se[order(this_rankings_replacement$Emp_se)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Emp_se)],
+  Value_Replacement  = this_tables_replacement$Emp_se[order(this_rankings_replacement$Emp_se)]
 )
 
 # Create table with two-level headers
-kbl_table <- kableExtra::kbl(tables_conditional_rmse, 
+kbl_table <- kableExtra::kbl(tables_conditional_Emp_se, 
                              col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
@@ -62,6 +86,32 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
 ```
+
+#### Interval Score
+
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average Interval Score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
+The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method.
+
+```{r echo=FALSE} 
+tables_conditional_interval_score <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$interval_score[order(this_rankings_conditional$interval_score)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$interval_score)],
+  Value_Convergence  = this_tables_conditional$interval_score[order(this_rankings_conditional$interval_score)],
+  Rank_Replacement   = this_rankings_replacement$interval_score[order(this_rankings_replacement$interval_score)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$interval_score)],
+  Value_Replacement  = this_tables_replacement$interval_score[order(this_rankings_replacement$interval_score)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_interval_score, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
 
 #### 95% CI Coverage
 
@@ -105,80 +155,6 @@ tables_conditional_CI_width <- data.frame(
 # Create table with two-level headers
 kbl_table <- kableExtra::kbl(tables_conditional_CI_width, 
                              col.names = c("Rank", "Method", if (common_scale) "Value" else "Mean Rank", "Rank", "Method", if (common_scale) "Value" else "Mean Rank"),
-                             digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
-kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
-
-kbl_table
-```
-
-
-#### Interval Score
-
-The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method.
-
-```{r echo=FALSE} 
-tables_conditional_interval_score <- data.frame(
-  Rank_Convergence   = this_rankings_conditional$interval_score[order(this_rankings_conditional$interval_score)],
-  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$interval_score)],
-  Value_Convergence  = this_tables_conditional$interval_score[order(this_rankings_conditional$interval_score)],
-  Rank_Replacement   = this_rankings_replacement$interval_score[order(this_rankings_replacement$interval_score)],
-  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$interval_score)],
-  Value_Replacement  = this_tables_replacement$interval_score[order(this_rankings_replacement$interval_score)]
-)
-
-# Create table with two-level headers
-kbl_table <- kableExtra::kbl(tables_conditional_interval_score, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
-                             digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
-kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
-
-kbl_table
-```
-
-
-#### Type I Error Rate
-
-The Type I Error Rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
-
-```{r echo=FALSE} 
-tables_conditional_error <- data.frame(
-  Rank_Convergence   = this_rankings_conditional$Error[order(this_rankings_conditional$Error)],
-  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Error)],
-  Value_Convergence  = this_tables_conditional$Error[order(this_rankings_conditional$Error)],
-  Rank_Replacement   = this_rankings_replacement$Error[order(this_rankings_replacement$Error)],
-  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Error)],
-  Value_Replacement  = this_tables_replacement$Error[order(this_rankings_replacement$Error)]
-)
-
-# Create table with two-level headers
-kbl_table <- kableExtra::kbl(tables_conditional_error, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
-                             digits = 3)
-kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
-kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
-
-kbl_table
-```
-
-#### Power
-
-The Power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
-
-```{r echo=FALSE} 
-tables_conditional_power <- data.frame(
-  Rank_Convergence   = this_rankings_conditional$Power[order(this_rankings_conditional$Power)],
-  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Power)],
-  Value_Convergence  = this_tables_conditional$Power[order(this_rankings_conditional$Power)],
-  Rank_Replacement   = this_rankings_replacement$Power[order(this_rankings_replacement$Power)],
-  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Power)],
-  Value_Replacement  = this_tables_replacement$Power[order(this_rankings_replacement$Power)]
-)
-
-# Create table with two-level headers
-kbl_table <- kableExtra::kbl(tables_conditional_power, 
-                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
@@ -236,25 +212,53 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-#### Combined
 
-A combined method rank is the mean method rank across all performance measures.  
+#### Type I Error Rate
 
-```{r echo=FALSE}
-tables_conditional_combined <- data.frame(
-  Rank_Convergence   = this_rankings_conditional$combined_rank[order(this_rankings_conditional$combined_rank)],
-  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$combined_rank)],
-  Value_Convergence  = this_rankings_conditional$combined_value[order(this_rankings_conditional$combined_rank)],
-  Rank_Replacement   = this_rankings_replacement$combined_rank[order(this_rankings_replacement$combined_rank)],
-  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$combined_rank)],
-  Value_Replacement  = this_rankings_replacement$combined_value[order(this_rankings_replacement$combined_rank)]
+The Type I Error Rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
+
+```{r echo=FALSE} 
+tables_conditional_error <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Error[order(this_rankings_conditional$Error)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Error)],
+  Value_Convergence  = this_tables_conditional$Error[order(this_rankings_conditional$Error)],
+  Rank_Replacement   = this_rankings_replacement$Error[order(this_rankings_replacement$Error)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Error)],
+  Value_Replacement  = this_tables_replacement$Error[order(this_rankings_replacement$Error)]
 )
+
 # Create table with two-level headers
-kbl_table <- kableExtra::kbl(tables_conditional_combined, 
-                             col.names = c("Rank", "Method", "Mean Rank", "Rank", "Method", "Mean Rank"),
+kbl_table <- kableExtra::kbl(tables_conditional_error, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
                              digits = 3)
 kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
 kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 
 kbl_table
 ```
+
+#### Power
+
+The Power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
+
+```{r echo=FALSE} 
+tables_conditional_power <- data.frame(
+  Rank_Convergence   = this_rankings_conditional$Power[order(this_rankings_conditional$Power)],
+  Method_Convergence = paste0(this_rankings_conditional$Method, "-", this_rankings_conditional$Setting)[order(this_rankings_conditional$Power)],
+  Value_Convergence  = this_tables_conditional$Power[order(this_rankings_conditional$Power)],
+  Rank_Replacement   = this_rankings_replacement$Power[order(this_rankings_replacement$Power)],
+  Method_Replacement = paste0(this_rankings_replacement$Method, "-", this_rankings_replacement$Setting)[order(this_rankings_replacement$Power)],
+  Value_Replacement  = this_tables_replacement$Power[order(this_rankings_replacement$Power)]
+)
+
+# Create table with two-level headers
+kbl_table <- kableExtra::kbl(tables_conditional_power, 
+                             col.names = c("Rank", "Method", "Value", "Rank", "Method", "Value"),
+                             digits = 3)
+kbl_table <- kableExtra::add_header_above(kbl_table, c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3))
+kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+
+kbl_table
+```
+
+

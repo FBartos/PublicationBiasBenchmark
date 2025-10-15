@@ -26,8 +26,8 @@ Generating Mechanism (DGM).
 dgm_conditions("Carter2019")
 get_dgm_condition("Carter2019", condition_id = 1)
 
-dgm_conditions("Alinaghi2018")
+head(dgm_conditions("Alinaghi2018"))
 
-dgm_conditions("Stanley2017")
+head(dgm_conditions("Stanley2017"))
 
 }

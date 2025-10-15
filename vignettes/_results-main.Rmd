@@ -67,17 +67,27 @@ for (dgm_name in dgm_names) {
   
   if (!common_scale) {
     # add rmse and bias ranks (can be reused by the subsequent computations)
-    temp_conditional$bias_rank <- NA
-    temp_replacement$bias_rank <- NA
-    temp_conditional$rmse_rank <- NA
-    temp_replacement$rmse_rank <- NA
+    temp_conditional$bias_rank           <- NA
+    temp_replacement$bias_rank           <- NA
+    temp_conditional$empirical_se_rank   <- NA
+    temp_replacement$empirical_se_rank   <- NA
+    temp_conditional$rmse_rank           <- NA
+    temp_replacement$rmse_rank           <- NA
+    temp_conditional$mean_ci_width_rank  <- NA
+    temp_replacement$mean_ci_width_rank  <- NA
+    temp_conditional$interval_score_rank <- NA
+    temp_replacement$interval_score_rank <- NA
     for (condition_id in unique(temp_conditional$condition_id)) {
-      temp_conditional$bias_rank[temp_conditional$condition_id == condition_id]     <- rank(abs(temp_conditional$bias[temp_conditional$condition_id == condition_id]), ties.method = "min")
-      temp_replacement$bias_rank[temp_replacement$condition_id == condition_id]     <- rank(abs(temp_replacement$bias[temp_replacement$condition_id == condition_id]), ties.method = "min")
-      temp_conditional$rmse_rank[temp_conditional$condition_id == condition_id]     <- rank(temp_conditional$rmse[temp_conditional$condition_id == condition_id], ties.method = "min")
-      temp_replacement$rmse_rank[temp_replacement$condition_id == condition_id]     <- rank(temp_replacement$rmse[temp_replacement$condition_id == condition_id], ties.method = "min")
-      temp_conditional$mean_ci_width_rank[temp_conditional$condition_id == condition_id] <- rank(temp_conditional$mean_ci_width[temp_conditional$condition_id == condition_id], ties.method = "min")
-      temp_replacement$mean_ci_width_rank[temp_replacement$condition_id == condition_id] <- rank(temp_replacement$mean_ci_width[temp_replacement$condition_id == condition_id], ties.method = "min")
+      temp_conditional$bias_rank[temp_conditional$condition_id == condition_id]           <- rank(abs(temp_conditional$bias[temp_conditional$condition_id == condition_id]), ties.method = "min")
+      temp_replacement$bias_rank[temp_replacement$condition_id == condition_id]           <- rank(abs(temp_replacement$bias[temp_replacement$condition_id == condition_id]), ties.method = "min")
+      temp_conditional$empirical_se_rank[temp_conditional$condition_id == condition_id]   <- rank(temp_conditional$empirical_se[temp_conditional$condition_id == condition_id], ties.method = "min")
+      temp_replacement$empirical_se_rank[temp_replacement$condition_id == condition_id]   <- rank(temp_replacement$empirical_se[temp_replacement$condition_id == condition_id], ties.method = "min")
+      temp_conditional$rmse_rank[temp_conditional$condition_id == condition_id]           <- rank(temp_conditional$rmse[temp_conditional$condition_id == condition_id], ties.method = "min")
+      temp_replacement$rmse_rank[temp_replacement$condition_id == condition_id]           <- rank(temp_replacement$rmse[temp_replacement$condition_id == condition_id], ties.method = "min")
+      temp_conditional$mean_ci_width_rank[temp_conditional$condition_id == condition_id]  <- rank(temp_conditional$mean_ci_width[temp_conditional$condition_id == condition_id], ties.method = "min")
+      temp_replacement$mean_ci_width_rank[temp_replacement$condition_id == condition_id]  <- rank(temp_replacement$mean_ci_width[temp_replacement$condition_id == condition_id], ties.method = "min")
+      temp_conditional$interval_score_rank[temp_conditional$condition_id == condition_id] <- rank(temp_conditional$interval_score[temp_conditional$condition_id == condition_id], ties.method = "min")
+      temp_replacement$interval_score_rank[temp_replacement$condition_id == condition_id] <- rank(temp_replacement$interval_score[temp_replacement$condition_id == condition_id], ties.method = "min")
     }
   }
   

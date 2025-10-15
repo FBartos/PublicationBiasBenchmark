@@ -51,9 +51,6 @@ simulate_dgm("Carter2019", 1)
 simulate_dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
                        bias = "high", QRP = "high", n_studies = 10))
 
-simulate_dgm("Alinaghi2018", list(environment = "FE", mean_effect = 0,
-                       bias = "positive"))
-
 simulate_dgm("Stanley2017", list(environment = "Cohens_d", mean_effect = 0,
                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
                         sample_sizes = c(32,64,125,250,500)))

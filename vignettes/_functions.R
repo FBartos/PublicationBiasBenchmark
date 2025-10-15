@@ -46,11 +46,12 @@ make_table_summary <- function(results, common_scale = TRUE) {
            "Method"         = unique(method),
            "Setting"        = unique(method_setting),
            "Convergence"    = mean(convergence),
-           "Bias"           = if (common_scale) mean(bias, na.rm = TRUE) else mean(bias_rank, na.rm = TRUE),
-           "RMSE"           = if (common_scale) mean(rmse, na.rm = TRUE) else mean(rmse_rank, na.rm = TRUE),
+           "Bias"           = if (common_scale) mean(bias,         na.rm = TRUE) else mean(bias_rank,         na.rm = TRUE),
+           "Emp_se"         = if (common_scale) mean(empirical_se, na.rm = TRUE) else mean(empirical_se_rank, na.rm = TRUE),
+           "RMSE"           = if (common_scale) mean(rmse,         na.rm = TRUE) else mean(rmse_rank,         na.rm = TRUE),
            "Coverage"       = mean(coverage, na.rm = TRUE),
-           "CI_width"       = if (common_scale) mean(mean_ci_width, na.rm = TRUE) else mean(mean_ci_width, na.rm = TRUE),
-           "interval_score" = mean(interval_score, na.rm = TRUE),
+           "CI_width"       = if (common_scale) mean(mean_ci_width,  na.rm = TRUE) else mean(mean_ci_width_rank,  na.rm = TRUE),
+           "interval_score" = if (common_scale) mean(interval_score, na.rm = TRUE) else mean(interval_score_rank, na.rm = TRUE),
            "Error"          = mean(power[H0], na.rm = TRUE),
            "Power"          = mean(power[!H0], na.rm = TRUE),
            "neg_LR"         = mean(negative_likelihood_ratio[!H0], na.rm = TRUE),
@@ -65,7 +66,7 @@ make_rank_summary  <- function(table_summary) {
   rank_summary <- table_summary
 
   # lower is better
-  for (measure in c("RMSE", "Error", "CI_width", "neg_LR", "interval_score")) {
+  for (measure in c("Emp_se", "RMSE", "Error", "CI_width", "neg_LR", "interval_score")) {
     rank_summary[[measure]]  <- rank(table_summary[[measure]], ties.method = "min", na.last = TRUE)
   }
 
@@ -79,26 +80,25 @@ make_rank_summary  <- function(table_summary) {
     rank_summary[[measure]]  <- rank(abs(table_summary[[measure]]), ties.method = "min", na.last = TRUE)
   }
 
-  rank_summary[["combined_value"]] <- rowMeans(rank_summary[, c("Bias", "RMSE", "Coverage", "CI_width", "interval_score", "Power", "Error", "neg_LR", "pos_LR")])
-  rank_summary[["combined_rank"]]  <- rank(rank_summary[["combined_value"]], ties.method = "min", na.last = TRUE)
-
   return(rank_summary)
 }
 
 ### Plots ----
-create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, reference_line = NULL, title_text = NULL) {
+create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, reference_line = NULL, title_text = NULL, rank = FALSE) {
   # Generate colors for methods (using a color palette)
   n_methods     <- length(unique(data$label))
   method_colors <- hcl.colors(n = n_methods, "Batlow", alpha = 0.7)
   names(method_colors) <- unique(data$label)
 
   # Cap values at axis limits if ylim_range is provided
-  if (!is.null(ylim_range)) {
+  if (!rank && !is.null(ylim_range)) {
     data[[y_var]] <- pmax(ylim_range[1], pmin(ylim_range[2], data[[y_var]]))
   }
 
   ## create slightly different plots for ordinary and rank variables
-  if (y_var %in% c("rmse_rank", "bias_rank", "mean_ci_width_rank", "interval_score_rank")) {
+  if (rank) {
+    y_var   <- paste0(y_var, "_rank")
+    y_label <- paste0("Rank(", y_label, ")")
     tab <- table(data$label, data[,y_var])
     rank_props <- as.data.frame(prop.table(tab, margin = 1) * 100)
     colnames(rank_props) <- c("label", y_var, "percentage")
@@ -143,7 +143,7 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
     )
 
   # Add reference line if provided
-  if (!is.null(reference_line)) {
+  if (!rank && !is.null(reference_line)) {
     p <- p + geom_hline(yintercept = reference_line, linetype = "dashed", alpha = 0.7)
   }
 
@@ -158,7 +158,7 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
     )
 
   # Set y-axis limits if provided
-  if (!is.null(ylim_range)) {
+  if (!rank && !is.null(ylim_range)) {
     p <- p + coord_flip(ylim = ylim_range)
   } else {
     p <- p + coord_flip()

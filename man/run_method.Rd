@@ -25,6 +25,26 @@ See
 \href{../doc/Adding_New_Methods.html}{\code{vignette("Adding_New_Methods", package = "PublicationBiasBenchmark")}}
 for details of extending the package with new methods
 }
+\section{Output Structure}{
+
+The returned data frame follows a standardized schema that downstream
+functions rely on. All methods return the following columns:
+\itemize{
+\item \code{method} (character): The name of the method used.
+\item \code{estimate} (numeric): The meta-analytic effect size estimate.
+\item \code{standard_error} (numeric): Standard error of the estimate.
+\item \code{ci_lower} (numeric): Lower bound of the 95\% confidence interval.
+\item \code{ci_upper} (numeric): Upper bound of the 95\% confidence interval.
+\item \code{p_value} (numeric): P-value for the estimate.
+\item \code{BF} (numeric): Bayes Factor for the estimate.
+\item \code{convergence} (logical): Whether the method converged successfully.
+\item \code{note} (character): Additional notes describing convergence issues.
+}
+Some methods may include additional method-specific columns beyond these
+standard columns. Use \code{\link[=get_method_extra_columns]{get_method_extra_columns()}} to query which
+additional columns a particular method returns.
+}
+
 \examples{
 # Example usage with PET method
 data <- data.frame(

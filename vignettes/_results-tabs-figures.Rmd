@@ -21,21 +21,37 @@ create_raincloud_plot(this_results, "convergence", "Convergence", ylim_range = c
   scale_y_continuous(labels = scales::percent)
 ```
 
+#### RMSE
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods"} 
+create_raincloud_plot(this_results, "rmse",  "RMSE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
+```
+
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
+
 #### Bias
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods"} 
-create_raincloud_plot(this_results, if (common_scale) "bias" else "bias_rank", if (common_scale) "Bias" else "Rank(Bias)" , ylim_range = if (common_scale) c(-0.5, 0.5), reference_line = if (common_scale) 0)
+create_raincloud_plot(this_results, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
 
-#### RMSE
+#### Empirical SE
 
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods"} 
-create_raincloud_plot(this_results, if (common_scale) "rmse" else "rmse_rank",  if (common_scale) "RMSE" else "Rank(RMSE)", ylim_range = if (common_scale) c(0, 0.5), reference_line = if (common_scale) 0)
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods"} 
+create_raincloud_plot(this_results, "emp_se", "Empirical SE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
+
+#### Interval Score
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
+create_raincloud_plot(this_results, "interval_score", "Interval Score", ylim_range = c(0, 100), rank = !common_scale)
+```
+
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the interval score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method. Values larger than 100 are visualized as 100."`
 
 #### 95% CI Coverage
 
@@ -47,18 +63,26 @@ create_raincloud_plot(this_results, "coverage", "95% CI Coverage", ylim_range = 
 #### 95% CI Width
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
-create_raincloud_plot(this_results, if (common_scale) "mean_ci_width" else "mean_ci_width_rank", if (common_scale) "95% CI Width" else "Rank(95% CI Width)")
+create_raincloud_plot(this_results, "mean_ci_width", "95% CI Width", rank = !common_scale)
 ```
 
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average 95% CI width is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of 95% CI width values on the corresponding outcome scale."`
 
-#### Interval Score
+#### Log Positive Likelihood Ratio
 
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
-create_raincloud_plot(this_results, "interval_score", "Interval Score", ylim_range = c(0, 100))
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing positive likelihood ratio across different methods"} 
+create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Log Positive Likelihood Ratio")
 ```
 
-The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method.
+The positive likelihood ratio indicates how much a significant test result changes the odds of H1 versus H0.
+
+#### Log Negative Likelihood Ratio
+
+```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing negative likelihood ratio across different methods"} 
+create_raincloud_plot(this_results[!this_results$H0,], "negative_likelihood_ratio", "Log Negative Likelihood Ratio")
+```
+
+The negative likelihood ratio indicates how much a non-significant test result changes the odds of H1 versus H0.
 
 #### Type I Error Rate
 
@@ -77,20 +101,3 @@ create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_ra
 ```
 
 The Power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
-
-#### Log Positive Likelihood Ratio
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing positive likelihood ratio across different methods"} 
-create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Log Positive Likelihood Ratio")
-```
-
-The positive likelihood ratio indicates how much a significant test result changes the odds of H1 versus H0.
-
-#### Log Negative Likelihood Ratio
-
-```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing negative likelihood ratio across different methods"} 
-create_raincloud_plot(this_results[!this_results$H0,], "negative_likelihood_ratio", "Log Negative Likelihood Ratio")
-```
-
-The negative likelihood ratio indicates how much a non-significant test result changes the odds of H1 versus H0.
-
