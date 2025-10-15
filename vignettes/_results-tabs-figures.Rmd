@@ -40,7 +40,7 @@ create_raincloud_plot(this_results, "bias", "Bias", ylim_range = c(-0.5, 0.5), r
 #### Empirical SE
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing bias across different methods"} 
-create_raincloud_plot(this_results, "emp_se", "Empirical SE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
+create_raincloud_plot(this_results, "empirical_se", "Empirical SE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
@@ -91,7 +91,7 @@ create_raincloud_plot(this_results[this_results$H0,], "power", "Type I Error Rat
   scale_y_continuous(labels = scales::percent)
 ```
 
-The Type I Error Rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
+The type I error rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
 
 #### Power
 
@@ -100,4 +100,4 @@ create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_ra
   scale_y_continuous(labels = scales::percent)
 ```
 
-The Power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
+The power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.

@@ -51,12 +51,28 @@ package website:
   (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
 
 Contributor guidelines for extending the package with data-generating
-mechanisms and methods are available at:
+mechanisms, methods, and results are available at:
 
 - [How to add a new data-generating
   mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
 - [How to add a new
   method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
+- [How to add a new
+  method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
+- [How to compute method
+  results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.html)
+- [How to compute method
+  measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.html)
+
+Illustrations of how to use the precomputed datasets, results, and
+measures are available at:
+
+- [How to use presimulated
+  datasets](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Presimulated_Datasets.html)
+- [How to use precomputed
+  results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Results.html)
+- [How to use precomputed
+  measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Measures.html)
 
 The rest of this file overviews the main features of the package.
 
@@ -69,7 +85,10 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-    #> Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.
+    #> Registered S3 method overwritten by 'clubSandwich':
+    #>   method    from    
+    #>   bread.mlm sandwich
+    #> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
     #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
     #> 
     #> Attaching package: 'PublicationBiasBenchmark'
@@ -128,36 +147,6 @@ retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id 
 # retrieve all measures across all conditions and measures
 retrieve_dgm_measures("no_bias")
 ```
-
-### Visualizing Pre-Computed Results
-
-``` r
-# retrieve all measures across all conditions and measures
-df <- retrieve_dgm_measures("no_bias")
-
-# retrieve conditions
-conditions <- dgm_conditions("no_bias")
-
-# add labels
-df$label <- with(df, paste0(method, " (", method_setting, ")"))
-
-# distinguish between H0 and H1
-df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
-
-par(mfrow = c(3, 2))
-par(mar = c(4, 10, 1, 1))
-boxplot(convergence*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(20, 100), data = df, xlab = "Convergence (%)")
-boxplot(rmse ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 0.6), data = df, xlab = "RMSE")
-boxplot(bias ~ label, horizontal = T, las = 1, ylab = "", ylim = c(-0.25, 0.25), data = df, xlab = "Bias")
-abline(v = 0, lty = 3)
-boxplot(coverage*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(30, 100), data = df, xlab = "95% CI Coverage (%)")
-abline(v = 95, lty = 3)
-boxplot(power*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(0, 40), data = df[df$H0,], xlab = "Type I Error Rate (%)")
-abline(v = 5, lty = 3)
-boxplot(power*100 ~ label, horizontal = T, las = 1, ylab = "", ylim = c(10, 100), data = df[!df$H0,], xlab = "Power (%)")
-```
-
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ### Simulating From an Existing DGM With Custom Settings
 

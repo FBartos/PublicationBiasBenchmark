@@ -1,0 +1,144 @@
+---
+title: "Using Precomputed Results"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Precomputed Results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, eval=FALSE}
+library(PublicationBiasBenchmark)
+```
+
+This vignette explains how to access and use the precomputed raw simulation results from the `PublicationBiasBenchmark` package. 
+While the [Using Precomputed Measures](Using_Precomputed_Measures.html) vignette describes how to work with summarized performance measures, 
+this vignette focuses on accessing the individual simulation repetitions, allowing for custom analyses and detailed examination of method behavior.
+
+For the sake of not re-downloading the simulation results every time you re-knit this vignette, we disable evaluation of code chunks below. 
+(To examine the output, please copy to your local R session.)
+
+## Overview
+
+The package provides access to the raw simulation results for all publication bias correction methods evaluated across different data-generating mechanisms (DGMs). 
+Each result represents a single application of a method to a simulated meta-analytic dataset (i.e., iteration of a given DGM).
+Raw results contain the detailed output from each individual simulation repetition, including:
+
+- `estimate` (numeric): The meta-analytic effect size estimate from each method application
+- `standard_error` (numeric): Standard error of the estimate
+- `ci_lower` (numeric), `ci_upper` (numeric): Lower and upper bounds of the 95% confidence interval
+- `p_value` (numeric): P-value for testing the null hypothesis of no effect  (if applicable)
+- `BF` (numeric): Bayes factor for the alternative hypothesis assuming the presence of effect (if applicable)
+- `convergence` (logical): Whether the method successfully converged
+- `note` (character): Additional notes describing convergence issues or warnings
+- Method-Specific Outputs: Additional columns specific to each method (e.g., `bias_coefficient`, `tau`, ...)
+
+Unlike the precomputed measures which summarize performance across repetitions, raw results allow you to:
+
+ - Compute custom performance metrics not included in the standard measures
+ - Examine the distribution of estimates across simulations
+ - Investigate specific cases where methods fail or perform poorly
+ - Create custom visualizations of method behavior
+ - Conduct sensitivity analyses with different criteria
+
+## Available Data-Generating Mechanisms
+
+The package includes precomputed results for several DGMs. See the [Adding New DGMs](Adding_New_DGMs.html) vignette for details on the individual DGMs and their simulation designs.
+
+You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
+
+```{r, eval=FALSE}
+# View conditions for the Stanley2017 DGM
+conditions <- dgm_conditions("Stanley2017")
+head(conditions)
+```
+
+Each condition represents a unique combination of simulation parameters (e.g., true effect size, heterogeneity, number of studies, publication bias severity).
+
+## Downloading Precomputed Results
+
+Before accessing the precomputed results, you need to download them from the package repository. The [`download_dgm()`](../reference/download_dgm.html) function downloads the raw results for a specified DGM:
+
+```{r, eval=FALSE}
+# Download precomputed results for the Stanley2017 DGM
+download_dgm_results("Stanley2017")
+```
+
+**Note**: Raw results files are significantly larger than the summarized measures files. Each DGM may require several hundred megabytes of storage space. 
+The results are downloaded to a local cache directory and are automatically available for subsequent analysis.
+You only need to download them once, unless you want to update to a newer version.
+The download function will display progress information and the total size of files being downloaded. 
+
+## Retrieving Precomputed Results
+
+Once downloaded, you can retrieve the precomputed results using the [`retrieve_dgm_results()`](../reference/retrieve_dgm_results.html) function. 
+This function offers flexible filtering options to extract exactly the data you need without loading the entire dataset into memory.
+
+### Retrieving a Specific Repetition
+
+You can retrieve results for a specific method, condition, and repetition:
+
+```{r, eval=FALSE}
+# Retrieve results for the first repetition of condition 1 for RMA method
+retrieve_dgm_results(
+  dgm = "Stanley2017",
+  method = "RMA",
+  condition_id = 1,
+  repetition_id = 1
+)
+```
+
+This returns a data frame with a single row containing all the output from applying the RMA method to the first simulated dataset in condition 1.
+
+### Retrieving All Repetitions for a Condition
+
+To retrieve all repetitions for a specific condition and method:
+
+```{r, eval=FALSE}
+# Retrieve all repetitions for condition 1 of RMA method
+condition_1_results <- retrieve_dgm_results(
+  dgm = "Stanley2017",
+  method = "RMA",
+  condition_id = 1
+)
+
+# Examine the distribution of estimates
+hist(condition_1_results$estimate, 
+     main = "Distribution of RMA Estimates",
+     xlab = "Effect Size Estimate")
+```
+
+### Retrieving All Results
+
+To retrieve all results across all conditions, methods, and repetitions, simply omit the filtering arguments:
+
+```{r, eval=FALSE}
+# Retrieve all results
+df <- retrieve_dgm_results("Stanley2017")
+```
+
+### Filtering by Method or Setting
+
+You can filter results by specific methods or method settings:
+
+```{r, eval=FALSE}
+# Retrieve all results for PET-PEESE method
+pet_peese_results <- retrieve_dgm_results(
+  dgm = "Stanley2017",
+  method = "PETPEESE"
+)
+
+# Retrieve results for a specific method setting
+rma_reml_results <- retrieve_dgm_results(
+  dgm = "Stanley2017",
+  method = "RMA",
+  method_setting = "default"
+)
+```

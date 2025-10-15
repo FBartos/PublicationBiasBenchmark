@@ -215,7 +215,7 @@ kbl_table
 
 #### Type I Error Rate
 
-The Type I Error Rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
+The type I error rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
 
 ```{r echo=FALSE} 
 tables_conditional_error <- data.frame(
@@ -239,7 +239,7 @@ kbl_table
 
 #### Power
 
-The Power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
+The power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_power <- data.frame(

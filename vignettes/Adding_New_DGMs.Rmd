@@ -1,6 +1,5 @@
 ---
 title: "Adding New Data-Generating Mechanisms"
-author: František Bartoš
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Adding New Data-Generating Mechanisms}
@@ -16,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 This vignette explains how to add new data-generating mechanisms (DGMs) to the `PublicationBiasBenchmark` package. In the following, we will use the `no_bias` DGM as an example.
+(See the [Using Precomputed Measures](Using_Precomputed_Measures.html) vignette for details on working with the raw benchmarking results.)
 
 ## Overview
 
@@ -26,6 +26,7 @@ Each DGM in the package consists of three key components:
 3. **Conditions function**: Defines pre-specified conditions
 
 All three functions must be implemented in a single file named `dgm-{DGM_NAME}.R` in the `R/` directory.
+Implementation of these three functions allows users to generate data from the DGM via the [`simulate_dgm()`](../reference/simulate_dgm.html) function.
 
 ## File Structure and Naming
 

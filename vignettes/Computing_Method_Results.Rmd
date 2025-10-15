@@ -1,0 +1,232 @@
+---
+title: "Computing Method Results"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Computing Method Results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette explains how to compute and store results for a new publication bias correction method across all benchmark conditions and repetitions.
+This is a crucial step after implementing a new method (see [Adding New Methods](Adding_New_Methods.html)) to make it part of the benchmark comparisons.
+Once you compute and store the results, you can Compute Method Measures using the [Computing Method Measures](Computing_Method_Measures.html) vignette,
+however, the package maintainers will update the precomputed measures upon your submission of the new method accompanied by the computed method results.
+
+## Overview
+
+After implementing the three required functions for a new method (`method.{METHOD_NAME}()`, `method_settings.{METHOD_NAME}()`, and `method_extra_columns.{METHOD_NAME}()`), you need to:
+
+1. **Download presimulated datasets** for each DGM
+2. **Apply your method** to all condition-repetition combinations
+3. **Store the results** in the appropriate directory structure
+4. **Document the session information** for reproducibility
+
+This process ensures that your method can be compared to existing methods using the precomputed performance measures.
+
+## Prerequisites
+
+Before computing results, ensure that:
+
+1. Your method is fully implemented with all three required functions
+2. You have sufficient computational resources (the full benchmark may take hours to days depending on method complexity)
+3. You have adequate disk space for storing results (typically several hundred MB per DGM)
+
+## Directory Structure
+
+The benchmark uses the following directory structure for storing results:
+
+```
+resources/
+├── {DGM_NAME}/
+│   ├── data/
+│   │   └── {condition_id}.csv          # Presimulated datasets
+│   ├── results/
+│   │   └── {METHOD}-{SETTING}.csv      # Method results
+│   └── metadata/
+│       ├── dgm-conditions.csv          # Condition parameters
+│       ├── {METHOD}-{SETTING}-sessionInfo.txt
+│       └── {METHOD}-{SETTING}-session.log
+```
+
+By default, this structure is created in the directory specified by `PublicationBiasBenchmark.get_option("simulation_directory")`.
+
+## Computing Results: Step-by-Step Guide
+
+### Step 1: Set Up Your Environment
+
+First, ensure you're working in the correct directory and have the package loaded:
+
+```{r, eval=FALSE}
+library(PublicationBiasBenchmark)
+
+# Optional: Set custom directory for results storage
+# PublicationBiasBenchmark.options(simulation_directory = "/path/to/storage")
+
+# Verify the directory
+data_folder <- PublicationBiasBenchmark.get_option("simulation_directory")
+print(paste("Working directory:", data_folder))
+```
+
+### Step 2: Define DGMs and Method Information
+
+Specify which DGMs you want to compute results for and your method details:
+
+```{r, eval=FALSE}
+# List of DGMs to evaluate
+dgm_names <- c(
+  "Stanley2017",
+  "Alinaghi2018",
+  "Bom2019",
+  "Carter2019"
+)
+
+# Your method information
+method_name    <- "myNewMethod"
+method_setting <- "default"  # Or other setting name if you have multiple
+```
+
+### Step 3: Download Presimulated Datasets
+
+Download the presimulated datasets for all DGMs:
+
+```{r, eval=FALSE}
+# Download datasets for all DGMs
+for (dgm_name in dgm_names) {
+  message("Downloading datasets for: ", dgm_name)
+  download_dgm_datasets(dgm_name)
+}
+```
+
+This step only needs to be done once. The datasets will be cached locally for subsequent use.
+
+### Step 4: Compute Results for Each DGM
+
+Now, compute results for your method across all conditions and repetitions.
+The code bellow is a template that you can adapt as needed. 
+You will most likely adapt this code to run parallel/using a job scheduler on a cluster. 
+
+```{r, eval=FALSE}
+# Set seed for reproducibility
+set.seed(1)
+
+# Process each DGM
+for (dgm_name in dgm_names) {
+  
+  message("\n", "="*60)
+  message("Processing DGM: ", dgm_name)
+  message("="*60)
+  
+  # Get condition information
+  conditions <- dgm_conditions(dgm_name)
+  message("Number of conditions: ", nrow(conditions))
+  
+  # Container to store all results for this DGM
+  all_results <- list()
+  
+  # Process each condition
+  for (condition_id in conditions$condition_id) {
+    
+    message("  Condition ", condition_id, " / ", nrow(conditions))
+    
+    # Retrieve all repetitions for this condition
+    condition_datasets <- retrieve_dgm_dataset(
+      dgm_name = dgm_name,
+      condition_id = condition_id,
+      repetition_id = NULL  # NULL retrieves all repetitions
+    )
+    
+    # Get unique repetition IDs
+    repetition_ids <- unique(condition_datasets$repetition_id)
+    message("    Repetitions: ", length(repetition_ids))
+    
+    # Compute results for each repetition
+    condition_results <- list()
+    for (repetition_id in repetition_ids) {
+      
+      # Extract data for this specific repetition
+      repetition_data <- condition_datasets[
+        condition_datasets$repetition_id == repetition_id, 
+      ]
+      
+      # Apply your method (error handling is done internally)
+      result <- run_method(
+        method_name = method_name,
+        data        = repetition_data,
+        settings    = method_setting
+      )
+      
+      # Attach metadata
+      result$condition_id  <- condition_id
+      result$repetition_id <- repetition_id
+      
+      condition_results[[repetition_id]] <- result
+    }
+    
+    # Combine results for this condition
+    all_results[[condition_id]] <- do.call(rbind, condition_results)
+  }
+  
+  # Combine all results for this DGM
+  dgm_results <- do.call(rbind, all_results)
+  
+  # Save results
+  results_dir <- file.path(data_folder, dgm_name, "results")
+  if (!dir.exists(results_dir)) {
+    dir.create(results_dir, recursive = TRUE)
+  }
+  
+  results_file <- file.path(
+    results_dir, 
+    paste0(method_name, "-", method_setting, ".csv")
+  )
+  
+  write.csv(dgm_results, file = results_file, row.names = FALSE)
+  message("Results saved to: ", results_file)
+  
+  # Save session information
+  metadata_dir <- file.path(data_folder, dgm_name, "metadata")
+  if (!dir.exists(metadata_dir)) {
+    dir.create(metadata_dir, recursive = TRUE)
+  }
+  
+  # sessionInfo() output
+  sessioninfo_file <- file.path(
+    metadata_dir,
+    paste0(method_name, "-", method_setting, "-sessionInfo.txt")
+  )
+  writeLines(
+    capture.output(sessionInfo()), 
+    sessioninfo_file
+  )
+  
+  # Detailed session info (if sessioninfo package is available)
+  if (requireNamespace("sessioninfo", quietly = TRUE)) {
+    session_log_file <- file.path(
+      metadata_dir,
+      paste0(method_name, "-", method_setting, "-session.log")
+    )
+    sessioninfo::session_info(to_file = session_log_file)
+  }
+  
+  message("Session info saved to: ", metadata_dir)
+}
+
+message("All computations completed!")
+```
+
+## Contributing to the Package
+
+The package maintainers will compute and update precomputed measures when you contribute a new method. If you want to contribute a new method:
+
+1. Implement the method following the [Adding New Methods](Adding_New_Methods.html) guidelines
+2. Compute results for all DGMs (see [Computing Method Results](Computing_Method_Results.html))
+3. Submit a pull request with your method implementation and results
+4. Package maintainers will compute the measures and integrate them into the benchmark
+

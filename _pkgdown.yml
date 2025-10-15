@@ -22,9 +22,19 @@ navbar:
       - text: Method Replacement
         href: articles/Results_Method_Replacement.html
     tutorials:
-      text: Extending the Benchmark
+      text: How To
       menu:
-      - text: Adding New DGMs
+      - text: Add New DGMs
         href: articles/Adding_New_DGMs.html
-      - text: Adding New Methods
+      - text: Add New Methods
         href: articles/Adding_New_Methods.html
+      - text: Compute Method Results
+        href: articles/Computing_Method_Results.html
+      - text: Compute Method Measures
+        href: articles/Computing_Method_Measures.html
+      - text: Use Presimulated Datasets
+        href: articles/Using_Presimulated_Datasets.html
+      - text: Use Precomputed Results
+        href: articles/Adding_Precomputed_Results.html
+      - text: Use Precomputed Measures
+        href: articles/Using_Precomputed_Measures.html

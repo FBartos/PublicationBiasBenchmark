@@ -1,0 +1,204 @@
+---
+title: "Using Precomputed Measures"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Precomputed Measures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, eval=FALSE}
+library(PublicationBiasBenchmark)
+```
+
+This vignette explains how to access and use the precomputed performance measures from the `PublicationBiasBenchmark` package. 
+The package provides comprehensive benchmark results for various publication bias correction methods across different data-generating mechanisms (DGMs), 
+allowing researchers to evaluate and compare method performance without running computationally intensive simulations themselves.
+
+For the sake of not re-downloading the performance measures every time you re-knit this vignette, we disable evaluation of code chunks below. 
+(To examine the output, please copy to your local R session.)
+
+## Overview
+
+The package provides precomputed performance measures for multiple publication bias correction methods evaluated under different simulation conditions. These measures include:
+
+- **Bias**: Average difference between estimates and true effect sizes
+- **Relative Bias**: Bias expressed as a proportion of the true effect size
+- **MSE** (Mean Square Error): Average squared difference between estimates and true values
+- **RMSE** (Root Mean Square Error): Square root of MSE, measuring overall estimation accuracy
+- **Empirical Variance**: Variability of estimates across repetitions
+- **Empirical SE**: Standard deviation of estimates across repetitions
+- **Coverage**: Proportion of confidence intervals containing the true effect
+- **Mean CI Width**: Average width of confidence intervals
+- **Interval Score**: Proper scoring rule for probabilistic interval forecasts
+- **Power**: Proportion of significant results (in conditions when the null hypothesis is true this corresponds the Type I error rate)
+- **Positive Likelihood Ratio**: Indication of how much a significant test result changes the odds of H1 versus H0
+- **Negative Likelihood Ratio**: Indication of how much a non-significant test result changes the odds of H1 versus H0
+- **Convergence**: Proportion of successful method convergence
+
+The precomputed results are organized by data-generating mechanism (DGM), with each DGM representing different patterns of publication bias and meta-analytic conditions.
+
+## Available Data-Generating Mechanisms
+
+The package includes precomputed measures for several DGMs. See the [Adding New DGMs](Adding_New_DGMs.html) vignette for details on the individual DGMs and their simulation designs.
+
+You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
+
+```{r, eval=FALSE}
+# View conditions for the Stanley2017 DGM
+conditions <- dgm_conditions("Stanley2017")
+head(conditions)
+```
+
+## Downloading Precomputed Measures
+
+Before accessing the precomputed measures, you need to download them from the package repository. The [`download_dgm_measures()`](../reference/download_dgm.html) function downloads the measures for a specified DGM:
+
+```{r, eval=FALSE}
+# Download precomputed measures for the Stanley2017 DGM
+download_dgm_measures("Stanley2017")
+```
+
+The measures are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once, unless you want to update to a newer version.
+
+## Retrieving Precomputed Measures
+
+Once downloaded, you can retrieve the precomputed measures using the [`retrieve_dgm_measures()`](../reference/retrieve_dgm_measures.html) function. This function offers flexible filtering options to extract exactly the data you need.
+
+### Retrieving Specific Measures
+
+You can retrieve measures for a specific method and condition:
+
+```{r, eval=FALSE}
+# Retrieve bias measures for RMA method in condition 1
+retrieve_dgm_measures(
+  dgm = "Stanley2017",
+  measure = "bias",
+  method = "RMA",
+  condition_id = 1
+)   
+```
+
+The `measure` argument can be any of measure function names listed in the [`measures()`](../reference/measures.html) documentation.
+
+### Retrieving All Measures
+
+To retrieve all measures across all conditions and methods, simply omit the filtering arguments:
+
+```{r, eval=FALSE}
+# Retrieve all measures across all conditions and methods
+df <- retrieve_dgm_measures("Stanley2017")
+```
+
+This returns a comprehensive data frame with columns:
+
+- `dgm`: Data-generating mechanism name
+- `condition_id`: Simulation condition identifier
+- `method`: Publication bias correction method name
+- `method_setting`: Specific method configuration
+- `bias`, `bias_mcse`, `rmse`, `rmse_mcse`, ...: Performance measures and their Monte Carlo standard errors
+
+### Filtering by Method or Setting
+
+You can also filter by method name or method setting:
+
+```{r, eval=FALSE}
+# Retrieve all measures for PET-PEESE method
+pet_peese_results <- retrieve_dgm_measures(
+  dgm = "Stanley2017",
+  method = "PETPEESE"
+)
+
+# Retrieve measures for a specific method setting
+rma_reml_results <- retrieve_dgm_measures(
+  dgm = "Stanley2017",
+  method = "RMA",
+  method_setting = "default"
+)
+```
+
+## Visualizing Precomputed Results
+
+Once you have retrieved the measures, you can create comprehensive visualizations to compare method performance. Here's an example that creates a multi-panel plot comparing all methods across all conditions:
+
+```{r, eval=FALSE, fig.height = 12, fig.width = 10, dpi = 320}
+# Retrieve all measures across all conditions and methods
+df <- retrieve_dgm_measures("Stanley2017")
+
+# Retrieve conditions to identify null vs. alternative hypotheses
+conditions <- dgm_conditions("Stanley2017")
+
+# Create readable method labels
+df$label <- with(df, paste0(method, " (", method_setting, ")"))
+
+# Identify conditions under null hypothesis (H₀: mean effect = 0)
+df$H0 <- df$condition_id %in% conditions$condition_id[conditions$mean_effect == 0]
+
+# Create multi-panel visualization
+par(mfrow = c(3, 2))
+par(mar = c(4, 10, 1, 1))
+
+# Panel 1: Convergence rates
+boxplot(convergence * 100 ~ label, 
+        horizontal = TRUE, 
+        las = 1, 
+        ylab = "", 
+        ylim = c(20, 100), 
+        data = df, 
+        xlab = "Convergence (%)")
+
+# Panel 2: RMSE
+boxplot(rmse ~ label, 
+        horizontal = TRUE, 
+        las = 1, 
+        ylab = "", 
+        ylim = c(0, 0.6), 
+        data = df, 
+        xlab = "RMSE")
+
+# Panel 3: Bias
+boxplot(bias ~ label, 
+        horizontal = TRUE, 
+        las = 1, 
+        ylab = "", 
+        ylim = c(-0.25, 0.25), 
+        data = df, 
+        xlab = "Bias")
+abline(v = 0, lty = 3)  # Reference line at zero
+
+# Panel 4: Coverage
+boxplot(coverage * 100 ~ label, 
+        horizontal = TRUE, 
+        las = 1, 
+        ylab = "", 
+        ylim = c(30, 100), 
+        data = df, 
+        xlab = "95% CI Coverage (%)")
+abline(v = 95, lty = 3)  # Reference line at nominal level
+
+# Panel 5: Type I Error Rate (H₀ conditions only)
+boxplot(power * 100 ~ label, 
+        horizontal = TRUE, 
+        las = 1, 
+        ylab = "", 
+        ylim = c(0, 40), 
+        data = df[df$H0, ], 
+        xlab = "Type I Error Rate (%)")
+abline(v = 5, lty = 3)  # Reference line at α = 0.05
+
+# Panel 6: Power (H₁ conditions only)
+boxplot(power * 100 ~ label, 
+        horizontal = TRUE, 
+        las = 1, 
+        ylab = "", 
+        ylim = c(10, 100), 
+        data = df[!df$H0, ], 
+        xlab = "Power (%)")
+```

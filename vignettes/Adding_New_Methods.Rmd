@@ -1,6 +1,5 @@
 ---
 title: "Adding New Methods"
-author: František Bartoš
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Adding New Methods}
@@ -27,6 +26,7 @@ Each method in the package consists of three key components:
 3. **Extra columns function**: Specifies additional result columns
 
 All three functions must be implemented in a single file named `method-{METHOD_NAME}.R` in the `R/` directory.
+Implementation of these three functions allows users to apply the method via the [`run_method()`](../reference/run_method.html) function.
 
 ## File Structure and Naming
 

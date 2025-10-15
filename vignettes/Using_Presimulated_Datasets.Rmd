@@ -1,0 +1,136 @@
+---
+title: "Using Presimulated Datasets"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Presimulated Datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, eval=FALSE}
+library(PublicationBiasBenchmark)
+```
+
+This vignette explains how to access and use the presimulated meta-analytic datasets from the `PublicationBiasBenchmark` package. 
+While the [Using Precomputed Results](Using_Precomputed_Results.html) vignette describes how to work with method outputs applied to these datasets, 
+this vignette focuses on accessing the raw simulated datasets themselves, allowing you to apply your own methods or conduct custom analyses.
+
+For the sake of not re-downloading the datasets every time you re-knit this vignette, we disable evaluation of code chunks below. 
+(To examine the output, please copy to your local R session.)
+
+## Overview
+
+The package provides access to the presimulated meta-analytic datasets used in the benchmark. Each dataset represents a collection of studies (effect sizes and standard errors) generated according to specific simulation conditions. These are the exact same datasets to which all benchmark methods were applied.
+
+### What Are Presimulated Datasets?
+
+Presimulated datasets contain the raw study-level data for meta-analyses, including:
+
+- `yi` (numeric): The effect size estimate for each study
+- `sei` (numeric): Standard error of `yi`
+- `ni` (integer): Total sample size for the estimate (e.g., sum over groups where applicable)
+- `es_type` (character): Effect size type, used to disambiguate the scale of `yi`. Currently used values are `"SMD"` (standardized mean difference / Cohen's d), `"logOR"` (log odds ratio), and `"none"` (unspecified generic continuous coefficient)
+- `study_id` (integer/character, optional): Identifier of the primary study/cluster when a DGM yields multiple estimates per study (e.g., Alinaghi2018). If absent, each row is treated as an independent study
+- `condition_id` (integer): Identifier of the condition
+- `repetition_id` (integer): Identifier for the simulation repetition
+
+Each dataset represents one simulated meta-analysis under specific conditions (e.g., true effect size, heterogeneity, number of studies, publication bias pattern).
+
+### Why Use Presimulated Datasets?
+
+Accessing the presimulated datasets allows you to:
+
+ - **Test new methods**: Apply your own publication bias correction methods to the same data used in the benchmark
+ - **Verify results**: Re-run existing methods to verify benchmark results
+ - **Conduct custom analyses**: Investigate characteristics of the simulated studies (e.g., funnel plot asymmetry, p-value distributions)
+ - **Compare approaches**: Test alternative implementations or parameter settings
+ - **Examine specific cases**: Analyze datasets from particular conditions or repetitions in detail
+
+## Available Data-Generating Mechanisms
+
+The package includes presimulated datasets for several DGMs. See the [Adding New DGMs](Adding_New_DGMs.html) vignette for details on the individual DGMs and their simulation designs.
+
+You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
+
+```{r, eval=FALSE}
+# View conditions for the Stanley2017 DGM
+conditions <- dgm_conditions("Stanley2017")
+head(conditions)
+```
+
+Each condition represents a unique combination of simulation parameters that determines how the meta-analytic datasets are generated.
+
+## Downloading Presimulated Datasets
+
+Before accessing the presimulated datasets, you need to download them from the package repository. The [`download_dgm_datasets()`](../reference/download_dgm.html) function downloads the datasets for a specified DGM:
+
+```{r, eval=FALSE}
+# Download presimulated datasets for the Stanley2017 DGM
+download_dgm_datasets("Stanley2017")
+```
+
+**Note**: Dataset files can be quite large as they contain all individual study data across many simulation repetitions. Each DGM may require several gigabytes of storage space.
+
+### Specifying Download Location
+
+By default, datasets are downloaded to the package's default simulation directory. You can change this location using the package options:
+
+```{r, eval=FALSE}
+# Set custom download directory
+PublicationBiasBenchmark.options(simulation_directory = "/path/to/your/directory")
+
+# Then download datasets
+download_dgm_datasets("Stanley2017")
+```
+
+The datasets are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once, unless you want to update to a newer version.
+
+## Retrieving Presimulated Datasets
+
+Once downloaded, you can retrieve the presimulated datasets using the [`retrieve_dgm_dataset()`](../reference/retrieve_dgm_dataset.html) function. This function allows you to extract specific simulation repetitions and conditions.
+
+### Retrieving a Single Repetition
+
+You can retrieve a specific simulated meta-analytic dataset by specifying the condition and repetition:
+
+```{r, eval=FALSE}
+# Retrieve first repetition of condition 1
+dataset <- retrieve_dgm_dataset(
+  dgm = "Stanley2017",
+  condition_id = 1,
+  repetition_id = 1
+)
+
+# Examine the dataset structure
+head(dataset)
+str(dataset)
+```
+
+This returns a data frame containing the study-level data (effect sizes `yi`, standard errors `sei`, ...) for that specific simulated meta-analysis.
+
+### Retrieving All Repetitions for a Condition
+
+To retrieve all simulation repetitions for a specific condition, omit the `repetition_id` argument:
+
+```{r, eval=FALSE}
+# Retrieve all repetitions for condition 1
+all_reps <- retrieve_dgm_dataset(
+  dgm = "Stanley2017",
+  condition_id = 1
+)
+
+# Check how many repetitions are available
+length(unique(all_reps$repetition_id))
+
+# Extract data for a specific repetition
+rep_5 <- all_reps[all_reps$repetition_id == 5, ]
+```
+
+This is useful when you want to apply your method to multiple repetitions without repeatedly calling the retrieve function.

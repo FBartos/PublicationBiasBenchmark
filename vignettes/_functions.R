@@ -52,7 +52,7 @@ make_table_summary <- function(results, common_scale = TRUE) {
            "Coverage"       = mean(coverage, na.rm = TRUE),
            "CI_width"       = if (common_scale) mean(mean_ci_width,  na.rm = TRUE) else mean(mean_ci_width_rank,  na.rm = TRUE),
            "interval_score" = if (common_scale) mean(interval_score, na.rm = TRUE) else mean(interval_score_rank, na.rm = TRUE),
-           "Error"          = mean(power[H0], na.rm = TRUE),
+           "Error"          = mean(power[H0],  na.rm = TRUE),
            "Power"          = mean(power[!H0], na.rm = TRUE),
            "neg_LR"         = mean(negative_likelihood_ratio[!H0], na.rm = TRUE),
            "pos_LR"         = mean(positive_likelihood_ratio[!H0], na.rm = TRUE)
@@ -168,6 +168,17 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
 }
 ### Texts ----
 generic_overview_text   <- function(dgm_names, results) {
+
+  dgm_names <- sapply(dgm_names, function(name) {
+    # Check if name ends with a 4-digit number
+    if (grepl("\\d{4}$", name)) {
+      # Extract year from end
+      year <- sub(".*?(\\d{4})$", "\\1", name)
+      sprintf("[%s (%s)](../reference/dgm.%s.html)", name, year, name)
+    } else {
+      sprintf("[%s](../reference/dgm.%s.html)", name, name)
+    }
+    }, USE.NAMES = FALSE)
 
   if (length(dgm_names) == 1) {
     dgm_names <- paste0(dgm_names, " data-generating mechanism")
