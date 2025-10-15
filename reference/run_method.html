@@ -33,9 +33,14 @@ for details of extending the package with new methods'></head><body>
     <li><a class="dropdown-item" href="../articles/Results_Method_Replacement.html">Method Replacement</a></li>
   </ul></li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-extending-the-benchmark" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Extending the Benchmark</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-extending-the-benchmark"><li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New DGMs</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-how-to" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">How To</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-how-to"><li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Add New DGMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Add New Methods</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Results.html">Compute Method Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Measures.html">Compute Method Measures</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Presimulated_Datasets.html">Use Presimulated Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_Precomputed_Results.html">Use Precomputed Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -89,6 +94,24 @@ default (first implemented) version of the method.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data frame with standardized method results</p>
+    </div>
+    <div class="section level2">
+    <h2 id="output-structure">Output Structure<a class="anchor" aria-label="anchor" href="#output-structure"></a></h2>
+
+
+<p>The returned data frame follows a standardized schema that downstream
+functions rely on. All methods return the following columns:</p><ul><li><p><code>method</code> (character): The name of the method used.</p></li>
+<li><p><code>estimate</code> (numeric): The meta-analytic effect size estimate.</p></li>
+<li><p><code>standard_error</code> (numeric): Standard error of the estimate.</p></li>
+<li><p><code>ci_lower</code> (numeric): Lower bound of the 95% confidence interval.</p></li>
+<li><p><code>ci_upper</code> (numeric): Upper bound of the 95% confidence interval.</p></li>
+<li><p><code>p_value</code> (numeric): P-value for the estimate.</p></li>
+<li><p><code>BF</code> (numeric): Bayes Factor for the estimate.</p></li>
+<li><p><code>convergence</code> (logical): Whether the method converged successfully.</p></li>
+<li><p><code>note</code> (character): Additional notes describing convergence issues.</p></li>
+</ul><p>Some methods may include additional method-specific columns beyond these
+standard columns. Use <code><a href="method_extra_columns.html">get_method_extra_columns()</a></code> to query which
+additional columns a particular method returns.</p>
     </div>
 
     <div class="section level2">

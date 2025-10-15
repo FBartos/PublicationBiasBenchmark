@@ -43,10 +43,15 @@
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-extending-the-benchmark" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Extending the Benchmark</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-extending-the-benchmark">
-<li><a class="dropdown-item" href="articles/Adding_New_DGMs.html">Adding New DGMs</a></li>
-    <li><a class="dropdown-item" href="articles/Adding_New_Methods.html">Adding New Methods</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-how-to" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">How To</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-how-to">
+<li><a class="dropdown-item" href="articles/Adding_New_DGMs.html">Add New DGMs</a></li>
+    <li><a class="dropdown-item" href="articles/Adding_New_Methods.html">Add New Methods</a></li>
+    <li><a class="dropdown-item" href="articles/Computing_Method_Results.html">Compute Method Results</a></li>
+    <li><a class="dropdown-item" href="articles/Computing_Method_Measures.html">Compute Method Measures</a></li>
+    <li><a class="dropdown-item" href="articles/Using_Presimulated_Datasets.html">Use Presimulated Datasets</a></li>
+    <li><a class="dropdown-item" href="articles/Adding_Precomputed_Results.html">Use Precomputed Results</a></li>
+    <li><a class="dropdown-item" href="articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
@@ -98,10 +103,19 @@
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Bom2019.html">Bom (2019)</a></li>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html">Carter (2019)</a></li>
 </ul>
-<p>Contributor guidelines for extending the package with data-generating mechanisms and methods are available at:</p>
+<p>Contributor guidelines for extending the package with data-generating mechanisms, methods, and results are available at:</p>
 <ul>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html">How to add a new data-generating mechanism</a></li>
 <li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html">How to add a new method</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html">How to add a new method</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.html">How to compute method results</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.html">How to compute method measures</a></li>
+</ul>
+<p>Illustrations of how to use the precomputed datasets, results, and measures are available at:</p>
+<ul>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Presimulated_Datasets.html">How to use presimulated datasets</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Results.html">How to use precomputed results</a></li>
+<li><a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Measures.html">How to use precomputed measures</a></li>
 </ul>
 <p>The rest of this file overviews the main features of the package.</p>
 <div class="section level2">
@@ -114,13 +128,16 @@
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Data, results, and measures will be saved to '/home/sam/Downloads/PublicationBiasBenchmark/resources'.</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Attaching package: 'PublicationBiasBenchmark'</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Registered S3 method overwritten by 'clubSandwich':</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;   method    from    </span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;   bread.mlm sandwich</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`</span></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;     power</span></span></code></pre></div>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; Attaching package: 'PublicationBiasBenchmark'</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;     power</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="simulating-from-existing-data-generating-mechanisms">Simulating From Existing Data-Generating Mechanisms<a class="anchor" aria-label="anchor" href="#simulating-from-existing-data-generating-mechanisms"></a>
 </h3>
@@ -174,38 +191,9 @@
 <span><span class="fu"><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="visualizing-pre-computed-results">Visualizing Pre-Computed Results<a class="anchor" aria-label="anchor" href="#visualizing-pre-computed-results"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># retrieve all measures across all conditions and measures</span></span>
-<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># retrieve conditions</span></span>
-<span><span class="va">conditions</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dgm_conditions.html">dgm_conditions</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># add labels</span></span>
-<span><span class="va">df</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">method</span>, <span class="st">" ("</span>, <span class="va">method_setting</span>, <span class="st">")"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># distinguish between H0 and H1</span></span>
-<span><span class="va">df</span><span class="op">$</span><span class="va">H0</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">$</span><span class="va">condition_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">conditions</span><span class="op">$</span><span class="va">condition_id</span><span class="op">[</span><span class="va">conditions</span><span class="op">$</span><span class="va">mean_effect</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">10</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">convergence</span><span class="op">*</span><span class="fl">100</span> <span class="op">~</span> <span class="va">label</span>, horizontal <span class="op">=</span> <span class="cn">T</span>, las <span class="op">=</span> <span class="fl">1</span>, ylab <span class="op">=</span> <span class="st">""</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span>, xlab <span class="op">=</span> <span class="st">"Convergence (%)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">rmse</span> <span class="op">~</span> <span class="va">label</span>, horizontal <span class="op">=</span> <span class="cn">T</span>, las <span class="op">=</span> <span class="fl">1</span>, ylab <span class="op">=</span> <span class="st">""</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.6</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span>, xlab <span class="op">=</span> <span class="st">"RMSE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">bias</span> <span class="op">~</span> <span class="va">label</span>, horizontal <span class="op">=</span> <span class="cn">T</span>, las <span class="op">=</span> <span class="fl">1</span>, ylab <span class="op">=</span> <span class="st">""</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.25</span>, <span class="fl">0.25</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span>, xlab <span class="op">=</span> <span class="st">"Bias"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">0</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">coverage</span><span class="op">*</span><span class="fl">100</span> <span class="op">~</span> <span class="va">label</span>, horizontal <span class="op">=</span> <span class="cn">T</span>, las <span class="op">=</span> <span class="fl">1</span>, ylab <span class="op">=</span> <span class="st">""</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">100</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span>, xlab <span class="op">=</span> <span class="st">"95% CI Coverage (%)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">95</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">power</span><span class="op">*</span><span class="fl">100</span> <span class="op">~</span> <span class="va">label</span>, horizontal <span class="op">=</span> <span class="cn">T</span>, las <span class="op">=</span> <span class="fl">1</span>, ylab <span class="op">=</span> <span class="st">""</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="va">df</span><span class="op">$</span><span class="va">H0</span>,<span class="op">]</span>, xlab <span class="op">=</span> <span class="st">"Type I Error Rate (%)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">5</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">power</span><span class="op">*</span><span class="fl">100</span> <span class="op">~</span> <span class="va">label</span>, horizontal <span class="op">=</span> <span class="cn">T</span>, las <span class="op">=</span> <span class="fl">1</span>, ylab <span class="op">=</span> <span class="st">""</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">[</span><span class="op">!</span><span class="va">df</span><span class="op">$</span><span class="va">H0</span>,<span class="op">]</span>, xlab <span class="op">=</span> <span class="st">"Power (%)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
-</div>
-<div class="section level3">
 <h3 id="simulating-from-an-existing-dgm-with-custom-settings">Simulating From an Existing DGM With Custom Settings<a class="anchor" aria-label="anchor" href="#simulating-from-an-existing-dgm-with-custom-settings"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># define sim setting</span></span>
 <span><span class="va">sim_settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  n_studies     <span class="op">=</span> <span class="fl">100</span>,</span>

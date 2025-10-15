@@ -27,9 +27,14 @@ usage and further details."></head><body>
     <li><a class="dropdown-item" href="../articles/Results_Method_Replacement.html">Method Replacement</a></li>
   </ul></li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-extending-the-benchmark" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Extending the Benchmark</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-extending-the-benchmark"><li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New DGMs</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-how-to" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">How To</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-how-to"><li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Add New DGMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Add New Methods</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Results.html">Compute Method Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Measures.html">Compute Method Measures</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Presimulated_Datasets.html">Use Presimulated Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_Precomputed_Results.html">Use Precomputed Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -77,6 +82,26 @@ containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="output-structure">Output Structure<a class="anchor" aria-label="anchor" href="#output-structure"></a></h2>
+
+
+<p>The returned data frame follows a standardized schema that downstream
+functions rely on. Across the currently implemented DGMs, the following
+columns are used:</p><ul><li><p><code>yi</code> (numeric): The effect size estimate.</p></li>
+<li><p><code>sei</code> (numeric): Standard error of <code>yi</code>.</p></li>
+<li><p><code>ni</code> (integer): Total sample size for the estimate
+(e.g., sum over groups where applicable).</p></li>
+<li><p><code>es_type</code> (character): Effect size type, used to disambiguate
+the scale of <code>yi</code>. Currently used values are
+<code>"SMD"</code> (standardized mean difference / Cohen's d),
+<code>"logOR"</code> (log odds ratio), and <code>"none"</code>
+(unspecified generic continuous coefficient).</p></li>
+<li><p><code>study_id</code> (integer/character, optional): Identifier of the
+primary study/cluster when a DGM yields multiple estimates per study
+(e.g., Alinaghi2018, PRE). If absent, each row is treated as an
+independent study.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="run_method.html">run_method()</a></code></p></div>

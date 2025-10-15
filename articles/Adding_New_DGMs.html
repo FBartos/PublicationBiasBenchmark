@@ -41,10 +41,15 @@
   </ul>
 </li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-extending-the-benchmark" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Extending the Benchmark</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-extending-the-benchmark">
-<li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New DGMs</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-how-to" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">How To</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-how-to">
+<li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Add New DGMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Add New Methods</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Results.html">Compute Method Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Measures.html">Compute Method Measures</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Presimulated_Datasets.html">Use Presimulated Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_Precomputed_Results.html">Use Precomputed Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -69,8 +74,6 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Adding New Data-Generating Mechanisms</h1>
-                        <h4 data-toc-skip class="author">František
-Bartoš</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/FBartos/PublicationBiasBenchmark/blob/master/vignettes/Adding_New_DGMs.Rmd" class="external-link"><code>vignettes/Adding_New_DGMs.Rmd</code></a></small>
@@ -81,7 +84,10 @@ Bartoš</h4>
     
 <p>This vignette explains how to add new data-generating mechanisms
 (DGMs) to the <code>PublicationBiasBenchmark</code> package. In the
-following, we will use the <code>no_bias</code> DGM as an example.</p>
+following, we will use the <code>no_bias</code> DGM as an example. (See
+the <a href="Using_Precomputed_Measures.html">Using Precomputed
+Measures</a> vignette for details on working with the raw benchmarking
+results.)</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -99,7 +105,10 @@ settings<br>
 conditions</li>
 </ol>
 <p>All three functions must be implemented in a single file named
-<code>dgm-{DGM_NAME}.R</code> in the <code>R/</code> directory.</p>
+<code>dgm-{DGM_NAME}.R</code> in the <code>R/</code> directory.
+Implementation of these three functions allows users to generate data
+from the DGM via the <a href="../reference/simulate_dgm.html"><code>simulate_dgm()</code></a>
+function.</p>
 </div>
 <div class="section level2">
 <h2 id="file-structure-and-naming">File Structure and Naming<a class="anchor" aria-label="anchor" href="#file-structure-and-naming"></a>
