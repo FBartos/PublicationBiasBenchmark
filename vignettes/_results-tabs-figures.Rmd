@@ -45,7 +45,7 @@ Bias is the average difference between the meta-analytic estimate and the true e
 create_raincloud_plot(this_results, "empirical_se", "Empirical SE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
-The empirical SE is the standard deviation of the meta-analytic estimates across simulation runs. A lower empirical SE indicates less variability and better method performance.
+The empirical SE is the standard deviation of the meta-analytic estimate across simulation runs. A lower empirical SE indicates less variability and better method performance.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
 
 #### Interval Score

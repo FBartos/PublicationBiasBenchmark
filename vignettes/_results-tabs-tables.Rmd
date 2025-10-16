@@ -17,9 +17,6 @@ Method performance measures are aggregated across all simulated conditions to pr
 
 #### RMSE
 
-RMSE (Root Mean Square Error) is an overall summary measure of estimation performance that combines bias and empirical SE. RMSE is the square root of the average squared difference between the meta-analytic estimate and the true effect across simulation runs. A lower RMSE indicates a better method.
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
-
 ```{r echo=FALSE} 
 tables_conditional_rmse <- data.frame(
   Rank_Convergence   = this_rankings_conditional$RMSE[order(this_rankings_conditional$RMSE)],
@@ -40,10 +37,10 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-#### Bias
+RMSE (Root Mean Square Error) is an overall summary measure of estimation performance that combines bias and empirical SE. RMSE is the square root of the average squared difference between the meta-analytic estimate and the true effect across simulation runs. A lower RMSE indicates a better method.
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
 
-Bias is the average difference between the meta-analytic estimate and the true effect across simulation runs. Ideally, this value should be close to 0.
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
+#### Bias
 
 ```{r echo=FALSE} 
 tables_conditional_bias <- data.frame(
@@ -65,10 +62,10 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
-#### Empirical SE
+Bias is the average difference between the meta-analytic estimate and the true effect across simulation runs. Ideally, this value should be close to 0.
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
 
-The empirical SE is the standard deviation of the meta-analytic estimates across simulation runs. A lower empirical SE indicates less variability and better method performance.
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
+#### Empirical SE
 
 ```{r echo=FALSE} 
 tables_conditional_Emp_se <- data.frame(
@@ -90,10 +87,11 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+The empirical SE is the standard deviation of the meta-analytic estimate across simulation runs. A lower empirical SE indicates less variability and better method performance.
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
+
 #### Interval Score
 
-The interval score measures the accuracy of a confidence interval by combining its width and coverage. It penalizes intervals that are too wide or that fail to include the true value. A lower interval score indicates a better method.
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average Interval Score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_interval_score <- data.frame(
@@ -115,10 +113,11 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+The interval score measures the accuracy of a confidence interval by combining its width and coverage. It penalizes intervals that are too wide or that fail to include the true value. A lower interval score indicates a better method.
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average Interval Score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
 
 #### 95% CI Coverage
 
-95% CI coverage is the proportion of simulation runs in which the 95% confidence interval contained the true effect. Ideally, this value should be close to the nominal level of 95%.
 
 ```{r echo=FALSE} 
 tables_conditional_coverage <- data.frame(
@@ -140,12 +139,10 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+95% CI coverage is the proportion of simulation runs in which the 95% confidence interval contained the true effect. Ideally, this value should be close to the nominal level of 95%.
 
 #### 95% CI Width
 
-
-95% CI width is the average length of the 95% confidence interval for the true effect. A lower average 95% CI length indicates a better method.
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average CI width is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of CI width values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
 tables_conditional_CI_width <- data.frame(
@@ -167,10 +164,11 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+95% CI width is the average length of the 95% confidence interval for the true effect. A lower average 95% CI length indicates a better method.
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average CI width is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of CI width values on the corresponding outcome scale."`
 
 #### Log Positive Likelihood Ratio
 
-The positive likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a positive likelihood ratio greater than 1 (or a log positive likelihood ratio greater than 0). A higher (log) positive likelihood ratio indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_pos_LR <- data.frame(
@@ -192,10 +190,10 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+The positive likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a positive likelihood ratio greater than 1 (or a log positive likelihood ratio greater than 0). A higher (log) positive likelihood ratio indicates a better method.
 
 #### Log Negative Likelihood Ratio
 
-The negative likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a non-significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a negative likelihood ratio less than 1 (or a log negative likelihood ratio less than 0). A lower (log) negative likelihood ratio indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_neg_LR <- data.frame(
@@ -217,10 +215,10 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+The negative likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a non-significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a negative likelihood ratio less than 1 (or a log negative likelihood ratio less than 0). A lower (log) negative likelihood ratio indicates a better method.
 
 #### Type I Error Rate
 
-The type I error rate is the proportion of simulation runs in which the null hypothesis of no effect was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 5%.
 
 ```{r echo=FALSE} 
 tables_conditional_error <- data.frame(
@@ -242,9 +240,10 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+The type I error rate is the proportion of simulation runs in which the null hypothesis of no effect was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 5%.
+
 #### Power
 
-The power is the proportion of simulation runs in which the null hypothesis of no effect was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_power <- data.frame(
@@ -266,4 +265,5 @@ kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
 kbl_table
 ```
 
+The power is the proportion of simulation runs in which the null hypothesis of no effect was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
 
