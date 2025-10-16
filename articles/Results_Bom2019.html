@@ -122,11 +122,6 @@ application.</p>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="rmse" role="tabpanel" aria-labelledby="rmse-tab">
 
-<p>RMSE (Root Mean Square Error) is an overall summary measure of
-estimation performance that combines bias and empirical SE. RMSE is the
-square root of the average squared difference between the meta-analytic
-estimate and the true effect across simulation runs. A lower RMSE
-indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -545,12 +540,14 @@ puniform-star
 </tr>
 </tbody>
 </table>
+<p>RMSE (Root Mean Square Error) is an overall summary measure of
+estimation performance that combines bias and empirical SE. RMSE is the
+square root of the average squared difference between the meta-analytic
+estimate and the true effect across simulation runs. A lower RMSE
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
-<p>Bias is the average difference between the meta-analytic estimate and
-the true effect across simulation runs. Ideally, this value should be
-close to 0.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -969,12 +966,12 @@ puniform-star
 </tr>
 </tbody>
 </table>
+<p>Bias is the average difference between the meta-analytic estimate and
+the true effect across simulation runs. Ideally, this value should be
+close to 0.</p>
 </div>
 <div class="fade tab-pane" id="empirical-se" role="tabpanel" aria-labelledby="empirical-se-tab">
 
-<p>The empirical SE is the standard deviation of the meta-analytic
-estimates across simulation runs. A lower empirical SE indicates less
-variability and better method performance.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -1393,13 +1390,12 @@ puniform-star
 </tr>
 </tbody>
 </table>
+<p>The empirical SE is the standard deviation of the meta-analytic
+estimate across simulation runs. A lower empirical SE indicates less
+variability and better method performance.</p>
 </div>
 <div class="fade tab-pane" id="interval-score" role="tabpanel" aria-labelledby="interval-score-tab">
 
-<p>The interval score measures the accuracy of a confidence interval by
-combining its width and coverage. It penalizes intervals that are too
-wide or that fail to include the true value. A lower interval score
-indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -1818,12 +1814,13 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The interval score measures the accuracy of a confidence interval by
+combining its width and coverage. It penalizes intervals that are too
+wide or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage" role="tabpanel" aria-labelledby="ci-coverage-tab">
 
-<p>95% CI coverage is the proportion of simulation runs in which the 95%
-confidence interval contained the true effect. Ideally, this value
-should be close to the nominal level of 95%.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -2242,12 +2239,12 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>95% CI coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true effect. Ideally, this value
+should be close to the nominal level of 95%.</p>
 </div>
 <div class="fade tab-pane" id="ci-width" role="tabpanel" aria-labelledby="ci-width-tab">
 
-<p>95% CI width is the average length of the 95% confidence interval for
-the true effect. A lower average 95% CI length indicates a better
-method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -2666,16 +2663,12 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>95% CI width is the average length of the 95% confidence interval for
+the true effect. A lower average 95% CI length indicates a better
+method.</p>
 </div>
 <div class="fade tab-pane" id="log-positive-likelihood-ratio" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-tab">
 
-<p>The positive likelihood ratio is an overall summary measure of
-hypothesis testing performance that combines power and type I error
-rate. It indicates how much a significant test result changes the odds
-of the alternative hypothesis versus the null hypothesis. A useful
-method has a positive likelihood ratio greater than 1 (or a log positive
-likelihood ratio greater than 0). A higher (log) positive likelihood
-ratio indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -3094,16 +3087,16 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The positive likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a significant test result changes the odds
+of the alternative hypothesis versus the null hypothesis. A useful
+method has a positive likelihood ratio greater than 1 (or a log positive
+likelihood ratio greater than 0). A higher (log) positive likelihood
+ratio indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="log-negative-likelihood-ratio" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-tab">
 
-<p>The negative likelihood ratio is an overall summary measure of
-hypothesis testing performance that combines power and type I error
-rate. It indicates how much a non-significant test result changes the
-odds of the alternative hypothesis versus the null hypothesis. A useful
-method has a negative likelihood ratio less than 1 (or a log negative
-likelihood ratio less than 0). A lower (log) negative likelihood ratio
-indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -3522,13 +3515,16 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The negative likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a non-significant test result changes the
+odds of the alternative hypothesis versus the null hypothesis. A useful
+method has a negative likelihood ratio less than 1 (or a log negative
+likelihood ratio less than 0). A lower (log) negative likelihood ratio
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate" role="tabpanel" aria-labelledby="type-i-error-rate-tab">
 
-<p>The type I error rate is the proportion of simulation runs in which
-the null hypothesis of no effect was incorrectly rejected when it was
-true. Ideally, this value should be close to the nominal level of
-5%.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -3947,12 +3943,13 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The type I error rate is the proportion of simulation runs in which
+the null hypothesis of no effect was incorrectly rejected when it was
+true. Ideally, this value should be close to the nominal level of
+5%.</p>
 </div>
 <div class="fade tab-pane" id="power" role="tabpanel" aria-labelledby="power-tab">
 
-<p>The power is the proportion of simulation runs in which the null
-hypothesis of no effect was correctly rejected when the alternative
-hypothesis was true. A higher power indicates a better method.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -4371,6 +4368,9 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The power is the proportion of simulation runs in which the null
+hypothesis of no effect was correctly rejected when the alternative
+hypothesis was true. A higher power indicates a better method.</p>
 </div>
 </div>
 </div>
@@ -4432,7 +4432,7 @@ close to 0. Values lower than -0.5 or larger than 0.5 are visualized as
 
 <p><img src="Results_Bom2019_files/figure-html/unnamed-chunk-47-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>The empirical SE is the standard deviation of the meta-analytic
-estimates across simulation runs. A lower empirical SE indicates less
+estimate across simulation runs. A lower empirical SE indicates less
 variability and better method performance. Values larger than 0.5 are
 visualized as 0.5.</p>
 </div>
@@ -4561,7 +4561,7 @@ close to 0. Values lower than -0.5 or larger than 0.5 are visualized as
 
 <p><img src="Results_Bom2019_files/figure-html/unnamed-chunk-73-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
 <p>The empirical SE is the standard deviation of the meta-analytic
-estimates across simulation runs. A lower empirical SE indicates less
+estimate across simulation runs. A lower empirical SE indicates less
 variability and better method performance. Values larger than 0.5 are
 visualized as 0.5.</p>
 </div>
@@ -4631,7 +4631,7 @@ hypothesis was true. A higher power indicates a better method.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Thu Oct 16 08:05:21 2025 (UTC) using the
+<p>This report was compiled on Thu Oct 16 08:35:33 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
