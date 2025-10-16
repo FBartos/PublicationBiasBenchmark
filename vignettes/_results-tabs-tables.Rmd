@@ -17,6 +17,7 @@ Method performance measures are aggregated across all simulated conditions to pr
 
 #### RMSE
 
+RMSE (Root Mean Square Error) is an overall summary measure of estimation performance that combines bias and empirical SE. RMSE is the square root of the average squared difference between the meta-analytic estimate and the true effect across simulation runs. A lower RMSE indicates a better method.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
@@ -41,6 +42,7 @@ kbl_table
 
 #### Bias
 
+Bias is the average difference between the meta-analytic estimate and the true effect across simulation runs. Ideally, this value should be close to 0.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
@@ -65,6 +67,7 @@ kbl_table
 
 #### Empirical SE
 
+The empirical SE is the standard deviation of the meta-analytic estimates across simulation runs. A lower empirical SE indicates less variability and better method performance.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
@@ -89,8 +92,8 @@ kbl_table
 
 #### Interval Score
 
+The interval score measures the accuracy of a confidence interval by combining its width and coverage. It penalizes intervals that are too wide or that fail to include the true value. A lower interval score indicates a better method.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average Interval Score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of empirical standard error values on the corresponding outcome scale."`
-The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_interval_score <- data.frame(
@@ -115,7 +118,7 @@ kbl_table
 
 #### 95% CI Coverage
 
-Coverage is the proportion of simulation runs in which the 95% confidence interval contained the true parameter value. Ideally, this value should be close to the nominal level of 0.95.
+95% CI coverage is the proportion of simulation runs in which the 95% confidence interval contained the true effect. Ideally, this value should be close to the nominal level of 95%.
 
 ```{r echo=FALSE} 
 tables_conditional_coverage <- data.frame(
@@ -140,6 +143,8 @@ kbl_table
 
 #### 95% CI Width
 
+
+95% CI width is the average length of the 95% confidence interval for the true effect. A lower average 95% CI length indicates a better method.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average CI width is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of CI width values on the corresponding outcome scale."`
 
 ```{r echo=FALSE} 
@@ -165,7 +170,7 @@ kbl_table
 
 #### Log Positive Likelihood Ratio
 
-The positive likelihood ratio indicates how much a significant test result changes the odds of H1 versus H0.
+The positive likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a positive likelihood ratio greater than 1 (or a log positive likelihood ratio greater than 0). A higher (log) positive likelihood ratio indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_pos_LR <- data.frame(
@@ -190,7 +195,7 @@ kbl_table
 
 #### Log Negative Likelihood Ratio
 
-The negative likelihood ratio indicates how much a non-significant test result changes the odds of H1 versus H0.
+The negative likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a non-significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a negative likelihood ratio less than 1 (or a log negative likelihood ratio less than 0). A lower (log) negative likelihood ratio indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_neg_LR <- data.frame(
@@ -215,7 +220,7 @@ kbl_table
 
 #### Type I Error Rate
 
-The type I error rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
+The type I error rate is the proportion of simulation runs in which the null hypothesis of no effect was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 5%.
 
 ```{r echo=FALSE} 
 tables_conditional_error <- data.frame(
@@ -239,7 +244,7 @@ kbl_table
 
 #### Power
 
-The power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
+The power is the proportion of simulation runs in which the null hypothesis of no effect was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
 
 ```{r echo=FALSE} 
 tables_conditional_power <- data.frame(

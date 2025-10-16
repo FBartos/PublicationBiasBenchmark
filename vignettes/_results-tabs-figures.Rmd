@@ -27,6 +27,7 @@ create_raincloud_plot(this_results, "convergence", "Convergence", ylim_range = c
 create_raincloud_plot(this_results, "rmse",  "RMSE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
+RMSE (Root Mean Square Error) is an overall summary measure of estimation performance that combines bias and empirical SE. RMSE is the square root of the average squared difference between the meta-analytic estimate and the true effect across simulation runs. A lower RMSE indicates a better method.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average RMSE is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of RMSE values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
 
 #### Bias
@@ -35,6 +36,7 @@ create_raincloud_plot(this_results, "rmse",  "RMSE", ylim_range = c(0, 0.5), ref
 create_raincloud_plot(this_results, "bias", "Bias", ylim_range = c(-0.5, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
+Bias is the average difference between the meta-analytic estimate and the true effect across simulation runs. Ideally, this value should be close to 0.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average bias is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values lower than -0.5 or larger than 0.5 are visualized as -0.5 and 0.5 respectively."`
 
 #### Empirical SE
@@ -43,6 +45,7 @@ create_raincloud_plot(this_results, "bias", "Bias", ylim_range = c(-0.5, 0.5), r
 create_raincloud_plot(this_results, "empirical_se", "Empirical SE", ylim_range = c(0, 0.5), reference_line = 0, rank = !common_scale)
 ```
 
+The empirical SE is the standard deviation of the meta-analytic estimates across simulation runs. A lower empirical SE indicates less variability and better method performance.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the empirical standard error is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values larger than 0.5 are visualized as 0.5."`
 
 #### Interval Score
@@ -51,7 +54,8 @@ create_raincloud_plot(this_results, "empirical_se", "Empirical SE", ylim_range =
 create_raincloud_plot(this_results, "interval_score", "Interval Score", ylim_range = c(0, 100), rank = !common_scale)
 ```
 
-`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the interval score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "The Interval Score measures the accuracy of an uncertainty interval by combining its width and coverage. It penalizes intervals that are too broad or that fail to include the true value. A lower interval score indicates a better method. Values larger than 100 are visualized as 100."`
+The interval score measures the accuracy of a confidence interval by combining its width and coverage. It penalizes intervals that are too wide or that fail to include the true value. A lower interval score indicates a better method.
+`r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the interval score is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of bias values on the corresponding outcome scale." else "Values larger than 100 are visualized as 100."`
 
 #### 95% CI Coverage
 
@@ -60,12 +64,15 @@ create_raincloud_plot(this_results, "coverage", "95% CI Coverage", ylim_range = 
   scale_y_continuous(labels = scales::percent)
 ```
 
+95% CI coverage is the proportion of simulation runs in which the 95% confidence interval contained the true effect. Ideally, this value should be close to the nominal level of 95%.
+
 #### 95% CI Width
 
 ```{r fig.height = 8, echo=FALSE, warning=FALSE, fig.alt="Raincloud plot showing 95% confidence interval width across different methods"} 
 create_raincloud_plot(this_results, "mean_ci_width", "95% CI Width", rank = !common_scale)
 ```
 
+95% CI width is the average length of the 95% confidence interval for the true effect. A lower average 95% CI length indicates a better method.
 `r if (!common_scale) "Methods are compared using condition-wise ranks. Direct comparison using the average 95% CI width is not possible because the data-generating mechanisms differ in the outcome scale. See the DGM-specific results (or subresults) to see the distribution of 95% CI width values on the corresponding outcome scale."`
 
 #### Log Positive Likelihood Ratio
@@ -74,7 +81,7 @@ create_raincloud_plot(this_results, "mean_ci_width", "95% CI Width", rank = !com
 create_raincloud_plot(this_results[!this_results$H0,], "positive_likelihood_ratio", "Log Positive Likelihood Ratio")
 ```
 
-The positive likelihood ratio indicates how much a significant test result changes the odds of H1 versus H0.
+The positive likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a positive likelihood ratio greater than 1 (or a log positive likelihood ratio greater than 0). A higher (log) positive likelihood ratio indicates a better method.
 
 #### Log Negative Likelihood Ratio
 
@@ -82,7 +89,7 @@ The positive likelihood ratio indicates how much a significant test result chang
 create_raincloud_plot(this_results[!this_results$H0,], "negative_likelihood_ratio", "Log Negative Likelihood Ratio")
 ```
 
-The negative likelihood ratio indicates how much a non-significant test result changes the odds of H1 versus H0.
+The negative likelihood ratio is an overall summary measure of hypothesis testing performance that combines power and type I error rate. It indicates how much a non-significant test result changes the odds of the alternative hypothesis versus the null hypothesis. A useful method has a negative likelihood ratio less than 1 (or a log negative likelihood ratio less than 0). A lower (log) negative likelihood ratio indicates a better method.
 
 #### Type I Error Rate
 
@@ -91,7 +98,7 @@ create_raincloud_plot(this_results[this_results$H0,], "power", "Type I Error Rat
   scale_y_continuous(labels = scales::percent)
 ```
 
-The type I error rate is the proportion of simulation runs in which the null hypothesis was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 0.05.
+The type I error rate is the proportion of simulation runs in which the null hypothesis of no effect was incorrectly rejected when it was true. Ideally, this value should be close to the nominal level of 5%.
 
 #### Power
 
@@ -100,4 +107,4 @@ create_raincloud_plot(this_results[!this_results$H0,], "power", "Power", ylim_ra
   scale_y_continuous(labels = scales::percent)
 ```
 
-The power is the proportion of simulation runs in which the null hypothesis was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.
+The power is the proportion of simulation runs in which the null hypothesis of no effect was correctly rejected when the alternative hypothesis was true. A higher power indicates a better method.

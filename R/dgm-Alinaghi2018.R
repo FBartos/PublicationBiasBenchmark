@@ -1,4 +1,4 @@
-#' @title Alinaghi and Reed (2018) Data-Generating Mechansim
+#' @title Alinaghi and Reed (2018) Data-Generating Mechanism
 #'
 #' @description
 #' This data-generating mechanism simulates univariate regression studies where a variable X
