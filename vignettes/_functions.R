@@ -174,6 +174,7 @@ generic_overview_text   <- function(dgm_names, results) {
     if (grepl("\\d{4}$", name)) {
       # Extract year from end
       year <- sub(".*?(\\d{4})$", "\\1", name)
+      name <- sub("\\d{4}$", "", name)
       sprintf("[%s (%s)](../reference/dgm.%s.html)", name, year, name)
     } else {
       sprintf("[%s](../reference/dgm.%s.html)", name, name)

@@ -1,6 +1,6 @@
 Package: PublicationBiasBenchmark
 Type: Package
-Title: Benchmark Methods for Publication Bias Correction
+Title: Benchmark for Publication Bias Correction Methods
 Version: 0.1.0
 Maintainer: František Bartoš <f.bartos96@gmail.com>
 Authors@R: c(

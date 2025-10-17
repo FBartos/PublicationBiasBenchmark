@@ -1,0 +1,30 @@
+citHeader("To cite PublicationBiasBenchmark in publications use:")
+
+citEntry(
+  entry    = "Unpublished",
+  title    = "Rethinking simulation studies: Living synthetic benchmarks for cumulative methodological research",
+  author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
+  year     = "2025",
+  note     = "Working paper",
+  textVersion = paste(
+    "Bartoš, F., Pawel, S., & Siepe, B. S. (2025).",
+    "Rethinking simulation studies: Living synthetic benchmarks for cumulative methodological research.",
+    "Working paper"
+  ),
+  header   = "For the methodology of living synthetic benchmarks please cite:"
+)
+
+citEntry(
+  entry    = "Manual",
+  title    = "PublicationBiasBenchmark: Benchmark for publication bias correction methods",
+  author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
+  year     = sub("-.*", "", meta$Date),
+  note     = sprintf("version %s", meta$Version),
+  url      = "https://github.com/FBartos/PublicationBiasBenchmark",
+  textVersion = paste(
+    sprintf("Bartoš, F., Pawel, S., & Siepe, B. S. (%s).", sub("-.*", "", meta$Date)),
+    sprintf("PublicationBiasBenchmark: Benchmark for publication bias correction methods (version %s).", meta$Version),
+    "https://github.com/FBartos/PublicationBiasBenchmark"
+  ),
+  header   = "For the publication bias benchmark R package please cite:"
+)
