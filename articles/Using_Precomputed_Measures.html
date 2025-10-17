@@ -127,7 +127,8 @@ containing the true effect</li>
 intervals</li>
 <li>
 <strong>Interval Score</strong>: Proper scoring rule for
-probabilistic interval forecasts</li>
+probabilistic interval forecasts, here adapted to evaluate CI
+quality</li>
 <li>
 <strong>Power</strong>: Proportion of significant results (in
 conditions when the null hypothesis is true this corresponds the Type I
@@ -222,29 +223,21 @@ standard errors</li>
 <div class="section level3">
 <h3 id="filtering-by-method-or-setting">Filtering by Method or Setting<a class="anchor" aria-label="anchor" href="#filtering-by-method-or-setting"></a>
 </h3>
-<p>You can also filter by method name or method setting:</p>
+<p>You can also filter by method name:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Retrieve all measures for PET-PEESE method</span></span>
 <span><span class="va">pet_peese_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span></span>
 <span>  dgm <span class="op">=</span> <span class="st">"Stanley2017"</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"PETPEESE"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Retrieve measures for a specific method setting</span></span>
-<span><span class="va">rma_reml_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span></span>
-<span>  dgm <span class="op">=</span> <span class="st">"Stanley2017"</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"RMA"</span>,</span>
-<span>  method_setting <span class="op">=</span> <span class="st">"default"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="visualizing-precomputed-results">Visualizing Precomputed Results<a class="anchor" aria-label="anchor" href="#visualizing-precomputed-results"></a>
 </h2>
-<p>Once you have retrieved the measures, you can create comprehensive
-visualizations to compare method performance. Here’s an example that
-creates a multi-panel plot comparing all methods across all
-conditions:</p>
+<p>Once you have retrieved the measures, you can create visualizations
+to compare method performance. Here’s an example that creates a
+multi-panel plot comparing all methods across all conditions:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Retrieve all measures across all conditions and methods</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span><span class="st">"Stanley2017"</span><span class="op">)</span></span>
