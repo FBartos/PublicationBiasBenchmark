@@ -37,7 +37,7 @@ The package provides precomputed performance measures for multiple publication b
 - **Empirical SE**: Standard deviation of estimates across repetitions
 - **Coverage**: Proportion of confidence intervals containing the true effect
 - **Mean CI Width**: Average width of confidence intervals
-- **Interval Score**: Proper scoring rule for probabilistic interval forecasts
+- **Interval Score**: Proper scoring rule for probabilistic interval forecasts, here adapted to evaluate CI quality
 - **Power**: Proportion of significant results (in conditions when the null hypothesis is true this corresponds the Type I error rate)
 - **Positive Likelihood Ratio**: Indication of how much a significant test result changes the odds of H1 versus H0
 - **Negative Likelihood Ratio**: Indication of how much a non-significant test result changes the odds of H1 versus H0
@@ -126,7 +126,7 @@ rma_reml_results <- retrieve_dgm_measures(
 
 ## Visualizing Precomputed Results
 
-Once you have retrieved the measures, you can create comprehensive visualizations to compare method performance. Here's an example that creates a multi-panel plot comparing all methods across all conditions:
+Once you have retrieved the measures, you can create visualizations to compare method performance. Here's an example that creates a multi-panel plot comparing all methods across all conditions:
 
 ```{r, eval=FALSE, fig.height = 12, fig.width = 10, dpi = 320}
 # Retrieve all measures across all conditions and methods
