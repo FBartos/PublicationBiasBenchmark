@@ -124,21 +124,14 @@ To retrieve all results across all conditions, methods, and repetitions, simply 
 df <- retrieve_dgm_results("Stanley2017")
 ```
 
-### Filtering by Method or Setting
+### Filtering by Method
 
-You can filter results by specific methods or method settings:
+You can filter results by specific methods:
 
 ```{r, eval=FALSE}
 # Retrieve all results for PET-PEESE method
 pet_peese_results <- retrieve_dgm_results(
   dgm = "Stanley2017",
   method = "PETPEESE"
-)
-
-# Retrieve results for a specific method setting
-rma_reml_results <- retrieve_dgm_results(
-  dgm = "Stanley2017",
-  method = "RMA",
-  method_setting = "default"
 )
 ```
