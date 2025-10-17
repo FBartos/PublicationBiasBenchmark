@@ -107,20 +107,13 @@ This returns a comprehensive data frame with columns:
 
 ### Filtering by Method or Setting
 
-You can also filter by method name or method setting:
+You can also filter by method name:
 
 ```{r, eval=FALSE}
 # Retrieve all measures for PET-PEESE method
 pet_peese_results <- retrieve_dgm_measures(
   dgm = "Stanley2017",
   method = "PETPEESE"
-)
-
-# Retrieve measures for a specific method setting
-rma_reml_results <- retrieve_dgm_measures(
-  dgm = "Stanley2017",
-  method = "RMA",
-  method_setting = "default"
 )
 ```
 
