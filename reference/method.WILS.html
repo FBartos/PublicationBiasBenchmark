@@ -90,13 +90,27 @@ Stanley and Doucouliagos (2024)
 
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
-<dd><p>List of method settings (no settings version are implemented)</p></dd>
+<dd><p>List of method settings (see Details)</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Data frame with WILS results</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The WILS method has two implementation versions based on Stanley &amp; Doucouliagos (2024).
+The following settings are implemented</p><dl><dt><code>"default"</code></dt>
+<dd><p>The simulation version (default) uses residuals from the
+t ~ Precision regression for the first iteration, then switches to individual
+excess statistical significance (ESS) for subsequent iterations.</p></dd>
+
+<dt><code>"example"</code></dt>
+<dd><p>The example version consistently uses residuals from the
+t ~ Precision regression to identify studies to remove across all iterations.</p></dd>
+
+
+</dl></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -110,7 +124,7 @@ Stanley and Doucouliagos (2024)
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_method.html">run_method</a></span><span class="op">(</span><span class="st">"WILS"</span>, <span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             method  estimate standard_error   ci_lower  ci_upper   p_value BF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)   WILS 0.1390244     0.04878049 0.04341463 0.2346341 0.2148312 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)   WILS 0.1662069     0.07448276 0.02022069 0.3121931 0.2682079 NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             convergence note n_removed method_setting</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)        TRUE   NA         3        default</span>
 <span class="r-in"><span></span></span>
