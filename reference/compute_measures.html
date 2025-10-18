@@ -170,7 +170,7 @@ Defaults to <code>NULL</code>, i.e., omitting repetitions without converged resu
 
 
 <dt id="arg-n-repetitions">n_repetitions<a class="anchor" aria-label="anchor" href="#arg-n-repetitions"></a></dt>
-<dd><p>Number of repetitions in each condition. Neccessary method replacement. Defaults to <code>1000</code>.</p></dd>
+<dd><p>Number of repetitions in each condition. Necessary method replacement. Defaults to <code>1000</code>.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
@@ -190,7 +190,7 @@ in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Invisible list of computed measures data frames</p>
+    <p>TRUE upon successfully computation of the results file</p>
     </div>
 
     <div class="section level2">
@@ -211,7 +211,7 @@ in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.</p></dd>
 <span class="r-in"><span><span class="co"># With method replacements for non-converged results</span></span></span>
 <span class="r-in"><span><span class="va">method_replacements</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"RMA-default"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"FMA"</span>, method_setting <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"PET-default"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WLS"</span>, <span class="st">"FMA"</span><span class="op">)</span>, </span></span>
+<span class="r-in"><span>  <span class="st">"PET-default"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WLS"</span>, <span class="st">"FMA"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                       method_setting <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"default"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
