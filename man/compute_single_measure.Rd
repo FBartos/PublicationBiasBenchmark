@@ -79,7 +79,7 @@ If multiple elements are specified within the vectors, these replacements are ap
 in case the previous replacements also failed to converge.
 Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.}
 
-\item{n_repetitions}{Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.}
+\item{n_repetitions}{Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
@@ -91,20 +91,11 @@ in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 \item{...}{Additional arguments passed to measure functions}
 }
 \value{
-Data frame with computed measures and MCSEs
+TRUE upon successfully computation of the results file
 }
 \description{
 This function provides a modular and extensible way to compute performance
 measures (PM) for Data-Generating Mechanisms (DGMs). It handles different types
 of measures and automatically determines the required arguments for each measure
 function.
-}
-\examples{
-\dontrun{
-# Get conditions for a DGM
-conditions <- dgm_conditions("no_bias")
-
-
-}
-
 }

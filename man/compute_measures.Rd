@@ -73,7 +73,7 @@ If multiple elements are specified within the vectors, these replacements are ap
 in case the previous replacements also failed to converge.
 Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.}
 
-\item{n_repetitions}{Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.}
+\item{n_repetitions}{Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
@@ -85,7 +85,7 @@ should be saved. Defaults to the location specified via
 in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 }
 \value{
-Invisible list of computed measures data frames
+TRUE upon successfully computation of the results file
 }
 \description{
 This is a high-level wrapper function that computes multiple performance
@@ -110,7 +110,7 @@ compute_measures(
 # With method replacements for non-converged results
 method_replacements <- list(
   "RMA-default" = list(method = "FMA", method_setting = "default"),
-  "PET-default" = list(method = c("WLS", "FMA"), 
+  "PET-default" = list(method = c("WLS", "FMA"),
                        method_setting = c("default", "default"))
 )
 

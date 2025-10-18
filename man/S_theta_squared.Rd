@@ -15,3 +15,4 @@ Sample variance S_theta^2
 \description{
 Calculate sample variance of estimates
 }
+\keyword{internal}

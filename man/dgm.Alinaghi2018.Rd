@@ -2,7 +2,7 @@
 % Please edit documentation in R/dgm-Alinaghi2018.R
 \name{dgm.Alinaghi2018}
 \alias{dgm.Alinaghi2018}
-\title{Alinaghi and Reed (2018) Data-Generating Mechansim}
+\title{Alinaghi and Reed (2018) Data-Generating Mechanism}
 \usage{
 \method{dgm}{Alinaghi2018}(dgm_name, settings)
 }

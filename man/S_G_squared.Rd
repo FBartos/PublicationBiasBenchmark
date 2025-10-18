@@ -15,3 +15,4 @@ Sample variance S_G^2
 \description{
 Calculate sample variance of generic statistic
 }
+\keyword{internal}

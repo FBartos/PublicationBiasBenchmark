@@ -86,6 +86,7 @@ NULL
 #' Calculate sample variance of estimates
 #' @param theta_hat Vector of estimates
 #' @return Sample variance S_theta^2
+#' @keywords internal
 S_theta_squared <- function(theta_hat) {
   n_sim <- length(theta_hat)
   sum((theta_hat - mean(theta_hat))^2) / (n_sim - 1)
@@ -95,6 +96,7 @@ S_theta_squared <- function(theta_hat) {
 #' @param theta_hat Vector of estimates
 #' @param theta True parameter value
 #' @return Sample variance S_(theta_hat - theta)^2
+#' @keywords internal
 S_theta_minus_theta_squared <- function(theta_hat, theta) {
   n_sim <- length(theta_hat)
   squared_errors <- (theta_hat - theta)^2
@@ -105,6 +107,7 @@ S_theta_minus_theta_squared <- function(theta_hat, theta) {
 #' @param ci_upper Vector of upper CI bounds
 #' @param ci_lower Vector of lower CI bounds
 #' @return Sample variance S_w^2
+#' @keywords internal
 S_w_squared <- function(ci_upper, ci_lower) {
   n_sim <- length(ci_upper)
   ci_widths <- ci_upper - ci_lower
@@ -114,6 +117,7 @@ S_w_squared <- function(ci_upper, ci_lower) {
 #' Calculate sample variance of generic statistic
 #' @param G Vector of generic statistics
 #' @return Sample variance S_G^2
+#' @keywords internal
 S_G_squared <- function(G) {
   n_sim <- length(G)
   sum((G - mean(G))^2) / (n_sim - 1)
@@ -361,6 +365,3 @@ interval_score_mcse <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 
   mean_generic_statistic_mcse(score)
 }
-
-
-

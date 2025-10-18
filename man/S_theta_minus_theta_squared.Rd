@@ -17,3 +17,4 @@ Sample variance S_(theta_hat - theta)^2
 \description{
 Calculate sample variance of squared errors
 }
+\keyword{internal}

@@ -48,7 +48,7 @@ If multiple elements are specified within the vectors, these replacements are ap
 in case the previous replacements also failed to converge.
 Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.}
 
-\item{n_repetitions}{Number of repetitions in each condition. Neccessary method replacement. Defaults to \code{1000}.}
+\item{n_repetitions}{Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing files.
 Defaults to \code{FALSE}, which means only missing files will be downloaded.}

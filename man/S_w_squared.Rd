@@ -17,3 +17,4 @@ Sample variance S_w^2
 \description{
 Calculate sample variance of CI widths
 }
+\keyword{internal}

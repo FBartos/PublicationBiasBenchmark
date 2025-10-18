@@ -4,7 +4,7 @@
 \name{PublicationBiasBenchmark-package}
 \alias{PublicationBiasBenchmark}
 \alias{PublicationBiasBenchmark-package}
-\title{PublicationBiasBenchmark: Benchmark Methods for Publication Bias Correction}
+\title{PublicationBiasBenchmark: Benchmark for Publication Bias Correction Methods}
 \description{
 Implements a unified interface for benchmarking meta-analytic publication bias correction methods through simulation studies. It provides 1) predefined data-generating mechanisms from the literature, 2) functions for running meta-analytic methods on simulated data, 3) pre-simulated datasets and pre-computed results for reproducible benchmarks, 4) tools for visualizing and comparing method performance.
 }
