@@ -43,52 +43,52 @@ child_path <- function(x) {
 }
 
 ### Tables ----
-create_ranking_table <- function(rankings_conditional, rankings_replacement, 
+create_ranking_table <- function(rankings_conditional, rankings_replacement,
                                   tables_conditional, tables_replacement,
                                   measure, common_scale = TRUE) {
-  
+
   # Determine value column label based on measure type and common_scale
   # Measures that depend on common_scale
   if (measure %in% c("RMSE", "Bias", "Emp_se", "CI_width")) {
     value_label <- if (common_scale) "Value" else "Mean Rank"
-  } 
+  }
   # Log-transformed measures
   else if (measure %in% c("pos_LR", "neg_LR")) {
     value_label <- "Log Value"
-  } 
+  }
   # All other measures always use "Value"
   else {
     value_label <- "Value"
   }
-  
+
   # Get ordering indices
   order_conditional <- order(rankings_conditional[[measure]])
   order_replacement <- order(rankings_replacement[[measure]])
-  
+
   # Create the table data frame
   table_data <- data.frame(
     Rank_Convergence   = rankings_conditional[[measure]][order_conditional],
-    Method_Convergence = format_method_label(rankings_conditional$Method, 
+    Method_Convergence = format_method_label(rankings_conditional$Method,
                                              rankings_conditional$Setting)[order_conditional],
     Value_Convergence  = tables_conditional[[measure]][order_conditional],
     Rank_Replacement   = rankings_replacement[[measure]][order_replacement],
-    Method_Replacement = format_method_label(rankings_replacement$Method, 
+    Method_Replacement = format_method_label(rankings_replacement$Method,
                                              rankings_replacement$Setting)[order_replacement],
     Value_Replacement  = tables_replacement[[measure]][order_replacement]
   )
-  
+
   # Create table with kableExtra
   kbl_table <- kableExtra::kbl(
-    table_data, 
+    table_data,
     col.names = c("Rank", "Method", value_label, "Rank", "Method", value_label),
     digits = 3
   )
   kbl_table <- kableExtra::add_header_above(
-    kbl_table, 
+    kbl_table,
     c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3)
   )
   kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
-  
+
   return(kbl_table)
 }
 
@@ -205,10 +205,11 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
     theme_minimal() +
     theme(
       legend.position = "none",
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      panel.grid.minor = element_blank(),
-      plot.title = element_text(size = 10),
-      axis.text.y = element_text(size = 8)
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = element_text(size = 10),
+      axis.title.x = element_text(size = 12),
+      axis.title.y = element_text(size = 12),
+      panel.grid.minor = element_blank()
     )
 
   # Set y-axis limits if provided
@@ -227,9 +228,9 @@ generic_overview_text   <- function(dgm_names, results) {
     # Check if name ends with a 4-digit number
     if (grepl("\\d{4}$", name)) {
       # Extract year from end
-      year <- sub(".*?(\\d{4})$", "\\1", name)
-      name <- sub("\\d{4}$", "", name)
-      sprintf("[%s (%s)](../reference/dgm.%s.html)", name, year, name)
+      name_year <- sub(".*?(\\d{4})$", "\\1", name)
+      name_name <- sub("\\d{4}$", "", name)
+      sprintf("[%s (%s)](../reference/dgm.%s.html)", name_name, name_year, name)
     } else {
       sprintf("[%s](../reference/dgm.%s.html)", name, name)
     }
