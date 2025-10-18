@@ -54,7 +54,6 @@ Contributor guidelines for extending the package with data-generating mechanisms
 
  - [How to add a new data-generating mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
  - [How to add a new method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
- - [How to add a new method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
  - [How to compute method results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.html)
  - [How to compute method measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.html)
  
@@ -75,7 +74,7 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-```{r echo=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(PublicationBiasBenchmark)
 ```
 

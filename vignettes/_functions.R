@@ -1,4 +1,9 @@
 ### Utilities ----
+# Format method names consistently across plots and tables
+format_method_label <- function(method, setting) {
+  paste0(method, " (", setting, ")")
+}
+
 # Local/Remote pathing with nested child paths is extremely buggy. This function makes sure that all paths are properly set
 child_path <- function(x) {
   # 1) Prefer the directory of the currently knitted Rmd (works for pkgdown/knitr in CI and locally)
@@ -38,6 +43,55 @@ child_path <- function(x) {
 }
 
 ### Tables ----
+create_ranking_table <- function(rankings_conditional, rankings_replacement, 
+                                  tables_conditional, tables_replacement,
+                                  measure, common_scale = TRUE) {
+  
+  # Determine value column label based on measure type and common_scale
+  # Measures that depend on common_scale
+  if (measure %in% c("RMSE", "Bias", "Emp_se", "CI_width")) {
+    value_label <- if (common_scale) "Value" else "Mean Rank"
+  } 
+  # Log-transformed measures
+  else if (measure %in% c("pos_LR", "neg_LR")) {
+    value_label <- "Log Value"
+  } 
+  # All other measures always use "Value"
+  else {
+    value_label <- "Value"
+  }
+  
+  # Get ordering indices
+  order_conditional <- order(rankings_conditional[[measure]])
+  order_replacement <- order(rankings_replacement[[measure]])
+  
+  # Create the table data frame
+  table_data <- data.frame(
+    Rank_Convergence   = rankings_conditional[[measure]][order_conditional],
+    Method_Convergence = format_method_label(rankings_conditional$Method, 
+                                             rankings_conditional$Setting)[order_conditional],
+    Value_Convergence  = tables_conditional[[measure]][order_conditional],
+    Rank_Replacement   = rankings_replacement[[measure]][order_replacement],
+    Method_Replacement = format_method_label(rankings_replacement$Method, 
+                                             rankings_replacement$Setting)[order_replacement],
+    Value_Replacement  = tables_replacement[[measure]][order_replacement]
+  )
+  
+  # Create table with kableExtra
+  kbl_table <- kableExtra::kbl(
+    table_data, 
+    col.names = c("Rank", "Method", value_label, "Rank", "Method", value_label),
+    digits = 3
+  )
+  kbl_table <- kableExtra::add_header_above(
+    kbl_table, 
+    c("Conditional on Convergence" = 3, "Replacement if Non-Convergence" = 3)
+  )
+  kbl_table <- kableExtra::kable_paper(kbl_table, "hover", full_width = FALSE)
+  
+  return(kbl_table)
+}
+
 make_table_summary <- function(results, common_scale = TRUE) {
 
   table_summary <- do.call(rbind, lapply(unique(results$label), function(ml)

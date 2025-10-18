@@ -57,8 +57,6 @@ mechanisms, methods, and results are available at:
   mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
 - [How to add a new
   method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
-- [How to add a new
-  method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
 - [How to compute method
   results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.html)
 - [How to compute method
@@ -85,16 +83,9 @@ remotes::install_github("FBartos/PublicationBiasBenchmark")
 
 ## Usage
 
-    #> Registered S3 method overwritten by 'clubSandwich':
-    #>   method    from    
-    #>   bread.mlm sandwich
-    #> Data, results, and measures will be saved to 'C:/R-Packages/PublicationBiasBenchmark/resources'.
-    #> To change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`
-    #> 
-    #> Attaching package: 'PublicationBiasBenchmark'
-    #> The following object is masked from 'package:stats':
-    #> 
-    #>     power
+``` r
+library(PublicationBiasBenchmark)
+```
 
 ### Simulating From Existing Data-Generating Mechanisms
 
@@ -212,7 +203,7 @@ See `methods("dgm")` for the full list:
 
 - `"no_bias"`: Generates data without publication bias (a test
   simulation)
-- `"Stanley2017"`: Tom D. Stanley et al. (2017)
+- `"Stanley2017"`: Stanley et al. (2017)
 - `"Alinaghi2018"`: Alinaghi & Reed (2018)
 - `"Bom2019"`: Bom & Rachinger (2019)
 - `"Carter2019"`: Carter et al. (2019)
@@ -227,16 +218,16 @@ See `methods("method")` for the full list:
 - `"WLS"`: Weighted Least Squares
 - `"trimfill"`: Trim-and-Fill (Duval & Tweedie, 2000)
 - `"WAAPWLS"`: Weighted Least Squares - Weighted Average of Adequately
-  Power Studies (Tom D. Stanley et al., 2017)
-- `"WILS"`: Weighted and Iterated Least Squares (T. D. Stanley &
-  Doucouliagos, 2024)
+  Power Studies (Stanley et al., 2017)
+- `"WILS"`: Weighted and Iterated Least Squares (Stanley & Doucouliagos,
+  2024)
 - `"PET"`: Precision-Effect Test (PET) publication bias adjustment
-  (Tom D. Stanley & Doucouliagos, 2014)
+  (Stanley & Doucouliagos, 2014)
 - `"PEESE"`: Precision-Effect Estimate with Standard Errors (PEESE)
-  publication bias adjustment (Tom D. Stanley & Doucouliagos, 2014)
+  publication bias adjustment (Stanley & Doucouliagos, 2014)
 - `"PETPEESE"`: Precision-Effect Test and Precision-Effect Estimate with
-  Standard Errors (PET-PEESE) publication bias adjustment (Tom D.
-  Stanley & Doucouliagos, 2014)
+  Standard Errors (PET-PEESE) publication bias adjustment (Stanley &
+  Doucouliagos, 2014)
 - `"EK"`: Endogenous Kink (Bom & Rachinger, 2019)
 - `"SM"`: Selection Models (3PSM, 4PSM) (Vevea & Hedges, 1995)
 - `"pcurve"`: P-curve (Simonsohn et al., 2014)
@@ -352,7 +343,7 @@ results. *Perspectives on Psychological Science*, *9*(6), 666–681.
 
 <div id="ref-stanley2014meta" class="csl-entry">
 
-Stanley, Tom D., & Doucouliagos, H. (2014). Meta-regression
+Stanley, T. D., & Doucouliagos, H. (2014). Meta-regression
 approximations to reduce publication selection bias. *Research Synthesis
 Methods*, *5*(1), 60–78. <https://doi.org/10.1002/jrsm.1095>
 
@@ -369,9 +360,9 @@ excess statistical significance: Weighted and iterative least squares.
 
 <div id="ref-stanley2017finding" class="csl-entry">
 
-Stanley, Tom D., Doucouliagos, H., & Ioannidis, J. P. (2017). Finding
-the power to reduce publication bias. *Statistics in Medicine*,
-*36*(10), 1580–1598. <https://doi.org/10.1002/sim.7228>
+Stanley, T. D., Doucouliagos, H., & Ioannidis, J. P. (2017). Finding the
+power to reduce publication bias. *Statistics in Medicine*, *36*(10),
+1580–1598. <https://doi.org/10.1002/sim.7228>
 
 </div>
 
