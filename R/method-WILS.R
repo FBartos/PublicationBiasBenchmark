@@ -9,10 +9,20 @@
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)
-#' @param settings List of method settings (no settings version are implemented)
+#' @param settings List of method settings (see Details)
 #'
 #' @return Data frame with WILS results
-#'
+#' 
+#' @details
+#' The WILS method has two implementation versions based on Stanley & Doucouliagos (2024).
+#' The following settings are implemented \describe{
+#'   \item{\code{"default"}}{The simulation version (default) uses residuals from the
+#'        t ~ Precision regression for the first iteration, then switches to individual
+#'        excess statistical significance (ESS) for subsequent iterations.}
+#'   \item{\code{"example"}}{The example version consistently uses residuals from the
+#'        t ~ Precision regression to identify studies to remove across all iterations.}
+#' }
+#' 
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(
@@ -36,7 +46,7 @@ method.WILS <- function(method_name, data, settings = NULL) {
     stop("At least 2 estimates required for WILS analysis", call. = FALSE)
 
   # Apply WILS computation
-  fit         <- .method_WILS_compute(y = effect_sizes, se = standard_errors)
+  fit         <- .method_WILS_compute(y = effect_sizes, se = standard_errors, version = settings$version)
   final_model <- fit[["final_model"]]
   final_data  <- fit[["data_trimmed"]]
 
@@ -77,7 +87,8 @@ method.WILS <- function(method_name, data, settings = NULL) {
 method_settings.WILS <- function(method_name) {
 
   settings <- list(
-    "default" = list()
+    "default" = list(version = "simulation"),
+    "example" = list(version = "example")
   )
 
   return(settings)
@@ -90,8 +101,14 @@ method_extra_columns.WILS <- function(method_name)
 
 
 ### additional computation functions ----
-# based on STATA code from https://supp.apa.org/psycarticles/supplemental/met0000502/met0000502_supp.html
-.method_WILS_compute <- function(y, se) {
+# There are two WILS version in the Stanley 2024 paper
+# "example" and "simulation". The key difference is how studies are dropped after the first iteration.
+# Simulation (default) version uses residuals for first iteration, then switches to
+# individual ESS (ESSi) for subsequent iterations. This follows the approach described
+# in the paper's simulation section and footnote 15, which states:
+# "After the first iteration, drop those studies with the largest ESSi"
+# Example version always uses residuals for dropping studies, as per the example in the paper.
+.method_WILS_compute <- function(y, se, version) {
 
   # Initialize data frame
   data <- data.frame(d = y, sed = se, study_id = seq_along(y))
@@ -102,10 +119,20 @@ method_extra_columns.WILS <- function(method_name)
   data$Precision    <- 1 / data$sed
 
   # While loop (continue while studies were dropped)
-  N0   <- Inf
+  N0        <- Inf
+  iteration <- 0
   while (N0 > nrow(data) && nrow(data) > 2) {
-    N0   <- nrow(data)
-    data <- .method_WILS_compute_iter(data)
+    N0        <- nrow(data)
+    iteration <- iteration + 1
+
+    # Determine sorting criterion based on iteration and version
+    if (version == "example") {      
+      sort_by_ESS <- FALSE # Example version: always sort by residuals
+    } else {
+      sort_by_ESS <- (iteration > 1) # Simulation version: first iteration by residuals, subsequent by ESS
+    }
+
+    data <- .method_WILS_compute_iter(data, sort_by_ESS = sort_by_ESS)
   }
 
   # Final WLS model
@@ -117,8 +144,7 @@ method_extra_columns.WILS <- function(method_name)
   ))
 }
 
-
-.method_WILS_compute_iter <- function(data) {
+.method_WILS_compute_iter <- function(data, sort_by_ESS = FALSE) {
 
   # Regression: t on Precision (without constant)
   reg_t_precision <- stats::lm(t ~ 0 + Precision, data = data)
@@ -139,20 +165,38 @@ method_extra_columns.WILS <- function(method_name)
   # Statistical significance indicator
   data$SS <- ifelse(data$t > 1.96, 1, 0)
 
-  # Excess statistical significance
+  # Excess statistical significance (individual level)
   data$ESS <- data$SS - data$Esig
 
-  # Sort
-  data         <- data[order(data$Resid), ]
+  # Calculate total ESS
+  ESStot <- sum(data$ESS)
+
+  # If ESS <= 0, return data unchanged (stopping condition)
+  if (ESStot <= 0) {
+    return(data)
+  }
+
+  # Determine sorting criterion based on iteration
+  if (sort_by_ESS) {
+    # In case of simulation version, subsequent iterations sort by individual ESS and drop those with largest ESS
+    data <- data[order(data$ESS), ]
+  } else {
+    # Always for first iteration: sort by residuals and drop those with largest residuals
+    # In case of example version, all iterations sort by residuals
+    data <- data[order(data$Resid), ]
+  }
+
   data$meta_id <- seq_len(nrow(data))
 
   # Calculate number of studies to drop
   Nsize     <- nrow(data)
-  ESStot    <- ceiling(sum(data$ESS))
-  n_to_keep <- Nsize - ESStot
+  n_to_drop <- ceiling(ESStot)
+  n_to_keep <- Nsize - n_to_drop
 
-  # Drop the excess results
-  data      <- data[data$meta_id <= n_to_keep,, drop = FALSE]
+  # Drop the excess results (those at the end after sorting)
+  if (n_to_keep > 0) {
+    data <- data[data$meta_id <= n_to_keep, , drop = FALSE]
+  }
 
   return(data)
 }

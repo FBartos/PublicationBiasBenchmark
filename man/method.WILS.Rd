@@ -11,7 +11,7 @@
 
 \item{data}{Data frame with yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List of method settings (no settings version are implemented)}
+\item{settings}{List of method settings (see Details)}
 }
 \value{
 Data frame with WILS results
@@ -22,6 +22,16 @@ bias correction in meta-analysis. The method is based on the idea of using exces
 significance (ESS) to identify how many underpowered studies should be removed to
 reduce publication selection bias. See
 \insertCite{stanley2024harnessing;textual}{PublicationBiasBenchmark} for details.
+}
+\details{
+The WILS method has two implementation versions based on Stanley & Doucouliagos (2024).
+The following settings are implemented \describe{
+\item{\code{"default"}}{The simulation version (default) uses residuals from the
+t ~ Precision regression for the first iteration, then switches to individual
+excess statistical significance (ESS) for subsequent iterations.}
+\item{\code{"example"}}{The example version consistently uses residuals from the
+t ~ Precision regression to identify studies to remove across all iterations.}
+}
 }
 \examples{
 # Generate some example data
