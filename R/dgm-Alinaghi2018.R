@@ -6,7 +6,9 @@
 #' of a fixed component (α1) representing the overall mean effect, and a random component
 #' that varies across studies but is constant within each study. In the "Random Effects"
 #' environment (\code{"RE"}), each study produces one estimate, and the population effect
-#' differs across studies.
+#' differs across studies. In the "Panel Random Effects" environment (\code{"PRE"}), each
+#' study has 10 estimates, modeling the common scenario where multiple estimates per study
+#' are available, with publication selection targeting the study rather than individual estimates.
 #'
 #' The description and code is based on
 #' \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
@@ -19,38 +21,36 @@
 #'                      \code{"RE"}, or \code{"PRE"}.}
 #'   \item{mean_effect}{Mean effect}
 #'   \item{bias}{Type of publication bias. One of \code{"none"}, \code{"positive"},
-#'   and \code{"significant"}.}
+#'               or \code{"significant"}.}
 #' }
 #'
 #' @details
 #' This data-generating mechanism is based on Alinaghi & Reed (2018), who study univariate
 #' regression models where a variable X affects a continuous variable Y. The parameter
-#' of interest is the coefficient on X. In the "Random Effects" environment, each study
-#' produces one estimate, and the population effect differs across studies. The coefficient
-#' on X equals a fixed component (α1) plus a random component that is fixed within a study
-#' but varies across studies. The overall mean effect of X on Y is given by α1.
+#' of interest is the coefficient on X. In the "Random Effects" environment (\code{"RE"}),
+#' each study produces one estimate, and the population effect differs across studies.
+#' The coefficient on X equals a fixed component (α1) plus a random component that is
+#' fixed within a study but varies across studies. The overall mean effect of X on Y is
+#' given by α1. In the "Panel Random Effects" environment (\code{"PRE"}), each study has
+#' 10 estimates, modeling the common scenario where multiple estimates per study are
+#' available. In this environment, effect estimates and standard errors are simulated to
+#' be more similar within studies than across studies, and publication selection targets
+#' the study rather than individual estimates (a study must have at least 7 out of 10 
+#' estimates that are significant or correctly signed.).
 #'
-#' A distinctive feature of Alinaghi & Reed's experiments is that the sample size of
-#' estimated effects is fixed before publication selection, making the meta-analyst's
+#' A distinctive feature of Alinaghi & Reed's experiments is that the number of 
+#' effect size estimates  is fixed before publication selection, making the meta-analyst's
 #' sample size endogenous and affected by the effect size. Large population effects
 #' are subject to less publication selection, as most estimates satisfy the selection
-#' criteria (statistical significance or correct sign).
-#'
+#' criteria (statistical significance or correct sign). The sample size of all primary 
+#' studies is fixed at 100 observations. (Neither the number of estimates nor the sample 
+#' size of primary studies can be changed in the current implementation of the function.)
+#' 
 #' Another feature is the separation of statistical significance and sign of the estimated
 #' effect as criteria for selection. Significant/correctly-signed estimates are always
 #' "published," while insignificant/wrong-signed estimates have only a 10% chance of
 #' being published. This allows for different and sometimes conflicting consequences for
 #' estimator performance.
-#'
-#' The simulations are designed to be representative of meta-analyses in economics and
-#' business, which typically have several hundred estimates and substantial effect
-#' heterogeneity. In addition to the "Random Effects" environment, a
-#' "Panel Random Effects" environment is included, where each study has 10 estimates,
-#' modeling the common scenario of multiple estimates per study. Effect estimates and
-#' standard errors are simulated to be more similar within studies than across studies,
-#' and publication selection targets the study rather than individual estimates. For
-#' inclusion in the meta-analyst's sample, a study must have at least 7 out of 10 estimates
-#' that are significant or correctly signed.
 #'
 #'
 #' @return Data frame with \describe{

@@ -1,12 +1,14 @@
 #' @title pcurve (P-Curve) Method
 #'
 #' @description
-#' Implements the P-Curve method.
-#' P-Curve analyzes the distribution of p-values from significant studies to
+#' Implements the p-Curve method which analyzes the distribution of p-values from significant studies to
 #' assess whether the significant findings reflect true effects or QRP/publication bias.
 #' The method also provides tests for the evidential value, lack of evidential value,
 #' and p-hacking. See
 #' \insertCite{simonsohn2014pcurve;textual}{PublicationBiasBenchmark} for details.
+#'
+#' The current implementation does not provide a test against the null hypothsis of no effect
+#' and does not produce confidence intervals of the estimate.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes), sei (standard errors), and ni

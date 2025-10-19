@@ -1,8 +1,8 @@
 #' @title puniform (P-Uniform) Method
 #'
 #' @description
-#' Implements the P-Uniform method for publication bias detection and correction.
-#' P-Uniform uses the distribution of p-values from significant studies to test
+#' Implements the p-uniform method for publication bias detection and correction.
+#' P-uniform uses the distribution of p-values from significant studies to test
 #' for publication bias and estimate the effect size corrected for publication bias.
 #' The method assumes that p-values follow a uniform distribution under the null
 #' hypothesis of no effect, and uses this to detect and correct for bias. See
@@ -18,6 +18,7 @@
 #' @details
 #' The following settings are implemented \describe{
 #'   \item{\code{"default"}}{Default p-uniform analysis settings.}
+#'   \item{\code{"star"}}{P-uniform star version of the method.}
 #' }
 #'
 #' @examples

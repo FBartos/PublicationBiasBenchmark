@@ -42,7 +42,7 @@
 #' The simulation incorporates two main types of distortions in the research
 #' environment. First, a publication selection algorithm is used, where the
 #' probability of a study being "published" depends nonlinearly on both the
-#' sign of the estimated effect and its P-value. Three publication selection
+#' sign of the estimated effect and its p-value. Three publication selection
 #' regimes are modeled: "No Publication Bias," "Medium Publication Bias,"
 #' and "Strong Publication Bias," each defined by different parameters in
 #' the selection algorithm. Second, the simulation includes four types of

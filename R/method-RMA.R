@@ -1,11 +1,11 @@
 #' @title Random Effects Meta-Analysis Method
 #'
 #' @description
-#' Implements the publication bias-unadjusted random effects meta-analysis.
+#' Implements the publication bias-unadjusted random-effects meta-analysis.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)
-#' @param settings List of method settings (see Details.)
+#' @param settings List of method settings (see Details)
 #'
 #' @return Data frame with RMA results
 #'
@@ -98,11 +98,11 @@ method.RMA <- function(method_name, data, settings) {
 
     # Call the model
     rma_model  <- do.call(metafor::rma.mv, settings)
-    
+
     # Ensure clubSandwich is available for robust SE estimation
     if (!requireNamespace("clubSandwich", quietly = TRUE))
       stop("Package 'clubSandwich' is required for cluster-robust standard errors.")
-    
+
     rma_est    <- try(metafor::robust(rma_model, cluster = study_ids, clubSandwich = TRUE))
     if (inherits(rma_est, "try-error")) {
       rma_est <- try(metafor::robust(rma_model, cluster = study_ids, clubSandwich = FALSE))

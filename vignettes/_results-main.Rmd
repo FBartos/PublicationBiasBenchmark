@@ -22,6 +22,13 @@ if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
   path <- NULL
 }
 
+# Specify methods to show in the results
+methods_settings <- data.frame(
+  method   = c("mean",    "FMA",     "RMA",     "PET",     "PEESE",   "PETPEESE", "WLS",     "WILS",    "WAAPWLS", "trimfill", "SM",   "SM",   "puniform",  "puniform", "pcurve",  "EK",      "AK",  "AK",  "RoBMA"),
+  settings = c("default", "default", "default", "default", "default", "default",  "default", "default", "default", "default",  "3PSM", "4PSM", "default",   "star",     "default", "default", "AK1", "AK2", "PSMA")
+)
+methods_settings_labels <- with(methods_settings, paste0(method, " (", settings, ")"))
+
 library(PublicationBiasBenchmark)
 PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
 library(ggplot2)
@@ -43,6 +50,11 @@ for (dgm_name in dgm_names) {
   # add labels
   temp_conditional$label <- with(temp_conditional, paste0(method, " (", method_setting, ")"))
   temp_replacement$label <- with(temp_replacement, paste0(method, " (", method_setting, ")"))
+  
+  # keep only the requested methods
+  temp_conditional <- temp_conditional[temp_conditional$label %in% methods_settings_labels,]
+  temp_replacement <- temp_replacement[temp_replacement$label %in% methods_settings_labels,]
+    
   temp_conditional$dgm_name <- dgm_name
   temp_replacement$dgm_name <- dgm_name
     

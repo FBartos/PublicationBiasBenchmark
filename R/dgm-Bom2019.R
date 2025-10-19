@@ -32,12 +32,6 @@
 #' omitted variable, α2, is randomly distributed across studies with mean
 #' zero and variance σ2_h.
 #'
-#' Individual estimates of α1 are subject to bias when α2 is nonzero due to
-#' the omitted variable. Across the population of all studies, this omitted
-#' variable bias averages out. However, when publication selection is
-#' present—where selection depends on the sign and significance of the
-#' estimated effect α^1—a bias is induced in the meta-analyst's sample.
-#'
 #' Publication selection is modeled in two regimes: (1) no selection, and
 #' (2) 50% selection. Under 50% selection, each estimate has a 50% chance of
 #' being evaluated for inclusion. If selected, only positive and statistically

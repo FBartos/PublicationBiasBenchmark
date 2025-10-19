@@ -1,7 +1,7 @@
 #' @title WAAPWLS (Weighted Average of Adequately Powered Studies) Method
 #'
 #' @description
-#' Implements the WAAPWLS method for meta-analysis, which combines WLS and WAAP approaches.
+#' Implements the WAAP-WLS method for meta-analysis, which combines WLS and WAAP approaches.
 #' First fits a WLS model to all studies, then identifies high-powered studies based on
 #' the criterion that the WLS estimate divided by 2.8 is greater than or equal to the
 #' standard error. If at least 2 high-powered studies are found, uses WAAP (weighted

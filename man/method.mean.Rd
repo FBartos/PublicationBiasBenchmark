@@ -11,7 +11,7 @@
 
 \item{data}{Data frame with yi (effect sizes)}
 
-\item{settings}{List of method settings (see Details.)}
+\item{settings}{List of method settings (see Details)}
 }
 \value{
 Data frame with mean results

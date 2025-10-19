@@ -11,8 +11,8 @@
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes), sei (standard errors), and study_id
-#' (for clustering whereever available)
-#' @param settings List of method settings (see Details.)
+#' (for clustering wherever available)
+#' @param settings List of method settings (see Details)
 #'
 #' @return Data frame with AK results
 #'

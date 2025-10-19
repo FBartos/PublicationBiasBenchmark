@@ -11,13 +11,13 @@
 
 \item{data}{Data frame with yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List of method settings (see Details.)}
+\item{settings}{List of method settings (see Details)}
 }
 \value{
 Data frame with SM results
 }
 \description{
-Implements Selection Models for publication bias correction in meta-analysis.
+Implements selection models for publication bias correction in meta-analysis.
 The method first fits a random effects meta-analysis model, then applies
 selection modeling to adjust for publication bias using the metafor package.
 Selection models account for the probability that studies are published

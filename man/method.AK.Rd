@@ -10,9 +10,9 @@
 \item{method_name}{Method name (automatically passed)}
 
 \item{data}{Data frame with yi (effect sizes), sei (standard errors), and study_id
-(for clustering whereever available)}
+(for clustering wherever available)}
 
-\item{settings}{List of method settings (see Details.)}
+\item{settings}{List of method settings (see Details)}
 }
 \value{
 Data frame with AK results

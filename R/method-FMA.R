@@ -5,7 +5,7 @@
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes) and sei (standard errors)
-#' @param settings List of method settings (see Details.)
+#' @param settings List of method settings (see Details)
 #'
 #' @return Data frame with FMA results
 #'
@@ -71,7 +71,7 @@ method.FMA <- function(method_name, data, settings) {
     # Ensure clubSandwich is available for robust SE estimation
     if (!requireNamespace("clubSandwich", quietly = TRUE))
       stop("Package 'clubSandwich' is required for cluster-robust standard errors.")
-    
+
     fma_est    <- try(metafor::robust(fma_model, cluster = study_ids, clubSandwich = TRUE))
     if (inherits(fma_est, "try-error")) {
       fma_est <- try(metafor::robust(fma_model, cluster = study_ids, clubSandwich = FALSE))

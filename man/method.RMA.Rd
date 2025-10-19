@@ -11,13 +11,13 @@
 
 \item{data}{Data frame with yi (effect sizes) and sei (standard errors)}
 
-\item{settings}{List of method settings (see Details.)}
+\item{settings}{List of method settings (see Details)}
 }
 \value{
 Data frame with RMA results
 }
 \description{
-Implements the publication bias-unadjusted random effects meta-analysis.
+Implements the publication bias-unadjusted random-effects meta-analysis.
 }
 \details{
 The following settings are implemented \describe{

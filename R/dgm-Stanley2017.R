@@ -56,6 +56,7 @@
 #' until this criterion is met. This process continues until the meta-analyst’s
 #' sample reaches its predetermined size.
 #'
+#'
 #' @return Data frame with \describe{
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
@@ -286,17 +287,21 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
         PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)
         while(PrimaryStudy[4]<=0){PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)}
         MetaStudyData[i,]<-c(i,PrimaryStudy)
-      }}}else{
-        for(i in 1:m){
-          primaryObs<-PrimaryN[(i-1) %% length(PrimaryN) + 1] # modified from the original
-          if(stats::runif(1, 0, 1)<bias){
-            PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)
-            while(PrimaryStudy[8]==0){PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)}
-            MetaStudyData[i,]<-c(i,PrimaryStudy)
-          }else{
-            PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)
-            MetaStudyData[i,]<-c(i,PrimaryStudy)
-          }}}
+      }
+    }
+  }else{
+    for(i in 1:m){
+      primaryObs<-PrimaryN[(i-1) %% length(PrimaryN) + 1] # modified from the original
+      if(stats::runif(1, 0, 1)<bias){
+        PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)
+        while(PrimaryStudy[8]==0){PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)}
+        MetaStudyData[i,]<-c(i,PrimaryStudy)
+      }else{
+        PrimaryStudy<-.HongAndReed2021_Stanley2017_PrimaryStudy_Cohen_d(effect, sigH, primaryObs)
+        MetaStudyData[i,]<-c(i,PrimaryStudy)
+      }
+    }
+  }
   return(MetaStudyData)
 }
 #################################################################
