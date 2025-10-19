@@ -107,7 +107,16 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
   }
 
   # upload the files
-  osfr::osf_upload(osf_dir, path = local_files, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress)
+  # the package cannot overwrite files in subfolders
+  # https://github.com/ropensci/osfr/issues/138
+  # therefore we need to manually delete them first
+  if (overwrite) {
+    osfr::osf_rm(osf_dir, verbose = FALSE, check = FALSE)
+    osfr::osf_mkdir(osf_repo, path = file.path(dgm_name, what))
+    osf_dir <- osfr::osf_ls_files(osf_repo, path = dgm_name, type = "folder")
+    osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
+  }
+  osfr::osf_upload(osf_dir, path = local_files, progress = progress)
 
   return(invisible(TRUE))
 }
