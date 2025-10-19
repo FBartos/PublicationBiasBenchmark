@@ -66,6 +66,7 @@ assign("prompt_for_download", TRUE, envir = PublicationBiasBenchmark.private)
 .onLoad <- function(libname, pkgname){
 
   PublicationBiasBenchmark.private$simulation_directory <- file.path(getwd(), "resources")
+  suppressWarnings(try(osfr::osf_auth()))
 
 }
 
