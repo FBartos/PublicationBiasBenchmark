@@ -14,7 +14,7 @@
 #' \code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are read
 #' from dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #' @param overwrite Logical indicating whether to overwrite existing files on OSF.
-#' Defaults to \code{TRUE}, which overwrites files with conflicts.
+#' Defaults to \code{TRUE} for performance measures and \code{FALSE} for results and datasets
 #' @param progress Logical indicating whether to show progress uploading files.
 #' Defaults to \code{TRUE}.
 #'
@@ -32,13 +32,13 @@ NULL
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_datasets <- function(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE) {
+upload_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
   .upload_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress)
 }
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_results <- function(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE) {
+upload_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
   .upload_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress)
 }
 

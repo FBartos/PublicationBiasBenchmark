@@ -7,9 +7,9 @@
 \alias{upload_dgm_measures}
 \title{Upload Datasets of a DGM}
 \usage{
-upload_dgm_datasets(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE)
+upload_dgm_datasets(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE)
 
-upload_dgm_results(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE)
+upload_dgm_results(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE)
 
 upload_dgm_measures(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE)
 }
@@ -22,7 +22,7 @@ are located. Defaults to the location specified via
 from dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing files on OSF.
-Defaults to \code{TRUE}, which overwrites files with conflicts.}
+Defaults to \code{TRUE} for performance measures and \code{FALSE} for results and datasets}
 
 \item{progress}{Logical indicating whether to show progress uploading files.
 Defaults to \code{TRUE}.}

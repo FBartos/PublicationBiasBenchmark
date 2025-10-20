@@ -21,6 +21,7 @@
 #' @return Data frame with \describe{
 #'   \item{yi}{effect size}
 #'   \item{sei}{standard error}
+#'   \item{ni}{sample size}
 #'   \item{es_type}{effect size type}
 #' }
 #'
@@ -58,6 +59,7 @@ dgm.no_bias <- function(dgm_name, settings) {
   data <- data.frame(
     yi      = effect_sizes,
     sei     = standard_errors,
+    ni      = N,
     es_type = "SMD"
   )
 

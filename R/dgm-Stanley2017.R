@@ -19,7 +19,7 @@
 #' @param dgm_name DGM name (automatically passed)
 #' @param settings List containing \describe{
 #'   \item{environment}{Type of the simulation environment. One of
-#'                      \code{"LogOR"} or \code{"Cohens_d"}.}
+#'                      \code{"logOR"} or \code{"SMD"}.}
 #'   \item{mean_effect}{Mean effect}
 #'   \item{effect_heterogeneity}{Mean effect heterogeneity}
 #'   \item{bias}{Proportion of studies affected by publication bias}
@@ -34,7 +34,7 @@
 #' of a binary treatment variable (`treat = {0, 1}`) on study outcomes,
 #' incorporating both effect heterogeneity and publication selection mechanisms.
 #'
-#' In the Log Odds Ratio (\code{"LogOR"}) scenario, primary studies assess the
+#' In the Log Odds Ratio (\code{"logOR"}) scenario, primary studies assess the
 #' impact of treatment on a binary success indicator (`Y = 1`). The control
 #' group has a fixed 10% probability of success, while the treatment group’s
 #' probability is increased by a fixed effect and a mean-zero random component,
@@ -43,7 +43,7 @@
 #' interest. Study sample sizes vary, resulting in different standard errors
 #' for estimated effects.
 #'
-#' In the Cohen's d (\code{"Cohens_d"}) scenario, the outcome variable is
+#' In the Cohen's d (\code{"SMD"}) scenario, the outcome variable is
 #' continuous. The treatment effect is modeled as a fixed effect (`α₁`) plus a
 #' random component (variance `σ²_h`). Each study computes Cohen's d, the
 #' standardized mean difference between treatment and control groups. Study
@@ -84,21 +84,21 @@ dgm.Stanley2017 <- function(dgm_name, settings) {
     sample_sizes <- sample_sizes[[1]]
 
   # Simulate data sets
-  if (environment == "LogOR"){
+  if (environment == "logOR"){
     df <- .HongAndReed2021_Stanley2017_MetaStudy_LogOR(mean_effect, effect_heterogeneity, n_studies, bias, sample_sizes)
-  } else if (environment == "Cohens_d"){
+  } else if (environment == "SMD"){
     df <- .HongAndReed2021_Stanley2017_MetaStudy_Cohen_d(mean_effect, effect_heterogeneity, n_studies, bias, sample_sizes)
   }
 
   # Create result data frame
-  if (environment == "LogOR"){
+  if (environment == "logOR"){
     data <- data.frame(
       yi      = df[,"EstimatedLogOR"],
       sei     = df[,"StdErrLogOR"],
       ni      = df[,"PrimaryStudyOBS"] * 2,
       es_type = "logOR"
     )
-  } else if (environment == "Cohens_d"){
+  } else if (environment == "SMD"){
     data <- data.frame(
       yi      = df[,"EstimatedCohend"],
       sei     = df[,"StdErrCohend"],
@@ -132,8 +132,8 @@ validate_dgm_setting.Stanley2017 <- function(dgm_name, settings) {
     sample_sizes <- sample_sizes[[1]]
 
   # Validate settings
-  if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("LogOR", "Cohens_d"))
-    stop("'environment' must be a string with one of the following values: 'LogOR', 'Cohens_d'")
+  if (!length(environment) == 1 || !is.character(environment) || !environment %in% c("logOR", "SMD"))
+    stop("'environment' must be a string with one of the following values: 'logOR', 'SMD'")
   if (length(mean_effect) != 1 || !is.numeric(mean_effect) || is.na(mean_effect))
     stop("'mean_effect' must be numeric")
   if (length(effect_heterogeneity) != 1 || !is.numeric(effect_heterogeneity) || is.na(effect_heterogeneity) || effect_heterogeneity < 0)
@@ -152,14 +152,14 @@ validate_dgm_setting.Stanley2017 <- function(dgm_name, settings) {
 dgm_conditions.Stanley2017 <- function(dgm_name) {
 
   # Keep the same order as in Hong and Reed 2021
-  simulationType  <- "Cohens_d"
+  simulationType  <- "SMD"
   effectSize_List <- c(0, 0.50)
   sigH_List       <- c(0, 0.0625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(5,10,20,40,80)
   param1 <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
 
-  simulationType   <- "LogOR"
+  simulationType   <- "logOR"
   effectSize_List  <- c(0.00, 0.03, 0.06)
   sigH_List        <- c(0.006)
   PubBias_List     <- c(0.0, 0.5)
@@ -169,14 +169,14 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   paramONE <- rbind(param1,param2)
 
 
-  simulationType  <- "Cohens_d"
+  simulationType  <- "SMD"
   effectSize_List <- c(0, 0.50)
   sigH_List       <- c(0, 0.0625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(100,200,400,800)
   param3          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
 
-  simulationType  <- "LogOR"
+  simulationType  <- "logOR"
   effectSize_List <- c(0.00, 0.03, 0.06)
   sigH_List       <- c(0.006)
   PubBias_List    <- c(0.0, 0.5)
@@ -192,8 +192,8 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   settings$sample_sizes <- NA
 
   # enlist the corresponding sample sizes
-  settings$sample_sizes[settings$environment == "Cohens_d"] <- list(c(32,64,125,250,500))
-  settings$sample_sizes[settings$environment == "LogOR"]    <- list(c(50,100,100,250,500))
+  settings$sample_sizes[settings$environment == "SMD"]   <- list(c(32,64,125,250,500))
+  settings$sample_sizes[settings$environment == "logOR"] <- list(c(50,100,100,250,500))
 
   # attach setting id
   settings$condition_id <- 1:nrow(settings)

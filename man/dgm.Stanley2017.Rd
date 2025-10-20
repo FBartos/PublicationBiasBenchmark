@@ -11,7 +11,7 @@
 
 \item{settings}{List containing \describe{
 \item{environment}{Type of the simulation environment. One of
-\code{"LogOR"} or \code{"Cohens_d"}.}
+\code{"logOR"} or \code{"SMD"}.}
 \item{mean_effect}{Mean effect}
 \item{effect_heterogeneity}{Mean effect heterogeneity}
 \item{bias}{Proportion of studies affected by publication bias}
@@ -50,7 +50,7 @@ This function simulates two meta-analysis scenarios to evaluate the effect
 of a binary treatment variable (\verb{treat = \{0, 1\}}) on study outcomes,
 incorporating both effect heterogeneity and publication selection mechanisms.
 
-In the Log Odds Ratio (\code{"LogOR"}) scenario, primary studies assess the
+In the Log Odds Ratio (\code{"logOR"}) scenario, primary studies assess the
 impact of treatment on a binary success indicator (\code{Y = 1}). The control
 group has a fixed 10\% probability of success, while the treatment group’s
 probability is increased by a fixed effect and a mean-zero random component,
@@ -59,7 +59,7 @@ logistic regression, with the coefficient on \code{treat} (\verb{α₁}) as the 
 interest. Study sample sizes vary, resulting in different standard errors
 for estimated effects.
 
-In the Cohen's d (\code{"Cohens_d"}) scenario, the outcome variable is
+In the Cohen's d (\code{"SMD"}) scenario, the outcome variable is
 continuous. The treatment effect is modeled as a fixed effect (\verb{α₁}) plus a
 random component (variance \verb{σ²_h}). Each study computes Cohen's d, the
 standardized mean difference between treatment and control groups. Study
