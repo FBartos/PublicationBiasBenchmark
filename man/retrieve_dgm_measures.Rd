@@ -8,6 +8,7 @@ retrieve_dgm_measures(
   dgm_name,
   measure = NULL,
   method = NULL,
+  method_setting = NULL,
   condition_id = NULL,
   path = NULL,
   replacement = FALSE
@@ -19,7 +20,9 @@ retrieve_dgm_measures(
 \item{measure}{Which performance measure should be returned (e.g., "bias", "mse", "coverage").
 All measures can be returned by setting to \code{NULL}.}
 
-\item{method}{Which method should be returned. All methods can be returned by setting to \code{NULL}.}
+\item{method}{Which method(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
+
+\item{method_setting}{Which method setting(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
 
 \item{condition_id}{which conditions should settings be returned for.}
 

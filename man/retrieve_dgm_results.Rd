@@ -7,7 +7,7 @@
 retrieve_dgm_results(
   dgm_name,
   method = NULL,
-  method_setting = "default",
+  method_setting = NULL,
   condition_id = NULL,
   repetition_id = NULL,
   path = NULL
@@ -16,10 +16,9 @@ retrieve_dgm_results(
 \arguments{
 \item{dgm_name}{Character string specifying the DGM type}
 
-\item{method}{Which method should be returned. The complete
-results can be returned by setting to \code{NULL}.}
+\item{method}{Which method(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
 
-\item{method_setting}{Which method setting should be returned. Defaults to "default".}
+\item{method_setting}{Which method setting(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
 
 \item{condition_id}{which conditions should settings be returned for.}
 

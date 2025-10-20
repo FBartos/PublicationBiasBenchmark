@@ -175,9 +175,8 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 #' @inheritParams download_dgm
 #' @inheritParams dgm_conditions
 #' @inheritParams retrieve_dgm_dataset
-#' @param method Which method should be returned. The complete
-#' results can be returned by setting to \code{NULL}.
-#' @param method_setting Which method setting should be returned. Defaults to "default".
+#' @param method Which method(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).
+#' @param method_setting Which method setting(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).
 #'
 #' @return A data.frame
 #'
@@ -192,7 +191,7 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 #'
 #'
 #' @export
-retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "default", condition_id = NULL, repetition_id = NULL, path = NULL){
+retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL, condition_id = NULL, repetition_id = NULL, path = NULL){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
@@ -252,10 +251,9 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "defa
 #' @inheritParams dgm
 #' @inheritParams download_dgm
 #' @inheritParams dgm_conditions
-#' @inheritParams retrieve_dgm_dataset
+#' @inheritParams retrieve_dgm_results
 #' @param measure Which performance measure should be returned (e.g., "bias", "mse", "coverage").
 #' All measures can be returned by setting to \code{NULL}.
-#' @param method Which method should be returned. All methods can be returned by setting to \code{NULL}.
 #' @param replacement Whether performance measures computed using replacement should be returned. Defaults to \code{FALSE}.
 #'
 #' @return A data.frame
@@ -273,7 +271,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = "defa
 #' }
 #'
 #' @export
-retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, condition_id = NULL, path = NULL, replacement = FALSE){
+retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, method_setting = NULL, condition_id = NULL, path = NULL, replacement = FALSE){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
@@ -327,6 +325,9 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, condi
   # subset by method, condition, repetition if specified
   if (!is.null(method)) {
     measures_file <- measures_file[measures_file$method %in% method, ]
+  }
+  if (!is.null(method_setting)) {
+    measures_file <- measures_file[measures_file$method_setting %in% method_setting, ]
   }
   if (!is.null(condition_id)) {
     measures_file <- measures_file[measures_file$condition %in% condition_id, ]
