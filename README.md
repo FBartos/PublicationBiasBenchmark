@@ -231,7 +231,8 @@ See `methods("method")` for the full list:
 - `"EK"`: Endogenous Kink (Bom & Rachinger, 2019)
 - `"SM"`: Selection Models (3PSM, 4PSM) (Vevea & Hedges, 1995)
 - `"pcurve"`: P-curve (Simonsohn et al., 2014)
-- `"puniform"`: P-uniform and P-uniform\* Aert & Assen (2025)
+- `"puniform"`: P-uniform (van Assen et al., 2015) and P-uniform\* (van
+  Aert & van Assen, 2025)
 - `"AK"`: Andrews & Kasy selection models (AK1, AK2) (Andrews & Kasy,
   2019)
 - `"RoBMA"`: Robust Bayesian Meta-Analysis (Bartoš et al., 2023)
@@ -272,14 +273,6 @@ contain the following elements:
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0" line-spacing="2">
-
-<div id="ref-vanaert2025puniform" class="csl-entry">
-
-Aert, R. C. M. van, & Assen, M. A. L. M. van. (2025). Correcting for
-publication bias in a meta-analysis with the p-uniform\* method.
-*Psychonomic Bulletin & Review*. <https://osf.io/preprints/bitss/zqjr9/>
-
-</div>
 
 <div id="ref-alinaghi2018meta" class="csl-entry">
 
@@ -366,9 +359,17 @@ power to reduce publication bias. *Statistics in Medicine*, *36*(10),
 
 </div>
 
+<div id="ref-vanaert2025puniform" class="csl-entry">
+
+van Aert, R. C. M., & van Assen, M. A. L. M. (2025). Correcting for
+publication bias in a meta-analysis with the p-uniform\* method.
+*Psychonomic Bulletin & Review*. <https://osf.io/preprints/bitss/zqjr9/>
+
+</div>
+
 <div id="ref-vanassen2015meta" class="csl-entry">
 
-Van Assen, M. A. L. M., Aert, R. C. M. van, & Wicherts, J. M. (2015).
+van Assen, M. A. L. M., van Aert, R. C. M., & Wicherts, J. M. (2015).
 Meta-analysis using effect size distributions of only statistically
 significant studies. *Psychological Methods*, *20*(3), 293–309.
 <https://doi.org/10.1037/met0000025>

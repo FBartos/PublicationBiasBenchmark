@@ -204,7 +204,7 @@ See `methods("method")` for the full list:
 - `"EK"`: Endogenous Kink [@bom2019kinked]
 - `"SM"`: Selection Models (3PSM, 4PSM) [@vevea1995general] 
 - `"pcurve"`: P-curve [@simonsohn2014pcurve]
-- `"puniform"`: P-uniform and P-uniform* [@vanassen2015meta, @vanaert2025puniform]
+- `"puniform"`: P-uniform [@vanassen2015meta] and P-uniform* [@vanaert2025puniform]
 - `"AK"`: Andrews & Kasy selection models (AK1, AK2) [@andrews2019identification]
 - `"RoBMA"`: Robust Bayesian Meta-Analysis [@bartos2023robust]
 
