@@ -35,6 +35,6 @@ navbar:
       - text: Use Presimulated Datasets
         href: articles/Using_Presimulated_Datasets.html
       - text: Use Precomputed Results
-        href: articles/Adding_Precomputed_Results.html
+        href: articles/Using_Precomputed_Results.html
       - text: Use Precomputed Measures
         href: articles/Using_Precomputed_Measures.html
