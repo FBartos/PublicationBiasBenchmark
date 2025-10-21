@@ -10,12 +10,13 @@ articles:
   Results_Bom2019: Results_Bom2019.html
   Results_Carter2019: Results_Carter2019.html
   Results_Method_Replacement: Results_Method_Replacement.html
+  Results_no_bias: Results_no_bias.html
   Results_Stanley2017: Results_Stanley2017.html
   Results: Results.html
   Using_Precomputed_Measures: Using_Precomputed_Measures.html
   Using_Precomputed_Results: Using_Precomputed_Results.html
   Using_Presimulated_Datasets: Using_Presimulated_Datasets.html
-last_built: 2025-10-20T12:28Z
+last_built: 2025-10-21T12:23Z
 urls:
   reference: https://fbartos.github.io/PublicationBiasBenchmark/reference
   article: https://fbartos.github.io/PublicationBiasBenchmark/articles

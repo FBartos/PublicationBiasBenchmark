@@ -37,13 +37,19 @@
     <li><a class="dropdown-item" href="../articles/Results_Alinaghi2018.html">Alinaghi (2018)</a></li>
     <li><a class="dropdown-item" href="../articles/Results_Bom2019.html">Bom (2019)</a></li>
     <li><a class="dropdown-item" href="../articles/Results_Carter2019.html">Carter (2019)</a></li>
+    <li><a class="dropdown-item" href="../articles/Results_Method_Replacement.html">Method Replacement</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-extending-the-benchmark" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Extending the Benchmark</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-extending-the-benchmark">
-<li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Adding New DGMs</a></li>
-    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Adding New Methods</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-how-to" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">How To</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-how-to">
+<li><a class="dropdown-item" href="../articles/Adding_New_DGMs.html">Add New DGMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_New_Methods.html">Add New Methods</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Results.html">Compute Method Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Computing_Method_Measures.html">Compute Method Measures</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Presimulated_Datasets.html">Use Presimulated Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Adding_Precomputed_Results.html">Use Precomputed Results</a></li>
+    <li><a class="dropdown-item" href="../articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -68,8 +74,6 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Results: No bias</h1>
-                        <h4 data-toc-skip class="author">František
-Bartoš</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/FBartos/PublicationBiasBenchmark/blob/master/vignettes/Results_no_bias.Rmd" class="external-link"><code>vignettes/Results_no_bias.Rmd</code></a></small>
@@ -81,8 +85,8 @@ Bartoš</h4>
 <div class="section level2">
 <h2 id="complete-results">Complete Results<a class="anchor" aria-label="anchor" href="#complete-results"></a>
 </h2>
-<p>These results are based on no_bias data generating mechanism with the
-total of 8 conditions.</p>
+<p>These results are based on <a href="../reference/dgm.no_bias.html">no_bias</a> data-generating
+mechanism with a total of 8 conditions.</p>
 <div class="section level3 tabset tabset-fade tabset-pills">
 <h3 class="tabset tabset-fade tabset-pills" id="average-performance">Average Performance<a class="anchor" aria-label="anchor" href="#average-performance"></a>
 </h3>
@@ -91,8 +95,12 @@ conditions to provide an overall impression of method performance.
 However, keep in mind that a method with a high overall ranking is not
 necessarily the “best” method for a particular application. To select a
 suitable method for your application, consider also non-aggregated
-performance measures in conditions most relevant to your application.
-(TODO: add links to non-aggregated data exploration tool)</p>
+performance measures in conditions most relevant to your
+application.</p>
+
+
+
+
 
 
 
@@ -100,18 +108,20 @@ performance measures in conditions most relevant to your application.
 
 
 <ul class="nav nav-pills" id="average-performance" role="tablist">
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#combined" id="combined-tab" type="button" role="tab" aria-controls="combined" aria-selected="true" class="active nav-link">Combined</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse" id="rmse-tab" type="button" role="tab" aria-controls="rmse" aria-selected="true" class="active nav-link">RMSE</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias" id="bias-tab" type="button" role="tab" aria-controls="bias" aria-selected="false" class="nav-link">Bias</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse" id="rmse-tab" type="button" role="tab" aria-controls="rmse" aria-selected="false" class="nav-link">RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#empirical-se" id="empirical-se-tab" type="button" role="tab" aria-controls="empirical-se" aria-selected="false" class="nav-link">Empirical SE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score" id="interval-score-tab" type="button" role="tab" aria-controls="interval-score" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage" id="ci-coverage-tab" type="button" role="tab" aria-controls="ci-coverage" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width" id="ci-width-tab" type="button" role="tab" aria-controls="ci-width" aria-selected="false" class="nav-link">95% CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio" id="log-positive-likelihood-ratio-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio" id="log-negative-likelihood-ratio-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate" id="type-i-error-rate-tab" type="button" role="tab" aria-controls="type-i-error-rate" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power" id="power-tab" type="button" role="tab" aria-controls="power" aria-selected="false" class="nav-link">Power</button></li>
 </ul>
 <div class="tab-content">
-<div class="active show fade tab-pane" id="combined" role="tabpanel" aria-labelledby="combined-tab">
+<div class="active show fade tab-pane" id="rmse" role="tabpanel" aria-labelledby="rmse-tab">
 
-<p>A combined method rank is the mean method rank across all performance
-measures.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -134,7 +144,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Mean Rank
+Value
 </th>
 <th style="text-align:right;">
 Rank
@@ -143,7 +153,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Mean Rank
+Value
 </th>
 </tr>
 </thead>
@@ -153,19 +163,19 @@ Mean Rank
 1
 </td>
 <td style="text-align:left;">
-WLS-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-1.768
+0.044
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:left;">
-WLS-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-1.768
+0.044
 </td>
 </tr>
 <tr>
@@ -173,19 +183,19 @@ WLS-default
 2
 </td>
 <td style="text-align:left;">
-RMA-default
+FMA (default)
 </td>
 <td style="text-align:right;">
-2.045
+0.044
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:left;">
-RMA-default
+FMA (default)
 </td>
 <td style="text-align:right;">
-2.045
+0.044
 </td>
 </tr>
 <tr>
@@ -193,19 +203,19 @@ RMA-default
 3
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-2.541
+0.044
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-2.541
+0.044
 </td>
 </tr>
 <tr>
@@ -213,19 +223,19 @@ WAAPWLS-default
 4
 </td>
 <td style="text-align:left;">
-SM-3PSM
+mean (default)
 </td>
 <td style="text-align:right;">
-2.551
+0.049
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:left;">
-SM-3PSM
+mean (default)
 </td>
 <td style="text-align:right;">
-2.601
+0.049
 </td>
 </tr>
 <tr>
@@ -233,19 +243,19 @@ SM-3PSM
 5
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+trimfill (default)
 </td>
 <td style="text-align:right;">
-3.025
+0.051
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+trimfill (default)
 </td>
 <td style="text-align:right;">
-3.025
+0.051
 </td>
 </tr>
 <tr>
@@ -253,19 +263,19 @@ RoBMA-PSMA
 6
 </td>
 <td style="text-align:left;">
-puniform-star
+WILS (default)
 </td>
 <td style="text-align:right;">
-3.174
+0.054
 </td>
 <td style="text-align:right;">
 6
 </td>
 <td style="text-align:left;">
-puniform-star
+WILS (default)
 </td>
 <td style="text-align:right;">
-3.124
+0.054
 </td>
 </tr>
 <tr>
@@ -273,19 +283,19 @@ puniform-star
 7
 </td>
 <td style="text-align:left;">
-AK-AK1
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-3.385
+0.055
 </td>
 <td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-AK-AK1
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-3.360
+0.055
 </td>
 </tr>
 <tr>
@@ -293,19 +303,19 @@ AK-AK1
 8
 </td>
 <td style="text-align:left;">
-PEESE-default
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-3.524
+0.055
 </td>
 <td style="text-align:right;">
 8
 </td>
 <td style="text-align:left;">
-PEESE-default
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-3.549
+0.055
 </td>
 </tr>
 <tr>
@@ -313,19 +323,19 @@ PEESE-default
 9
 </td>
 <td style="text-align:left;">
-SM-4PSM
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-4.075
+0.065
 </td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:left;">
-trimfill-default
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-4.120
+0.064
 </td>
 </tr>
 <tr>
@@ -333,19 +343,19 @@ trimfill-default
 10
 </td>
 <td style="text-align:left;">
-trimfill-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-4.120
+0.087
 </td>
 <td style="text-align:right;">
 10
 </td>
 <td style="text-align:left;">
-SM-4PSM
+PEESE (default)
 </td>
 <td style="text-align:right;">
-4.150
+0.087
 </td>
 </tr>
 <tr>
@@ -353,19 +363,19 @@ SM-4PSM
 11
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-4.267
+0.098
 </td>
 <td style="text-align:right;">
 11
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-4.267
+0.097
 </td>
 </tr>
 <tr>
@@ -373,19 +383,19 @@ PETPEESE-default
 12
 </td>
 <td style="text-align:left;">
-WILS-default
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-4.323
+0.101
 </td>
 <td style="text-align:right;">
 12
 </td>
 <td style="text-align:left;">
-WILS-default
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-4.323
+0.132
 </td>
 </tr>
 <tr>
@@ -393,19 +403,19 @@ WILS-default
 13
 </td>
 <td style="text-align:left;">
-PET-default
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-4.789
+0.132
 </td>
 <td style="text-align:right;">
 13
 </td>
 <td style="text-align:left;">
-PET-default
+EK (default)
 </td>
 <td style="text-align:right;">
-4.739
+0.166
 </td>
 </tr>
 <tr>
@@ -413,39 +423,39 @@ PET-default
 14
 </td>
 <td style="text-align:left;">
-EK-default
+EK (default)
 </td>
 <td style="text-align:right;">
-4.794
+0.166
 </td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+</tr>
+<tr>
 <td style="text-align:right;">
 14
 </td>
 <td style="text-align:left;">
-EK-default
+PET (default)
 </td>
 <td style="text-align:right;">
-4.744
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:left;">
-puniform-default
-</td>
-<td style="text-align:right;">
-6.220
+0.166
 </td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-puniform-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
-6.244
+0.618
 </td>
 </tr>
 <tr>
@@ -453,19 +463,19 @@ puniform-default
 16
 </td>
 <td style="text-align:left;">
-AK-AK2
+pcurve (default)
 </td>
 <td style="text-align:right;">
-NaN
+0.811
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-AK-AK2
+AK (AK1)
 </td>
 <td style="text-align:right;">
-NaN
+1.850
 </td>
 </tr>
 <tr>
@@ -473,31 +483,71 @@ NaN
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+AK (AK1)
 </td>
 <td style="text-align:right;">
-NaN
+1.973
 </td>
 <td style="text-align:right;">
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-NaN
+1.857
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+3.649
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+2.885
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+29.262
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+29.262
 </td>
 </tr>
 </tbody>
 </table>
+<p>RMSE (Root Mean Square Error) is an overall summary measure of
+estimation performance that combines bias and empirical SE. RMSE is the
+square root of the average squared difference between the meta-analytic
+estimate and the true effect across simulation runs. A lower RMSE
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="bias" role="tabpanel" aria-labelledby="bias-tab">
 
-<p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
-mechanisms differ in the outcome scale. See the DGM-specific results (or
-subresults) to see the distribution of bias values on the corresponding
-outcome scale.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -520,7 +570,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Mean Rank
+Value
 </th>
 <th style="text-align:right;">
 Rank
@@ -529,7 +579,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Mean Rank
+Value
 </th>
 </tr>
 </thead>
@@ -539,19 +589,19 @@ Mean Rank
 1
 </td>
 <td style="text-align:left;">
-SM-3PSM
+RMA (default)
 </td>
 <td style="text-align:right;">
-4.000
+0.000
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:left;">
-SM-3PSM
+RMA (default)
 </td>
 <td style="text-align:right;">
-4.250
+0.000
 </td>
 </tr>
 <tr>
@@ -559,19 +609,19 @@ SM-3PSM
 2
 </td>
 <td style="text-align:left;">
-WLS-default
+mean (default)
 </td>
 <td style="text-align:right;">
-4.750
+0.000
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:left;">
-WLS-default
+mean (default)
 </td>
 <td style="text-align:right;">
-4.750
+0.000
 </td>
 </tr>
 <tr>
@@ -579,19 +629,19 @@ WLS-default
 3
 </td>
 <td style="text-align:left;">
-RMA-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-5.500
+0.000
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-RMA-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-5.500
+0.000
 </td>
 </tr>
 <tr>
@@ -599,19 +649,19 @@ RMA-default
 4
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+FMA (default)
 </td>
 <td style="text-align:right;">
-6.000
+0.000
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+FMA (default)
 </td>
 <td style="text-align:right;">
-6.000
+0.000
 </td>
 </tr>
 <tr>
@@ -619,39 +669,39 @@ WAAPWLS-default
 5
 </td>
 <td style="text-align:left;">
-PEESE-default
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-6.375
+0.001
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-puniform-star
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-6.125
+0.001
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-5
+6
 </td>
 <td style="text-align:left;">
-puniform-star
+PEESE (default)
 </td>
 <td style="text-align:right;">
-6.375
+-0.001
 </td>
 <td style="text-align:right;">
 6
 </td>
 <td style="text-align:left;">
-PEESE-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-6.250
+-0.001
 </td>
 </tr>
 <tr>
@@ -659,39 +709,39 @@ PEESE-default
 7
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+EK (default)
 </td>
 <td style="text-align:right;">
-7.250
+-0.002
 </td>
 <td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-AK-AK1
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-7.250
+0.001
 </td>
 </tr>
 <tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+-0.002
+</td>
 <td style="text-align:right;">
 8
 </td>
 <td style="text-align:left;">
-AK-AK1
+EK (default)
 </td>
 <td style="text-align:right;">
-7.375
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-PETPEESE-default
-</td>
-<td style="text-align:right;">
-7.250
+-0.002
 </td>
 </tr>
 <tr>
@@ -699,19 +749,19 @@ PETPEESE-default
 9
 </td>
 <td style="text-align:left;">
-SM-4PSM
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-8.250
+0.002
 </td>
 <td style="text-align:right;">
-9
+8
 </td>
 <td style="text-align:left;">
-EK-default
+PET (default)
 </td>
 <td style="text-align:right;">
-8.375
+-0.002
 </td>
 </tr>
 <tr>
@@ -719,39 +769,39 @@ EK-default
 10
 </td>
 <td style="text-align:left;">
-EK-default
+AK (AK1)
 </td>
 <td style="text-align:right;">
-8.625
+-0.003
 </td>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:left;">
-PET-default
-</td>
-<td style="text-align:right;">
-8.375
-</td>
-</tr>
-<tr>
 <td style="text-align:right;">
 10
 </td>
 <td style="text-align:left;">
-PET-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-8.625
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+0.005
 </td>
 <td style="text-align:right;">
 11
 </td>
 <td style="text-align:left;">
-SM-4PSM
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-8.875
+0.004
 </td>
 </tr>
 <tr>
@@ -759,19 +809,19 @@ SM-4PSM
 12
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-9.625
+-0.011
 </td>
 <td style="text-align:right;">
 12
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+AK (AK1)
 </td>
 <td style="text-align:right;">
-9.625
+-0.004
 </td>
 </tr>
 <tr>
@@ -779,39 +829,39 @@ RoBMA-PSMA
 13
 </td>
 <td style="text-align:left;">
-AK-AK2
+trimfill (default)
 </td>
 <td style="text-align:right;">
-12.500
+-0.013
 </td>
 <td style="text-align:right;">
 13
 </td>
 <td style="text-align:left;">
-AK-AK2
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-12.500
+-0.011
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-13
+14
 </td>
 <td style="text-align:left;">
-WILS-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-12.500
+-0.018
 </td>
 <td style="text-align:right;">
-13
+14
 </td>
 <td style="text-align:left;">
-WILS-default
+trimfill (default)
 </td>
 <td style="text-align:right;">
-12.500
+-0.013
 </td>
 </tr>
 <tr>
@@ -819,19 +869,19 @@ WILS-default
 15
 </td>
 <td style="text-align:left;">
-trimfill-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-12.750
+0.033
 </td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-trimfill-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-12.750
+-0.018
 </td>
 </tr>
 <tr>
@@ -839,19 +889,19 @@ trimfill-default
 16
 </td>
 <td style="text-align:left;">
-puniform-default
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-14.000
+-0.036
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-puniform-default
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-14.125
+-0.036
 </td>
 </tr>
 <tr>
@@ -859,31 +909,69 @@ puniform-default
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+puniform (default)
 </td>
 <td style="text-align:right;">
-17.000
+-0.344
 </td>
 <td style="text-align:right;">
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
-17.000
+0.187
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+0.349
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+-0.198
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+1.307
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+1.307
 </td>
 </tr>
 </tbody>
 </table>
+<p>Bias is the average difference between the meta-analytic estimate and
+the true effect across simulation runs. Ideally, this value should be
+close to 0.</p>
 </div>
-<div class="fade tab-pane" id="rmse" role="tabpanel" aria-labelledby="rmse-tab">
+<div class="fade tab-pane" id="empirical-se" role="tabpanel" aria-labelledby="empirical-se-tab">
 
-<p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
-mechanisms differ in the outcome scale. See the DGM-specific results (or
-subresults) to see the distribution of RMSE values on the corresponding
-outcome scale.</p>
 <table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -906,7 +994,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Mean Rank
+Value
 </th>
 <th style="text-align:right;">
 Rank
@@ -915,7 +1003,7 @@ Rank
 Method
 </th>
 <th style="text-align:right;">
-Mean Rank
+Value
 </th>
 </tr>
 </thead>
@@ -925,19 +1013,19 @@ Mean Rank
 1
 </td>
 <td style="text-align:left;">
-WLS-default
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-2.125
+0.040
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:left;">
-WLS-default
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-2.125
+0.040
 </td>
 </tr>
 <tr>
@@ -945,19 +1033,19 @@ WLS-default
 2
 </td>
 <td style="text-align:left;">
-RMA-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-2.750
+0.044
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:left;">
-RMA-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-2.750
+0.044
 </td>
 </tr>
 <tr>
@@ -965,39 +1053,39 @@ RMA-default
 3
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+FMA (default)
 </td>
 <td style="text-align:right;">
-4.000
+0.044
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+FMA (default)
 </td>
 <td style="text-align:right;">
-4.000
+0.044
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-4
+3
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-4.875
+0.044
 </td>
 <td style="text-align:right;">
-4
+3
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-4.875
+0.044
 </td>
 </tr>
 <tr>
@@ -1005,19 +1093,19 @@ WAAPWLS-default
 5
 </td>
 <td style="text-align:left;">
-trimfill-default
+trimfill (default)
 </td>
 <td style="text-align:right;">
-5.875
+0.049
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-trimfill-default
+trimfill (default)
 </td>
 <td style="text-align:right;">
-5.875
+0.049
 </td>
 </tr>
 <tr>
@@ -1025,19 +1113,19 @@ trimfill-default
 6
 </td>
 <td style="text-align:left;">
-SM-3PSM
+mean (default)
 </td>
 <td style="text-align:right;">
-6.875
+0.049
 </td>
 <td style="text-align:right;">
 6
 </td>
 <td style="text-align:left;">
-SM-3PSM
+mean (default)
 </td>
 <td style="text-align:right;">
-6.875
+0.049
 </td>
 </tr>
 <tr>
@@ -1045,19 +1133,19 @@ SM-3PSM
 7
 </td>
 <td style="text-align:left;">
-WILS-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-7.375
+0.051
 </td>
 <td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-WILS-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-7.375
+0.051
 </td>
 </tr>
 <tr>
@@ -1065,39 +1153,39 @@ WILS-default
 8
 </td>
 <td style="text-align:left;">
-AK-AK1
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-7.625
+0.055
 </td>
 <td style="text-align:right;">
 8
 </td>
 <td style="text-align:left;">
-AK-AK1
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-7.625
+0.055
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-8
+9
 </td>
 <td style="text-align:left;">
-puniform-star
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-7.625
+0.064
 </td>
 <td style="text-align:right;">
-8
+9
 </td>
 <td style="text-align:left;">
-puniform-star
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-7.625
+0.064
 </td>
 </tr>
 <tr>
@@ -1105,19 +1193,19 @@ puniform-star
 10
 </td>
 <td style="text-align:left;">
-PEESE-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-9.500
+0.086
 </td>
 <td style="text-align:right;">
 10
 </td>
 <td style="text-align:left;">
-PEESE-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-9.750
+0.087
 </td>
 </tr>
 <tr>
@@ -1125,19 +1213,19 @@ PEESE-default
 11
 </td>
 <td style="text-align:left;">
-SM-4PSM
+PEESE (default)
 </td>
 <td style="text-align:right;">
-10.125
+0.087
 </td>
 <td style="text-align:right;">
 11
 </td>
 <td style="text-align:left;">
-SM-4PSM
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-9.875
+0.096
 </td>
 </tr>
 <tr>
@@ -1145,19 +1233,19 @@ SM-4PSM
 12
 </td>
 <td style="text-align:left;">
-AK-AK2
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-10.625
+0.100
 </td>
 <td style="text-align:right;">
 12
 </td>
 <td style="text-align:left;">
-AK-AK2
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-10.625
+0.132
 </td>
 </tr>
 <tr>
@@ -1165,19 +1253,19 @@ AK-AK2
 13
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-12.500
+0.132
 </td>
 <td style="text-align:right;">
 13
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+EK (default)
 </td>
 <td style="text-align:right;">
-12.500
+0.166
 </td>
 </tr>
 <tr>
@@ -1185,19 +1273,19 @@ PETPEESE-default
 14
 </td>
 <td style="text-align:left;">
-EK-default
+EK (default)
 </td>
 <td style="text-align:right;">
-13.750
+0.166
 </td>
 <td style="text-align:right;">
-14
+13
 </td>
 <td style="text-align:left;">
-EK-default
+PET (default)
 </td>
 <td style="text-align:right;">
-13.750
+0.166
 </td>
 </tr>
 <tr>
@@ -1205,19 +1293,19 @@ EK-default
 14
 </td>
 <td style="text-align:left;">
-PET-default
+PET (default)
 </td>
 <td style="text-align:right;">
-13.750
+0.166
 </td>
 <td style="text-align:right;">
-14
+15
 </td>
 <td style="text-align:left;">
-PET-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
-13.750
+0.582
 </td>
 </tr>
 <tr>
@@ -1225,19 +1313,19 @@ PET-default
 16
 </td>
 <td style="text-align:left;">
-puniform-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
-15.375
+0.719
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-puniform-default
+AK (AK1)
 </td>
 <td style="text-align:right;">
-15.375
+1.850
 </td>
 </tr>
 <tr>
@@ -1245,23 +1333,491 @@ puniform-default
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+AK (AK1)
 </td>
 <td style="text-align:right;">
-16.750
+1.974
 </td>
 <td style="text-align:right;">
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-16.750
+1.857
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+3.620
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+2.865
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+29.247
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+29.247
 </td>
 </tr>
 </tbody>
 </table>
+<p>The empirical SE is the standard deviation of the meta-analytic
+estimate across simulation runs. A lower empirical SE indicates less
+variability and better method performance.</p>
+</div>
+<div class="fade tab-pane" id="interval-score" role="tabpanel" aria-labelledby="interval-score-tab">
+
+<table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Conditional on Convergence
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Replacement if Non-Convergence
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.218
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.218
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+0.225
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+0.225
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+0.226
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+0.226
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+0.226
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+0.226
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+0.235
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+0.235
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+0.270
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+0.270
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+0.304
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+0.302
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+0.318
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+0.318
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+0.339
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+0.339
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+0.364
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+0.364
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+0.445
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+0.426
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+0.453
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+0.445
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+0.630
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+0.679
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+0.679
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+0.840
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+0.840
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.850
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.850
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+3.303
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+4.791
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+23.441
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+26.457
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+23.498
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+</tr>
+</tbody>
+</table>
+<p>The interval score measures the accuracy of a confidence interval by
+combining its width and coverage. It penalizes intervals that are too
+wide or that fail to include the true value. A lower interval score
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage" role="tabpanel" aria-labelledby="ci-coverage-tab">
 
@@ -1306,19 +1862,19 @@ Value
 1
 </td>
 <td style="text-align:left;">
-AK-AK1
+AK (AK1)
 </td>
 <td style="text-align:right;">
-0.967
+0.970
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:left;">
-AK-AK1
+AK (AK1)
 </td>
 <td style="text-align:right;">
-0.967
+0.969
 </td>
 </tr>
 <tr>
@@ -1326,19 +1882,19 @@ AK-AK1
 2
 </td>
 <td style="text-align:left;">
-puniform-star
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-0.954
+0.964
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:left;">
-puniform-star
+AK (AK2)
 </td>
 <td style="text-align:right;">
-0.954
+0.966
 </td>
 </tr>
 <tr>
@@ -1346,19 +1902,19 @@ puniform-star
 3
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+puniform (star)
 </td>
 <td style="text-align:right;">
-0.951
+0.959
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
-0.951
+0.964
 </td>
 </tr>
 <tr>
@@ -1366,16 +1922,56 @@ RoBMA-PSMA
 4
 </td>
 <td style="text-align:left;">
-RMA-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-0.949
+0.953
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:left;">
-RMA-default
+puniform (star)
+</td>
+<td style="text-align:right;">
+0.959
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+0.949
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+0.953
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+0.948
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+SM (3PSM)
 </td>
 <td style="text-align:right;">
 0.949
@@ -1383,62 +1979,22 @@ RMA-default
 </tr>
 <tr>
 <td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-SM-3PSM
-</td>
-<td style="text-align:right;">
-0.939
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-SM-3PSM
-</td>
-<td style="text-align:right;">
-0.940
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-PETPEESE-default
-</td>
-<td style="text-align:right;">
-0.938
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-PETPEESE-default
-</td>
-<td style="text-align:right;">
-0.938
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-EK-default
+EK (default)
 </td>
 <td style="text-align:right;">
-0.936
+0.943
 </td>
 <td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-EK-default
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-0.936
+0.946
 </td>
 </tr>
 <tr>
@@ -1446,19 +2002,19 @@ EK-default
 8
 </td>
 <td style="text-align:left;">
-SM-4PSM
+mean (default)
 </td>
 <td style="text-align:right;">
-0.933
+0.929
 </td>
 <td style="text-align:right;">
 8
 </td>
 <td style="text-align:left;">
-SM-4PSM
+EK (default)
 </td>
 <td style="text-align:right;">
-0.934
+0.943
 </td>
 </tr>
 <tr>
@@ -1466,16 +2022,96 @@ SM-4PSM
 9
 </td>
 <td style="text-align:left;">
-WLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-0.922
+0.927
 </td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:left;">
-WLS-default
+mean (default)
+</td>
+<td style="text-align:right;">
+0.929
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.927
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+0.927
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+0.925
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.927
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.922
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+0.925
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+0.920
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+PET (default)
 </td>
 <td style="text-align:right;">
 0.922
@@ -1483,102 +2119,22 @@ WLS-default
 </tr>
 <tr>
 <td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-PEESE-default
-</td>
-<td style="text-align:right;">
-0.919
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-PEESE-default
-</td>
-<td style="text-align:right;">
-0.919
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:left;">
-PET-default
-</td>
-<td style="text-align:right;">
-0.912
-</td>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:left;">
-PET-default
-</td>
-<td style="text-align:right;">
-0.912
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:left;">
-WAAPWLS-default
-</td>
-<td style="text-align:right;">
-0.909
-</td>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:left;">
-WAAPWLS-default
-</td>
-<td style="text-align:right;">
-0.909
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-trimfill-default
-</td>
-<td style="text-align:right;">
-0.883
-</td>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-trimfill-default
-</td>
-<td style="text-align:right;">
-0.883
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
 14
 </td>
 <td style="text-align:left;">
-puniform-default
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-0.837
+0.910
 </td>
 <td style="text-align:right;">
 14
 </td>
 <td style="text-align:left;">
-puniform-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-0.842
+0.920
 </td>
 </tr>
 <tr>
@@ -1586,19 +2142,19 @@ puniform-default
 15
 </td>
 <td style="text-align:left;">
-AK-AK2
+trimfill (default)
 </td>
 <td style="text-align:right;">
-0.833
+0.902
 </td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-AK-AK2
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-0.833
+0.910
 </td>
 </tr>
 <tr>
@@ -1606,19 +2162,19 @@ AK-AK2
 16
 </td>
 <td style="text-align:left;">
-WILS-default
+AK (AK2)
 </td>
 <td style="text-align:right;">
-0.776
+0.898
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-WILS-default
+trimfill (default)
 </td>
 <td style="text-align:right;">
-0.776
+0.902
 </td>
 </tr>
 <tr>
@@ -1626,23 +2182,1346 @@ WILS-default
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+WILS (default)
+</td>
+<td style="text-align:right;">
+0.861
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+0.861
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+0.859
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+0.860
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
 </td>
 <td style="text-align:right;">
 NaN
 </td>
 <td style="text-align:right;">
-17
+19
 </td>
 <td style="text-align:left;">
-pcurve-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
-0.656
+NaN
 </td>
 </tr>
 </tbody>
 </table>
+<p>95% CI coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true effect. Ideally, this value
+should be close to the nominal level of 95%.</p>
+</div>
+<div class="fade tab-pane" id="ci-width" role="tabpanel" aria-labelledby="ci-width-tab">
+
+<table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Conditional on Convergence
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Replacement if Non-Convergence
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+0.161
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+0.161
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+0.172
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+0.172
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+0.178
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+0.178
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+0.189
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+0.189
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+0.192
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+0.192
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+0.192
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+0.192
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+0.253
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+0.252
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+0.316
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+0.316
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+0.327
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+0.327
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+0.389
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+0.358
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+0.446
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+0.533
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+0.533
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.609
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.609
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+0.694
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+0.694
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+2.723
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+4.052
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+23.417
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+26.434
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+23.465
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+</tr>
+</tbody>
+</table>
+<p>95% CI width is the average length of the 95% confidence interval for
+the true effect. A lower average 95% CI length indicates a better
+method.</p>
+</div>
+<div class="fade tab-pane" id="log-positive-likelihood-ratio" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-tab">
+
+<table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Conditional on Convergence
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Replacement if Non-Convergence
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Log Value
+</th>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Log Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+6.220
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+6.220
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+3.683
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+3.641
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+3.448
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+3.355
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+3.074
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+3.102
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+3.067
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+3.074
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+2.975
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+2.975
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+2.952
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+2.952
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+2.947
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+2.947
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+2.803
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+2.817
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+2.750
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+2.803
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+2.714
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+2.750
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+2.620
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+2.620
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+2.557
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+2.557
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+2.434
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+2.434
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+2.406
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+2.406
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+2.199
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+2.104
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+2.104
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+2.104
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+2.104
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+2.075
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+</tr>
+</tbody>
+</table>
+<p>The positive likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a significant test result changes the odds
+of the alternative hypothesis versus the null hypothesis. A useful
+method has a positive likelihood ratio greater than 1 (or a log positive
+likelihood ratio greater than 0). A higher (log) positive likelihood
+ratio indicates a better method.</p>
+</div>
+<div class="fade tab-pane" id="log-negative-likelihood-ratio" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-tab">
+
+<table class="table  lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Conditional on Convergence
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Replacement if Non-Convergence
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Log Value
+</th>
+<th style="text-align:right;">
+Rank
+</th>
+<th style="text-align:left;">
+Method
+</th>
+<th style="text-align:right;">
+Log Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+-6.475
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+-6.475
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+-5.920
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+mean (default)
+</td>
+<td style="text-align:right;">
+-5.920
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+-5.738
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+WLS (default)
+</td>
+<td style="text-align:right;">
+-5.738
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+-5.619
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+RMA (default)
+</td>
+<td style="text-align:right;">
+-5.619
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+-5.419
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+-5.420
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+-4.748
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+WILS (default)
+</td>
+<td style="text-align:right;">
+-4.748
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+-4.742
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+AK (AK1)
+</td>
+<td style="text-align:right;">
+-4.742
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+-4.644
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+SM (3PSM)
+</td>
+<td style="text-align:right;">
+-4.653
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+-4.533
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+puniform (star)
+</td>
+<td style="text-align:right;">
+-4.533
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+-4.180
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+-4.284
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+-4.040
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+SM (4PSM)
+</td>
+<td style="text-align:right;">
+-4.182
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+AK (AK2)
+</td>
+<td style="text-align:right;">
+-3.333
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PEESE (default)
+</td>
+<td style="text-align:right;">
+-4.180
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+-3.280
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+-3.290
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+-2.791
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+PETPEESE (default)
+</td>
+<td style="text-align:right;">
+-2.791
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+-2.327
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+EK (default)
+</td>
+<td style="text-align:right;">
+-2.327
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+-2.327
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+-2.327
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+-2.004
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+-2.004
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+-1.761
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+-1.761
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+</tr>
+</tbody>
+</table>
+<p>The negative likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a non-significant test result changes the
+odds of the alternative hypothesis versus the null hypothesis. A useful
+method has a negative likelihood ratio less than 1 (or a log negative
+likelihood ratio less than 0). A lower (log) negative likelihood ratio
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate" role="tabpanel" aria-labelledby="type-i-error-rate-tab">
 
@@ -1687,7 +3566,7 @@ Value
 1
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
 0.000
@@ -1696,7 +3575,7 @@ RoBMA-PSMA
 1
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+RoBMA (PSMA)
 </td>
 <td style="text-align:right;">
 0.000
@@ -1707,19 +3586,19 @@ RoBMA-PSMA
 2
 </td>
 <td style="text-align:left;">
-AK-AK1
+AK (AK1)
 </td>
 <td style="text-align:right;">
-0.010
+0.024
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:left;">
-AK-AK1
+AK (AK1)
 </td>
 <td style="text-align:right;">
-0.010
+0.024
 </td>
 </tr>
 <tr>
@@ -1727,19 +3606,19 @@ AK-AK1
 3
 </td>
 <td style="text-align:left;">
-puniform-star
+AK (AK2)
 </td>
 <td style="text-align:right;">
-0.040
+0.032
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-puniform-star
+AK (AK2)
 </td>
 <td style="text-align:right;">
-0.040
+0.034
 </td>
 </tr>
 <tr>
@@ -1747,19 +3626,19 @@ puniform-star
 4
 </td>
 <td style="text-align:left;">
-SM-3PSM
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-0.049
+0.043
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:left;">
-SM-3PSM
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-0.048
+0.042
 </td>
 </tr>
 <tr>
@@ -1767,19 +3646,19 @@ SM-3PSM
 5
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+puniform (star)
 </td>
 <td style="text-align:right;">
-0.052
+0.045
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+puniform (star)
 </td>
 <td style="text-align:right;">
-0.052
+0.045
 </td>
 </tr>
 <tr>
@@ -1787,16 +3666,36 @@ PETPEESE-default
 6
 </td>
 <td style="text-align:left;">
-RMA-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-0.053
+0.045
 </td>
 <td style="text-align:right;">
 6
 </td>
 <td style="text-align:left;">
-RMA-default
+RMA (default)
+</td>
+<td style="text-align:right;">
+0.045
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
+</td>
+<td style="text-align:right;">
+0.053
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
 0.053
@@ -1807,39 +3706,19 @@ RMA-default
 7
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-0.058
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-WAAPWLS-default
-</td>
-<td style="text-align:right;">
-0.058
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-WLS-default
-</td>
-<td style="text-align:right;">
-0.058
+0.053
 </td>
 <td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-WLS-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-0.058
+0.053
 </td>
 </tr>
 <tr>
@@ -1847,19 +3726,19 @@ WLS-default
 9
 </td>
 <td style="text-align:left;">
-AK-AK2
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-0.060
+0.054
 </td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:left;">
-AK-AK2
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-0.060
+0.053
 </td>
 </tr>
 <tr>
@@ -1867,19 +3746,19 @@ AK-AK2
 10
 </td>
 <td style="text-align:left;">
-PEESE-default
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-0.060
+0.057
 </td>
 <td style="text-align:right;">
 10
 </td>
 <td style="text-align:left;">
-PEESE-default
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-0.060
+0.054
 </td>
 </tr>
 <tr>
@@ -1887,19 +3766,19 @@ PEESE-default
 11
 </td>
 <td style="text-align:left;">
-WILS-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-0.068
+0.058
 </td>
 <td style="text-align:right;">
 11
 </td>
 <td style="text-align:left;">
-SM-4PSM
+PEESE (default)
 </td>
 <td style="text-align:right;">
-0.065
+0.058
 </td>
 </tr>
 <tr>
@@ -1907,16 +3786,56 @@ SM-4PSM
 12
 </td>
 <td style="text-align:left;">
-SM-4PSM
+EK (default)
 </td>
 <td style="text-align:right;">
-0.068
+0.058
 </td>
 <td style="text-align:right;">
 12
 </td>
 <td style="text-align:left;">
-WILS-default
+EK (default)
+</td>
+<td style="text-align:right;">
+0.058
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.058
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.058
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+FMA (default)
+</td>
+<td style="text-align:right;">
+0.068
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+FMA (default)
 </td>
 <td style="text-align:right;">
 0.068
@@ -1924,62 +3843,22 @@ WILS-default
 </tr>
 <tr>
 <td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-EK-default
-</td>
-<td style="text-align:right;">
-0.070
-</td>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-EK-default
-</td>
-<td style="text-align:right;">
-0.070
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-PET-default
-</td>
-<td style="text-align:right;">
-0.070
-</td>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-PET-default
-</td>
-<td style="text-align:right;">
-0.070
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-trimfill-default
+mean (default)
 </td>
 <td style="text-align:right;">
-0.125
+0.070
 </td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-trimfill-default
+mean (default)
 </td>
 <td style="text-align:right;">
-0.125
+0.070
 </td>
 </tr>
 <tr>
@@ -1987,19 +3866,19 @@ trimfill-default
 16
 </td>
 <td style="text-align:left;">
-puniform-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-0.150
+0.076
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-puniform-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-0.140
+0.076
 </td>
 </tr>
 <tr>
@@ -2007,16 +3886,56 @@ puniform-default
 17
 </td>
 <td style="text-align:left;">
-pcurve-default
+trimfill (default)
+</td>
+<td style="text-align:right;">
+0.092
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+trimfill (default)
+</td>
+<td style="text-align:right;">
+0.092
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+0.129
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+puniform (default)
+</td>
+<td style="text-align:right;">
+0.124
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
 </td>
 <td style="text-align:right;">
 NaN
 </td>
 <td style="text-align:right;">
-17
+19
 </td>
 <td style="text-align:left;">
-pcurve-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
 NaN
@@ -2024,6 +3943,10 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The type I error rate is the proportion of simulation runs in which
+the null hypothesis of no effect was incorrectly rejected when it was
+true. Ideally, this value should be close to the nominal level of
+5%.</p>
 </div>
 <div class="fade tab-pane" id="power" role="tabpanel" aria-labelledby="power-tab">
 
@@ -2068,19 +3991,19 @@ Value
 1
 </td>
 <td style="text-align:left;">
-SM-4PSM
+FMA (default)
 </td>
 <td style="text-align:right;">
-1.000
+0.996
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:left;">
-SM-4PSM
+FMA (default)
 </td>
 <td style="text-align:right;">
-1.000
+0.996
 </td>
 </tr>
 <tr>
@@ -2088,19 +4011,19 @@ SM-4PSM
 2
 </td>
 <td style="text-align:left;">
-WLS-default
+mean (default)
 </td>
 <td style="text-align:right;">
-0.982
+0.992
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:left;">
-WLS-default
+mean (default)
 </td>
 <td style="text-align:right;">
-0.982
+0.992
 </td>
 </tr>
 <tr>
@@ -2108,19 +4031,19 @@ WLS-default
 3
 </td>
 <td style="text-align:left;">
-RMA-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-0.975
+0.984
 </td>
 <td style="text-align:right;">
 3
 </td>
 <td style="text-align:left;">
-RMA-default
+WLS (default)
 </td>
 <td style="text-align:right;">
-0.975
+0.984
 </td>
 </tr>
 <tr>
@@ -2128,19 +4051,19 @@ RMA-default
 4
 </td>
 <td style="text-align:left;">
-trimfill-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-0.970
+0.980
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:left;">
-trimfill-default
+RMA (default)
 </td>
 <td style="text-align:right;">
-0.970
+0.980
 </td>
 </tr>
 <tr>
@@ -2148,19 +4071,19 @@ trimfill-default
 5
 </td>
 <td style="text-align:left;">
-AK-AK1
+trimfill (default)
 </td>
 <td style="text-align:right;">
-0.947
+0.973
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-AK-AK1
+trimfill (default)
 </td>
 <td style="text-align:right;">
-0.947
+0.974
 </td>
 </tr>
 <tr>
@@ -2168,19 +4091,19 @@ AK-AK1
 6
 </td>
 <td style="text-align:left;">
-WILS-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-0.895
+0.929
 </td>
 <td style="text-align:right;">
 6
 </td>
 <td style="text-align:left;">
-WILS-default
+WILS (default)
 </td>
 <td style="text-align:right;">
-0.895
+0.929
 </td>
 </tr>
 <tr>
@@ -2188,19 +4111,19 @@ WILS-default
 7
 </td>
 <td style="text-align:left;">
-SM-3PSM
+AK (AK2)
 </td>
 <td style="text-align:right;">
-0.891
+0.928
 </td>
 <td style="text-align:right;">
 7
 </td>
 <td style="text-align:left;">
-SM-3PSM
+AK (AK1)
 </td>
 <td style="text-align:right;">
-0.892
+0.918
 </td>
 </tr>
 <tr>
@@ -2208,19 +4131,19 @@ SM-3PSM
 8
 </td>
 <td style="text-align:left;">
-puniform-star
+AK (AK1)
 </td>
 <td style="text-align:right;">
-0.877
+0.918
 </td>
 <td style="text-align:right;">
-8
+7
 </td>
 <td style="text-align:left;">
-puniform-star
+AK (AK2)
 </td>
 <td style="text-align:right;">
-0.877
+0.918
 </td>
 </tr>
 <tr>
@@ -2228,19 +4151,19 @@ puniform-star
 9
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-0.865
+0.904
 </td>
 <td style="text-align:right;">
 9
 </td>
 <td style="text-align:left;">
-WAAPWLS-default
+SM (3PSM)
 </td>
 <td style="text-align:right;">
-0.865
+0.905
 </td>
 </tr>
 <tr>
@@ -2248,19 +4171,19 @@ WAAPWLS-default
 10
 </td>
 <td style="text-align:left;">
-PEESE-default
+puniform (star)
 </td>
 <td style="text-align:right;">
-0.767
+0.889
 </td>
 <td style="text-align:right;">
 10
 </td>
 <td style="text-align:left;">
-PEESE-default
+puniform (star)
 </td>
 <td style="text-align:right;">
-0.767
+0.889
 </td>
 </tr>
 <tr>
@@ -2268,19 +4191,19 @@ PEESE-default
 11
 </td>
 <td style="text-align:left;">
-puniform-default
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-0.739
+0.851
 </td>
 <td style="text-align:right;">
 11
 </td>
 <td style="text-align:left;">
-puniform-default
+WAAPWLS (default)
 </td>
 <td style="text-align:right;">
-0.740
+0.851
 </td>
 </tr>
 <tr>
@@ -2288,19 +4211,19 @@ puniform-default
 12
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-0.595
+0.801
 </td>
 <td style="text-align:right;">
 12
 </td>
 <td style="text-align:left;">
-PETPEESE-default
+SM (4PSM)
 </td>
 <td style="text-align:right;">
-0.595
+0.848
 </td>
 </tr>
 <tr>
@@ -2308,39 +4231,39 @@ PETPEESE-default
 13
 </td>
 <td style="text-align:left;">
-EK-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-0.588
+0.786
 </td>
 <td style="text-align:right;">
 13
 </td>
 <td style="text-align:left;">
-EK-default
+PEESE (default)
 </td>
 <td style="text-align:right;">
-0.588
+0.786
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-13
+14
 </td>
 <td style="text-align:left;">
-PET-default
+puniform (default)
 </td>
 <td style="text-align:right;">
-0.588
+0.748
 </td>
 <td style="text-align:right;">
-13
+14
 </td>
 <td style="text-align:left;">
-PET-default
+puniform (default)
 </td>
 <td style="text-align:right;">
-0.588
+0.750
 </td>
 </tr>
 <tr>
@@ -2348,19 +4271,19 @@ PET-default
 15
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-0.550
+0.661
 </td>
 <td style="text-align:right;">
 15
 </td>
 <td style="text-align:left;">
-RoBMA-PSMA
+PETPEESE (default)
 </td>
 <td style="text-align:right;">
-0.550
+0.661
 </td>
 </tr>
 <tr>
@@ -2368,36 +4291,76 @@ RoBMA-PSMA
 16
 </td>
 <td style="text-align:left;">
-AK-AK2
+EK (default)
 </td>
 <td style="text-align:right;">
-NaN
+0.598
 </td>
 <td style="text-align:right;">
 16
 </td>
 <td style="text-align:left;">
-AK-AK2
+EK (default)
 </td>
 <td style="text-align:right;">
-NaN
+0.598
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-17
+16
 </td>
 <td style="text-align:left;">
-pcurve-default
+PET (default)
+</td>
+<td style="text-align:right;">
+0.598
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+PET (default)
+</td>
+<td style="text-align:right;">
+0.598
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+0.543
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+RoBMA (PSMA)
+</td>
+<td style="text-align:right;">
+0.543
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+pcurve (default)
 </td>
 <td style="text-align:right;">
 NaN
 </td>
 <td style="text-align:right;">
-17
+19
 </td>
 <td style="text-align:left;">
-pcurve-default
+pcurve (default)
 </td>
 <td style="text-align:right;">
 NaN
@@ -2405,6 +4368,9 @@ NaN
 </tr>
 </tbody>
 </table>
+<p>The power is the proportion of simulation runs in which the null
+hypothesis of no effect was correctly rejected when the alternative
+hypothesis was true. A higher power indicates a better method.</p>
 </div>
 </div>
 </div>
@@ -2414,7 +4380,12 @@ NaN
 </h3>
 <p>The results below are conditional on method convergence. Note that
 the methods might differ in convergence rate and are therefore not
-necessarily compared on the same data sets.</p>
+compared on the same data sets.</p>
+
+
+
+
+
 
 
 
@@ -2423,46 +4394,107 @@ necessarily compared on the same data sets.</p>
 
 <ul class="nav nav-pills" id="by-condition-performance-conditional-on-method-convergence" role="tablist">
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#convergence" id="convergence-tab" type="button" role="tab" aria-controls="convergence" aria-selected="true" class="active nav-link">Convergence</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-1" id="bias-1-tab" type="button" role="tab" aria-controls="bias-1" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-1" id="rmse-1-tab" type="button" role="tab" aria-controls="rmse-1" aria-selected="false" class="nav-link">RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-1" id="bias-1-tab" type="button" role="tab" aria-controls="bias-1" aria-selected="false" class="nav-link">Bias</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#empirical-se-1" id="empirical-se-1-tab" type="button" role="tab" aria-controls="empirical-se-1" aria-selected="false" class="nav-link">Empirical SE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-1" id="interval-score-1-tab" type="button" role="tab" aria-controls="interval-score-1" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-1" id="ci-coverage-1-tab" type="button" role="tab" aria-controls="ci-coverage-1" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-1" id="ci-width-1-tab" type="button" role="tab" aria-controls="ci-width-1" aria-selected="false" class="nav-link">95% CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-1" id="log-positive-likelihood-ratio-1-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-1" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-1" id="log-negative-likelihood-ratio-1-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-1" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-1" id="type-i-error-rate-1-tab" type="button" role="tab" aria-controls="type-i-error-rate-1" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-1" id="power-1-tab" type="button" role="tab" aria-controls="power-1" aria-selected="false" class="nav-link">Power</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence" role="tabpanel" aria-labelledby="convergence-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-35-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
-</div>
-<div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
-
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-36-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
-<p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
-mechanisms differ in the outcome scale. See the DGM-specific results (or
-subresults) to see the distribution of bias values on the corresponding
-outcome scale.</p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-44-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="rmse-1" role="tabpanel" aria-labelledby="rmse-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-37-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
-<p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
-mechanisms differ in the outcome scale. See the DGM-specific results (or
-subresults) to see the distribution of RMSE values on the corresponding
-outcome scale.</p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-45-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p>RMSE (Root Mean Square Error) is an overall summary measure of
+estimation performance that combines bias and empirical SE. RMSE is the
+square root of the average squared difference between the meta-analytic
+estimate and the true effect across simulation runs. A lower RMSE
+indicates a better method. Values larger than 0.5 are visualized as
+0.5.</p>
+</div>
+<div class="fade tab-pane" id="bias-1" role="tabpanel" aria-labelledby="bias-1-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-46-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p>Bias is the average difference between the meta-analytic estimate and
+the true effect across simulation runs. Ideally, this value should be
+close to 0. Values lower than -0.5 or larger than 0.5 are visualized as
+-0.5 and 0.5 respectively.</p>
+</div>
+<div class="fade tab-pane" id="empirical-se-1" role="tabpanel" aria-labelledby="empirical-se-1-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-47-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p>The empirical SE is the standard deviation of the meta-analytic
+estimate across simulation runs. A lower empirical SE indicates less
+variability and better method performance. Values larger than 0.5 are
+visualized as 0.5.</p>
+</div>
+<div class="fade tab-pane" id="interval-score-1" role="tabpanel" aria-labelledby="interval-score-1-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-48-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The interval score measures the accuracy of a confidence interval by
+combining its width and coverage. It penalizes intervals that are too
+wide or that fail to include the true value. A lower interval score
+indicates a better method. Values larger than 100 are visualized as
+100.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-1" role="tabpanel" aria-labelledby="ci-coverage-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-38-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-49-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p>95% CI coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true effect. Ideally, this value
+should be close to the nominal level of 95%.</p>
+</div>
+<div class="fade tab-pane" id="ci-width-1" role="tabpanel" aria-labelledby="ci-width-1-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-50-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>95% CI width is the average length of the 95% confidence interval for
+the true effect. A lower average 95% CI length indicates a better
+method.</p>
+</div>
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-1" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-1-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-51-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a significant test result changes the odds
+of the alternative hypothesis versus the null hypothesis. A useful
+method has a positive likelihood ratio greater than 1 (or a log positive
+likelihood ratio greater than 0). A higher (log) positive likelihood
+ratio indicates a better method.</p>
+</div>
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-1" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-1-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a non-significant test result changes the
+odds of the alternative hypothesis versus the null hypothesis. A useful
+method has a negative likelihood ratio less than 1 (or a log negative
+likelihood ratio less than 0). A lower (log) negative likelihood ratio
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-1" role="tabpanel" aria-labelledby="type-i-error-rate-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-39-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-53-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The type I error rate is the proportion of simulation runs in which
+the null hypothesis of no effect was incorrectly rejected when it was
+true. Ideally, this value should be close to the nominal level of
+5%.</p>
 </div>
 <div class="fade tab-pane" id="power-1" role="tabpanel" aria-labelledby="power-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-40-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-54-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The power is the proportion of simulation runs in which the null
+hypothesis of no effect was correctly rejected when the alternative
+hypothesis was true. A higher power indicates a better method.</p>
 </div>
 </div>
 </div>
@@ -2476,8 +4508,13 @@ with the results from a simpler method (e.g., random-effects
 meta-analysis without publication bias adjustment). This emulates what a
 data analyst may do in practice in case a method does not converge.
 However, note that these results do not correspond to “pure” method
-performance as they might combine multiple different methods. See TODO
+performance as they might combine multiple different methods. See <a href="Results_Method_Replacement.html">Method Replacement Strategy</a>
 for details of the method replacement specification.</p>
+
+
+
+
+
 
 
 
@@ -2486,46 +4523,107 @@ for details of the method replacement specification.</p>
 
 <ul class="nav nav-pills" id="by-condition-performance-replacement-in-case-of-non-convergence" role="tablist">
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#convergence-1" id="convergence-1-tab" type="button" role="tab" aria-controls="convergence-1" aria-selected="true" class="active nav-link">Convergence</button></li>
-<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-2" id="bias-2-tab" type="button" role="tab" aria-controls="bias-2" aria-selected="false" class="nav-link">Bias</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#rmse-2" id="rmse-2-tab" type="button" role="tab" aria-controls="rmse-2" aria-selected="false" class="nav-link">RMSE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#bias-2" id="bias-2-tab" type="button" role="tab" aria-controls="bias-2" aria-selected="false" class="nav-link">Bias</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#empirical-se-2" id="empirical-se-2-tab" type="button" role="tab" aria-controls="empirical-se-2" aria-selected="false" class="nav-link">Empirical SE</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#interval-score-2" id="interval-score-2-tab" type="button" role="tab" aria-controls="interval-score-2" aria-selected="false" class="nav-link">Interval Score</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-coverage-2" id="ci-coverage-2-tab" type="button" role="tab" aria-controls="ci-coverage-2" aria-selected="false" class="nav-link">95% CI Coverage</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#ci-width-2" id="ci-width-2-tab" type="button" role="tab" aria-controls="ci-width-2" aria-selected="false" class="nav-link">95% CI Width</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-positive-likelihood-ratio-2" id="log-positive-likelihood-ratio-2-tab" type="button" role="tab" aria-controls="log-positive-likelihood-ratio-2" aria-selected="false" class="nav-link">Log Positive Likelihood Ratio</button></li>
+<li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#log-negative-likelihood-ratio-2" id="log-negative-likelihood-ratio-2-tab" type="button" role="tab" aria-controls="log-negative-likelihood-ratio-2" aria-selected="false" class="nav-link">Log Negative Likelihood Ratio</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#type-i-error-rate-2" id="type-i-error-rate-2-tab" type="button" role="tab" aria-controls="type-i-error-rate-2" aria-selected="false" class="nav-link">Type I Error Rate</button></li>
 <li role="presentation" class="nav-item"><button data-bs-toggle="tab" data-bs-target="#power-2" id="power-2-tab" type="button" role="tab" aria-controls="power-2" aria-selected="false" class="nav-link">Power</button></li>
 </ul>
 <div class="tab-content">
 <div class="active show fade tab-pane" id="convergence-1" role="tabpanel" aria-labelledby="convergence-1-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-50-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
-</div>
-<div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
-
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-51-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
-<p>Methods are compared using condition-wise ranks. Direct comparison
-using the average bias is not possible because the data generating
-mechanisms differ in the outcome scale. See the DGM-specific results (or
-subresults) to see the distribution of bias values on the corresponding
-outcome scale.</p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-70-1.png" alt="Raincloud plot showing convergence rates across different methods" width="700"></p>
 </div>
 <div class="fade tab-pane" id="rmse-2" role="tabpanel" aria-labelledby="rmse-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-52-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
-<p>Methods are compared using condition-wise ranks. Direct comparison
-using the average RMSE is not possible because the data generating
-mechanisms differ in the outcome scale. See the DGM-specific results (or
-subresults) to see the distribution of RMSE values on the corresponding
-outcome scale.</p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-71-1.png" alt="Raincloud plot showing RMSE (Root Mean Square Error) across different methods" width="700"></p>
+<p>RMSE (Root Mean Square Error) is an overall summary measure of
+estimation performance that combines bias and empirical SE. RMSE is the
+square root of the average squared difference between the meta-analytic
+estimate and the true effect across simulation runs. A lower RMSE
+indicates a better method. Values larger than 0.5 are visualized as
+0.5.</p>
+</div>
+<div class="fade tab-pane" id="bias-2" role="tabpanel" aria-labelledby="bias-2-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-72-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p>Bias is the average difference between the meta-analytic estimate and
+the true effect across simulation runs. Ideally, this value should be
+close to 0. Values lower than -0.5 or larger than 0.5 are visualized as
+-0.5 and 0.5 respectively.</p>
+</div>
+<div class="fade tab-pane" id="empirical-se-2" role="tabpanel" aria-labelledby="empirical-se-2-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-73-1.png" alt="Raincloud plot showing bias across different methods" width="700"></p>
+<p>The empirical SE is the standard deviation of the meta-analytic
+estimate across simulation runs. A lower empirical SE indicates less
+variability and better method performance. Values larger than 0.5 are
+visualized as 0.5.</p>
+</div>
+<div class="fade tab-pane" id="interval-score-2" role="tabpanel" aria-labelledby="interval-score-2-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-74-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>The interval score measures the accuracy of a confidence interval by
+combining its width and coverage. It penalizes intervals that are too
+wide or that fail to include the true value. A lower interval score
+indicates a better method. Values larger than 100 are visualized as
+100.</p>
 </div>
 <div class="fade tab-pane" id="ci-coverage-2" role="tabpanel" aria-labelledby="ci-coverage-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-53-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-75-1.png" alt="Raincloud plot showing 95% confidence interval coverage across different methods" width="700"></p>
+<p>95% CI coverage is the proportion of simulation runs in which the 95%
+confidence interval contained the true effect. Ideally, this value
+should be close to the nominal level of 95%.</p>
+</div>
+<div class="fade tab-pane" id="ci-width-2" role="tabpanel" aria-labelledby="ci-width-2-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-76-1.png" alt="Raincloud plot showing 95% confidence interval width across different methods" width="700"></p>
+<p>95% CI width is the average length of the 95% confidence interval for
+the true effect. A lower average 95% CI length indicates a better
+method.</p>
+</div>
+<div class="fade tab-pane" id="log-positive-likelihood-ratio-2" role="tabpanel" aria-labelledby="log-positive-likelihood-ratio-2-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-77-1.png" alt="Raincloud plot showing positive likelihood ratio across different methods" width="700"></p>
+<p>The positive likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a significant test result changes the odds
+of the alternative hypothesis versus the null hypothesis. A useful
+method has a positive likelihood ratio greater than 1 (or a log positive
+likelihood ratio greater than 0). A higher (log) positive likelihood
+ratio indicates a better method.</p>
+</div>
+<div class="fade tab-pane" id="log-negative-likelihood-ratio-2" role="tabpanel" aria-labelledby="log-negative-likelihood-ratio-2-tab">
+
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-78-1.png" alt="Raincloud plot showing negative likelihood ratio across different methods" width="700"></p>
+<p>The negative likelihood ratio is an overall summary measure of
+hypothesis testing performance that combines power and type I error
+rate. It indicates how much a non-significant test result changes the
+odds of the alternative hypothesis versus the null hypothesis. A useful
+method has a negative likelihood ratio less than 1 (or a log negative
+likelihood ratio less than 0). A lower (log) negative likelihood ratio
+indicates a better method.</p>
 </div>
 <div class="fade tab-pane" id="type-i-error-rate-2" role="tabpanel" aria-labelledby="type-i-error-rate-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-54-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-79-1.png" alt="Raincloud plot showing Type I Error rates across different methods" width="700"></p>
+<p>The type I error rate is the proportion of simulation runs in which
+the null hypothesis of no effect was incorrectly rejected when it was
+true. Ideally, this value should be close to the nominal level of
+5%.</p>
 </div>
 <div class="fade tab-pane" id="power-2" role="tabpanel" aria-labelledby="power-2-tab">
 
-<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-55-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p><img src="Results_no_bias_files/figure-html/unnamed-chunk-80-1.png" alt="Raincloud plot showing statistical power across different methods" width="700"></p>
+<p>The power is the proportion of simulation runs in which the null
+hypothesis of no effect was correctly rejected when the alternative
+hypothesis was true. A higher power indicates a better method.</p>
 </div>
 </div>
 </div>
@@ -2533,7 +4631,7 @@ outcome scale.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<p>This report was compiled on Thu Oct 09 15:38:43 2025 (UTC) using the
+<p>This report was compiled on Tue Oct 21 12:39:51 2025 (UTC) using the
 following computational environment</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -2560,30 +4658,30 @@ following computational environment</p>
 <span><span class="co">## other attached packages:</span></span>
 <span><span class="co">## [1] scales_1.4.0                   ggdist_3.3.3                  </span></span>
 <span><span class="co">## [3] ggplot2_4.0.0                  PublicationBiasBenchmark_0.1.0</span></span>
-<span><span class="co">## [5] devtools_2.4.6                 usethis_3.2.1                 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] sass_0.4.10          generics_0.1.4       xml2_1.4.0          </span></span>
-<span><span class="co">##  [4] stringi_1.8.7        httpcode_0.3.0       digest_0.6.37       </span></span>
-<span><span class="co">##  [7] magrittr_2.0.4       evaluate_1.0.5       grid_4.5.1          </span></span>
-<span><span class="co">## [10] RColorBrewer_1.1-3   pkgload_1.4.1        fastmap_1.2.0       </span></span>
-<span><span class="co">## [13] jsonlite_2.0.0       pkgbuild_1.4.8       sessioninfo_1.2.3   </span></span>
-<span><span class="co">## [16] crul_1.6.0           urltools_1.7.3.1     httr_1.4.7          </span></span>
-<span><span class="co">## [19] purrr_1.1.0          viridisLite_0.4.2    textshaping_1.0.3   </span></span>
-<span><span class="co">## [22] jquerylib_0.1.4      cli_3.6.5            rlang_1.1.6         </span></span>
-<span><span class="co">## [25] triebeard_0.4.1      ellipsis_0.3.2       remotes_2.5.0       </span></span>
-<span><span class="co">## [28] withr_3.0.2          cachem_1.1.0         yaml_2.3.10         </span></span>
-<span><span class="co">## [31] tools_4.5.1          memoise_2.0.1        kableExtra_1.4.0    </span></span>
-<span><span class="co">## [34] curl_7.0.0           vctrs_0.6.5          R6_2.6.1            </span></span>
-<span><span class="co">## [37] lifecycle_1.0.4      stringr_1.5.2        fs_1.6.6            </span></span>
-<span><span class="co">## [40] htmlwidgets_1.6.4    ragg_1.5.0           pkgconfig_2.0.3     </span></span>
-<span><span class="co">## [43] desc_1.4.3           osfr_0.2.9           pkgdown_2.1.3       </span></span>
-<span><span class="co">## [46] bslib_0.9.0          pillar_1.11.1        gtable_0.3.6        </span></span>
-<span><span class="co">## [49] glue_1.8.0           Rcpp_1.1.0           systemfonts_1.3.1   </span></span>
-<span><span class="co">## [52] xfun_0.53            tibble_3.3.0         rstudioapi_0.17.1   </span></span>
-<span><span class="co">## [55] knitr_1.50           farver_2.1.2         htmltools_0.5.8.1   </span></span>
-<span><span class="co">## [58] labeling_0.4.3       svglite_2.2.1        rmarkdown_2.30      </span></span>
-<span><span class="co">## [61] compiler_4.5.1       S7_0.2.0             distributional_0.5.0</span></span></code></pre>
+<span><span class="co">##  [1] generics_0.1.4       sandwich_3.1-1       sass_0.4.10         </span></span>
+<span><span class="co">##  [4] xml2_1.4.0           stringi_1.8.7        lattice_0.22-7      </span></span>
+<span><span class="co">##  [7] httpcode_0.3.0       digest_0.6.37        magrittr_2.0.4      </span></span>
+<span><span class="co">## [10] evaluate_1.0.5       grid_4.5.1           RColorBrewer_1.1-3  </span></span>
+<span><span class="co">## [13] fastmap_1.2.0        jsonlite_2.0.0       crul_1.6.0          </span></span>
+<span><span class="co">## [16] urltools_1.7.3.1     httr_1.4.7           purrr_1.1.0         </span></span>
+<span><span class="co">## [19] viridisLite_0.4.2    textshaping_1.0.4    jquerylib_0.1.4     </span></span>
+<span><span class="co">## [22] Rdpack_2.6.4         cli_3.6.5            rlang_1.1.6         </span></span>
+<span><span class="co">## [25] triebeard_0.4.1      rbibutils_2.3        withr_3.0.2         </span></span>
+<span><span class="co">## [28] cachem_1.1.0         yaml_2.3.10          tools_4.5.1         </span></span>
+<span><span class="co">## [31] memoise_2.0.1        kableExtra_1.4.0     curl_7.0.0          </span></span>
+<span><span class="co">## [34] vctrs_0.6.5          R6_2.6.1             clubSandwich_0.6.1  </span></span>
+<span><span class="co">## [37] zoo_1.8-14           lifecycle_1.0.4      stringr_1.5.2       </span></span>
+<span><span class="co">## [40] fs_1.6.6             htmlwidgets_1.6.4    ragg_1.5.0          </span></span>
+<span><span class="co">## [43] pkgconfig_2.0.3      desc_1.4.3           osfr_0.2.9          </span></span>
+<span><span class="co">## [46] pkgdown_2.1.3        bslib_0.9.0          pillar_1.11.1       </span></span>
+<span><span class="co">## [49] gtable_0.3.6         Rcpp_1.1.0           glue_1.8.0          </span></span>
+<span><span class="co">## [52] systemfonts_1.3.1    xfun_0.53            tibble_3.3.0        </span></span>
+<span><span class="co">## [55] rstudioapi_0.17.1    knitr_1.50           farver_2.1.2        </span></span>
+<span><span class="co">## [58] htmltools_0.5.8.1    labeling_0.4.3       svglite_2.2.1       </span></span>
+<span><span class="co">## [61] rmarkdown_2.30       compiler_4.5.1       S7_0.2.0            </span></span>
+<span><span class="co">## [64] distributional_0.5.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
