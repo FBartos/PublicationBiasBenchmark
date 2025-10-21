@@ -122,6 +122,7 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
   while (!done) {
     
     # skip files already present
+    osf_repo    <- osfr::osf_retrieve_node(osf_link)
     files_done  <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what), type = "file", n_max = Inf)
     local_files <- local_files[!basename(local_files) %in% files_done$name]
     

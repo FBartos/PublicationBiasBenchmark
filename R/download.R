@@ -94,8 +94,24 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
     if (!((rl == "" || substr(rl, 1, 1) == "y")))
       return(invisible(FALSE))
   }
-
-  osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress)
+  
+  # download the files
+  # to allow for recovery in the case of errors, delete the local files manually on overwrite 
+  if (overwrite) {
+    unlink(data_path)
+  }
+  
+  # add error catching and restart on failure  
+  done <- FALSE
+  while (!done) {
+    
+    # skip files already present
+    files_done  <- list.files(data_path)
+    osf_files   <- osf_files[!osf_files$name %in% current_files,]
+    
+    done <- try(osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
+    done <- !inherits(done, "try-error")
+  }
 
   return(invisible(TRUE))
 }
