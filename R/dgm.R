@@ -41,7 +41,7 @@
 #' simulate_dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
 #'                        bias = "high", QRP = "high", n_studies = 10))
 #'
-#' simulate_dgm("Stanley2017", list(environment = "Cohens_d", mean_effect = 0,
+#' simulate_dgm("Stanley2017", list(environment = "SMD", mean_effect = 0,
 #'                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
 #'                         sample_sizes = c(32,64,125,250,500)))
 #'
@@ -123,7 +123,7 @@ dgm.default <- function(dgm_name, settings) {
 #' validate_dgm_setting("Alinaghi2018", list(environment = "FE",
 #'                         mean_effect = 0, bias = "positive"))
 #'
-#' validate_dgm_setting("Stanley2017", list(environment = "Cohens_d",
+#' validate_dgm_setting("Stanley2017", list(environment = "SMD",
 #'                         mean_effect = 0,
 #'                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
 #'                         sample_sizes = c(32,64,125,250,500)))
