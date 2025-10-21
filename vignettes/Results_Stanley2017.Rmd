@@ -31,8 +31,8 @@ common_scale <- TRUE
 
 ```{r, include = FALSE}
 # compute average performance
-this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
-this_tables_replacement <- make_table_summary(results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],], common_scale = TRUE)
+this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "SMD"],], common_scale = TRUE)
+this_tables_replacement <- make_table_summary(results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "SMD"],], common_scale = TRUE)
 
 # add ranks
 this_rankings_conditional <- make_rank_summary(this_tables_conditional)
@@ -47,7 +47,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 `r paste0(conditional_text())`
 
 ```{r, include = FALSE}
-  this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],]
+  this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "SMD"],]
 ```
 ```{r, child = child_path("_results-tabs-figures.Rmd")}
 ```
@@ -58,7 +58,7 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 `r paste0(method_replacement_text())`
 
 ```{r, include = FALSE}
-  this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "Cohens_d"],]
+  this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "SMD"],]
 ```
 ```{r, child = child_path("_results-tabs-figures.Rmd")}
 ```
@@ -72,8 +72,8 @@ this_rankings_replacement <- make_rank_summary(this_tables_replacement)
 
 ```{r, include = FALSE}
 # compute average performance
-this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
-this_tables_replacement <- make_table_summary(results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],], common_scale = TRUE)
+this_tables_conditional <- make_table_summary(results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "logOR"],], common_scale = TRUE)
+this_tables_replacement <- make_table_summary(results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "logOR"],], common_scale = TRUE)
 
 # add ranks
 this_rankings_conditional <- make_rank_summary(this_tables_conditional)
@@ -89,7 +89,7 @@ The results below are conditional on method convergence.
 Note that the methods might differ in convergence rate and are therefore not compared on the same data sets.
 
 ```{r, include = FALSE}
-  this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],]
+  this_results <- results_conditional[results_conditional$condition_id %in% conditions$condition_id[conditions$environment == "logOR"],]
 ```
 ```{r, child = child_path("_results-tabs-figures.Rmd")}
 ```
@@ -100,7 +100,7 @@ Note that the methods might differ in convergence rate and are therefore not com
 
 
 ```{r, include = FALSE}
-  this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "LogOR"],]
+  this_results <- results_replacement[results_replacement$condition_id %in% conditions$condition_id[conditions$environment == "logOR"],]
 ```
 ```{r, child = child_path("_results-tabs-figures.Rmd")}
 ```
