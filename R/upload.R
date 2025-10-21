@@ -116,7 +116,18 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
     osf_dir <- osfr::osf_ls_files(osf_repo, path = dgm_name, type = "folder")
     osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
   }
-  osfr::osf_upload(osf_dir, path = local_files, progress = progress)
+
+  # add error catching and restart on failure  
+  done <- FALSE
+  while (!done) {
+    
+    # skip files already present
+    files_done  <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what), type = "file", n_max = Inf)
+    local_files <- local_files[!basename(local_files) %in% files_done$name]
+    
+    done <- try(osfr::osf_upload(osf_dir, path = local_files, progress = progress))
+    done <- !inherits(done, "try-error")
+  }
 
   return(invisible(TRUE))
 }
