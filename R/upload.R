@@ -15,8 +15,8 @@
 #' from dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #' @param overwrite Logical indicating whether to overwrite existing files on OSF.
 #' Defaults to \code{TRUE} for performance measures and \code{FALSE} for results and datasets
-#' @param progress Logical indicating whether to show progress uploading files.
-#' Defaults to \code{TRUE}.
+#' @param progress Logical indicating whether to show progress uploading files. Defaults to \code{TRUE}.
+#' @param max_try Integet specifying how many times should the function attempt reconnecting to OSF upon failure.
 #'
 #' @return \code{TRUE} if the upload was successful, otherwise an error is raised.
 #'
@@ -32,24 +32,24 @@ NULL
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .upload_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress)
+upload_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .upload_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .upload_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress)
+upload_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .upload_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE) {
-  .upload_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress)
+upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE, max_try = 10) {
+  .upload_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 
-.upload_dgm_fun <- function(dgm_name, what, path, overwrite, progress) {
+.upload_dgm_fun <- function(dgm_name, what, path, overwrite, progress, max_try) {
 
   if (is.null(path))
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
@@ -117,17 +117,22 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
     osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
   }
 
-  # add error catching and restart on failure  
-  done <- FALSE
-  while (!done) {
-    
+  # add error catching and restart on failure
+  done      <- FALSE
+  iteration <- 0
+  while (!done && iteration < max_try) {
+
     # skip files already present
     osf_repo    <- osfr::osf_retrieve_node(osf_link)
     files_done  <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what), type = "file", n_max = Inf)
     local_files <- local_files[!basename(local_files) %in% files_done$name]
-    
-    done <- try(osfr::osf_upload(osf_dir, path = local_files, progress = progress))
-    done <- !inherits(done, "try-error")
+
+    if (length(local_files) == 0)
+      break
+
+    done      <- try(osfr::osf_upload(osf_dir, path = local_files, progress = progress))
+    done      <- !inherits(done, "try-error")
+    iteration <- iteration + 1
   }
 
   return(invisible(TRUE))

@@ -11,16 +11,24 @@ download_dgm_datasets(
   dgm_name,
   path = NULL,
   overwrite = FALSE,
-  progress = TRUE
+  progress = TRUE,
+  max_try = 10
 )
 
-download_dgm_results(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE)
+download_dgm_results(
+  dgm_name,
+  path = NULL,
+  overwrite = FALSE,
+  progress = TRUE,
+  max_try = 10
+)
 
 download_dgm_measures(
   dgm_name,
   path = NULL,
   overwrite = FALSE,
-  progress = TRUE
+  progress = TRUE,
+  max_try = 10
 )
 }
 \arguments{
@@ -36,6 +44,8 @@ Defaults to \code{FALSE}, which means only missing files will be downloaded.}
 
 \item{progress}{Logical indicating whether to show progress downloading files.
 Defaults to \code{TRUE}.}
+
+\item{max_try}{Integet specifying how many times should the function attempt reconnecting to OSF upon failure.}
 }
 \value{
 \code{TRUE} if the download was successful, otherwise an error is raised.

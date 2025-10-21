@@ -7,11 +7,29 @@
 \alias{upload_dgm_measures}
 \title{Upload Datasets of a DGM}
 \usage{
-upload_dgm_datasets(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE)
+upload_dgm_datasets(
+  dgm_name,
+  path = NULL,
+  overwrite = FALSE,
+  progress = TRUE,
+  max_try = 10
+)
 
-upload_dgm_results(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE)
+upload_dgm_results(
+  dgm_name,
+  path = NULL,
+  overwrite = FALSE,
+  progress = TRUE,
+  max_try = 10
+)
 
-upload_dgm_measures(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE)
+upload_dgm_measures(
+  dgm_name,
+  path = NULL,
+  overwrite = TRUE,
+  progress = TRUE,
+  max_try = 10
+)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to upload.}
@@ -24,8 +42,9 @@ from dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 \item{overwrite}{Logical indicating whether to overwrite existing files on OSF.
 Defaults to \code{TRUE} for performance measures and \code{FALSE} for results and datasets}
 
-\item{progress}{Logical indicating whether to show progress uploading files.
-Defaults to \code{TRUE}.}
+\item{progress}{Logical indicating whether to show progress uploading files. Defaults to \code{TRUE}.}
+
+\item{max_try}{Integet specifying how many times should the function attempt reconnecting to OSF upon failure.}
 }
 \value{
 \code{TRUE} if the upload was successful, otherwise an error is raised.

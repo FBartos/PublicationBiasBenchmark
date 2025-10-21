@@ -13,6 +13,7 @@
 #' Defaults to \code{FALSE}, which means only missing files will be downloaded.
 #' @param progress Logical indicating whether to show progress downloading files.
 #' Defaults to \code{TRUE}.
+#' @param max_try Integet specifying how many times should the function attempt reconnecting to OSF upon failure.
 #'
 #' @return \code{TRUE} if the download was successful, otherwise an error is raised.
 #'
@@ -27,24 +28,24 @@ NULL
 
 #' @rdname download_dgm
 #' @export
-download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress)
+download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress)
+download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE) {
-  .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress)
+download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 
-.download_dgm_fun <- function(dgm_name, what, path, overwrite, progress) {
+.download_dgm_fun <- function(dgm_name, what, path, overwrite, progress, max_try) {
 
   if (is.null(path))
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
@@ -94,23 +95,28 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
     if (!((rl == "" || substr(rl, 1, 1) == "y")))
       return(invisible(FALSE))
   }
-  
+
   # download the files
-  # to allow for recovery in the case of errors, delete the local files manually on overwrite 
+  # to allow for recovery in the case of errors, delete the local files manually on overwrite
   if (overwrite) {
     unlink(data_path)
   }
-  
-  # add error catching and restart on failure  
-  done <- FALSE
-  while (!done) {
-    
+
+  # add error catching and restart on failure
+  done      <- FALSE
+  iteration <- 0
+  while (!done && iteration < max_try) {
+
     # skip files already present
     files_done  <- list.files(data_path)
     osf_files   <- osf_files[!osf_files$name %in% current_files,]
-    
-    done <- try(osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
-    done <- !inherits(done, "try-error")
+
+    if (length(osf_files) == 0)
+      break
+
+    done      <- try(osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
+    done      <- !inherits(done, "try-error")
+    iteration <- iteration + 1
   }
 
   return(invisible(TRUE))
