@@ -2,13 +2,13 @@ citHeader("To cite PublicationBiasBenchmark in publications use:")
 
 citEntry(
   entry    = "Unpublished",
-  title    = "Rethinking simulation studies: Living synthetic benchmarks for cumulative methodological research",
+  title    = "Living synthetic benchmarks: A neutral and cumulative framework for simulation studies",
   author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
   year     = "2025",
   note     = "Working paper",
   textVersion = paste(
     "Bartoš, F., Pawel, S., & Siepe, B. S. (2025).",
-    "Rethinking simulation studies: Living synthetic benchmarks for cumulative methodological research.",
+    "Living synthetic benchmarks: A neutral and cumulative framework for simulation studies.",
     "Working paper"
   ),
   header   = "For the methodology of living synthetic benchmarks please cite:"
