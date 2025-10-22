@@ -76,4 +76,4 @@ method_settings.mean <- function(method_name) {
 
 #' @export
 method_extra_columns.mean <- function(method_name)
-  c()
+  character()

@@ -157,14 +157,14 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   sigH_List       <- c(0, 0.0625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(5,10,20,40,80)
-  param1 <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+  param1 <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType,stringsAsFactors = FALSE))
 
   simulationType   <- "logOR"
   effectSize_List  <- c(0.00, 0.03, 0.06)
   sigH_List        <- c(0.006)
   PubBias_List     <- c(0.0, 0.5)
   MetaStudyN_List  <- c(5,10,20,40,80)
-  param2           <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+  param2           <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType,stringsAsFactors = FALSE))
 
   paramONE <- rbind(param1,param2)
 
@@ -174,14 +174,14 @@ dgm_conditions.Stanley2017 <- function(dgm_name) {
   sigH_List       <- c(0, 0.0625, 0.125, 0.25, 0.50)
   PubBias_List    <- c(0, 0.5, 0.75)
   MetaStudyN_List <- c(100,200,400,800)
-  param3          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+  param3          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType,stringsAsFactors = FALSE))
 
   simulationType  <- "logOR"
   effectSize_List <- c(0.00, 0.03, 0.06)
   sigH_List       <- c(0.006)
   PubBias_List    <- c(0.0, 0.5)
   MetaStudyN_List <- c(100,200,400,800)
-  param4          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType))
+  param4          <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List, SimType=simulationType,stringsAsFactors = FALSE))
 
   paramTWO <- rbind(param3,param4)
 

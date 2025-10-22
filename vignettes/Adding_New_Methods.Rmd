@@ -190,7 +190,7 @@ method_extra_columns.PET <- function(method_name) {
 ```
 The column names must match exactly the additional columns that your main function returns. These columns will be included in the final output data frame alongside the required columns and guarantee that the results can be merged in case the method fails with an error.
 
-Use `character(0)` or `c()` if your method has no extra columns
+Use `character(0)` if your method has no extra columns
 
 ## Using Your New Method
 

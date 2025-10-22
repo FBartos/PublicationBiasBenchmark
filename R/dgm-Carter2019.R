@@ -127,7 +127,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
   tau_set    <- c(0, .2, .4)							  # heterogeneity; assumed to follow a normal distribution
 
   # params stores all possible combinations of experimental factors
-  paramsONE <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set)
+  paramsONE <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set, stringsAsFactors = FALSE)
 
 
   k_set      <- c(200, 400, 800)				  	# number of studies in each MA
@@ -137,7 +137,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
   tau_set    <- c(0, .2, .4)							  # heterogeneity; assumed to follow a normal distribution
 
   # params stores all possible combinations of experimental factors
-  paramsTWO <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set)
+  paramsTWO <- expand.grid(k=k_set, delta=delta_set, qrpEnv=qrpEnv_Set, censor=censor_set, tau=tau_set, stringsAsFactors = FALSE)
 
   # rename parameters
   settings <- rbind(paramsONE, paramsTWO)

@@ -70,7 +70,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     # Create all possible method pairs
     method_pairs <- expand.grid(
       method_a = paste0(method, "-", method_setting),
-      method_b = paste0(method, "-", method_setting)
+      method_b = paste0(method, "-", method_setting),
+      stringsAsFactors = FALSE
     )
     # Remove self-comparisons
     comparisons_to_compute <- method_pairs[method_pairs$method_a != method_pairs$method_b, ]
@@ -85,7 +86,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     # Create all possible method pairs
     method_pairs <- expand.grid(
       method_a = paste0(method, "-", method_setting),
-      method_b = paste0(method, "-", method_setting)
+      method_b = paste0(method, "-", method_setting),
+      stringsAsFactors = FALSE
     )
     # Remove self-comparisons
     method_pairs <- method_pairs[method_pairs$method_a != method_pairs$method_b, ]

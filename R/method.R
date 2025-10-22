@@ -12,6 +12,7 @@
 #' @param settings Either a character identifying a method version or list
 #' containing method-specific settings. An emty input will result in running the
 #' default (first implemented) version of the method.
+#' @param silent Logical indicating whether error messages from the method should be suppressed.
 #'
 #' @section Output Structure:
 #' The returned data frame follows a standardized schema that downstream
@@ -44,7 +45,7 @@
 #' # Example usage with PETPEESE method
 #' # result <- method("PETPEESE", data)
 #' @export
-run_method <- function(method_name, data, settings = NULL) {
+run_method <- function(method_name, data, settings = NULL, silent = FALSE) {
 
   # Allow calling methods with pre-specified `settings`
   if (length(settings) == 1 && is.character(settings)) {
@@ -58,7 +59,7 @@ run_method <- function(method_name, data, settings = NULL) {
   }
 
   # Call the method with the pre-specified settings
-  results <- try(method(method_name, data, settings))
+  results <- try(method(method_name, data, settings), silent = silent)
 
   # In case of error, return the error message and append the method specific columns
   if (inherits(results, "try-error")) {

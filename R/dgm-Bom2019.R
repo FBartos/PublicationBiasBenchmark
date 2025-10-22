@@ -122,13 +122,13 @@ dgm_conditions.Bom2019 <- function(dgm_name) {
   MetaStudyN_List <- c(5, 10, 20, 40, 80)
   effectSize_List <- c(0, 1)
   PubBias_List    <- c(0, 25, 50, 75) / 100 # already divided by 100 in contrast to Hong and Reed
-  paramONE        <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List))
+  paramONE        <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List,stringsAsFactors = FALSE))
 
   sigH_List       <- c(0,0.125,0.25,0.5,1.0,2.0,4.0);
   MetaStudyN_List <- c(100, 200, 400, 800);
   effectSize_List <- c(0, 1);
   PubBias_List    <- c(0, 25, 50, 75) / 100
-  paramTWO <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List))
+  paramTWO <- as.data.frame(expand.grid(effectSize=effectSize_List, sigH=sigH_List, PubBias=PubBias_List, m=MetaStudyN_List,stringsAsFactors = FALSE))
 
   param <- rbind(paramONE, paramTWO)
 

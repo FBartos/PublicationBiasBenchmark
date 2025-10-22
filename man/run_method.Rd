@@ -4,7 +4,7 @@
 \alias{run_method}
 \title{Generic method function for publication bias correction}
 \usage{
-run_method(method_name, data, settings = NULL)
+run_method(method_name, data, settings = NULL, silent = FALSE)
 }
 \arguments{
 \item{method_name}{Character string specifying the method type}
@@ -14,6 +14,8 @@ run_method(method_name, data, settings = NULL)
 \item{settings}{Either a character identifying a method version or list
 containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.}
+
+\item{silent}{Logical indicating whether error messages from the method should be suppressed.}
 }
 \value{
 A data frame with standardized method results

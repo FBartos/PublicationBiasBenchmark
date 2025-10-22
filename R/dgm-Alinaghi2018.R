@@ -35,17 +35,17 @@
 #' 10 estimates, modeling the common scenario where multiple estimates per study are
 #' available. In this environment, effect estimates and standard errors are simulated to
 #' be more similar within studies than across studies, and publication selection targets
-#' the study rather than individual estimates (a study must have at least 7 out of 10 
+#' the study rather than individual estimates (a study must have at least 7 out of 10
 #' estimates that are significant or correctly signed.).
 #'
-#' A distinctive feature of Alinaghi & Reed's experiments is that the number of 
+#' A distinctive feature of Alinaghi & Reed's experiments is that the number of
 #' effect size estimates  is fixed before publication selection, making the meta-analyst's
 #' sample size endogenous and affected by the effect size. Large population effects
 #' are subject to less publication selection, as most estimates satisfy the selection
-#' criteria (statistical significance or correct sign). The sample size of all primary 
-#' studies is fixed at 100 observations. (Neither the number of estimates nor the sample 
+#' criteria (statistical significance or correct sign). The sample size of all primary
+#' studies is fixed at 100 observations. (Neither the number of estimates nor the sample
 #' size of primary studies can be changed in the current implementation of the function.)
-#' 
+#'
 #' Another feature is the separation of statistical significance and sign of the estimated
 #' effect as criteria for selection. Significant/correctly-signed estimates are always
 #' "published," while insignificant/wrong-signed estimates have only a 10% chance of
@@ -125,7 +125,8 @@ dgm_conditions.Alinaghi2018 <- function(dgm_name) {
   settings <- as.data.frame(expand.grid(
     environment = environment,
     mean_effect = mean_effect,
-    bias        = bias
+    bias        = bias,
+    stringsAsFactors = FALSE
   ))
 
   # attach setting id

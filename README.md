@@ -19,10 +19,9 @@ All datasets and results are hosted on OSF:
 
 If you use this package in your research, please cite:
 
-> Bartoš, F., Pawel, S., Siepe, B. S. (2025). Rethinking Simulation
-> Studies: Living Synthetic Benchmarks for Cumulative Methodological
-> Research. Working paper.
-> <https://github.com/FBartos/PublicationBiasBenchmark>
+> Bartoš, F., Pawel, S., Siepe, B. S. (2025). Living synthetic
+> benchmarks: A neutral and cumulative framework for simulation studies.
+> Working paper. <https://github.com/FBartos/PublicationBiasBenchmark>
 
 A BibTeX entry is given by
 
@@ -30,7 +29,7 @@ A BibTeX entry is given by
 @misc{Bartos2025,
   year = {2025},
   author = {Franti{\v{s}}ek Barto{\v{s}} and Samuel Pawel and Bj{\"o}rn S. Siepe},
-  title = {Rethinking Simulation Studies: {L}iving Synthetic Benchmarks for Cumulative Methodological Research},
+  title = {Living synthetic benchmarks: {A} neutral and cumulative framework for simulation studies},
   url = {https://github.com/FBartos/PublicationBiasBenchmark},
   note = {Working paper}
 }
