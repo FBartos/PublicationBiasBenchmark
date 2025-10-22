@@ -34,3 +34,6 @@ result <- run_method("WLS", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

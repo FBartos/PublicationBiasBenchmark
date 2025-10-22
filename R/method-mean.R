@@ -14,6 +14,8 @@
 #'   \item{\code{"default"}}{No settings}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
 #'
 #' @examples
 #' # Generate some example data

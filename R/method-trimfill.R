@@ -19,6 +19,9 @@
 #'        (\code{estimator = "L0"}).}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

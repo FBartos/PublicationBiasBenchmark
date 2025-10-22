@@ -34,6 +34,8 @@
 #'   three-level specification whenever \code{"study_ids"} are supplied with the data}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
 #'
 #' @examples
 #' \dontrun{

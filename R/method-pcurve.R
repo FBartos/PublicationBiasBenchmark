@@ -22,6 +22,9 @@
 #'   \item{\code{"default"}}{no options}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

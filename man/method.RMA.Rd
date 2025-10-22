@@ -44,3 +44,6 @@ result <- run_method("RMA", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

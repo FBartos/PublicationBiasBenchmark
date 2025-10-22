@@ -18,6 +18,9 @@
 #'
 #' @return Data frame with EK results
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

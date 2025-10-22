@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 This vignette explains how to compute and store results for a new publication bias correction method across all benchmark conditions and repetitions.
 This is a crucial step after implementing a new method (see [Adding New Methods](Adding_New_Methods.html)) to make it part of the benchmark comparisons.
-Once you compute and store the results, you can Compute Method Measures using the [Computing Method Measures](Computing_Method_Measures.html) vignette,
+Once you compute and store the results, you can evaluate the method's performance using the [Computing Method Measures](Computing_Method_Measures.html) vignette,
 however, the package maintainers will update the precomputed measures upon your submission of the new method accompanied by the computed method results.
 
 ## Overview
@@ -119,9 +119,7 @@ set.seed(1)
 # Process each DGM
 for (dgm_name in dgm_names) {
   
-  message("\n", "="*60)
   message("Processing DGM: ", dgm_name)
-  message("="*60)
   
   # Get condition information
   conditions <- dgm_conditions(dgm_name)
@@ -206,14 +204,12 @@ for (dgm_name in dgm_names) {
     sessioninfo_file
   )
   
-  # Detailed session info (if sessioninfo package is available)
-  if (requireNamespace("sessioninfo", quietly = TRUE)) {
+  # Detailed session info (using the sessioninfo package)
     session_log_file <- file.path(
       metadata_dir,
       paste0(method_name, "-", method_setting, "-session.log")
     )
     sessioninfo::session_info(to_file = session_log_file)
-  }
   
   message("Session info saved to: ", metadata_dir)
 }
@@ -223,10 +219,9 @@ message("All computations completed!")
 
 ## Contributing to the Package
 
-The package maintainers will compute and update precomputed measures when you contribute a new method. If you want to contribute a new method:
+The package maintainers will compute and update precomputed measures based on your computed results when you contribute a new method. If you want to contribute a new method:
 
 1. Implement the method following the [Adding New Methods](Adding_New_Methods.html) guidelines
-2. Compute results for all DGMs (see [Computing Method Results](Computing_Method_Results.html))
+2. Compute results for all DGMs (desribed in this vignette)
 3. Submit a pull request with your method implementation and results
 4. Package maintainers will compute the measures and integrate them into the benchmark
-

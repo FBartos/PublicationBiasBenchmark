@@ -154,7 +154,7 @@ validate_dgm_setting <- function(dgm_name, settings) {
 #' `condition_id` column which maps settings id to the corresponding settings.
 #'
 #' @examples
-#' dgm_conditions("Carter2019")
+#' head(dgm_conditions("Carter2019"))
 #' get_dgm_condition("Carter2019", condition_id = 1)
 #'
 #' head(dgm_conditions("Alinaghi2018"))

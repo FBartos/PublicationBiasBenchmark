@@ -35,3 +35,6 @@ result <- run_method("PET", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

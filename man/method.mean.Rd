@@ -36,3 +36,6 @@ result <- run_method("mean", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

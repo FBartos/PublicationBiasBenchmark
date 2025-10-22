@@ -22,6 +22,9 @@
 #'
 #' @return Data frame with PET-PEESE results
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

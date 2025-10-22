@@ -225,8 +225,8 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
   if (!dir.exists(results_path))
     stop(sprintf("Computed results of the specified dgm '%1$s' cannot be locatated at the specified location '%2$s'. You might need to dowload the computed results using the 'download_dgm_results()' function first.", dgm_name, path))
 
-  # return ithe specific methods results or all results
-  if (!is.null(method) && length(method) == 1) {
+  # return the specific methods results or all results
+  if (length(method) == 1 && length(method_setting) == 1) {
 
     # construct the method-method_setting filename
     method_filename <- paste0(method, "-", method_setting, ".csv")
@@ -250,10 +250,15 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
 
   }
 
-  # subset the condition / repetition if specified
-  # return the complete file if repetition_id is not specified
+  # subset by method, settings, condition, repetition if specified
+  if (!is.null(method)) {
+    results_file <- results_file[results_file$method %in% method, ]
+  }
+  if (!is.null(method_setting)) {
+    results_file <- results_file[results_file$method_setting %in% method_setting, ]
+  }
   if (!is.null(condition_id)) {
-    results_file <- results_file[results_file$condition_id %in% condition_id, ]
+    results_file <- results_file[results_file$condition %in% condition_id, ]
   }
   if (!is.null(repetition_id)) {
     results_file <- results_file[results_file$repetition_id %in% repetition_id, ]
@@ -306,7 +311,7 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
     stop(sprintf("Computed measures of the specified dgm '%1$s' cannot be located at the specified location '%2$s'. You might need to download the computed measures using the 'download_dgm_measures()' function first.", dgm_name, path))
 
   # return the specific measure results or all measures
-  if (!is.null(measure) && length(measure) == 1) {
+  if (length(measure) == 1) {
 
     # check that the corresponding file was downloaded
     file_name <- paste0(measure, if(replacement) "-replacement", ".csv")
@@ -344,7 +349,7 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
 
   }
 
-  # subset by method, condition, repetition if specified
+  # subset by method, settings, condition if specified
   if (!is.null(method)) {
     measures_file <- measures_file[measures_file$method %in% method, ]
   }

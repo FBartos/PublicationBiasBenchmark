@@ -44,3 +44,6 @@ result <- run_method("pcurve", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

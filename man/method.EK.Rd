@@ -40,3 +40,6 @@ result <- run_method("EK", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

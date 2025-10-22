@@ -16,6 +16,9 @@
 #'
 #' @return Data frame with AK results
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @details
 #' The following settings are implemented \describe{
 #'   \item{\code{"default"}}{Uses AK1 estimator (symmetric selection)}

@@ -36,7 +36,6 @@ Before computing measures, ensure that:
 
 1. Method results have been computed and stored for all DGMs (see [Computing Method Results](Computing_Method_Results.html))
 2. Results files are in the correct directory structure
-3. You have the `PublicationBiasBenchmark` package loaded
 
 ## Performance Measures
 
@@ -47,11 +46,13 @@ Each measure is computed separately for each method-setting-condition combinatio
 
 Some methods may fail to converge for certain datasets. The **method replacement** strategy handles these cases by:
 
-1. Computing measures only from successfully converged cases
-2. For failed cases, substituting results from a fallback method
-3. Ensuring fair comparison across all conditions
+1. For each condition, identifying cases where the method fails to converge
+2. For the failed cases, substituting results from a fallback method(s)
+3. Computing measures for the condition
 
 For example, if `RMA` fails to converge, it might be replaced with simpler `FMA` (fixed-effects) results for those specific cases.
+Method replacement allows us to mimic an analyst analyzing data who would choose a different method upon a method failure. 
+See [this article](https://doi.org/10.1080/00031305.2025.2540002) for a detailed description of different non-convergence handling strategies in simulation studies.
 
 ## Computing Measures: Step-by-Step Guide
 
@@ -233,3 +234,5 @@ The package maintainers will compute and update precomputed measures when you co
 3. Submit a pull request with your method implementation and results
 4. Package maintainers will compute the measures and integrate them into the benchmark
 
+Do you want the benchmark to include additional measures or evaluate different parameters? Open an issue/contact the benchmark maintainers. 
+We will be happy to incorporate your suggestions!

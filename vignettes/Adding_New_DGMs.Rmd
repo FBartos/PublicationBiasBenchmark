@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 This vignette explains how to add new data-generating mechanisms (DGMs) to the `PublicationBiasBenchmark` package. In the following, we will use the `no_bias` DGM as an example.
-(See the [Using Precomputed Measures](Using_Precomputed_Measures.html) vignette for details on working with the raw benchmarking results.)
+(See the [Using Presimulated Datasets](Using_Presimulated_Datasets.html) vignette for details on working with the already stored simulated datasets.)
 
 ## Overview
 
@@ -205,11 +205,13 @@ data <- simulate_dgm("no_bias", list(
   heterogeneity = 0.1,
   n_studies = 50
 ))
+head(data)
 
 # Use with pre-defined conditions
-data <- simulate_dgm("no_bias", condition_id = 1)
+data <- simulate_dgm("no_bias", settings = 1)
+head(data)
 
 # View available conditions
 conditions <- dgm_conditions("no_bias")
-print(conditions)
+conditions
 ```

@@ -41,3 +41,6 @@ result <- run_method("trimfill", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

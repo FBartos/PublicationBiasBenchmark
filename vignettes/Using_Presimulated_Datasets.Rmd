@@ -80,7 +80,7 @@ download_dgm_datasets("Stanley2017")
 
 ### Specifying Download Location
 
-By default, datasets are downloaded to the package's default simulation directory. You can change this location using the package options:
+By default, datasets are downloaded to your's project default simulation directory. You can change this location using the package options:
 
 ```{r, eval=FALSE}
 # Set custom download directory
@@ -90,7 +90,7 @@ PublicationBiasBenchmark.options(simulation_directory = "/path/to/your/directory
 download_dgm_datasets("Stanley2017")
 ```
 
-The datasets are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once, unless you want to update to a newer version.
+The datasets are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once.
 
 ## Retrieving Presimulated Datasets
 

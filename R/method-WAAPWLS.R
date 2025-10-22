@@ -14,6 +14,9 @@
 #'
 #' @return Data frame with WAAPWLS results
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

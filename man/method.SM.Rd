@@ -47,3 +47,6 @@ result <- run_method("SM", data, "3PSM")
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

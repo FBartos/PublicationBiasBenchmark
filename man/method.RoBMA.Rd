@@ -58,3 +58,6 @@ result <- run_method("RoBMA", data)
 print(result)
 }
 }
+\references{
+\insertAllCited{}
+}

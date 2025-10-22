@@ -57,6 +57,8 @@
 #' Each metric function returns a numeric value representing the performance measure.
 #' Each MCSE function returns a numeric value representing the Monte Carlo standard error.
 #'
+#' @references
+#' \insertAllCited{}
 #'
 #' @examples
 #' # Generate some example data

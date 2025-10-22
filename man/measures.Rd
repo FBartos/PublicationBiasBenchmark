@@ -162,3 +162,6 @@ coverage_est <- coverage(ci_lower, ci_upper, theta_true)
 coverage_se <- coverage_mcse(ci_lower, ci_upper, theta_true)
 
 }
+\references{
+\insertAllCited{}
+}

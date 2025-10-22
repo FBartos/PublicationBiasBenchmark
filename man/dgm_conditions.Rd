@@ -23,7 +23,7 @@ This function returns the list of pre-specified settings for a given Data
 Generating Mechanism (DGM).
 }
 \examples{
-dgm_conditions("Carter2019")
+head(dgm_conditions("Carter2019"))
 get_dgm_condition("Carter2019", condition_id = 1)
 
 head(dgm_conditions("Alinaghi2018"))

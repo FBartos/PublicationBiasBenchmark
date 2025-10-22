@@ -18,6 +18,8 @@
 #'        \code{study_ids} is specified in the data}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
 #'
 #' @examples
 #' # Generate some example data

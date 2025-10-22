@@ -13,6 +13,9 @@
 #'
 #' @return Data frame with PEESE results
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

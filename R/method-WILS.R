@@ -12,7 +12,7 @@
 #' @param settings List of method settings (see Details)
 #'
 #' @return Data frame with WILS results
-#' 
+#'
 #' @details
 #' The WILS method has two implementation versions based on Stanley & Doucouliagos (2024).
 #' The following settings are implemented \describe{
@@ -22,7 +22,10 @@
 #'   \item{\code{"example"}}{The example version consistently uses residuals from the
 #'        t ~ Precision regression to identify studies to remove across all iterations.}
 #' }
-#' 
+#'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(
@@ -126,7 +129,7 @@ method_extra_columns.WILS <- function(method_name)
     iteration <- iteration + 1
 
     # Determine sorting criterion based on iteration and version
-    if (version == "example") {      
+    if (version == "example") {
       sort_by_ESS <- FALSE # Example version: always sort by residuals
     } else {
       sort_by_ESS <- (iteration > 1) # Simulation version: first iteration by residuals, subsequent by ESS

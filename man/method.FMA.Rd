@@ -40,3 +40,6 @@ result <- run_method("FMA", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

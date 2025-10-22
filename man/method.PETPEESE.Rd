@@ -44,3 +44,6 @@ result <- run_method("PETPEESE", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

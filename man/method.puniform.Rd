@@ -43,3 +43,6 @@ result <- run_method("puniform", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

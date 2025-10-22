@@ -45,3 +45,6 @@ result <- run_method("WILS", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

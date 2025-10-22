@@ -25,6 +25,9 @@
 #'        and direction of the effect)}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

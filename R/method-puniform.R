@@ -21,6 +21,9 @@
 #'   \item{\code{"star"}}{P-uniform star version of the method.}
 #' }
 #'
+#' @references
+#'  \insertAllCited{}
+#'
 #' @examples
 #' # Generate some example data
 #' data <- data.frame(

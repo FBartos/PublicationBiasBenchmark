@@ -36,3 +36,6 @@ result <- run_method("WAAPWLS", data)
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}

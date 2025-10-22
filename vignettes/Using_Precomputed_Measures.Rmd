@@ -47,8 +47,7 @@ The precomputed results are organized by data-generating mechanism (DGM), with e
 
 ## Available Data-Generating Mechanisms
 
-The package includes precomputed measures for several DGMs. See the [Adding New DGMs](Adding_New_DGMs.html) vignette for details on the individual DGMs and their simulation designs.
-
+The package includes precomputed measures for several DGMs.
 You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
 
 ```{r, eval=FALSE}
@@ -66,7 +65,8 @@ Before accessing the precomputed measures, you need to download them from the pa
 download_dgm_measures("Stanley2017")
 ```
 
-The measures are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once, unless you want to update to a newer version.
+The measures are downloaded to a local cache directory and are automatically available for subsequent analysis. 
+You only need to download them once, unless the benchmark measures were updated with a new method (in that case, you need to specify `overwrite = TRUE` argument).
 
 ## Retrieving Precomputed Measures
 
@@ -79,10 +79,11 @@ You can retrieve measures for a specific method and condition:
 ```{r, eval=FALSE}
 # Retrieve bias measures for RMA method in condition 1
 retrieve_dgm_measures(
-  dgm = "Stanley2017",
-  measure = "bias",
-  method = "RMA",
-  condition_id = 1
+  dgm            = "Stanley2017",
+  measure        = "bias",
+  method         = "RMA",
+  method_setting = "default",
+  condition_id   = 1
 )   
 ```
 
@@ -99,10 +100,9 @@ df <- retrieve_dgm_measures("Stanley2017")
 
 This returns a comprehensive data frame with columns:
 
-- `dgm`: Data-generating mechanism name
-- `condition_id`: Simulation condition identifier
 - `method`: Publication bias correction method name
 - `method_setting`: Specific method configuration
+- `condition_id`: Simulation condition identifier
 - `bias`, `bias_mcse`, `rmse`, `rmse_mcse`, ...: Performance measures and their Monte Carlo standard errors
 
 ### Filtering by Method or Setting
@@ -112,7 +112,7 @@ You can also filter by method name:
 ```{r, eval=FALSE}
 # Retrieve all measures for PET-PEESE method
 pet_peese_results <- retrieve_dgm_measures(
-  dgm = "Stanley2017",
+  dgm    = "Stanley2017",
   method = "PETPEESE"
 )
 ```

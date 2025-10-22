@@ -18,12 +18,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: František Bartoš \email{f.bartos96@gmail.com} (\href{https://orcid.org/0000-0002-0018-5573}{ORCID})
+\strong{Maintainer}: Franti<U+0161>ek Barto<U+0161> \email{f.bartos96@gmail.com} (\href{https://orcid.org/0000-0002-0018-5573}{ORCID})
 
 Authors:
 \itemize{
   \item Samuel Pawel (\href{https://orcid.org/0000-0003-2779-320X}{ORCID})
-  \item Björn S. Siepe (\href{https://orcid.org/0000-0002-9558-4648}{ORCID})
+  \item Bj<U+00F6>rn S. Siepe (\href{https://orcid.org/0000-0002-9558-4648}{ORCID})
 }
 
 }

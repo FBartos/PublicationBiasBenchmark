@@ -49,3 +49,6 @@ result <- run_method("AK", data, "default")
 print(result)
 
 }
+\references{
+\insertAllCited{}
+}
