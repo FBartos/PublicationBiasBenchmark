@@ -87,7 +87,7 @@ publication bias correction method across all benchmark conditions and
 repetitions. This is a crucial step after implementing a new method (see
 <a href="Adding_New_Methods.html">Adding New Methods</a>) to make it
 part of the benchmark comparisons. Once you compute and store the
-results, you can Compute Method Measures using the <a href="Computing_Method_Measures.html">Computing Method Measures</a>
+results, you can evaluate the method’s performance using the <a href="Computing_Method_Measures.html">Computing Method Measures</a>
 vignette, however, the package maintainers will update the precomputed
 measures upon your submission of the new method accompanied by the
 computed method results.</p>
@@ -208,9 +208,7 @@ scheduler on a cluster.</p>
 <span><span class="co"># Process each DGM</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">dgm_name</span> <span class="kw">in</span> <span class="va">dgm_names</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"\n"</span>, <span class="st">"="</span><span class="op">*</span><span class="fl">60</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Processing DGM: "</span>, <span class="va">dgm_name</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"="</span><span class="op">*</span><span class="fl">60</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># Get condition information</span></span>
 <span>  <span class="va">conditions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dgm_conditions.html">dgm_conditions</a></span><span class="op">(</span><span class="va">dgm_name</span><span class="op">)</span></span>
@@ -295,14 +293,12 @@ scheduler on a cluster.</p>
 <span>    <span class="va">sessioninfo_file</span></span>
 <span>  <span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co"># Detailed session info (if sessioninfo package is available)</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"sessioninfo"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Detailed session info (using the sessioninfo package)</span></span>
 <span>    <span class="va">session_log_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
 <span>      <span class="va">metadata_dir</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">method_name</span>, <span class="st">"-"</span>, <span class="va">method_setting</span>, <span class="st">"-session.log"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>    <span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://sessioninfo.r-lib.org/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span>to_file <span class="op">=</span> <span class="va">session_log_file</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Session info saved to: "</span>, <span class="va">metadata_dir</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -314,11 +310,11 @@ scheduler on a cluster.</p>
 <h2 id="contributing-to-the-package">Contributing to the Package<a class="anchor" aria-label="anchor" href="#contributing-to-the-package"></a>
 </h2>
 <p>The package maintainers will compute and update precomputed measures
-when you contribute a new method. If you want to contribute a new
-method:</p>
+based on your computed results when you contribute a new method. If you
+want to contribute a new method:</p>
 <ol style="list-style-type: decimal">
 <li>Implement the method following the <a href="Adding_New_Methods.html">Adding New Methods</a> guidelines</li>
-<li>Compute results for all DGMs (see <a href="Computing_Method_Results.html">Computing Method Results</a>)</li>
+<li>Compute results for all DGMs (desribed in this vignette)</li>
 <li>Submit a pull request with your method implementation and
 results</li>
 <li>Package maintainers will compute the measures and integrate them

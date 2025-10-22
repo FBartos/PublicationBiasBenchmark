@@ -85,9 +85,9 @@
 <p>This vignette explains how to add new data-generating mechanisms
 (DGMs) to the <code>PublicationBiasBenchmark</code> package. In the
 following, we will use the <code>no_bias</code> DGM as an example. (See
-the <a href="Using_Precomputed_Measures.html">Using Precomputed
-Measures</a> vignette for details on working with the raw benchmarking
-results.)</p>
+the <a href="Using_Presimulated_Datasets.html">Using Presimulated
+Datasets</a> vignette for details on working with the already stored
+simulated datasets.)</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -315,13 +315,15 @@ interface:</p>
 <span>  heterogeneity <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  n_studies <span class="op">=</span> <span class="fl">50</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Use with pre-defined conditions</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_dgm.html">simulate_dgm</a></span><span class="op">(</span><span class="st">"no_bias"</span>, condition_id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_dgm.html">simulate_dgm</a></span><span class="op">(</span><span class="st">"no_bias"</span>, settings <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View available conditions</span></span>
 <span><span class="va">conditions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dgm_conditions.html">dgm_conditions</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">conditions</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">conditions</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -117,8 +117,6 @@ comparison of methods across conditions.</p>
 <ol style="list-style-type: decimal">
 <li>Method results have been computed and stored for all DGMs (see <a href="Computing_Method_Results.html">Computing Method Results</a>)</li>
 <li>Results files are in the correct directory structure</li>
-<li>You have the <code>PublicationBiasBenchmark</code> package
-loaded</li>
 </ol>
 </div>
 <div class="section level2">
@@ -134,13 +132,19 @@ method-setting-condition combination.</p>
 <p>Some methods may fail to converge for certain datasets. The
 <strong>method replacement</strong> strategy handles these cases by:</p>
 <ol style="list-style-type: decimal">
-<li>Computing measures only from successfully converged cases</li>
-<li>For failed cases, substituting results from a fallback method</li>
-<li>Ensuring fair comparison across all conditions</li>
+<li>For each condition, identifying cases where the method fails to
+converge</li>
+<li>For the failed cases, substituting results from a fallback
+method(s)</li>
+<li>Computing measures for the condition</li>
 </ol>
 <p>For example, if <code>RMA</code> fails to converge, it might be
 replaced with simpler <code>FMA</code> (fixed-effects) results for those
-specific cases.</p>
+specific cases. Method replacement allows us to mimic an analyst
+analyzing data who would choose a different method upon a method
+failure. See <a href="https://doi.org/10.1080/00031305.2025.2540002" class="external-link">this article</a>
+for a detailed description of different non-convergence handling
+strategies in simulation studies.</p>
 </div>
 <div class="section level2">
 <h2 id="computing-measures-step-by-step-guide">Computing Measures: Step-by-Step Guide<a class="anchor" aria-label="anchor" href="#computing-measures-step-by-step-guide"></a>
@@ -373,6 +377,9 @@ results</li>
 <li>Package maintainers will compute the measures and integrate them
 into the benchmark</li>
 </ol>
+<p>Do you want the benchmark to include additional measures or evaluate
+different parameters? Open an issue/contact the benchmark maintainers.
+We will be happy to incorporate your suggestions!</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
