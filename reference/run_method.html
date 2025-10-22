@@ -70,7 +70,7 @@ for details of extending the package with new methods</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_method</span><span class="op">(</span><span class="va">method_name</span>, <span class="va">data</span>, settings <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_method</span><span class="op">(</span><span class="va">method_name</span>, <span class="va">data</span>, settings <span class="op">=</span> <span class="cn">NULL</span>, silent <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -89,6 +89,10 @@ for details of extending the package with new methods</p>
 <dd><p>Either a character identifying a method version or list
 containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.</p></dd>
+
+
+<dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
+<dd><p>Logical indicating whether error messages from the method should be suppressed.</p></dd>
 
 </dl></div>
     <div class="section level2">
