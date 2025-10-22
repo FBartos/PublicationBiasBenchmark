@@ -1,7 +1,5 @@
-citHeader("To cite PublicationBiasBenchmark in publications use:")
-
-citEntry(
-  entry    = "Unpublished",
+bibentry(
+  bibtype  = "Unpublished",
   title    = "Living synthetic benchmarks: A neutral and cumulative framework for simulation studies",
   author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
   year     = "2025",
@@ -11,11 +9,11 @@ citEntry(
     "Living synthetic benchmarks: A neutral and cumulative framework for simulation studies.",
     "Working paper"
   ),
-  header   = "For the methodology of living synthetic benchmarks please cite:"
+  header   = "To cite PublicationBiasBenchmark in publications use:\n\nFor the methodology of living synthetic benchmarks please cite:"
 )
 
-citEntry(
-  entry    = "Manual",
+bibentry(
+  bibtype  = "Manual",
   title    = "PublicationBiasBenchmark: Benchmark for publication bias correction methods",
   author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
   year     = sub("-.*", "", meta$Date),

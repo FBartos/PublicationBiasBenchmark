@@ -52,16 +52,16 @@ incorporating both effect heterogeneity and publication selection mechanisms.
 
 In the Log Odds Ratio (\code{"logOR"}) scenario, primary studies assess the
 impact of treatment on a binary success indicator (\code{Y = 1}). The control
-group has a fixed 10\% probability of success, while the treatment group’s
+group has a fixed 10\% probability of success, while the treatment group's
 probability is increased by a fixed effect and a mean-zero random component,
-whose variance (\verb{σ²_h}) controls effect heterogeneity. Each study estimates a
-logistic regression, with the coefficient on \code{treat} (\verb{α₁}) as the effect of
+whose variance (sigma2_h) controls effect heterogeneity. Each study estimates a
+logistic regression, with the coefficient on \code{treat} (alpha1) as the effect of
 interest. Study sample sizes vary, resulting in different standard errors
 for estimated effects.
 
 In the Cohen's d (\code{"SMD"}) scenario, the outcome variable is
-continuous. The treatment effect is modeled as a fixed effect (\verb{α₁}) plus a
-random component (variance \verb{σ²_h}). Each study computes Cohen's d, the
+continuous. The treatment effect is modeled as a fixed effect (alpha1) plus a
+random component (variance sigma2_h). Each study computes Cohen's d, the
 standardized mean difference between treatment and control groups. Study
 sample sizes vary, affecting the standard errors of d.
 

@@ -20,7 +20,7 @@ Data frame with AK results
 \description{
 Implements the Andrews & Kasy (AK) method for publication bias correction in meta-analysis.
 The AK method categorizes estimated effects into groups with different probabilities of being
-published. AK1 uses symmetric selection grouping estimates into significant (|t| ≥ 1.96) and
+published. AK1 uses symmetric selection grouping estimates into significant (|t| >= 1.96) and
 insignificant (|t| < 1.96) estimates. AK2 uses asymmetric selection with four groups based on
 both significance and sign: highly significant positive/negative effects and marginally
 significant positive/negative effects, each with different publication probabilities. See
@@ -30,10 +30,10 @@ significant positive/negative effects, each with different publication probabili
 The following settings are implemented \describe{
 \item{\code{"default"}}{Uses AK1 estimator (symmetric selection)}
 \item{\code{"AK1"}}{Symmetric selection model grouping estimates into significant
-(|t| ≥ 1.96) and insignificant (|t| < 1.96) categories with relative publication
+(|t| >= 1.96) and insignificant (|t| < 1.96) categories with relative publication
 probabilities of 1 and p1 respectively.}
 \item{\code{"AK2"}}{Asymmetric selection model with four groups based on t-statistics:
-(a) t ≥ 1.96, (b) t < -1.96, (c) -1.96 ≤ t < 0, and (d) 0 ≤ t < 1.96, with
+(a) t >= 1.96, (b) t < -1.96, (c) -1.96 <= t < 0, and (d) 0 <= t < 1.96, with
 relative publication probabilities of 1, p1, p2, and p3 respectively.}
 }
 }

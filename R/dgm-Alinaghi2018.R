@@ -3,7 +3,7 @@
 #' @description
 #' This data-generating mechanism simulates univariate regression studies where a variable X
 #' affects a continuous outcome Y. Each study estimates the coefficient of X, which consists
-#' of a fixed component (α1) representing the overall mean effect, and a random component
+#' of a fixed component (alpha1) representing the overall mean effect, and a random component
 #' that varies across studies but is constant within each study. In the "Random Effects"
 #' environment (\code{"RE"}), each study produces one estimate, and the population effect
 #' differs across studies. In the "Panel Random Effects" environment (\code{"PRE"}), each
@@ -29,9 +29,9 @@
 #' regression models where a variable X affects a continuous variable Y. The parameter
 #' of interest is the coefficient on X. In the "Random Effects" environment (\code{"RE"}),
 #' each study produces one estimate, and the population effect differs across studies.
-#' The coefficient on X equals a fixed component (α1) plus a random component that is
+#' The coefficient on X equals a fixed component (alpha1) plus a random component that is
 #' fixed within a study but varies across studies. The overall mean effect of X on Y is
-#' given by α1. In the "Panel Random Effects" environment (\code{"PRE"}), each study has
+#' given by alpha1. In the "Panel Random Effects" environment (\code{"PRE"}), each study has
 #' 10 estimates, modeling the common scenario where multiple estimates per study are
 #' available. In this environment, effect estimates and standard errors are simulated to
 #' be more similar within studies than across studies, and publication selection targets

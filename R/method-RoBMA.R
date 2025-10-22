@@ -14,7 +14,7 @@
 #'
 #' \strong{Important:} This method requires JAGS (Just Another Gibbs Sampler) to be
 #' installed on your system. Please download and install JAGS from
-#' \url{http://mcmc-jags.sourceforge.net/} before using this method.
+#' \url{https://mcmc-jags.sourceforge.io/} before using this method.
 #'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes), sei (standard errors), es_type
@@ -248,7 +248,7 @@ method_extra_columns.RoBMA <- function(method_name)
 # Returns TRUE if available, FALSE otherwise
 # Used internally and in tests
 .check_robma_available <- function(message_on_fail = TRUE, stop_on_fail = FALSE) {
-  
+
   # Check if RoBMA package is installed
   if (!requireNamespace("RoBMA", quietly = TRUE)) {
     if (message_on_fail) {
@@ -261,7 +261,7 @@ method_extra_columns.RoBMA <- function(method_name)
     }
     return(FALSE)
   }
-  
+
   # Check if JAGS is installed by trying to load the RoBMA namespace
   jags_available <- tryCatch({
     loadNamespace("RoBMA")
@@ -270,7 +270,7 @@ method_extra_columns.RoBMA <- function(method_name)
     if (grepl("JAGS", e$message, ignore.case = TRUE)) {
       if (message_on_fail) {
         msg <- paste0("RoBMA requires JAGS to be installed. ",
-                     "Please install JAGS from http://mcmc-jags.sourceforge.net/ ",
+                     "Please install JAGS from https://mcmc-jags.sourceforge.io/ ",
                      "before using the RoBMA method.")
         if (stop_on_fail) {
           stop(msg, call. = FALSE)
@@ -286,6 +286,6 @@ method_extra_columns.RoBMA <- function(method_name)
       return(FALSE)
     }
   })
-  
+
   return(jags_available)
 }

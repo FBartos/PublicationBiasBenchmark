@@ -2,9 +2,9 @@
 #'
 #' @description
 #' Simulates univariate regression environments to estimate the effect of
-#' X1 on Y (parameter α1). Effect heterogeneity is introduced via an omitted
-#' variable (X2) correlated with X1, whose coefficient (α2)
-#' is randomly distributed with mean zero and variance σ2_h.
+#' X1 on Y (parameter alpha1). Effect heterogeneity is introduced via an omitted
+#' variable (X2) correlated with X1, whose coefficient (alpha2)
+#' is randomly distributed with mean zero and variance sigma2_h.
 #'
 #' The description and code is based on
 #' \insertCite{hong2021using;textual}{PublicationBiasBenchmark}.
@@ -25,12 +25,12 @@
 #' @details
 #' This function simulates univariate regression environments, focusing on
 #' estimating the effect of a variable X1 on a dependent variable Y,
-#' represented by the parameter α1. The simulation introduces variation in the
+#' represented by the parameter alpha1. The simulation introduces variation in the
 #' standard errors of estimated effects by allowing sample sizes to differ
 #' across primary studies. Effect heterogeneity is modeled through an omitted
 #' variable (X2) that is correlated with X1, where the coefficient on the
-#' omitted variable, α2, is randomly distributed across studies with mean
-#' zero and variance σ2_h.
+#' omitted variable, alpha2, is randomly distributed across studies with mean
+#' zero and variance sigma2_h.
 #'
 #' Publication selection is modeled in two regimes: (1) no selection, and
 #' (2) 50% selection. Under 50% selection, each estimate has a 50% chance of

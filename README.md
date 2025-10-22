@@ -362,7 +362,8 @@ power to reduce publication bias. *Statistics in Medicine*, *36*(10),
 
 van Aert, R. C. M., & van Assen, M. A. L. M. (2025). Correcting for
 publication bias in a meta-analysis with the p-uniform\* method.
-*Psychonomic Bulletin & Review*. <https://osf.io/preprints/bitss/zqjr9/>
+*Psychonomic Bulletin & Review*.
+<https://osf.io/preprints/metaarxiv/zqjr9/>
 
 </div>
 
