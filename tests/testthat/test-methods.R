@@ -55,6 +55,13 @@ test_that("Method settings functions return valid lists", {
 
   for (method_name in method_names) {
 
+    # Skip RoBMA if JAGS is not available
+    if (method_name == "RoBMA") {
+      if (!PublicationBiasBenchmark:::.check_robma_available(message_on_fail = FALSE, stop_on_fail = FALSE)) {
+        skip("RoBMA requires JAGS to be installed")
+      }
+    }
+
     # Get settings
     settings <- method_settings(method_name)
 

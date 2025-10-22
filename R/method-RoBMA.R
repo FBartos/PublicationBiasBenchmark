@@ -12,6 +12,10 @@
 #' to the dataset. The resulting estimates are then summarized on the same scale
 #' as was the dataset input (for \code{"r"}, heterogeneity is summarized on Fisher's z).
 #'
+#' \strong{Important:} This method requires JAGS (Just Another Gibbs Sampler) to be
+#' installed on your system. Please download and install JAGS from
+#' \url{http://mcmc-jags.sourceforge.net/} before using this method.
+#'
 #' @param method_name Method name (automatically passed)
 #' @param data Data frame with yi (effect sizes), sei (standard errors), es_type
 #' (either \code{"SMD"} for Cohen's d / Hedge's g, \code{"logOR"} for log odds
@@ -52,6 +56,9 @@
 #' }
 #' @export
 method.RoBMA <- function(method_name, data, settings) {
+
+  # Check if RoBMA and JAGS are available
+  .check_robma_available(message_on_fail = TRUE, stop_on_fail = TRUE)
 
   # Extract data
   effect_sizes    <- data$yi
@@ -185,6 +192,12 @@ method.RoBMA <- function(method_name, data, settings) {
 #' @export
 method_settings.RoBMA <- function(method_name) {
 
+  # Check if RoBMA and JAGS are available
+  if (!.check_robma_available(message_on_fail = TRUE, stop_on_fail = FALSE)) {
+    # Return minimal settings structure to pass checks
+    return(list(default = list()))
+  }
+
   settings.PSMA <- list(
     effect_direction          = "positive",
     prior_scale               = "cohens_d",
@@ -229,3 +242,50 @@ method_settings.RoBMA <- function(method_name) {
 method_extra_columns.RoBMA <- function(method_name)
   c("tau_estimate", "tau_ci_lower", "tau_ci_upper", "tau_BF",
     "bias_SM_coefficient", "bias_SM_coefficient_ci_lower", "bias_SM_coefficient_ci_upper", "bias_PP_coefficient", "bias_PP_coefficient_ci_lower", "bias_PP_coefficient_ci_upper", "bias_BF")
+
+
+# Helper function to check if RoBMA (and JAGS) is available
+# Returns TRUE if available, FALSE otherwise
+# Used internally and in tests
+.check_robma_available <- function(message_on_fail = TRUE, stop_on_fail = FALSE) {
+  
+  # Check if RoBMA package is installed
+  if (!requireNamespace("RoBMA", quietly = TRUE)) {
+    if (message_on_fail) {
+      msg <- "Package 'RoBMA' is required for RoBMA method. Please install it with: install.packages('RoBMA')"
+      if (stop_on_fail) {
+        stop(msg, call. = FALSE)
+      } else {
+        message(msg)
+      }
+    }
+    return(FALSE)
+  }
+  
+  # Check if JAGS is installed by trying to load the RoBMA namespace
+  jags_available <- tryCatch({
+    loadNamespace("RoBMA")
+    TRUE
+  }, error = function(e) {
+    if (grepl("JAGS", e$message, ignore.case = TRUE)) {
+      if (message_on_fail) {
+        msg <- paste0("RoBMA requires JAGS to be installed. ",
+                     "Please install JAGS from http://mcmc-jags.sourceforge.net/ ",
+                     "before using the RoBMA method.")
+        if (stop_on_fail) {
+          stop(msg, call. = FALSE)
+        } else {
+          message(msg)
+        }
+      }
+      return(FALSE)
+    } else {
+      if (stop_on_fail) {
+        stop(e$message, call. = FALSE)
+      }
+      return(FALSE)
+    }
+  })
+  
+  return(jags_available)
+}
