@@ -200,7 +200,7 @@ method_extra_columns.AK <- function(method_name)
   }else{
     EstCoefficients <- t(as.matrix(Result$par))
     colnames(EstCoefficients) <-  c("tau2", "Betap", colnames(AKdata)[4:ncol(AKdata)])
-    StdErrors <- diag(sqrt(MASS::ginv(numDeriv::hessian(.method_AK_AK1logLik_LLH, AKdata = AKdata, Result$par), tol=10^(-30))))
+    StdErrors <- diag(sqrt(MASS::ginv(numDeriv::hessian(.method_AK_AK1logLik_LLH, Result$par, AKdata = AKdata), tol=10^(-30))))
     PValue <- stats::dt(EstCoefficients/StdErrors, df=nrow(AKdata)-length(EstCoefficients))
     EstResults <- rbind(EstCoefficients, StdErrors, PValue)
     rownames(EstResults) <- c("Coefficients", "Std.Err", "p-value")
@@ -297,7 +297,7 @@ method_extra_columns.AK <- function(method_name)
 
   err<- tryCatch(
     {
-      diag(sqrt(MASS::ginv(numDeriv::hessian(.method_AK_AK2logLik_LLH, AKdata = AKdata, Result$par), tol=10^(-30)))); },
+      diag(sqrt(MASS::ginv(numDeriv::hessian(.method_AK_AK2logLik_LLH, Result$par, AKdata = AKdata), tol=10^(-30)))); },
     error=function(cond){
       return("error")
     })
@@ -308,7 +308,7 @@ method_extra_columns.AK <- function(method_name)
   }else{
     EstCoefficients <- t(as.matrix(Result$par))
     colnames(EstCoefficients) <-  c("tau2", "Beta1", "Beta2", "Beta3", colnames(AKdata)[4:ncol(AKdata)])
-    StdErrors <- diag(sqrt(MASS::ginv(numDeriv::hessian(.method_AK_AK2logLik_LLH, AKdata = AKdata, Result$par), tol=10^(-30))))
+    StdErrors <- diag(sqrt(MASS::ginv(numDeriv::hessian(.method_AK_AK2logLik_LLH, Result$par, AKdata = AKdata), tol=10^(-30))))
     PValue <- stats::dt(EstCoefficients/StdErrors, df=nrow(AKdata)-length(EstCoefficients))
 
     if(sum(is.finite(PValue))==length(EstCoefficients)){
