@@ -53,6 +53,9 @@ test_that("Method settings functions return valid lists", {
   method_names <- sub("^method\\.", "", method_methods)
   method_names <- method_names[!method_names %in% c("default", "skeleton")]
 
+  # Skip RoBMA because of possibly missing JAGS
+  method_names <- method_names[!method_names %in% "RoBMA"]
+
   for (method_name in method_names) {
 
     # Skip RoBMA if JAGS is not available
@@ -90,6 +93,9 @@ test_that("Method extra columns functions return valid character vectors", {
   method_methods <- methods("method")
   method_names <- sub("^method\\.", "", method_methods)
   method_names <- method_names[!method_names %in% c("default", "skeleton")]
+
+  # Skip RoBMA because of possibly missing JAGS
+  method_names <- method_names[!method_names %in% "RoBMA"]
 
   for (method_name in method_names) {
 

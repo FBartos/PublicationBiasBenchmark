@@ -31,6 +31,10 @@ details.
 Note that the prior settings is dispatched based on \code{"es_type"} column attached
 to the dataset. The resulting estimates are then summarized on the same scale
 as was the dataset input (for \code{"r"}, heterogeneity is summarized on Fisher's z).
+
+\strong{Important:} This method requires JAGS (Just Another Gibbs Sampler) to be
+installed on your system. Please download and install JAGS from
+\url{http://mcmc-jags.sourceforge.net/} before using this method.
 }
 \details{
 The following settings are implemented \describe{
