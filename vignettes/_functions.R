@@ -156,6 +156,7 @@ create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, refer
     tab <- table(data$label, data[,y_var])
     rank_props <- as.data.frame(prop.table(tab, margin = 1) * 100)
     colnames(rank_props) <- c("label", y_var, "percentage")
+    rank_props <- rank_props[rank_props$percentage > 0,] # remove empty ranks
     rank_props[,y_var] <- as.numeric(as.character(rank_props[,y_var]))
     p <- ggplot(data, aes(x = label, y = .data[[y_var]], fill = label, color = label)) +
       geom_point(data = rank_props, aes(size = percentage)) +
