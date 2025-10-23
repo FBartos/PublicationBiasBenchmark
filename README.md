@@ -17,23 +17,18 @@ benchmarks
 All datasets and results are hosted on OSF:
 <https://doi.org/10.17605/OSF.IO/EXF3M>
 
-If you use this package in your research, please cite:
+For the methodology of living synthetic benchmarks please cite:
 
-> Bartoš, F., Pawel, S., Siepe, B. S. (2025). Living synthetic
+> Bartoš, F., Pawel, S., & Siepe, B. S. (2025). Living synthetic
 > benchmarks: A neutral and cumulative framework for simulation studies.
-> Working paper. <https://github.com/FBartos/PublicationBiasBenchmark>
+> *arXiv Preprint*. <https://doi.org/10.48550/arXiv.2510.19489>
 
-A BibTeX entry is given by
+For the publication bias benchmark R package please cite:
 
-``` bibtex
-@misc{Bartos2025,
-  year = {2025},
-  author = {Franti{\v{s}}ek Barto{\v{s}} and Samuel Pawel and Bj{\"o}rn S. Siepe},
-  title = {Living synthetic benchmarks: {A} neutral and cumulative framework for simulation studies},
-  url = {https://github.com/FBartos/PublicationBiasBenchmark},
-  note = {Working paper}
-}
-```
+> Bartoš, F., Pawel, S., & Siepe, B. S. (2025).
+> PublicationBiasBenchmark: Benchmark for publication bias correction
+> methods (version 0.1.0).
+> <https://github.com/FBartos/PublicationBiasBenchmark>
 
 Overviews of the benchmark results are available as articles on the
 package website:
