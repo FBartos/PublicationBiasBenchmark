@@ -51,15 +51,15 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
   # get link to the repository
-  osf_link <- "https://osf.io/exf3m/"
+  osf_link <- .get_osf_link(dgm_name)
 
   # connect to the repository
   osf_repo <- osfr::osf_retrieve_node(osf_link)
 
   # select the data folder
-  osf_files <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what), n_max = Inf)
+  osf_files <- osfr::osf_ls_files(osf_repo, path = what, n_max = Inf)
 
-  ### download all condition datasets to the specified folder
+  ### download all datasets to the specified folder
   # check the directory name
   dgm_path <- file.path(path, dgm_name)
   if (!dir.exists(dgm_path)) {
@@ -77,8 +77,10 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
     current_files <- list.files(data_path)
     osf_files     <- osf_files[!osf_files$name %in% current_files,]
 
-    if(nrow(osf_files) == 0)
+    if(nrow(osf_files) == 0) {
+      if (progress) message("All files are already downloaded.")
       return(invisible(TRUE))
+    }
   }
 
   # Calculate the total size
@@ -114,14 +116,27 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
     if (length(osf_files) == 0)
       break
 
-    done      <- try(osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
+    done      <- try(osfr::osf_download(osf_files, path = what, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
     done      <- !inherits(done, "try-error")
     iteration <- iteration + 1
   }
 
+  if (iteration == max_try)
+    warning("Maximum number of restarts reached. Some files might be missing.")
+
   return(invisible(TRUE))
 }
 
+.get_osf_link <- function(dgm_name) {
+  switch(
+    dgm_name,
+    "no_bias"      = "https://osf.io/q8phr",
+    "Alinaghi2018" = "https://osf.io/5hbm8",
+    "Bom2019"      = "https://osf.io/4bcr2",
+    "Carter2019"   = "https://osf.io/vcs85",
+    "Stanley2017"  = "https://osf.io/fg62w"
+    )
+}
 
 #' @title Retrieve a Pre-Simulated Condition and Repetition From a DGM
 #'

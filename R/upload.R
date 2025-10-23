@@ -55,20 +55,17 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
     path <- PublicationBiasBenchmark.get_option("simulation_directory")
 
   # get link to the repository
-  osf_link <- "https://osf.io/exf3m/"
+  osf_link <- .get_osf_link(dgm_name)
 
   # connect to the repository
   osf_repo <- osfr::osf_retrieve_node(osf_link)
 
   # check that the remote data folder exists, create otherwise
-  osf_dir <-try(osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what)), silent = TRUE)
+  osf_dir <-try(osfr::osf_ls_files(osf_repo, path = what), silent = TRUE)
   if (inherits(osf_dir, "try-error")) {
-    osfr::osf_mkdir(osf_repo, path = file.path(dgm_name, what))
+    osfr::osf_mkdir(osf_repo, path = what)
+    osf_dir <- osfr::osf_ls_files(osf_dir, path = what)
   }
-
-  # select the remote data folder
-  osf_dir <- osfr::osf_ls_files(osf_repo, path = dgm_name, type = "folder")
-  osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
 
   # check the local directory name
   dgm_path <- file.path(path, dgm_name)
@@ -112,9 +109,8 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
   # therefore we need to manually delete them first
   if (overwrite) {
     osfr::osf_rm(osf_dir, verbose = FALSE, check = FALSE)
-    osfr::osf_mkdir(osf_repo, path = file.path(dgm_name, what))
-    osf_dir <- osfr::osf_ls_files(osf_repo, path = dgm_name, type = "folder")
-    osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
+    osfr::osf_mkdir(osf_repo, path = what)
+    osf_dir <- osfr::osf_ls_files(osf_repo, path = what)
   }
 
   # add error catching and restart on failure
@@ -124,7 +120,7 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
 
     # skip files already present
     osf_repo    <- osfr::osf_retrieve_node(osf_link)
-    files_done  <- osfr::osf_ls_files(osf_repo, path = file.path(dgm_name, what), type = "file", n_max = Inf)
+    files_done  <- osfr::osf_ls_files(osf_repo, path = what, n_max = Inf)
     local_files <- local_files[!basename(local_files) %in% files_done$name]
 
     if (length(local_files) == 0)
