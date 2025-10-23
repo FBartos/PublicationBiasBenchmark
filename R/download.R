@@ -116,7 +116,7 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
     if (length(osf_files) == 0)
       break
 
-    done      <- try(osfr::osf_download(osf_files, path = what, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
+    done      <- try(osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
     done      <- !inherits(done, "try-error")
     iteration <- iteration + 1
   }

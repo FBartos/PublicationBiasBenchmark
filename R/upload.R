@@ -61,11 +61,12 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
   osf_repo <- osfr::osf_retrieve_node(osf_link)
 
   # check that the remote data folder exists, create otherwise
-  osf_dir <-try(osfr::osf_ls_files(osf_repo, path = what), silent = TRUE)
-  if (inherits(osf_dir, "try-error")) {
+  osf_dir <- osfr::osf_ls_files(osf_repo, type = "folder")
+  if (sum(osf_dir$name == what) == 0) {
     osfr::osf_mkdir(osf_repo, path = what)
-    osf_dir <- osfr::osf_ls_files(osf_dir, path = what)
+    osf_dir <- osfr::osf_ls_files(osf_repo, type = "folder")
   }
+  osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
 
   # check the local directory name
   dgm_path <- file.path(path, dgm_name)
@@ -110,7 +111,8 @@ upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progres
   if (overwrite) {
     osfr::osf_rm(osf_dir, verbose = FALSE, check = FALSE)
     osfr::osf_mkdir(osf_repo, path = what)
-    osf_dir <- osfr::osf_ls_files(osf_repo, path = what)
+    osf_dir <- osfr::osf_ls_files(osf_repo, type = "folder")
+    osf_dir <- osfr::osf_retrieve_file(osf_dir$id[osf_dir$name == what])
   }
 
   # add error catching and restart on failure
