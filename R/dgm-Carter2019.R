@@ -749,7 +749,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
 
   }
 
-  else{stop('define QRP strategy')}
+  else{stop("ERROR: Invalid QRP strategy. Must be one of: 'none', 'mod', 'agg'")}
 
   #return the result
   return(a)
@@ -795,7 +795,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
   } else if (qrpEnv == 'high'){
     noneP = 0.10; modP = 0.40; aggP = 0.50
   } else {
-    stop('qrpEnv must be none, low, medium, or high')
+    stop('ERROR: qrpEnv must be none, low, medium, or high')
   }
 
 

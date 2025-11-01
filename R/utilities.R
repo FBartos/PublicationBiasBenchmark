@@ -79,7 +79,7 @@ assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
   if (is.null(resources)) {
     packageStartupMessage(paste0(
       "This package works with precomputed data, results, and measures.\n",
-      "Specify a location where those resources should be stored and accessed from by using `PublicationBiasBenchmark.options(resources_directory = `/path/`)` ", 
+      "Specify a location where those resources should be stored and accessed from by using `PublicationBiasBenchmark.options(resources_directory = '/path/')` ", 
       "or the `PublicationBiasBenchmark_RESOURCES` environmental variable."
     ))        
   } else {
