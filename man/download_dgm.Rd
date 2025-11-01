@@ -45,8 +45,8 @@ Defaults to \code{TRUE}.}
 \description{
 This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM)
 from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved
-to the location specified via \code{PublicationBiasBenchmark.get_option("resources_directory")}.
-To set the location permanently, specify the \code{PublicationBiasBenchmark_RESOURCES} environmental
+to the location specified via \code{PublicationBiasBenchmark.options(resources_directory = "/path/")}.
+To set the location permanently, specify the \code{PublicationBiasBenchmark_RESOURCES} environment
 variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 }
 \examples{

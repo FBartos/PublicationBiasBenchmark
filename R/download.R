@@ -3,7 +3,7 @@
 #' @description
 #' This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM) 
 #' from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved 
-#' to the location specified via \code{PublicationBiasBenchmark.get_option("resources_directory")}. 
+#' to the location specified via \code{PublicationBiasBenchmark.options(resources_directory = "/path/")}. 
 #' To set the location permanently, specify the `PublicationBiasBenchmark_RESOURCES` environment 
 #' variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #'
@@ -46,9 +46,7 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
 
 .download_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try) {
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
 
   # get link to the repository
   osf_link <- .get_osf_link(dgm_name)
@@ -143,7 +141,7 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
 #' @description
 #' This function returns a pre-simulated dataset of a given repetition and
 #' condition from a dgm. The pre-simulated datasets must be already stored
-#' locally. See [download_dgm_datasets()] function for more guidance.
+#' locally. See [download_dgm] function for more guidance.
 #'
 #' @inheritParams dgm
 #' @inheritParams download_dgm
@@ -171,9 +169,7 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL){
   if (missing(condition_id))
     stop("'condition_id' must be specified")
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
 
   # check that the directory / condition folders exist
   data_path <- file.path(path, dgm_name, "data")
@@ -234,9 +230,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
   
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
 
   # check that the directory / condition folders exist
   results_path <- file.path(path, dgm_name, "results")
@@ -321,9 +315,7 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
 
   # check that the directory / measures folders exist
   measures_path <- file.path(path, dgm_name, "measures")

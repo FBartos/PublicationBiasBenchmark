@@ -55,9 +55,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
   # Create a file name
   file_name <- paste0(measure_name, "-pairwise", if (is.null(method_replacements)) ".csv" else "-replacement.csv")
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
   
   output_folder <- file.path(path, dgm_name, "measures")
   output_file   <- file.path(output_folder, file_name)
@@ -323,9 +321,7 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
   if (is.null(measures))
     measures <- c("estimate_comparison")
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
 
   # Ensure output directory exists
   output_folder <- file.path(path, dgm_name, "measures")

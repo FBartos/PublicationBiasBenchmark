@@ -20,7 +20,7 @@ A data.frame
 \description{
 This function returns a pre-simulated dataset of a given repetition and
 condition from a dgm. The pre-simulated datasets must be already stored
-locally. See \code{\link[=download_dgm_datasets]{download_dgm_datasets()}} function for more guidance.
+locally. See \link{download_dgm} function for more guidance.
 }
 \examples{
 \donttest{

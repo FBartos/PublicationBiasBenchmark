@@ -63,7 +63,7 @@ assign("resources_directory",  NULL, envir = PublicationBiasBenchmark.private)
 assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
 
 
-.onLoad <- function(libname, pkgname){
+.onLoad   <- function(libname, pkgname){
 
   # locate the pre-downloaded results
   resources <- Sys.getenv("PublicationBiasBenchmark_RESOURCES")
@@ -73,7 +73,6 @@ assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
   # set-up OSF PAT
   try(suppressWarnings(suppressMessages(osfr::osf_auth())))
 }
-
 .onAttach <- function(libname, pkgname){
 
   resources <- PublicationBiasBenchmark.get_option("resources_directory")
@@ -86,9 +85,18 @@ assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
   } else {
     packageStartupMessage(sprintf(paste0(
       "Data, results, and measures will be stored and accessed from '%1$s'.\n", 
-      "To change the default location, use `PublicationBiasBenchmark.options(resources_directory = `/path/`)` ",
+      "To change the default location, use `PublicationBiasBenchmark.options(resources_directory = '/path/')` ",
       "or the `PublicationBiasBenchmark_RESOURCES` environmental variable."),
       PublicationBiasBenchmark.private$resources_directory
     ))    
   }
+}
+
+.get_path <- function() {
+  
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
+  if (is.null(path))
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.", call. = FALSE)
+  
+  return(path)
 }
