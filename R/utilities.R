@@ -70,7 +70,7 @@ assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
   if (resources != "")
     PublicationBiasBenchmark.options(resources_directory = resources)
 
-  # set-up OSF PAT  
+  # set-up OSF PAT
   try(suppressWarnings(suppressMessages(osfr::osf_auth())))
 }
 
