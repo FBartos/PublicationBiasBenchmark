@@ -16,10 +16,16 @@ if (!exists("dgm_names")) {
 ```{r, include = FALSE}
 # Load and merge the 
 # use pre-local results if compiled locally
+library(PublicationBiasBenchmark)
+library(ggplot2)
+library(ggdist)
+library(scales)
+
+PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
 if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
-  path <- "C:/R-Packages/PublicationBiasBenchmark/resources"
+  PublicationBiasBenchmark.options(resources_directory = "C:/R-Packages/PublicationBiasBenchmark/resources")
 } else { 
-  path <- NULL
+  PublicationBiasBenchmark.options(resources_directory = tempdir())
 }
 
 # Specify methods to show in the results
@@ -29,20 +35,15 @@ methods_settings <- data.frame(
 )
 methods_settings_labels <- with(methods_settings, paste0(method, " (", settings, ")"))
 
-library(PublicationBiasBenchmark)
-PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
-library(ggplot2)
-library(ggdist)
-library(scales)
 
 results_conditional_list <- list()
 results_replacement_list <- list()
 for (dgm_name in dgm_names) {
   
   # retrieve all measures across all conditions and measures
-  download_dgm_measures(dgm_name, path = path)
-  temp_conditional <- retrieve_dgm_measures(dgm_name, path = path)
-  temp_replacement <- retrieve_dgm_measures(dgm_name, replacement = TRUE, path = path)  
+  download_dgm_measures(dgm_name)
+  temp_conditional <- retrieve_dgm_measures(dgm_name)
+  temp_replacement <- retrieve_dgm_measures(dgm_name, replacement = TRUE)  
   
   # retrieve conditions
   conditions <- dgm_conditions(dgm_name)
