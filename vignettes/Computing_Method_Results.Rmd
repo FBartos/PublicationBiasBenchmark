@@ -55,7 +55,6 @@ resources/
 │       └── {METHOD}-{SETTING}-session.log
 ```
 
-By default, this structure is created in the directory specified by `PublicationBiasBenchmark.get_option("simulation_directory")`.
 
 ## Computing Results: Step-by-Step Guide
 
@@ -66,12 +65,8 @@ First, ensure you're working in the correct directory and have the package loade
 ```{r, eval=FALSE}
 library(PublicationBiasBenchmark)
 
-# Optional: Set custom directory for results storage
-# PublicationBiasBenchmark.options(simulation_directory = "/path/to/storage")
-
-# Verify the directory
-data_folder <- PublicationBiasBenchmark.get_option("simulation_directory")
-print(paste("Working directory:", data_folder))
+# Specify path to the directory containing results
+PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
 ```
 
 ### Step 2: Define DGMs and Method Information

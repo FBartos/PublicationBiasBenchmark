@@ -5,11 +5,10 @@
 \alias{download_dgm_datasets}
 \alias{download_dgm_results}
 \alias{download_dgm_measures}
-\title{Download Datasets of a DGM}
+\title{Download Datasets/Results/Measures of a DGM}
 \usage{
 download_dgm_datasets(
   dgm_name,
-  path = NULL,
   overwrite = FALSE,
   progress = TRUE,
   max_try = 10
@@ -17,7 +16,6 @@ download_dgm_datasets(
 
 download_dgm_results(
   dgm_name,
-  path = NULL,
   overwrite = FALSE,
   progress = TRUE,
   max_try = 10
@@ -25,7 +23,6 @@ download_dgm_results(
 
 download_dgm_measures(
   dgm_name,
-  path = NULL,
   overwrite = FALSE,
   progress = TRUE,
   max_try = 10
@@ -33,11 +30,6 @@ download_dgm_measures(
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
-
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-should be saved. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing files.
 Defaults to \code{FALSE}, which means only missing files will be downloaded.}
@@ -51,11 +43,14 @@ Defaults to \code{TRUE}.}
 \code{TRUE} if the download was successful, otherwise an error is raised.
 }
 \description{
-This function downloads datasets of a specified Data-Generating Mechanism (DGM).
-All data are located at \url{https://osf.io/exf3m/}.
+This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM)
+from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved
+to the location specified via \code{PublicationBiasBenchmark.get_option("resources_directory")}.
+To set the location permanently, specify the \code{PublicationBiasBenchmark_RESOURCES} environmental
+variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 }
 \examples{
-\dontrun{
+\donttest{
   download_dgm_datasets("no_bias")
 }
 

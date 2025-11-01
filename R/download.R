@@ -1,14 +1,13 @@
-#' @title Download Datasets of a DGM
+#' @title Download Datasets/Results/Measures of a DGM
 #'
 #' @description
-#' This function downloads datasets of a specified Data-Generating Mechanism (DGM).
-#' All data are located at \url{https://osf.io/exf3m/}.
+#' This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM) 
+#' from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved 
+#' to the location specified via \code{PublicationBiasBenchmark.get_option("resources_directory")}. 
+#' To set the location permanently, specify the `PublicationBiasBenchmark_RESOURCES` environmental 
+#' variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #'
 #' @param dgm_name Character string specifying the name of the DGM dataset to download.
-#' @param path Character string specifying the directory path where the datasets/results/measures
-#' should be saved. Defaults to the location specified via
-#' \code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-#' in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #' @param overwrite Logical indicating whether to overwrite existing files.
 #' Defaults to \code{FALSE}, which means only missing files will be downloaded.
 #' @param progress Logical indicating whether to show progress downloading files.
@@ -18,7 +17,7 @@
 #' @return \code{TRUE} if the download was successful, otherwise an error is raised.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   download_dgm_datasets("no_bias")
 #' }
 #'
@@ -28,27 +27,28 @@ NULL
 
 #' @rdname download_dgm
 #' @export
-download_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .download_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
+download_dgm_datasets <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .download_dgm_fun(dgm_name, what = "data", overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .download_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
+download_dgm_results <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .download_dgm_fun(dgm_name, what = "results", overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .download_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
+download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .download_dgm_fun(dgm_name, what = "measures", overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 
-.download_dgm_fun <- function(dgm_name, what, path, overwrite, progress, max_try) {
+.download_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try) {
 
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
 
   # get link to the repository
   osf_link <- .get_osf_link(dgm_name)
@@ -154,7 +154,7 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
 #' @return A data.frame
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   # get condition 1, repetition 1
 #'   retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 #'
@@ -164,15 +164,16 @@ download_dgm_measures <- function(dgm_name, path = NULL, overwrite = FALSE, prog
 #'
 #'
 #' @export
-retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, path = NULL){
+retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
   if (missing(condition_id))
     stop("'condition_id' must be specified")
 
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
 
   # check that the directory / condition folders exist
   data_path <- file.path(path, dgm_name, "data")
@@ -218,7 +219,7 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 #' @return A data.frame
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   # get condition 1, repetition 1 for default method setting
 #'   retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
 #'
@@ -228,12 +229,14 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL, p
 #'
 #'
 #' @export
-retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL, condition_id = NULL, repetition_id = NULL, path = NULL){
+retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL, condition_id = NULL, repetition_id = NULL){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
+  
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
 
   # check that the directory / condition folders exist
   results_path <- file.path(path, dgm_name, "results")
@@ -301,7 +304,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
 #' @return A data.frame
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   # get bias measures for all methods and conditions
 #'   retrieve_dgm_measures("no_bias", measure = "bias")
 #'
@@ -313,12 +316,14 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
 #' }
 #'
 #' @export
-retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, method_setting = NULL, condition_id = NULL, path = NULL, replacement = FALSE){
+retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, method_setting = NULL, condition_id = NULL, replacement = FALSE){
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
+
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
 
   # check that the directory / measures folders exist
   measures_path <- file.path(path, dgm_name, "measures")

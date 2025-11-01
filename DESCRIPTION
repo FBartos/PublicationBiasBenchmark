@@ -19,7 +19,8 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-9558-4648"))
     )
 Description: Implements a unified interface for benchmarking meta-analytic
-    publication bias correction methods through simulation studies. It provides
+    publication bias correction methods through simulation studies (see 
+    Bartoš et al., 2022, <doi:10.48550/arXiv.2510.19489>). It provides
     1) predefined data-generating mechanisms from the literature, 2) functions
     for running meta-analytic methods on simulated data, 3) pre-simulated
     datasets and pre-computed results for reproducible benchmarks, 4) tools for

@@ -16,8 +16,7 @@ compare_measures(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  conditions = NULL,
-  path = NULL
+  conditions = NULL
 )
 }
 \arguments{
@@ -54,11 +53,6 @@ Defaults to \code{NULL}, i.e., omitting repetitions without converged results on
 Defaults to \code{FALSE}, which means only missing files will be downloaded.}
 
 \item{conditions}{Data frame of conditions from dgm_conditions()}
-
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-should be saved. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 }
 \value{
 Invisible list of computed comparison data frames

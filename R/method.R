@@ -35,15 +35,12 @@
 #' @return A data frame with standardized method results
 #'
 #' @examples
-#' # Example usage with PET method
+#' # Example usage with RMA method
 #' data <- data.frame(
 #'   yi = c(0.2, 0.3, 0.1, 0.4),
 #'   sei = c(0.1, 0.15, 0.08, 0.12)
 #' )
 #' result <- run_method("RMA", data, "default")
-#'
-#' # Example usage with PETPEESE method
-#' # result <- method("PETPEESE", data)
 #' @export
 run_method <- function(method_name, data, settings = NULL, silent = FALSE) {
 
@@ -82,7 +79,12 @@ run_method <- function(method_name, data, settings = NULL, silent = FALSE) {
 #' usage and further details.
 #'
 #' @inheritParams run_method
-#' @inheritSection simulate_dgm Output Structure
+#' @inheritSection run_method Output Structure
+#'
+#' @return A data frame with method results following the structure described
+#' in the Output Structure section. This is an S3 generic method that dispatches
+#' to specific method implementations based on \code{method_name}.
+#'
 #' @seealso [run_method()]
 #' @examples
 #'
@@ -106,6 +108,10 @@ method <- function(method_name, data, settings) {
 
 #' @title Default method handler
 #' @inheritParams method
+#'
+#' @return Throws an error indicating the method type is unknown. This default
+#' method is only called when no specific method implementation is found for the
+#' given \code{method_name}.
 #'
 #' @export
 method.default <- function(method_name, data, settings = list()) {

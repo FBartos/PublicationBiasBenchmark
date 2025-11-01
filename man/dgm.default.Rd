@@ -12,6 +12,11 @@
 \item{settings}{List containing the required parameters for the DGM or
 numeric condition_id}
 }
+\value{
+Throws an error indicating the DGM type is unknown. This default
+method is only called when no specific DGM implementation is found for the
+given \code{dgm_name}.
+}
 \description{
 Default DGM handler
 }

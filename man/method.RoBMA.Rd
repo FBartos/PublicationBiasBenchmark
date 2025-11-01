@@ -49,7 +49,7 @@ three-level specification whenever \code{"study_ids"} are supplied with the data
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # Generate some example data
 data <- data.frame(
   yi      = c(0.2, 0.3, 0.1, 0.4, 0.25),

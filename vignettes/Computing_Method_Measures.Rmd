@@ -61,9 +61,8 @@ See [this article](https://doi.org/10.1080/00031305.2025.2540002) for a detailed
 ```{r, eval=FALSE}
 library(PublicationBiasBenchmark)
 
-# Verify the directory containing results
-data_folder <- PublicationBiasBenchmark.get_option("simulation_directory")
-print(paste("Working directory:", data_folder))
+# Specify path to the directory containing results
+PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
 ```
 
 ### Step 2: Define DGMs and Methods

@@ -25,7 +25,6 @@ compute_single_measure(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  path = NULL,
   ...
 )
 }
@@ -82,11 +81,6 @@ Defaults to \code{NULL}, i.e., omitting repetitions without converged results on
 \item{n_repetitions}{Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
-
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-should be saved. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{...}{Additional arguments passed to measure functions}
 }

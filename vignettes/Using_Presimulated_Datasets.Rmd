@@ -72,24 +72,14 @@ Each condition represents a unique combination of simulation parameters that det
 Before accessing the presimulated datasets, you need to download them from the package repository. The [`download_dgm_datasets()`](../reference/download_dgm.html) function downloads the datasets for a specified DGM:
 
 ```{r, eval=FALSE}
+# Specify path to the directory containing resources
+PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
+
 # Download presimulated datasets for the Stanley2017 DGM
 download_dgm_datasets("Stanley2017")
 ```
 
 **Note**: Dataset files can be quite large as they contain all individual study data across many simulation repetitions. Each DGM may require several gigabytes of storage space.
-
-### Specifying Download Location
-
-By default, datasets are downloaded to your's project default simulation directory. You can change this location using the package options:
-
-```{r, eval=FALSE}
-# Set custom download directory
-PublicationBiasBenchmark.options(simulation_directory = "/path/to/your/directory")
-
-# Then download datasets
-download_dgm_datasets("Stanley2017")
-```
-
 The datasets are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once.
 
 ## Retrieving Presimulated Datasets

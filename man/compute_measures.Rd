@@ -23,8 +23,7 @@ compute_measures(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  conditions = NULL,
-  path = NULL
+  conditions = NULL
 )
 }
 \arguments{
@@ -78,11 +77,6 @@ Defaults to \code{NULL}, i.e., omitting repetitions without converged results on
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
 \item{conditions}{Data frame of conditions from dgm_conditions()}
-
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-should be saved. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 }
 \value{
 TRUE upon successfully computation of the results file
@@ -94,7 +88,7 @@ It provides a clean and extensible interface for computing standard simulation
 performance measures.
 }
 \examples{
-\dontrun{
+\donttest{
 # Download DGM results
 dgm_name <- "no_bias"
 download_dgm_results(dgm_name)

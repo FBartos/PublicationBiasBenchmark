@@ -15,6 +15,11 @@ method(method_name, data, settings)
 containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.}
 }
+\value{
+A data frame with method results following the structure described
+in the Output Structure section. This is an S3 generic method that dispatches
+to specific method implementations based on \code{method_name}.
+}
 \description{
 S3 Method for defining methods. See \code{\link[=run_method]{run_method()}} for
 usage and further details.
@@ -22,23 +27,21 @@ usage and further details.
 \section{Output Structure}{
 
 The returned data frame follows a standardized schema that downstream
-functions rely on. Across the currently implemented DGMs, the following
-columns are used:
+functions rely on. All methods return the following columns:
 \itemize{
-\item \code{yi} (numeric): The effect size estimate.
-\item \code{sei} (numeric): Standard error of \code{yi}.
-\item \code{ni} (integer): Total sample size for the estimate
-(e.g., sum over groups where applicable).
-\item \code{es_type} (character): Effect size type, used to disambiguate
-the scale of \code{yi}. Currently used values are
-\code{"SMD"} (standardized mean difference / Cohen's d),
-\code{"logOR"} (log odds ratio), and \code{"none"}
-(unspecified generic continuous coefficient).
-\item \code{study_id} (integer/character, optional): Identifier of the
-primary study/cluster when a DGM yields multiple estimates per study
-(e.g., Alinaghi2018, PRE). If absent, each row is treated as an
-independent study.
+\item \code{method} (character): The name of the method used.
+\item \code{estimate} (numeric): The meta-analytic effect size estimate.
+\item \code{standard_error} (numeric): Standard error of the estimate.
+\item \code{ci_lower} (numeric): Lower bound of the 95\% confidence interval.
+\item \code{ci_upper} (numeric): Upper bound of the 95\% confidence interval.
+\item \code{p_value} (numeric): P-value for the estimate.
+\item \code{BF} (numeric): Bayes Factor for the estimate.
+\item \code{convergence} (logical): Whether the method converged successfully.
+\item \code{note} (character): Additional notes describing convergence issues.
 }
+Some methods may include additional method-specific columns beyond these
+standard columns. Use \code{\link[=get_method_extra_columns]{get_method_extra_columns()}} to query which
+additional columns a particular method returns.
 }
 
 \examples{

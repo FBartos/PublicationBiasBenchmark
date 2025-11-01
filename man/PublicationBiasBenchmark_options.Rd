@@ -26,7 +26,7 @@ A placeholder object and functions for the PublicationBiasBenchmark package.
 }
 \details{
 \describe{
-\item{\code{"simulation_directory"}}{Location where the benchmark data/results/measures are stored}
+\item{\code{"resources_directory"}}{Location where the benchmark data/results/measures are stored}
 \item{\code{"prompt_for_download"}}{Whether each file download should ask for explicit approval}
 }
 }

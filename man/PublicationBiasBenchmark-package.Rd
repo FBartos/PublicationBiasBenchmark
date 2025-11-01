@@ -6,7 +6,7 @@
 \alias{PublicationBiasBenchmark-package}
 \title{PublicationBiasBenchmark: Benchmark for Publication Bias Correction Methods}
 \description{
-Implements a unified interface for benchmarking meta-analytic publication bias correction methods through simulation studies. It provides 1) predefined data-generating mechanisms from the literature, 2) functions for running meta-analytic methods on simulated data, 3) pre-simulated datasets and pre-computed results for reproducible benchmarks, 4) tools for visualizing and comparing method performance.
+Implements a unified interface for benchmarking meta-analytic publication bias correction methods through simulation studies (see Bartoš et al., 2022, \doi{10.48550/arXiv.2510.19489}). It provides 1) predefined data-generating mechanisms from the literature, 2) functions for running meta-analytic methods on simulated data, 3) pre-simulated datasets and pre-computed results for reproducible benchmarks, 4) tools for visualizing and comparing method performance.
 }
 \seealso{
 Useful links:
@@ -18,12 +18,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Franti<U+0161>ek Barto<U+0161> \email{f.bartos96@gmail.com} (\href{https://orcid.org/0000-0002-0018-5573}{ORCID})
+\strong{Maintainer}: František Bartoš \email{f.bartos96@gmail.com} (\href{https://orcid.org/0000-0002-0018-5573}{ORCID})
 
 Authors:
 \itemize{
   \item Samuel Pawel (\href{https://orcid.org/0000-0003-2779-320X}{ORCID})
-  \item Bj<U+00F6>rn S. Siepe (\href{https://orcid.org/0000-0002-9558-4648}{ORCID})
+  \item Björn S. Siepe (\href{https://orcid.org/0000-0002-9558-4648}{ORCID})
 }
 
 }

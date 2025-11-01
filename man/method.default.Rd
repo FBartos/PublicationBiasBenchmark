@@ -15,6 +15,11 @@
 containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.}
 }
+\value{
+Throws an error indicating the method type is unknown. This default
+method is only called when no specific method implementation is found for the
+given \code{method_name}.
+}
 \description{
 Default method handler
 }

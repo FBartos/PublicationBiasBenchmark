@@ -98,9 +98,8 @@ run_method("RMA", df)
 
 ``` r
 # download the pre-simulated datasets
-# the default settings downloads the datasets to the `resources` directory, use
-# PublicationBiasBenchmark.options(simulation_directory = "/path/")
-# to change the settings
+# (the intended location for storing the package resources needs to be specified)
+PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
 download_dgm_datasets("no_bias")
 
 # retrieve first repetition of first condition from the downloaded datasets

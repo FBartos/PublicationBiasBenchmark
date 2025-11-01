@@ -15,7 +15,7 @@
 #'
 #' @details
 #' \describe{
-#'   \item{\code{"simulation_directory"}}{Location where the benchmark data/results/measures are stored}
+#'   \item{\code{"resources_directory"}}{Location where the benchmark data/results/measures are stored}
 #'   \item{\code{"prompt_for_download"}}{Whether each file download should ask for explicit approval}
 #' }
 #'
@@ -59,22 +59,36 @@ PublicationBiasBenchmark.get_option <- function(name){
 }
 
 PublicationBiasBenchmark.private <- new.env()
-assign("simulation_directory", "notset", envir = PublicationBiasBenchmark.private)
-assign("prompt_for_download", TRUE, envir = PublicationBiasBenchmark.private)
+assign("resources_directory",  NULL, envir = PublicationBiasBenchmark.private)
+assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
 
 
 .onLoad <- function(libname, pkgname){
 
-  PublicationBiasBenchmark.private$simulation_directory <- file.path(getwd(), "resources")
-    try(suppressWarnings(suppressMessages(osfr::osf_auth())))
+  # locate the pre-downloaded results
+  resources <- Sys.getenv("PublicationBiasBenchmark_RESOURCES")
+  if (resources != "")
+    PublicationBiasBenchmark.options(resources_directory = resources)
 
+  # set-up OSF PAT  
+  try(suppressWarnings(suppressMessages(osfr::osf_auth())))
 }
 
 .onAttach <- function(libname, pkgname){
 
-  packageStartupMessage(sprintf(
-    "Data, results, and measures will be saved to '%1$s'.\nTo change the default location, use `PublicationBiasBenchmark.options(simulation_directory = `/path/`)`",
-    PublicationBiasBenchmark.private$simulation_directory
-  ))
-
+  resources <- PublicationBiasBenchmark.get_option("resources_directory")
+  if (is.null(resources)) {
+    packageStartupMessage(paste0(
+      "This package works with precomputed data, results, and measures.\n",
+      "Specify a location where those resources should be saved to and accessed from by using `PublicationBiasBenchmark.options(resources_directory = `/path/`)` ", 
+      "or the `PublicationBiasBenchmark_RESOURCES` environmental variable."
+    ))        
+  } else {
+    packageStartupMessage(sprintf(paste0(
+      "Data, results, and measures will be saved to and accessed from '%1$s'.\n", 
+      "To change the default location, use `PublicationBiasBenchmark.options(resources_directory = `/path/`)` ",
+      "or the `PublicationBiasBenchmark_RESOURCES` environmental variable."),
+      PublicationBiasBenchmark.private$resources_directory
+    ))    
+  }
 }

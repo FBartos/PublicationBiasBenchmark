@@ -40,7 +40,6 @@
 #' @param n_repetitions Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.
 #' @param overwrite Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist
 #' @param ... Additional arguments passed to measure functions
-#' @inheritParams download_dgm_datasets
 #'
 #' @return TRUE upon successfully computation of the results file
 #'
@@ -53,7 +52,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
                                    p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                                    power_threshold_p_value = 0.05, power_threshold_bayes_factor = 10,
                                    method_replacements = NULL, n_repetitions = 1000,
-                                   overwrite = FALSE, path = NULL, ...) {
+                                   overwrite = FALSE, ...) {
 
   # Validate that method and method_setting have the same length
   if (length(method) != length(method_setting))
@@ -98,9 +97,10 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   # Create a file name
   file_name <- paste0(measure_name, if (is.null(method_replacements) || length(method_replacements) == 0) ".csv" else "-replacement.csv")
 
-  # Specify directory structures
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  
   output_folder <- file.path(path, dgm_name, "measures")
   output_file   <- file.path(output_folder, file_name)
 
@@ -154,8 +154,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
         method_replacements_results[[method_name]][[replacement_key]] <- retrieve_dgm_results(
           dgm_name       = dgm_name,
           method         = replacement_method,
-          method_setting = replacement_setting,
-          path           = path
+          method_setting = replacement_setting
         )
 
         # Precompute H0 rejection
@@ -194,8 +193,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_results <- retrieve_dgm_results(
       dgm_name       = dgm_name,
       method         = this_method,
-      method_setting = this_method_setting,
-      path           = path
+      method_setting = this_method_setting
     )
 
     # Check that all pre-specified columns exist
@@ -547,7 +545,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
 #' @return TRUE upon successfully computation of the results file
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Download DGM results
 #' dgm_name <- "no_bias"
 #' download_dgm_results(dgm_name)
@@ -584,7 +582,7 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
                              p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                              method_replacements = NULL, n_repetitions = 1000,
-                             overwrite = FALSE, conditions = NULL, path = NULL) {
+                             overwrite = FALSE, conditions = NULL) {
 
   # Define all available measures if not specified
   if (is.null(measures))
@@ -615,7 +613,8 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     if (!measure %in% names(measure_functions))
       stop(paste0("Unknown measure: ", measure, ". Skipping."))
 
-    cat("Computing", measure, "...\n")
+    if (verbose)
+      message("Computing ", measure, "...")
 
     compute_single_measure(
       dgm_name                  = dgm_name,
@@ -637,12 +636,11 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       convergence_col           = convergence_col,
       method_replacements       = method_replacements,
       n_repetitions             = n_repetitions,
-      overwrite                 = overwrite,
-      path                      = path
+      overwrite                 = overwrite
     )
 
     if (verbose)
-      cat("Saved", measure, "\n")
+      message("Saved ", measure)
   }
 
   return(invisible(TRUE))

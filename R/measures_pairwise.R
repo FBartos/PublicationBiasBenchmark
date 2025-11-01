@@ -19,7 +19,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
                                    estimate_col = "estimate", true_effect_col = "mean_effect",
                                    convergence_col = "convergence",
                                    method_replacements = NULL,
-                                   n_repetitions = 1000, overwrite = FALSE, path = NULL, ...) {
+                                   n_repetitions = 1000, overwrite = FALSE, ...) {
 
   # Validate that method and method_setting have the same length
   if (length(method) != length(method_setting))
@@ -55,11 +55,12 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
   # Create a file name
   file_name <- paste0(measure_name, "-pairwise", if (is.null(method_replacements)) ".csv" else "-replacement.csv")
 
-  # Specify directory structures
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  
   output_folder <- file.path(path, dgm_name, "measures")
-  output_file <- file.path(output_folder, file_name)
+  output_file   <- file.path(output_folder, file_name)
 
   # Check if results already exist
   existing_results       <- NULL
@@ -136,8 +137,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
         method_replacements_results[[method_name]][[replacement_key]] <- retrieve_dgm_results(
           dgm_name       = dgm_name,
           method         = replacement_method,
-          method_setting = replacement_setting,
-          path           = path
+          method_setting = replacement_setting
         )
       }
     }
@@ -152,8 +152,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_results <- retrieve_dgm_results(
       dgm_name       = dgm_name,
       method         = this_method,
-      method_setting = this_method_setting,
-      path           = path
+      method_setting = this_method_setting
     )
 
     # Check that all pre-specified columns exist
@@ -317,15 +316,16 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              estimate_col = "estimate", true_effect_col = "mean_effect",
                              convergence_col = "convergence",
                              method_replacements = NULL,
-                             n_repetitions = 1000, overwrite = FALSE, conditions = NULL, path = NULL) {
+                             n_repetitions = 1000, overwrite = FALSE, conditions = NULL) {
 
   # Input validation downstream
   # Define all available comparison measures if not specified
   if (is.null(measures))
     measures <- c("estimate_comparison")
 
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
 
   # Ensure output directory exists
   output_folder <- file.path(path, dgm_name, "measures")
@@ -348,15 +348,15 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     # If overwrite is TRUE, remove existing file to start fresh
     if (overwrite && file.exists(output_file)) {
       if (verbose)
-        cat("Overwriting existing", measure, "comparison results at", output_file, "\n")
+        message("Overwriting existing ", measure, " comparison results at ", output_file)
       file.remove(output_file)
     }
 
     if (verbose) {
       if (file.exists(output_file) && !overwrite) {
-        cat("Computing missing", measure, "comparison results...\n")
+        message("Computing missing ", measure, " comparison results...")
       } else {
-        cat("Computing", measure, "comparisons...\n")
+        message("Computing ", measure, " comparisons...")
       }
     }
 
@@ -371,15 +371,14 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       convergence_col     = convergence_col,
       method_replacements = method_replacements,
       n_repetitions       = n_repetitions,
-      overwrite           = overwrite,
-      path                = path
+      overwrite           = overwrite
     )
 
     # Save results (measure_result already contains combined existing + new results if applicable)
     utils::write.csv(measure_result, file = output_file, row.names = FALSE)
 
     if (verbose)
-      cat("Saved", measure, "comparison results to", output_file, "\n")
+      message("Saved ", measure, " comparison results to ", output_file)
 
     results[[measure]] <- measure_result
   }

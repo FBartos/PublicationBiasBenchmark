@@ -74,6 +74,11 @@ simulate_dgm <- function(dgm_name, settings) {
 #'
 #' @inheritParams simulate_dgm
 #' @inheritSection simulate_dgm Output Structure
+#'
+#' @return A data frame with simulated data following the structure described
+#' in the Output Structure section. This is an S3 generic method that dispatches
+#' to specific DGM implementations based on \code{dgm_name}.
+#'
 #' @seealso [simulate_dgm()]
 #' @examples
 #'
@@ -93,6 +98,10 @@ dgm <- function(dgm_name, settings) {
 
 #' @title Default DGM handler
 #' @inheritParams dgm
+#'
+#' @return Throws an error indicating the DGM type is unknown. This default
+#' method is only called when no specific DGM implementation is found for the
+#' given \code{dgm_name}.
 #'
 #' @export
 dgm.default <- function(dgm_name, settings) {

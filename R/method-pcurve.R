@@ -127,7 +127,7 @@ method_extra_columns.pcurve <- function(method_name)
 # this code mirrors the functionality of the original loss function
 # written by Simonsohn et al.
 .method_pcurve_pcurve_loss <- function(pc_data, dobs) {
-  options(warn=-1)
+  #options(warn=-1)
   t.sig <- pc_data$t_obs
   df.sig <- pc_data$df_obs
   ncp_est <- sqrt((df.sig+2)/4)*dobs
@@ -147,7 +147,7 @@ method_extra_columns.pcurve <- function(method_name)
   # print progression of loss function
   #cat(paste0("dobs=", round(dobs, 3), "; loss=", round(KSD, 3), "\n"))
 
-  options(warn=0)
+  #options(warn=0)
   return(KSD)
 }
 

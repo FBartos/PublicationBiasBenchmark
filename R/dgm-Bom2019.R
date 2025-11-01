@@ -190,7 +190,9 @@ dgm_conditions.Bom2019 <- function(dgm_name) {
       output[i,2]=stats::coefficients(out)[2];
       output[i,3]=sqrt(diag(stats::vcov(out)))[2];
       output[i,4]=((summary(out)$coefficients[2,4]<=0.05)*(0<=summary(out)$coefficients[2,1]));
-    } else { cat("Publication Bias Error", "\n"); }
+    } else { 
+      warning("Publication Bias Error")
+    }
   }
   return(output)
 }

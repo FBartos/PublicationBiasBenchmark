@@ -16,7 +16,6 @@ compare_single_measure(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  path = NULL,
   ...
 )
 }
@@ -52,11 +51,6 @@ Defaults to \code{NULL}, i.e., omitting repetitions without converged results on
 
 \item{overwrite}{Logical indicating whether to overwrite existing files.
 Defaults to \code{FALSE}, which means only missing files will be downloaded.}
-
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-should be saved. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{...}{Additional arguments passed to measure functions}
 }

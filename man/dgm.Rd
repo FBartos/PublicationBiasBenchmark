@@ -12,6 +12,11 @@ dgm(dgm_name, settings)
 \item{settings}{List containing the required parameters for the DGM or
 numeric condition_id}
 }
+\value{
+A data frame with simulated data following the structure described
+in the Output Structure section. This is an S3 generic method that dispatches
+to specific DGM implementations based on \code{dgm_name}.
+}
 \description{
 S3 Method for defining data-generating mechanisms. See \code{\link[=simulate_dgm]{simulate_dgm()}} for
 usage and further details.

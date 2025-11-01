@@ -749,7 +749,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
 
   }
 
-  else{print('ERROR: define QRP strategy')}
+  else{stop('define QRP strategy')}
 
   #return the result
   return(a)
@@ -795,7 +795,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
   } else if (qrpEnv == 'high'){
     noneP = 0.10; modP = 0.40; aggP = 0.50
   } else {
-    print('ERROR: qrpEnv must be none, low, medium, or high')
+    stop('qrpEnv must be none, low, medium, or high')
   }
 
 
@@ -833,7 +833,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
 
     if (publish == 1) {
       datMA <- rbind(datMA, res)
-      if (verbose==TRUE) print(nrow(datMA))
+      if (verbose==TRUE) message(nrow(datMA))
     }
 
     if (nrow(datMA) >= k) {break}

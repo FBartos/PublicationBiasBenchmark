@@ -9,21 +9,12 @@
 #' and repository access.
 #'
 #' @param dgm_name Character string specifying the name of the DGM dataset to upload.
-#' @param path Character string specifying the directory path where the datasets/results/measures
-#' are located. Defaults to the location specified via
-#' \code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are read
-#' from dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #' @param overwrite Logical indicating whether to overwrite existing files on OSF.
 #' Defaults to \code{TRUE} for performance measures and \code{FALSE} for results and datasets
 #' @param progress Logical indicating whether to show progress uploading files. Defaults to \code{TRUE}.
 #' @param max_try Integet specifying how many times should the function attempt reconnecting to OSF upon failure.
 #'
 #' @return \code{TRUE} if the upload was successful, otherwise an error is raised.
-#'
-#' @examples
-#' \dontrun{
-#'   upload_dgm_datasets("no_bias")
-#' }
 #'
 #' @keywords internal
 #' @aliases upload_dgm_datasets upload_dgm_results upload_dgm_measures
@@ -32,28 +23,29 @@ NULL
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_datasets <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .upload_dgm_fun(dgm_name, what = "data", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
+upload_dgm_datasets <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .upload_dgm_fun(dgm_name, what = "data", overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_results <- function(dgm_name, path = NULL, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .upload_dgm_fun(dgm_name, what = "results", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
+upload_dgm_results <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
+  .upload_dgm_fun(dgm_name, what = "results", overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 #' @rdname upload_dgm
 #' @keywords internal
-upload_dgm_measures <- function(dgm_name, path = NULL, overwrite = TRUE, progress = TRUE, max_try = 10) {
-  .upload_dgm_fun(dgm_name, what = "measures", path = path, overwrite = overwrite, progress = progress, max_try = max_try)
+upload_dgm_measures <- function(dgm_name, overwrite = TRUE, progress = TRUE, max_try = 10) {
+  .upload_dgm_fun(dgm_name, what = "measures", overwrite = overwrite, progress = progress, max_try = max_try)
 }
 
 
-.upload_dgm_fun <- function(dgm_name, what, path, overwrite, progress, max_try) {
+.upload_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try) {
 
+  path <- PublicationBiasBenchmark.get_option("resources_directory")
   if (is.null(path))
-    path <- PublicationBiasBenchmark.get_option("simulation_directory")
-
+    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  
   # get link to the repository
   osf_link <- .get_osf_link(dgm_name)
 

@@ -7,37 +7,14 @@
 \alias{upload_dgm_measures}
 \title{Upload Datasets of a DGM}
 \usage{
-upload_dgm_datasets(
-  dgm_name,
-  path = NULL,
-  overwrite = FALSE,
-  progress = TRUE,
-  max_try = 10
-)
+upload_dgm_datasets(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10)
 
-upload_dgm_results(
-  dgm_name,
-  path = NULL,
-  overwrite = FALSE,
-  progress = TRUE,
-  max_try = 10
-)
+upload_dgm_results(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10)
 
-upload_dgm_measures(
-  dgm_name,
-  path = NULL,
-  overwrite = TRUE,
-  progress = TRUE,
-  max_try = 10
-)
+upload_dgm_measures(dgm_name, overwrite = TRUE, progress = TRUE, max_try = 10)
 }
 \arguments{
 \item{dgm_name}{Character string specifying the name of the DGM dataset to upload.}
-
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-are located. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are read
-from dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing files on OSF.
 Defaults to \code{TRUE} for performance measures and \code{FALSE} for results and datasets}
@@ -56,11 +33,5 @@ to the OSF repository at \url{https://osf.io/exf3m/}.
 This is an internal function intended for the benchmark maintainer.
 It requires OSF repository authentication (via \code{osfr::osf_auth()})
 and repository access.
-}
-\examples{
-\dontrun{
-  upload_dgm_datasets("no_bias")
-}
-
 }
 \keyword{internal}

@@ -10,7 +10,6 @@ retrieve_dgm_measures(
   method = NULL,
   method_setting = NULL,
   condition_id = NULL,
-  path = NULL,
   replacement = FALSE
 )
 }
@@ -26,11 +25,6 @@ All measures can be returned by setting to \code{NULL}.}
 
 \item{condition_id}{which conditions should settings be returned for.}
 
-\item{path}{Character string specifying the directory path where the datasets/results/measures
-should be saved. Defaults to the location specified via
-\code{PublicationBiasBenchmark.get_option("simulation_directory")}. The objects are stored
-in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.}
-
 \item{replacement}{Whether performance measures computed using replacement should be returned. Defaults to \code{FALSE}.}
 }
 \value{
@@ -42,7 +36,7 @@ Data-Generating Mechanism (DGM). The pre-computed measures must be already store
 locally. See \code{\link[=download_dgm_measures]{download_dgm_measures()}} function for more guidance.
 }
 \examples{
-\dontrun{
+\donttest{
   # get bias measures for all methods and conditions
   retrieve_dgm_measures("no_bias", measure = "bias")
 
