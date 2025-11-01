@@ -42,9 +42,7 @@ upload_dgm_measures <- function(dgm_name, overwrite = TRUE, progress = TRUE, max
 
 .upload_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try) {
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
   
   # get link to the repository
   osf_link <- .get_osf_link(dgm_name)

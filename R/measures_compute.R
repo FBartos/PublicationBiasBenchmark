@@ -97,9 +97,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   # Create a file name
   file_name <- paste0(measure_name, if (is.null(method_replacements) || length(method_replacements) == 0) ".csv" else "-replacement.csv")
 
-  path <- PublicationBiasBenchmark.get_option("resources_directory")
-  if (is.null(path))
-    stop("The resources location needs to be specified via the `PublicationBiasBenchmark.get_option('resources_directory')` function.", call. = FALSE)
+  path <- .get_path()
   
   output_folder <- file.path(path, dgm_name, "measures")
   output_file   <- file.path(output_folder, file_name)
