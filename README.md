@@ -94,6 +94,12 @@ Install latest development version from GitHub
 remotes::install_github("FBartos/PublicationBiasBenchmark")
 ```
 
+### Versions
+
+Addition or modification of a method or data-generating mechanisms is
+always reflected in a minor version update. Minor changes to
+infrastructure etc are reflected in patch updates.
+
 ## Usage
 
 ``` r
