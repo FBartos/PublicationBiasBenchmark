@@ -3,6 +3,18 @@ README
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+
+[![CRAN
+check](https://github.com/FBartos/PublicationBiasBenchmark/workflows/R-CMD-check/badge.svg)](https://github.com/FBartos/PublicationBiasBenchmark/actions)
+[![R
+tests](https://github.com/FBartos/PublicationBiasBenchmark/workflows/test-package/badge.svg)](https://github.com/FBartos/PublicationBiasBenchmark/actions)
+[![Benchmark
+Site](https://github.com/FBartos/PublicationBiasBenchmark/workflows/pkgdown/badge.svg)](https://github.com/FBartos/PublicationBiasBenchmark/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/PublicationBiasBenchmark)](https://CRAN.R-project.org/package=PublicationBiasBenchmark)
+<!-- badges: end -->
+
 # PublicationBiasBenchmark
 
 **PublicationBiasBenchmark** is an R package for benchmarking
@@ -70,8 +82,15 @@ The rest of this file overviews the main features of the package.
 
 ## Installation
 
+Install the released CRAN version
+
 ``` r
-# Install from GitHub
+install.packages("PublicationBiasBenchmark")
+```
+
+Install latest development version from GitHub
+
+``` r
 remotes::install_github("FBartos/PublicationBiasBenchmark")
 ```
 

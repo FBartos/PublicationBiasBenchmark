@@ -1,3 +1,6 @@
-# PublicationBiasBenchmark 0.1.0
+# 0.1.1
+## Fixes
+ - Documentation updates
 
-* Initial CRAN submission.
+# 0.1.0
+Initial CRAN submission.

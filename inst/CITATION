@@ -19,11 +19,11 @@ bibentry(
   author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
   year     = sub("-.*", "", meta$Date),
   note     = sprintf("version %s", meta$Version),
-  url      = "https://github.com/FBartos/PublicationBiasBenchmark",
+  url      = "https://cran.r-project.org/package=PublicationBiasBenchmark",
   textVersion = paste(
     "Bartoš, F., Pawel, S., & Siepe, B. S. (2025).",
     sprintf("PublicationBiasBenchmark: Benchmark for publication bias correction methods (version %s).", meta$Version),
-    "https://github.com/FBartos/PublicationBiasBenchmark"
+    "https://cran.r-project.org/package=PublicationBiasBenchmark"
   ),
   header   = "For the publication bias benchmark R package please cite:"
 )
