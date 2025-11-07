@@ -210,6 +210,14 @@ create_empty_result <- function(method_name, note, extra_columns = NULL) {
 #' (method, estimate, standard_error, ci_lower, ci_upper, p_value, BF,
 #' convergence, note) that each method returns.
 #'
+#' When implementing new methods, consider using standardized column names
+#' for consistency: \describe{
+#'   \item{Heterogeneity}{\code{tau_estimate}, \code{tau_ci_lower}, \code{tau_ci_upper},
+#'         \code{tau_p_value}, \code{tau_BF}}
+#'   \item{Publication Bias}{\code{bias_coefficient}, \code{bias_coefficient_se},
+#'         \code{bias_p_value}, \code{bias_BF}}
+#' }
+#'
 #' @param method_name Character string of the method name
 #'
 #' @return Character vector of extra column names, or empty character vector

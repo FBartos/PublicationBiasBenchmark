@@ -24,6 +24,14 @@ Retrieves the character vector of custom columns for a given method.
 These are method-specific columns beyond the standard columns
 (method, estimate, standard_error, ci_lower, ci_upper, p_value, BF,
 convergence, note) that each method returns.
+
+When implementing new methods, consider using standardized column names
+for consistency: \describe{
+\item{Heterogeneity}{\code{tau_estimate}, \code{tau_ci_lower}, \code{tau_ci_upper},
+\code{tau_p_value}, \code{tau_BF}}
+\item{Publication Bias}{\code{bias_coefficient}, \code{bias_coefficient_se},
+\code{bias_p_value}, \code{bias_BF}}
+}
 }
 \examples{
 # Get extra columns for PET method
