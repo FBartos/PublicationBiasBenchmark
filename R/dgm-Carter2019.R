@@ -747,9 +747,7 @@ dgm_conditions.Carter2019 <- function(dgm_name) {
                  multDV=1,out=1,mod=1) # AGGRESSIVE
     }
 
-  }
-
-  else{stop("Invalid QRP strategy. Must be one of: 'none', 'mod', 'agg'")}
+  }else{stop("Invalid QRP strategy. Must be one of: 'none', 'mod', 'agg'")}
 
   #return the result
   return(a)
