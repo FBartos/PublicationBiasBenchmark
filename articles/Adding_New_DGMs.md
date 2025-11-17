@@ -1,0 +1,219 @@
+# Adding New Data-Generating Mechanisms
+
+This vignette explains how to add new data-generating mechanisms (DGMs)
+to the `PublicationBiasBenchmark` package. In the following, we will use
+the `no_bias` DGM as an example. (See the [Using Presimulated
+Datasets](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Presimulated_Datasets.md)
+vignette for details on working with the already stored simulated
+datasets.)
+
+## Overview
+
+Each DGM in the package consists of three key components:
+
+1.  **Main DGM function**: Implements the data-generating mechanism
+2.  **Validation function**: Validates input parameters and settings  
+3.  **Conditions function**: Defines pre-specified conditions
+
+All three functions must be implemented in a single file named
+`dgm-{DGM_NAME}.R` in the `R/` directory. Implementation of these three
+functions allows users to generate data from the DGM via the
+[`simulate_dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/simulate_dgm.md)
+function.
+
+## File Structure and Naming
+
+For a DGM called “no_bias”, you need to create a file named
+`R/dgm-no_bias.R` containing three functions:
+
+- [`dgm.no_bias()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.no_bias.md):
+  The main data-generating mechanism implementation
+- `validate_dgm_setting.no_bias()`: Parameter validation
+- `dgm_conditions.no_bias()`: Pre-defined conditions
+
+The naming pattern is crucial for the package’s S3 method dispatch
+system to work correctly.
+
+## 1. Main DGM Function: `dgm.{DGM_NAME}()`
+
+This is the core function that implements your data-generating
+mechanism. Here is the `no_bias` implementation as an example:
+
+``` r
+#' @title Normal Unbiased Data-Generating Mechanism
+#'
+#' @description
+#' An example data-generating mechanism to simulate effect sizes without
+#' publication bias.
+#'
+#' @param dgm_name DGM name (automatically passed)
+#' @param settings List containing \describe{
+#'   \item{mean_effect}{Mean effect}
+#'   \item{heterogeneity}{Effect heterogeneity}
+#'   \item{n_studies}{Number of effect size estimates}
+#' }
+#'
+#'
+#' @return Data frame with \describe{
+#'   \item{yi}{effect size}
+#'   \item{sei}{standard error}
+#' }
+#'
+#' @references
+#' \insertAllCited{}
+#'
+#' @seealso [dgm()], [validate_dgm_setting()]
+#' @export
+dgm.no_bias <- function(dgm_name, settings) {
+
+  # Extract settings
+  n_studies     <- settings[["n_studies"]]
+  mean_effect   <- settings[["mean_effect"]]
+  heterogeneity <- settings[["heterogeneity"]]
+
+  # Simulate sample sizes based on empirical distribution
+  N_shape <- 2
+  N_scale <- 58
+  N_low   <- 25
+  N_high  <- 500
+
+  N_seq <- seq(N_low, N_high, 1)
+  N_den <- stats::dnbinom(N_seq, size = N_shape, prob = 1/(N_scale+1)) /
+      (stats::pnbinom(N_high, size = N_shape, prob = 1/(N_scale+1)) - 
+       stats::pnbinom(N_low - 1, size = N_shape, prob = 1/(N_scale+1)))
+
+  N <- sample(N_seq, n_studies, TRUE, N_den)
+
+  # Compute standard errors based on sample sizes (Cohen's d formula)
+  standard_errors <- sqrt(4/N)
+
+  # Simulate true effect sizes with heterogeneity
+  effect_sizes <- stats::rnorm(n_studies, mean_effect, 
+                              sqrt(heterogeneity^2 + standard_errors^2))
+
+  # Return standardized data frame
+  data <- data.frame(
+    yi  = effect_sizes,
+    sei = standard_errors,
+    ni  = N
+  )
+
+  return(data)
+}
+```
+
+### Key Requirements for the Main Function:
+
+**Input Parameters:**
+
+- `dgm_name`: Automatically passed by the framework
+- `settings`: Named list containing all DGM parameters or the
+  `condition_id` value
+
+**Output:** Must return a data frame with these **required columns**:
+
+- `yi`: Effect sizes
+- `sei`: Standard errors
+- `ni`: Sample sizes
+- `es_type`: Type of effect size (e.g., “SMD”, “logOR”, “none”)
+
+**Optional additional columns** (commonly used):
+
+- `study_id`: Unique identifier for each study/cluster (in the presence
+  of multilevel/clustered data)
+
+## 2. Validation Function: `validate_dgm_setting.{DGM_NAME}()`
+
+This function validates that all required parameters are provided and
+have valid values:
+
+``` r
+#' @export
+validate_dgm_setting.no_bias <- function(dgm_name, settings) {
+
+  # Check that all required settings are specified
+  required_params <- c("n_studies", "mean_effect", "heterogeneity")
+  missing_params <- setdiff(required_params, names(settings))
+  if (length(missing_params) > 0)
+    stop("Missing required settings: ", paste(missing_params, collapse = ", "))
+
+  # Extract settings for validation
+  n_studies     <- settings[["n_studies"]]
+  mean_effect   <- settings[["mean_effect"]]
+  heterogeneity <- settings[["heterogeneity"]]
+
+  # Validate each parameter
+  if (length(n_studies) != 1 || !is.numeric(n_studies) || is.na(n_studies) || 
+      !is.wholenumber(n_studies) || n_studies < 1)
+    stop("'n_studies' must be an integer larger than 0")
+  
+  if (length(mean_effect) != 1 || !is.numeric(mean_effect) || is.na(mean_effect))
+    stop("'mean_effect' must be numeric")
+  
+  if (length(heterogeneity) != 1 || !is.numeric(heterogeneity) || 
+      is.na(heterogeneity) || heterogeneity < 0)
+    stop("'heterogeneity' must be non-negative")
+
+  return(invisible(TRUE))
+}
+```
+
+### Key Points for Validation:
+
+- Check for missing required parameters
+- Validate parameter types (numeric, integer, character, etc.)
+- Check parameter ranges and constraints
+- Provide clear, informative error messages
+- Return `invisible(TRUE)` on successful validation
+- Use [`stop()`](https://rdrr.io/r/base/stop.html) for validation
+  failures
+
+## 3. Conditions Function: `dgm_conditions.{DGM_NAME}()`
+
+This function defines pre-specified conditions for benchmarking studies:
+
+``` r
+#' @export
+dgm_conditions.no_bias <- function(dgm_name) {
+
+  # Generate a grid of pre-specified settings
+  settings <- data.frame(expand.grid(
+    mean_effect    = c(0, 0.3),
+    heterogeneity  = c(0, 0.15),
+    n_studies      = c(10, 100)
+  ))
+
+  # Attach unique condition identifiers
+  settings$condition_id <- 1:nrow(settings)
+
+  return(settings)
+}
+```
+
+Always add a `condition_id` column with unique identifiers. This column
+is used for generating data from the pre-defined conditions.
+
+Once defined, these settings cannot be changed retrospectively to ensure
+reproducibility and continuity of the benchmark.
+
+## Using Your New DGM
+
+Once implemented, your DGM can be used through a unified interface:
+
+``` r
+# Use with custom settings
+data <- simulate_dgm("no_bias", list(
+  mean_effect = 0.2,
+  heterogeneity = 0.1,
+  n_studies = 50
+))
+head(data)
+
+# Use with pre-defined conditions
+data <- simulate_dgm("no_bias", settings = 1)
+head(data)
+
+# View available conditions
+conditions <- dgm_conditions("no_bias")
+conditions
+```

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,9 +155,8 @@ strategies in simulation studies.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/FBartos/PublicationBiasBenchmark" class="external-link">PublicationBiasBenchmark</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Verify the directory containing results</span></span>
-<span><span class="va">data_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PublicationBiasBenchmark_options.html">PublicationBiasBenchmark.get_option</a></span><span class="op">(</span><span class="st">"simulation_directory"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Working directory:"</span>, <span class="va">data_folder</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Specify path to the directory containing results</span></span>
+<span><span class="fu"><a href="../reference/PublicationBiasBenchmark_options.html">PublicationBiasBenchmark.options</a></span><span class="op">(</span>resources_directory <span class="op">=</span> <span class="st">"/path/to/files"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-2-define-dgms-and-methods">Step 2: Define DGMs and Methods<a class="anchor" aria-label="anchor" href="#step-2-define-dgms-and-methods"></a>
@@ -392,7 +391,7 @@ We will be happy to incorporate your suggestions!</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

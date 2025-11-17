@@ -1,0 +1,496 @@
+# README
+
+# PublicationBiasBenchmark
+
+**PublicationBiasBenchmark** is an R package for benchmarking
+publication bias correction methods through simulation studies. It
+provides:  
+- Predefined data-generating mechanisms from the literature  
+- Functions for running meta-analytic methods on simulated data  
+- Pre-simulated datasets and pre-computed results for reproducible
+benchmarks  
+- Tools for visualizing and comparing method performance
+
+All datasets and results are hosted on OSF:
+<https://doi.org/10.17605/OSF.IO/EXF3M>
+
+For the methodology of living synthetic benchmarks please cite:
+
+> Bartoš, F., Pawel, S., & Siepe, B. S. (2025). Living synthetic
+> benchmarks: A neutral and cumulative framework for simulation studies.
+> *arXiv Preprint*. <https://doi.org/10.48550/arXiv.2510.19489>
+
+For the publication bias benchmark R package please cite:
+
+> Bartoš, F., Pawel, S., & Siepe, B. S. (2025).
+> PublicationBiasBenchmark: Benchmark for publication bias correction
+> methods (version 0.1.0).
+> <https://github.com/FBartos/PublicationBiasBenchmark>
+
+Overviews of the benchmark results are available as articles on the
+package website:
+
+- [Overall
+  Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html)
+- [Stanley
+  (2017)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2017.html)
+- [Alinaghi
+  (2018)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Alinaghi2018.html)
+- [Bom
+  (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Bom2019.html)
+- [Carter
+  (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.html)
+
+Contributor guidelines for extending the package with data-generating
+mechanisms, methods, and results are available at:
+
+- [How to add a new data-generating
+  mechanism](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html)
+- [How to add a new
+  method](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html)
+- [How to compute method
+  results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.html)
+- [How to compute method
+  measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.html)
+
+Illustrations of how to use the precomputed datasets, results, and
+measures are available at:
+
+- [How to use presimulated
+  datasets](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Presimulated_Datasets.html)
+- [How to use precomputed
+  results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Results.html)
+- [How to use precomputed
+  measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Measures.html)
+
+The rest of this file overviews the main features of the package.
+
+## Installation
+
+Install the released CRAN version
+
+``` r
+install.packages("PublicationBiasBenchmark")
+```
+
+Install latest development version from GitHub
+
+``` r
+remotes::install_github("FBartos/PublicationBiasBenchmark")
+```
+
+### Versions
+
+Addition or modification of a method or data-generating mechanisms is
+always reflected in a minor version update. Minor changes to
+infrastructure etc are reflected in patch updates.
+
+## Usage
+
+``` r
+library(PublicationBiasBenchmark)
+```
+
+### Simulating From Existing Data-Generating Mechanisms
+
+``` r
+# Obtain a data.frame with pre-defined conditions
+dgm_conditions("Stanley2017")
+
+# simulate the data from the second condition
+df <- simulate_dgm("Stanley2017", 2)
+
+# fit a method
+run_method("RMA", df)
+```
+
+### Using Pre-Simulated Datasets
+
+``` r
+# download the pre-simulated datasets
+# (the intended location for storing the package resources needs to be specified)
+PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
+download_dgm_datasets("no_bias")
+
+# retrieve first repetition of first condition from the downloaded datasets
+retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
+```
+
+### Using Pre-Computed Results
+
+``` r
+# download the pre-computed results
+download_dgm_results("no_bias")
+
+# retrieve results the first repetition of first condition of RMA from the downloaded results
+retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id = 1)
+
+# retrieve all results across all conditions and repetitions
+retrieve_dgm_results("no_bias")
+```
+
+### Using Pre-Computed Measures
+
+``` r
+# download the pre-computed measures
+download_dgm_measures("no_bias")
+
+# retrieve measures of bias the first condition of RMA from the downloaded results
+retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id = 1)
+
+# retrieve all measures across all conditions and measures
+retrieve_dgm_measures("no_bias")
+```
+
+### Simulating From an Existing DGM With Custom Settings
+
+``` r
+# define sim setting
+sim_settings <- list(
+  n_studies     = 100,
+  mean_effect   = 0.3,
+  heterogeneity = 0.1
+)
+
+# check whether it is feasible
+# (defined outside of the function - not to decrease performance during simulation)
+validate_dgm_setting("no_bias", sim_settings)
+
+# simulate the data
+df <- simulate_dgm("no_bias", sim_settings)
+
+# fit a method
+run_method("RMA", df)
+```
+
+### Key Functions
+
+#### Data-Generating Mechanisms
+
+- [`simulate_dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/simulate_dgm.md):
+  Generates simulated data according to specified data-generating
+  mechanism and settings.
+- [`dgm_conditions()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm_conditions.md):
+  Lists prespecified conditions of the data-generating mechanism.
+- [`validate_dgm_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/validate_dgm_setting.md):
+  Validates (custom) setting of the data-generating mechanism.
+- [`download_dgm_datasets()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md):
+  Downloads pre-simulated datasets from the OSF repository.
+- [`retrieve_dgm_dataset()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_dataset.md):
+  Retrieves the pre-simulated dataset of a given condition and
+  repetition from downloaded from the pre-downloaded OSF repository.
+
+#### Method Estimation And Results
+
+- [`run_method()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/run_method.md):
+  Estimates method on a supplied data according to the specified
+  settings.
+- [`method_settings()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.md):
+  Lists prespecified settings of the method.
+- [`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md):
+  Downloads pre-computed results from the OSF repository.
+- [`retrieve_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_results.md):
+  Retrieves the pre-computed results of a given method, condition, and
+  repetition from the pre-downloaded OSF repository.
+
+#### Performance measures And Results
+
+- [`bias()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md),
+  [`bias_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md),
+  etc.: Functions to compute performance measures and their Monte Carlo
+  standard errors.
+- [`download_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md):
+  Downloads pre-computed performance measures from the OSF repository.
+- [`retrieve_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_measures.md):
+  Retrieves the pre-computed performance measures of a given method,
+  condition, and repetition from the pre-downloaded OSF repository.
+
+### Available Data-Generating Mechanisms
+
+See `methods("dgm")` for the full list:
+
+- `"no_bias"`: Generates data without publication bias (a test
+  simulation)
+- `"Stanley2017"`: Stanley et al. (2017)
+- `"Alinaghi2018"`: Alinaghi & Reed (2018)
+- `"Bom2019"`: Bom & Rachinger (2019)
+- `"Carter2019"`: Carter et al. (2019)
+
+### Available Methods
+
+See `methods("method")` for the full list:
+
+- `"mean"`: Mean effects size
+- `"FMA"`: Fixed effects meta-analysis
+- `"RMA"`: Random effects meta-analysis
+- `"WLS"`: Weighted Least Squares
+- `"trimfill"`: Trim-and-Fill (Duval & Tweedie, 2000)
+- `"WAAPWLS"`: Weighted Least Squares - Weighted Average of Adequately
+  Power Studies (Stanley et al., 2017)
+- `"WILS"`: Weighted and Iterated Least Squares (Stanley & Doucouliagos,
+  2024. 
+- `"PET"`: Precision-Effect Test (PET) publication bias adjustment
+  (Stanley & Doucouliagos, 2014)
+- `"PEESE"`: Precision-Effect Estimate with Standard Errors (PEESE)
+  publication bias adjustment (Stanley & Doucouliagos, 2014)
+- `"PETPEESE"`: Precision-Effect Test and Precision-Effect Estimate with
+  Standard Errors (PET-PEESE) publication bias adjustment (Stanley &
+  Doucouliagos, 2014)
+- `"EK"`: Endogenous Kink (Bom & Rachinger, 2019)
+- `"SM"`: Selection Models (3PSM, 4PSM) (Vevea & Hedges, 1995)
+- `"pcurve"`: P-curve (Simonsohn et al., 2014)
+- `"puniform"`: P-uniform (van Assen et al., 2015) and P-uniform\* (van
+  Aert & van Assen, 2025)
+- `"AK"`: Andrews & Kasy selection models (AK1, AK2) (Andrews & Kasy,
+  2019. 
+- `"RoBMA"`: Robust Bayesian Meta-Analysis (Bartoš et al., 2023)
+
+### Available Performance Measures
+
+See
+[`?measures`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+for the full list of performance measures and their Monte Carlo standard
+errors/
+
+### DGM OSF Repositories
+
+All DGMs are linked to the OSF repository (<https://osf.io/exf3m/>) and
+contain the following elements:
+
+- `data` : folder containing by-condition simulated datasets for all
+  repetitions
+- `results` : folder containing by-method results for all conditions \*
+  repetitions
+- `measures` : folder containing by-measure performance for all methods
+  \* conditions
+- `metadata` : folder containing the following information:
+  - `dgm-conditions.csv` : file mapping of all conditions and the
+    corresponding settings
+  - `dgm-generation.R` : file with code for exact reproduction of the
+    pre-simulated datasets
+  - `dgm-sessionInfo.txt`: file with reproducibility details for the
+    pre-simulated datasets
+  - `dgm-session.log`: file with reproducibility details for the
+    pre-simulated datasets (based on sessioninfo package)
+  - `results.R` : file with code for exact reproduction of the by method
+    results (might be method / method groups specific)
+  - `results-sessionInfo.txt`: file with reproducibility details for the
+    precomputed results (might be method / method groups specific)
+  - `pm-computation.R` : file with code for computation of performance
+    measures
+
+### References
+
+Alinaghi, N., & Reed, W. R. (2018). Meta-analysis and publication bias:
+How well does the FAT-PET-PEESE procedure work? *Research Synthesis
+Methods*, *9*(2), 285–311. <https://doi.org/10.1002/jrsm.1298>
+
+Andrews, I., & Kasy, M. (2019). Identification of and correction for
+publication bias. *American Economic Review*, *109*(8), 2766–2794.
+<https://doi.org/10.1257/aer.20180310>
+
+Bartoš, F., Maier, M., Wagenmakers, E.-J., Doucouliagos, H., & Stanley,
+T. (2023). Robust bayesian meta-analysis: Model-averaging across
+complementary publication bias adjustment methods. *Research Synthesis
+Methods*, *14*(1), 99–116. <https://doi.org/10.1002/jrsm.1594>
+
+Bom, P. R., & Rachinger, H. (2019). A kinked meta-regression model for
+publication bias correction. *Research Synthesis Methods*, *10*(4),
+497–514. <https://doi.org/10.1002/jrsm.1352>
+
+Carter, E. C., Schönbrodt, F. D., Gervais, W. M., & Hilgard, J. (2019).
+Correcting for bias in psychology: A comparison of meta-analytic
+methods. *Advances in Methods and Practices in Psychological Science*,
+*2*(2), 115–144. <https://doi.org/10.1177/2515245919847196>
+
+Duval, S. J., & Tweedie, R. L. (2000). Trim and fill: A simple
+funnel-plot-based method of testing and adjusting for publication bias
+in meta-analysis. *Biometrics*, *56*(2), 455–463.
+<https://doi.org/10.1111/j.0006-341X.2000.00455.x>
+
+Simonsohn, U., Nelson, L. D., & Simmons, J. P. (2014). P-curve and
+effect size: Correcting for publication bias using only significant
+results. *Perspectives on Psychological Science*, *9*(6), 666–681.
+<https://doi.org/10.1177/1745691614553988>
+
+Stanley, T. D., & Doucouliagos, H. (2014). Meta-regression
+approximations to reduce publication selection bias. *Research Synthesis
+Methods*, *5*(1), 60–78. <https://doi.org/10.1002/jrsm.1095>
+
+Stanley, T. D., & Doucouliagos, H. (2024). Harnessing the power of
+excess statistical significance: Weighted and iterative least squares.
+*Psychological Methods*, *29*(2), 407–420.
+<https://doi.org/10.1037/met0000502>
+
+Stanley, T. D., Doucouliagos, H., & Ioannidis, J. P. (2017). Finding the
+power to reduce publication bias. *Statistics in Medicine*, *36*(10),
+1580–1598. <https://doi.org/10.1002/sim.7228>
+
+van Aert, R. C. M., & van Assen, M. A. L. M. (2025). Correcting for
+publication bias in a meta-analysis with the p-uniform\* method.
+*Psychonomic Bulletin & Review*.
+<https://osf.io/preprints/metaarxiv/zqjr9/>
+
+van Assen, M. A. L. M., van Aert, R. C. M., & Wicherts, J. M. (2015).
+Meta-analysis using effect size distributions of only statistically
+significant studies. *Psychological Methods*, *20*(3), 293–309.
+<https://doi.org/10.1037/met0000025>
+
+Vevea, J. L., & Hedges, L. V. (1995). A general linear model for
+estimating effect size in the presence of publication bias.
+*Psychometrika*, *60*(3), 419–435. <https://doi.org/10.1007/BF02294384>
+
+# Package index
+
+## All functions
+
+- [`PublicationBiasBenchmark.options()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/PublicationBiasBenchmark_options.md)
+  [`PublicationBiasBenchmark.get_option()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/PublicationBiasBenchmark_options.md)
+  : Options for the PublicationBiasBenchmark package
+- [`compare_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/compare_measures.md)
+  : Compare method with Multiple Measures for a DGM
+- [`compare_single_measure()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/compare_single_measure.md)
+  : Compare method with a Single Measure for a DGM
+- [`compute_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/compute_measures.md)
+  : Compute Multiple Performance measures for a DGM
+- [`compute_single_measure()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/compute_single_measure.md)
+  : Compute Performance Measures
+- [`create_empty_result()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/create_empty_result.md)
+  : Create standardized empty method result for convergence failures
+- [`dgm(`*`<Alinaghi2018>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.Alinaghi2018.md)
+  : Alinaghi and Reed (2018) Data-Generating Mechanism
+- [`dgm(`*`<Bom2019>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.Bom2019.md)
+  : Bom and Rachinger (2019) Data-Generating Mechanism
+- [`dgm(`*`<Carter2019>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.Carter2019.md)
+  : Carter et al. (2019) Data-Generating Mechanism
+- [`dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.md)
+  : DGM Method
+- [`dgm(`*`<Stanley2017>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.Stanley2017.md)
+  : Stanley, Doucouliagos, and Ioannidis (2017) Data-Generating
+  Mechanism
+- [`dgm(`*`<default>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.default.md)
+  : Default DGM handler
+- [`dgm(`*`<no_bias>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.no_bias.md)
+  : Normal Unbiased Data-Generating Mechanism
+- [`dgm_conditions()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm_conditions.md)
+  [`get_dgm_condition()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm_conditions.md)
+  : Return Pre-specified DGM Settings
+- [`download_dgm_datasets()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
+  [`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
+  [`download_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
+  : Download Datasets/Results/Measures of a DGM
+- [`bias()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`bias_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`relative_bias()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`relative_bias_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`mse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`mse_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`rmse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`rmse_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`empirical_variance()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`empirical_variance_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`empirical_se()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`empirical_se_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`coverage()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`coverage_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`power()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`power_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`mean_ci_width()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`mean_ci_width_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`mean_generic_statistic()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`mean_generic_statistic_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`positive_likelihood_ratio()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`positive_likelihood_ratio_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`negative_likelihood_ratio()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`negative_likelihood_ratio_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`interval_score()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  [`interval_score_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  : Performance Measures and Monte Carlo Standard Errors
+- [`method(`*`<AK>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.AK.md)
+  : AK Method
+- [`method(`*`<EK>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.EK.md)
+  : Endogenous Kink Method
+- [`method(`*`<FMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.FMA.md)
+  : Fixed Effects Meta-Analysis Method
+- [`method(`*`<PEESE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PEESE.md)
+  : PEESE (Precision-Effect Estimate with Standard Errors) Method
+- [`method(`*`<PET>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PET.md)
+  : PET (Precision-Effect Test) Method
+- [`method(`*`<PETPEESE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PETPEESE.md)
+  : PET-PEESE (Precision-Effect Test and Precision-Effect Estimate with
+  Standard Errors) Method
+- [`method(`*`<RMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RMA.md)
+  : Random Effects Meta-Analysis Method
+- [`method()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.md)
+  : Method Method
+- [`method(`*`<RoBMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RoBMA.md)
+  : Robust Bayesian Meta-Analysis (RoBMA) Method
+- [`method(`*`<SM>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.SM.md)
+  : SM (Selection Models) Method
+- [`method(`*`<WAAPWLS>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.WAAPWLS.md)
+  : WAAPWLS (Weighted Average of Adequately Powered Studies) Method
+- [`method(`*`<WILS>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.WILS.md)
+  : Weighted and Iterated Least Squares (WILS) Method
+- [`method(`*`<WLS>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.WLS.md)
+  : WLS (Weighted Least Squares) Method
+- [`method(`*`<default>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.default.md)
+  : Default method handler
+- [`method(`*`<mean>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.mean.md)
+  : Mean Method
+- [`method(`*`<pcurve>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.pcurve.md)
+  : pcurve (P-Curve) Method
+- [`method(`*`<puniform>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.puniform.md)
+  : puniform (P-Uniform) Method
+- [`method(`*`<trimfill>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.trimfill.md)
+  : Trim-and-Fill Meta-Analysis Method
+- [`get_method_extra_columns()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_extra_columns.md)
+  [`method_extra_columns()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_extra_columns.md)
+  : Method Extra Columns
+- [`method_settings()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.md)
+  [`get_method_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.md)
+  : Return Pre-specified Method Settings
+- [`retrieve_dgm_dataset()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_dataset.md)
+  : Retrieve a Pre-Simulated Condition and Repetition From a DGM
+- [`retrieve_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_measures.md)
+  : Retrieve Pre-Computed Performance measures for a DGM
+- [`retrieve_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_results.md)
+  : Retrieve a Pre-Computed Results of a Method Applied to DGM
+- [`run_method()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/run_method.md)
+  : Generic method function for publication bias correction
+- [`simulate_dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/simulate_dgm.md)
+  : Simulate From Data-Generating Mechanism
+- [`validate_dgm_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/validate_dgm_setting.md)
+  : Validate DGM Settings
+
+# Articles
+
+### All vignettes
+
+- [Adding New Data-Generating
+  Mechanisms](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.md):
+- [Adding New
+  Methods](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.md):
+- [Computing Method
+  Measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.md):
+- [Computing Method
+  Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.md):
+- [Results: Alinaghi
+  (2018)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Alinaghi2018.md):
+- [Results: Bom
+  (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Bom2019.md):
+- [Results: Carter
+  (2019)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Carter2019.md):
+- [Method Replacement
+  Strategy](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Method_Replacement.md):
+- [Results: No
+  bias](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_no_bias.md):
+- [Results: Stanley
+  (2017)](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results_Stanley2017.md):
+- [Results:
+  Overall](https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.md):
+- [Using Precomputed
+  Measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Measures.md):
+- [Using Precomputed
+  Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Precomputed_Results.md):
+- [Using Presimulated
+  Datasets](https://fbartos.github.io/PublicationBiasBenchmark/articles/Using_Presimulated_Datasets.md):

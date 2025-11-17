@@ -1,0 +1,262 @@
+# Computing Method Measures
+
+This vignette explains how to compute performance measures for
+publication bias correction methods across all benchmark conditions.
+This is the final step after computing method results (see [Computing
+Method
+Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.md))
+and allows you to evaluate and compare method performance
+systematically.
+
+If you are contributing a new method to the package, the package
+maintainers will compute and update the precomputed measures upon your
+submission. This vignette is primarily for advanced users who want to
+compute custom measures or update measures for their own analyses.
+
+## Overview
+
+After computing and storing method results for all DGMs, you need to:
+
+1.  **Compute standard performance measures** (bias, RMSE, coverage,
+    power, etc.)
+2.  **Compute measures with method replacement** (for methods with
+    convergence issues)
+3.  **Store the measures** in the appropriate directory structure
+
+This process creates the performance summaries that allow systematic
+comparison of methods across conditions.
+
+## Prerequisites
+
+Before computing measures, ensure that:
+
+1.  Method results have been computed and stored for all DGMs (see
+    [Computing Method
+    Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.md))
+2.  Results files are in the correct directory structure
+
+## Performance Measures
+
+The package computes various performance measures defined in the
+[`measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+documentation. Each measure is computed separately for each
+method-setting-condition combination.
+
+## Method Replacement Strategy
+
+Some methods may fail to converge for certain datasets. The **method
+replacement** strategy handles these cases by:
+
+1.  For each condition, identifying cases where the method fails to
+    converge
+2.  For the failed cases, substituting results from a fallback method(s)
+3.  Computing measures for the condition
+
+For example, if `RMA` fails to converge, it might be replaced with
+simpler `FMA` (fixed-effects) results for those specific cases. Method
+replacement allows us to mimic an analyst analyzing data who would
+choose a different method upon a method failure. See [this
+article](https://doi.org/10.1080/00031305.2025.2540002) for a detailed
+description of different non-convergence handling strategies in
+simulation studies.
+
+## Computing Measures: Step-by-Step Guide
+
+### Step 1: Set Up Your Environment
+
+``` r
+library(PublicationBiasBenchmark)
+
+# Specify path to the directory containing results
+PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
+```
+
+### Step 2: Define DGMs and Methods
+
+Specify which DGMs to process and which methods to compute measures for:
+
+``` r
+# List of DGMs to evaluate
+dgm_names <- c(
+  "Stanley2017",
+  "Alinaghi2018",
+  "Bom2019",
+  "Carter2019"
+)
+
+# Define your new method
+methods_settings <- data.frame(
+  method          = c("myNewMethod"),
+  method_setting  = c("default"),
+  power_test_type = c("p_value")
+)
+```
+
+### Step 3: Compute Performance Measures
+
+Process each DGM to compute both standard and replacement performance
+measures:
+
+``` r
+for (dgm_name in dgm_names) {
+  
+  # Download precomputed results for existing methods (for replacements)
+  download_dgm_results(dgm_name)
+  
+  ### Simple performance metrics ----
+  # Compute primary measures (not dependent on CI or power)
+  compute_measures(
+    dgm_name        = dgm_name,
+    method          = methods_settings$method,
+    method_setting  = methods_settings$method_setting,
+    power_test_type = methods_settings$power_test_type,
+    measures        = c("bias", "relative_bias", "mse", "rmse", 
+                       "empirical_variance", "empirical_se", "convergence"),
+    verbose         = TRUE,
+    estimate_col    = "estimate",
+    true_effect_col = "mean_effect",
+    ci_lower_col    = "ci_lower",
+    ci_upper_col    = "ci_upper",
+    p_value_col     = "p_value",
+    bf_col          = "BF",
+    convergence_col = "convergence",
+    n_repetitions   = 1000,
+    overwrite       = FALSE
+  )
+  
+  # If your method does not return CI or hypothesis test, skip these measures
+  compute_measures(
+    dgm_name        = dgm_name,
+    method          = methods_settings$method,
+    method_setting  = methods_settings$method_setting,
+    power_test_type = methods_settings$power_test_type,
+    measures        = c("power", "coverage", "mean_ci_width", "interval_score", 
+                       "negative_likelihood_ratio", "positive_likelihood_ratio"),
+    verbose         = TRUE,
+    estimate_col    = "estimate",
+    true_effect_col = "mean_effect",
+    ci_lower_col    = "ci_lower",
+    ci_upper_col    = "ci_upper",
+    p_value_col     = "p_value",
+    bf_col          = "BF",
+    convergence_col = "convergence",
+    n_repetitions   = 1000,
+    overwrite       = FALSE
+  )
+  
+  
+  ### Replacement performance metrics ----
+  # Specify method replacement strategy
+  # The most common one: random-effects meta-analysis -> fixed-effect meta-analysis
+  RMA_replacement <- list(
+    method          = c("RMA", "FMA"), 
+    method_setting  = c("default", "default"), 
+    power_test_type = c("p_value", "p_value")
+  )
+  
+  method_replacements <- list(
+    "myNewMethod-default" = RMA_replacement
+  )
+  
+  compute_measures(
+    dgm_name            = dgm_name,
+    method              = methods_settings$method,
+    method_setting      = methods_settings$method_setting,
+    power_test_type     = methods_settings$power_test_type,
+    method_replacements = method_replacements,
+    measures            = c("bias", "relative_bias", "mse", "rmse", 
+                           "empirical_variance", "empirical_se", "convergence"),
+    verbose         = TRUE,
+    estimate_col    = "estimate",
+    true_effect_col = "mean_effect",
+    ci_lower_col    = "ci_lower",
+    ci_upper_col    = "ci_upper",
+    p_value_col     = "p_value",
+    bf_col          = "BF",
+    convergence_col = "convergence",
+    n_repetitions   = 1000,
+    overwrite       = FALSE
+  )
+  
+  # If your method does not return CI or hypothesis test, skip these measures
+  compute_measures(
+    dgm_name            = dgm_name,
+    method              = methods_settings$method,
+    method_setting      = methods_settings$method_setting,
+    power_test_type     = methods_settings$power_test_type,
+    method_replacements = method_replacements,
+    measures            = c("power", "coverage", "mean_ci_width", "interval_score", 
+                           "negative_likelihood_ratio", "positive_likelihood_ratio"),
+    verbose         = TRUE,
+    estimate_col    = "estimate",
+    true_effect_col = "mean_effect",
+    ci_lower_col    = "ci_lower",
+    ci_upper_col    = "ci_upper",
+    p_value_col     = "p_value",
+    bf_col          = "BF",
+    convergence_col = "convergence",
+    n_repetitions   = 1000,
+    overwrite       = FALSE
+  )
+  
+}
+```
+
+## Understanding the Parameters
+
+### Core Parameters
+
+- **dgm_name**: Name of the data-generating mechanism
+- **method**: Vector of method names
+- **method_setting**: Vector of method settings (must match length of
+  `method`)
+- **power_test_type**: How significance is determined (`"p_value"` or
+  `"bayes_factor"`)
+
+### Measure Selection
+
+- **measures**: Vector of measure names to compute (see
+  [`measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
+  for available options)
+
+### Column Mapping
+
+- **estimate_col**: Column name for effect size estimates (default:
+  `"estimate"`)
+- **true_effect_col**: Column name for true effects in conditions
+  (default: `"mean_effect"`)
+- **ci_lower_col**: Column name for CI lower bounds (default:
+  `"ci_lower"`)
+- **ci_upper_col**: Column name for CI upper bounds (default:
+  `"ci_upper"`)
+- **p_value_col**: Column name for p-values (default: `"p_value"`)
+- **bf_col**: Column name for Bayes factors (default: `"BF"`)
+- **convergence_col**: Column name for convergence indicator (default:
+  `"convergence"`)
+
+### Control Parameters
+
+- **n_repetitions**: Expected number of repetitions per condition
+  (default: 1000)
+- **verbose**: Whether to print progress messages (default: TRUE)
+- **overwrite**: Whether to overwrite existing measure files (default:
+  FALSE)
+
+## Contributing to the Package
+
+The package maintainers will compute and update precomputed measures
+when you contribute a new method. If you want to contribute a new
+method:
+
+1.  Implement the method following the [Adding New
+    Methods](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.md)
+    guidelines
+2.  Compute results for all DGMs (see [Computing Method
+    Results](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.md))
+3.  Submit a pull request with your method implementation and results
+4.  Package maintainers will compute the measures and integrate them
+    into the benchmark
+
+Do you want the benchmark to include additional measures or evaluate
+different parameters? Open an issue/contact the benchmark maintainers.
+We will be happy to incorporate your suggestions!

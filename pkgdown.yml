@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   Adding_New_DGMs: Adding_New_DGMs.html
@@ -16,7 +16,7 @@ articles:
   Using_Precomputed_Measures: Using_Precomputed_Measures.html
   Using_Precomputed_Results: Using_Precomputed_Results.html
   Using_Presimulated_Datasets: Using_Presimulated_Datasets.html
-last_built: 2025-10-23T13:50Z
+last_built: 2025-11-17T14:27Z
 urls:
   reference: https://fbartos.github.io/PublicationBiasBenchmark/reference
   article: https://fbartos.github.io/PublicationBiasBenchmark/articles

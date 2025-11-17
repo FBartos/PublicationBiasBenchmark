@@ -15,7 +15,7 @@ for details of extending the package with new DGMs.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,41 +123,41 @@ independent study.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">simulate_dgm</span><span class="op">(</span><span class="st">"Carter2019"</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              yi        sei  ni es_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  -0.027406349 0.28285599  50     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  -0.096607006 0.07837172 652     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   0.016303565 0.25400447  62     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.002914326 0.14990642 178     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  -0.199668025 0.50124431  16     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.169618220 0.20888902  92     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  -0.403814247 0.45174844  20     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   0.250896476 0.27843914  52     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  -0.152818816 0.47209208  18     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.361928439 0.22543004  80     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             yi       sei  ni es_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  -0.36100456 0.3681106  30     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  -0.32997749 0.2643940  58     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   0.70533775 0.4858412  18     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  -0.25994330 0.1255268 256     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0.02979852 0.1474501 184     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.16323063 0.4721889  18     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  -0.28402439 0.2639336  58     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  -0.04741783 0.3015537  44     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  -0.16656330 0.2239942  80     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.29194225 0.3102463  42     SMD</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">simulate_dgm</span><span class="op">(</span><span class="st">"Carter2019"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean_effect <span class="op">=</span> <span class="fl">0</span>, effect_heterogeneity <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                       bias <span class="op">=</span> <span class="st">"high"</span>, QRP <span class="op">=</span> <span class="st">"high"</span>, n_studies <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           yi       sei  ni es_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.7838699 0.3281473  40     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.6203106 0.2961379  48     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.4809701 0.1971873 106     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.1201830 0.1645514 148     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.7183940 0.3273348  40     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.6595228 0.2853888  52     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.2868821 0.1319919 232     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.2173063 0.1052860 363     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  1.0274545 0.2855963  56     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.2882129 0.1368006 216     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            yi       sei  ni es_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.78360290 0.3686681  32     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.04228118 0.2182435  84     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.47544911 0.2255153  81     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.90066316 0.3178459  44     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.72976778 0.3455482  36     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.69439468 0.3116263  44     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  1.18205518 0.5541036  16     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.13864104 0.1049557 364     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.80602118 0.4029696  27     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.51675737 0.2121197  92     SMD</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">simulate_dgm</span><span class="op">(</span><span class="st">"Stanley2017"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>environment <span class="op">=</span> <span class="st">"SMD"</span>, mean_effect <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                        effect_heterogeneity <span class="op">=</span> <span class="fl">0</span>, bias <span class="op">=</span> <span class="fl">0</span>, n_studies <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>                        sample_sizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">32</span>,<span class="fl">64</span>,<span class="fl">125</span>,<span class="fl">250</span>,<span class="fl">500</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             yi        sei   ni es_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 -0.046999782 0.25003451   64     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 -0.115987229 0.17692527  128     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.036326602 0.12650154  250     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.067512997 0.08946820  500     SMD</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.006335243 0.06324571 1000     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            yi        sei   ni es_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.27645111 0.25119131   64     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 -0.14731625 0.17701631  128     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.25515327 0.12700475  250     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 -0.07596428 0.08947497  500     SMD</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -0.03670826 0.06325088 1000     SMD</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -171,7 +171,7 @@ independent study.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

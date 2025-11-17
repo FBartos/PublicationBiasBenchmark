@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -186,27 +186,17 @@ generated.</p>
 from the package repository. The <a href="../reference/download_dgm.html"><code>download_dgm_datasets()</code></a>
 function downloads the datasets for a specified DGM:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download presimulated datasets for the Stanley2017 DGM</span></span>
+<code class="sourceCode R"><span><span class="co"># Specify path to the directory containing resources</span></span>
+<span><span class="fu"><a href="../reference/PublicationBiasBenchmark_options.html">PublicationBiasBenchmark.options</a></span><span class="op">(</span>resources_directory <span class="op">=</span> <span class="st">"/path/to/files"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Download presimulated datasets for the Stanley2017 DGM</span></span>
 <span><span class="fu"><a href="../reference/download_dgm.html">download_dgm_datasets</a></span><span class="op">(</span><span class="st">"Stanley2017"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Note</strong>: Dataset files can be quite large as they
 contain all individual study data across many simulation repetitions.
-Each DGM may require several gigabytes of storage space.</p>
-<div class="section level3">
-<h3 id="specifying-download-location">Specifying Download Location<a class="anchor" aria-label="anchor" href="#specifying-download-location"></a>
-</h3>
-<p>By default, datasets are downloaded to your’s project default
-simulation directory. You can change this location using the package
-options:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set custom download directory</span></span>
-<span><span class="fu"><a href="../reference/PublicationBiasBenchmark_options.html">PublicationBiasBenchmark.options</a></span><span class="op">(</span>simulation_directory <span class="op">=</span> <span class="st">"/path/to/your/directory"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Then download datasets</span></span>
-<span><span class="fu"><a href="../reference/download_dgm.html">download_dgm_datasets</a></span><span class="op">(</span><span class="st">"Stanley2017"</span><span class="op">)</span></span></code></pre></div>
-<p>The datasets are downloaded to a local cache directory and are
-automatically available for subsequent analysis. You only need to
-download them once.</p>
-</div>
+Each DGM may require several gigabytes of storage space. The datasets
+are downloaded to a local cache directory and are automatically
+available for subsequent analysis. You only need to download them
+once.</p>
 </div>
 <div class="section level2">
 <h2 id="retrieving-presimulated-datasets">Retrieving Presimulated Datasets<a class="anchor" aria-label="anchor" href="#retrieving-presimulated-datasets"></a>
@@ -220,7 +210,7 @@ repetitions and conditions.</p>
 </h3>
 <p>You can retrieve a specific simulated meta-analytic dataset by
 specifying the condition and repetition:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Retrieve first repetition of condition 1</span></span>
 <span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_dgm_dataset.html">retrieve_dgm_dataset</a></span><span class="op">(</span></span>
 <span>  dgm <span class="op">=</span> <span class="st">"Stanley2017"</span>,</span>
@@ -240,7 +230,7 @@ specific simulated meta-analysis.</p>
 </h3>
 <p>To retrieve all simulation repetitions for a specific condition, omit
 the <code>repetition_id</code> argument:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Retrieve all repetitions for condition 1</span></span>
 <span><span class="va">all_reps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_dgm_dataset.html">retrieve_dgm_dataset</a></span><span class="op">(</span></span>
 <span>  dgm <span class="op">=</span> <span class="st">"Stanley2017"</span>,</span>
@@ -267,7 +257,7 @@ repetitions without repeatedly calling the retrieve function.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
