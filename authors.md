@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/FBartos/PublicationBiasBenchmark/blob/v0.1.1/inst/CITATION)
 
 Bartoš, F., Pawel, S., & Siepe, B. S. (2025). Living synthetic
 benchmarks: A neutral and cumulative framework for simulation studies.
