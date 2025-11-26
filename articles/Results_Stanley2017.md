@@ -991,7 +991,7 @@ hypothesis was true. A higher power indicates a better method.
 
 ## Session Info
 
-This report was compiled on Wed Nov 26 14:01:09 2025 (UTC) using the
+This report was compiled on Wed Nov 26 14:20:34 2025 (UTC) using the
 following computational environment
 
 ``` r
