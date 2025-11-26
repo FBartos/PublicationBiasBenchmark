@@ -1,10 +1,10 @@
 #' @title Download Datasets/Results/Measures of a DGM
 #'
 #' @description
-#' This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM) 
-#' from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved 
-#' to the location specified via \code{PublicationBiasBenchmark.options(resources_directory = "/path/")}. 
-#' To set the location permanently, specify the PublicationBiasBenchmark_RESOURCES environment 
+#' This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM)
+#' from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved
+#' to the location specified via \code{PublicationBiasBenchmark.options(resources_directory = "/path/")}.
+#' To set the location permanently, specify the PublicationBiasBenchmark_RESOURCES environment
 #' variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 #'
 #' @param dgm_name Character string specifying the name of the DGM dataset to download.
@@ -45,6 +45,10 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
 
 
 .download_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try) {
+
+  # add a warning for missing token
+  if (Sys.getenv("OSF_PAT") == "")
+    stop("Please set up 'OSF_PAT' environmental variable. The file download is unreliable otherwise. See '?osfr::osf_auth' for instructions.", call. = FALSE)
 
   path <- .get_path()
 
@@ -229,7 +233,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
 
   if (missing(dgm_name))
     stop("'dgm_name' must be specified")
-  
+
   path <- .get_path()
 
   # check that the directory / condition folders exist
