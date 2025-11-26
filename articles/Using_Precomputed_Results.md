@@ -106,7 +106,7 @@ repetition:
 retrieve_dgm_results(
   dgm            = "Stanley2017",
   method         = "PETPEESE",
-  method_setting = "default"
+  method_setting = "default",
   condition_id   = 1,
   repetition_id  = 1
 )
@@ -125,7 +125,7 @@ To retrieve all repetitions for a specific condition and method:
 condition_1_results <- retrieve_dgm_results(
   dgm            = "Stanley2017",
   method         = "PETPEESE",
-  method_setting = "default"
+  method_setting = "default",
   condition_id   = 1
 )
 

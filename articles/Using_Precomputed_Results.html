@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +76,7 @@
       <h1>Using Precomputed Results</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/FBartos/PublicationBiasBenchmark/blob/v0.1.1/vignettes/Using_Precomputed_Results.Rmd" class="external-link"><code>vignettes/Using_Precomputed_Results.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/FBartos/PublicationBiasBenchmark/blob/master/vignettes/Using_Precomputed_Results.Rmd" class="external-link"><code>vignettes/Using_Precomputed_Results.Rmd</code></a></small>
       <div class="d-none name"><code>Using_Precomputed_Results.Rmd</code></div>
     </div>
 
@@ -183,14 +183,15 @@ memory.</p>
 </h3>
 <p>You can retrieve results for a specific method, condition, and
 repetition:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Retrieve results for the first repetition of condition 1 for RMA method</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">retrieve_dgm_results</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">dgm            =</span> <span class="st">"Stanley2017"</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">method         =</span> <span class="st">"PETPEESE"</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">method_setting =</span> <span class="st">"default"</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">condition_id   =</span> <span class="dv">1</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">repetition_id  =</span> <span class="dv">1</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Retrieve results for the first repetition of condition 1 for RMA method</span></span>
+<span><span class="fu"><a href="../reference/retrieve_dgm_results.html">retrieve_dgm_results</a></span><span class="op">(</span></span>
+<span>  dgm            <span class="op">=</span> <span class="st">"Stanley2017"</span>,</span>
+<span>  method         <span class="op">=</span> <span class="st">"PETPEESE"</span>,</span>
+<span>  method_setting <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  condition_id   <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  repetition_id  <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>This returns a data frame with a single row containing all the output
 from applying the RMA method to the first simulated dataset in condition
 1.</p>
@@ -199,18 +200,19 @@ from applying the RMA method to the first simulated dataset in condition
 <h3 id="retrieving-all-repetitions-for-a-condition">Retrieving All Repetitions for a Condition<a class="anchor" aria-label="anchor" href="#retrieving-all-repetitions-for-a-condition"></a>
 </h3>
 <p>To retrieve all repetitions for a specific condition and method:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Retrieve all repetitions for condition 1 of RMA method</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>condition_1_results <span class="ot">&lt;-</span> <span class="fu">retrieve_dgm_results</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">dgm            =</span> <span class="st">"Stanley2017"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">method         =</span> <span class="st">"PETPEESE"</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">method_setting =</span> <span class="st">"default"</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">condition_id   =</span> <span class="dv">1</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>)</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># Examine the distribution of estimates</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">hist</span>(condition_1_results<span class="sc">$</span>estimate, </span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Distribution of RMA Estimates"</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Effect Size Estimate"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Retrieve all repetitions for condition 1 of RMA method</span></span>
+<span><span class="va">condition_1_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_dgm_results.html">retrieve_dgm_results</a></span><span class="op">(</span></span>
+<span>  dgm            <span class="op">=</span> <span class="st">"Stanley2017"</span>,</span>
+<span>  method         <span class="op">=</span> <span class="st">"PETPEESE"</span>,</span>
+<span>  method_setting <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  condition_id   <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Examine the distribution of estimates</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">condition_1_results</span><span class="op">$</span><span class="va">estimate</span>, </span>
+<span>     main <span class="op">=</span> <span class="st">"Distribution of RMA Estimates"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Effect Size Estimate"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="retrieving-by-method">Retrieving by Method<a class="anchor" aria-label="anchor" href="#retrieving-by-method"></a>

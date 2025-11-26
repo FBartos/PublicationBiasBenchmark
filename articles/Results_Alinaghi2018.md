@@ -1258,7 +1258,7 @@ hypothesis was true. A higher power indicates a better method.
 
 ## Session Info
 
-This report was compiled on Mon Nov 17 14:52:38 2025 (UTC) using the
+This report was compiled on Wed Nov 26 13:53:01 2025 (UTC) using the
 following computational environment
 
 ``` r
@@ -1287,12 +1287,12 @@ sessionInfo()
     ## 
     ## other attached packages:
     ## [1] scales_1.4.0                   ggdist_3.3.3                  
-    ## [3] ggplot2_4.0.0                  PublicationBiasBenchmark_0.1.1
+    ## [3] ggplot2_4.0.1                  PublicationBiasBenchmark_0.1.2
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] generics_0.1.4       sandwich_3.1-1       sass_0.4.10         
-    ##  [4] xml2_1.4.1           stringi_1.8.7        lattice_0.22-7      
-    ##  [7] httpcode_0.3.0       digest_0.6.38        magrittr_2.0.4      
+    ##  [4] xml2_1.5.0           stringi_1.8.7        lattice_0.22-7      
+    ##  [7] httpcode_0.3.0       digest_0.6.39        magrittr_2.0.4      
     ## [10] evaluate_1.0.5       grid_4.5.2           RColorBrewer_1.1-3  
     ## [13] fastmap_1.2.0        jsonlite_2.0.0       crul_1.6.0          
     ## [16] urltools_1.7.3.1     httr_1.4.7           purrr_1.2.0         
@@ -1310,5 +1310,5 @@ sessionInfo()
     ## [52] systemfonts_1.3.1    xfun_0.54            tibble_3.3.0        
     ## [55] rstudioapi_0.17.1    knitr_1.50           farver_2.1.2        
     ## [58] htmltools_0.5.8.1    labeling_0.4.3       svglite_2.2.2       
-    ## [61] rmarkdown_2.30       compiler_4.5.2       S7_0.2.0            
+    ## [61] rmarkdown_2.30       compiler_4.5.2       S7_0.2.1            
     ## [64] distributional_0.5.0
