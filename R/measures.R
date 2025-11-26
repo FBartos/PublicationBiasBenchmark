@@ -381,9 +381,9 @@ interval_score_mcse <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 #' @export
 measures <- function(measure, ...) {
   if (missing(measure)) {
-    return(c("bias", "relative_bias", "mse", "rmse", "empirical_variance",
-             "empirical_se", "coverage", "power", "mean_ci_width", "interval_score",
-             "convergence", "positive_likelihood_ratio", "negative_likelihood_ratio"))
+    m <- as.character(utils::methods("measures"))
+    m <- gsub("^measures\\.", "", m)
+    return(m[m != "default"])
   }
 
   if (is.character(measure)) {

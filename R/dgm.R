@@ -86,6 +86,18 @@ simulate_dgm <- function(dgm_name, settings) {
 #' @export
 dgm <- function(dgm_name, settings) {
 
+  if (missing(dgm_name)) {
+    m <- as.character(utils::methods("dgm"))
+    m <- gsub("^dgm\\.", "", m)
+    return(m[m != "default"])
+  }
+
+  if (missing(settings)) {
+    if (is.character(dgm_name)) {
+      return(utils::getS3method("dgm", dgm_name))
+    }
+  }
+
   # Convert character to appropriate class for dispatch
   if (is.character(dgm_name)) {
     dgm_type <- structure(dgm_name, class = dgm_name)

@@ -96,6 +96,18 @@ run_method <- function(method_name, data, settings = NULL, silent = FALSE) {
 #' @export
 method <- function(method_name, data, settings) {
 
+  if (missing(method_name)) {
+    m <- as.character(utils::methods("method"))
+    m <- gsub("^method\\.", "", m)
+    return(m[m != "default"])
+  }
+
+  if (missing(data) && missing(settings)) {
+    if (is.character(method_name)) {
+      return(utils::getS3method("method", method_name))
+    }
+  }
+
   # Convert character to appropriate class for dispatch
   if (is.character(method_name)) {
     method <- structure(method_name, class = method_name)
