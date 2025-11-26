@@ -1,3 +1,8 @@
+# 0.1.3
+## New Features
+ - Added `measures()` function to list available performance measures.
+ - Implemented S3 methods for `measures()` to retrieve specific measure functions (e.g., `measures("bias")`).
+
 # 0.1.2
 ## Fixes
  - Vignette updates

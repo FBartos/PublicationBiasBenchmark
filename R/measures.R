@@ -367,3 +367,62 @@ interval_score_mcse <- function(ci_lower, ci_upper, theta, alpha = 0.05) {
 
   mean_generic_statistic_mcse(score)
 }
+
+#' @title Get performance measure function
+#'
+#' @description
+#' Returns the function for computing a specific performance measure.
+#' Can also be used to list available measures.
+#'
+#' @param measure Character string specifying the measure name. If missing, returns a vector of all available measures.
+#' @param ... Additional arguments passed to methods.
+#'
+#' @return A function that computes the requested measure, or a character vector of measure names.
+#' @export
+measures <- function(measure, ...) {
+  if (missing(measure)) {
+    return(c("bias", "relative_bias", "mse", "rmse", "empirical_variance",
+             "empirical_se", "coverage", "power", "mean_ci_width", "interval_score",
+             "convergence", "positive_likelihood_ratio", "negative_likelihood_ratio"))
+  }
+
+  if (is.character(measure)) {
+    # Create a copy to avoid modifying the original object if it's not just a string
+    m <- measure
+    class(m) <- measure
+    UseMethod("measures", m)
+  } else {
+    UseMethod("measures")
+  }
+}
+
+#' @export
+measures.bias <- function(measure, ...) bias
+#' @export
+measures.relative_bias <- function(measure, ...) relative_bias
+#' @export
+measures.mse <- function(measure, ...) mse
+#' @export
+measures.rmse <- function(measure, ...) rmse
+#' @export
+measures.empirical_variance <- function(measure, ...) empirical_variance
+#' @export
+measures.empirical_se <- function(measure, ...) empirical_se
+#' @export
+measures.coverage <- function(measure, ...) coverage
+#' @export
+measures.power <- function(measure, ...) power
+#' @export
+measures.mean_ci_width <- function(measure, ...) mean_ci_width
+#' @export
+measures.interval_score <- function(measure, ...) interval_score
+#' @export
+measures.convergence <- function(measure, ...) power
+#' @export
+measures.positive_likelihood_ratio <- function(measure, ...) positive_likelihood_ratio
+#' @export
+measures.negative_likelihood_ratio <- function(measure, ...) negative_likelihood_ratio
+#' @export
+measures.default <- function(measure, ...) {
+  stop(paste0("Unknown measure: ", measure))
+}
