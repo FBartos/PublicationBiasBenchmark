@@ -94,7 +94,7 @@ dgm <- function(dgm_name, settings) {
 
   if (missing(settings)) {
     if (is.character(dgm_name)) {
-      return(utils::getS3method("dgm", dgm_name))
+      return(utils::getS3method("dgm", dgm_name)())
     }
   }
 

@@ -592,7 +592,7 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     measure_fun      <- try(measure(measure_name), silent = TRUE)
     measure_mcse_fun <- try(measure_mcse(measure_name), silent = TRUE)
 
-    if (inherits(measure_fun, "try-error") || inherits(measure_mcse_fun, "try-error")) 
+    if (inherits(measure_fun, "try-error") || inherits(measure_mcse_fun, "try-error"))
       stop(paste0("Unknown measure: ", measure_name), call. = FALSE)
 
     if (verbose)

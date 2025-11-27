@@ -104,7 +104,7 @@ method <- function(method_name, data, settings) {
 
   if (missing(data) && missing(settings)) {
     if (is.character(method_name)) {
-      return(utils::getS3method("method", method_name))
+      return(utils::getS3method("method", method_name)())
     }
   }
 

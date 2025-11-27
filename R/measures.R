@@ -388,7 +388,7 @@ measure <- function(measure, ...) {
 
   if (missing(...)) {
     if (is.character(measure)) {
-      return(utils::getS3method("measure", measure))
+      return(utils::getS3method("measure", measure)())
     }
   }
 
@@ -453,7 +453,7 @@ measure_mcse <- function(measure, ...) {
 
   if (missing(...)) {
     if (is.character(measure)) {
-      return(utils::getS3method("measure_mcse", measure))
+      return(utils::getS3method("measure_mcse", measure)())
     }
   }
 
