@@ -98,7 +98,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   file_name <- paste0(measure_name, if (is.null(method_replacements) || length(method_replacements) == 0) ".csv" else "-replacement.csv")
 
   path <- .get_path()
-  
+
   output_folder <- file.path(path, dgm_name, "measures")
   output_file   <- file.path(output_folder, file_name)
 
@@ -622,7 +622,7 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
     )
 
     if (verbose)
-      message("Saved ", measure)
+      message("Saved ", measure_name)
   }
 
   return(invisible(TRUE))
