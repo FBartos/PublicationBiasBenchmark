@@ -81,8 +81,6 @@ negative_likelihood_ratio_mcse(tp, fp, fn, tn)
 interval_score(ci_lower, ci_upper, theta, alpha = 0.05)
 
 interval_score_mcse(ci_lower, ci_upper, theta, alpha = 0.05)
-
-measures(measure, ...)
 }
 \arguments{
 \item{theta_hat}{Vector of parameter estimates from simulations}
@@ -106,16 +104,10 @@ measures(measure, ...)
 \item{tn}{Numeric with the count of true negative hypothesis tests}
 
 \item{alpha}{Numeric indicating the 1 - coverage level for interval_score calculation}
-
-\item{measure}{Character string specifying the measure name. If missing, returns a vector of all available measures.}
-
-\item{...}{Additional arguments passed to methods.}
 }
 \value{
 Each metric function returns a numeric value representing the performance measure.
 Each MCSE function returns a numeric value representing the Monte Carlo standard error.
-
-A function that computes the requested measure, or a character vector of measure names.
 }
 \description{
 A comprehensive set of functions for computing performance measures and their
@@ -129,9 +121,6 @@ Positive and negative likelihood ratios are defined in
 \insertCite{morris2019using;textual}{PublicationBiasBenchmark} for additional
 details. Bias and relative bias were modified to account for possibly different
 true values across repetitions.
-
-Returns the function for computing a specific performance measure.
-Can also be used to list available measures.
 }
 \details{
 The package provides the following performance measures and their corresponding MCSE functions:

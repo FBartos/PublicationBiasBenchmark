@@ -584,7 +584,7 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
 
   # Define all available measures if not specified
   if (is.null(measures))
-    measures <- measures()
+    measures <- measure()
 
   # Define measure functions
   measure_functions <- list(

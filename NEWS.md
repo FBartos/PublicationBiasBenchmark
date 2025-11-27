@@ -1,10 +1,11 @@
 # 0.1.3
 ## New Features
- - Added `measures()` function to list available performance measures.
- - Implemented S3 methods for `measures()` to retrieve specific measure functions (e.g., `measures("bias")`).
+ - Added `measure()` function to list available performance measures (renamed from `measures()`).
+ - Added `measure_se()` function to list available performance measure MCSE functions.
+ - Implemented S3 methods for `measure()` and `measure_se()` to retrieve specific functions (e.g., `measure("bias")`, `measure_se("bias")`).
  - Updated `method()` and `dgm()` to list available methods and DGMs when called without arguments.
  - Updated `method()` and `dgm()` to return the corresponding function when called with a single argument (e.g., `method("RMA")`).
- - `measures()`, `method()`, and `dgm()` now dynamically retrieve available options using `methods()`.
+ - `measure()`, `measure_se()`, `method()`, and `dgm()` now dynamically retrieve available options using `methods()`.
 
 # 0.1.2
 ## Fixes
