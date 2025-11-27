@@ -386,6 +386,12 @@ measure <- function(measure, ...) {
     return(m[m != "default"])
   }
 
+  if (missing(...)) {
+    if (is.character(measure)) {
+      return(utils::getS3method("measure", measure))
+    }
+  }
+
   if (is.character(measure)) {
     # Create a copy to avoid modifying the original object if it's not just a string
     m <- measure
@@ -424,7 +430,7 @@ measure.positive_likelihood_ratio <- function(measure, ...) positive_likelihood_
 measure.negative_likelihood_ratio <- function(measure, ...) negative_likelihood_ratio
 #' @export
 measure.default <- function(measure, ...) {
-  stop(paste0("Unknown measure: ", measure))
+  stop(paste0("Unknown measure: ", measure), call. = FALSE)
 }
 
 #' @title Get performance measure MCSE function
@@ -443,6 +449,12 @@ measure_mcse <- function(measure, ...) {
     m <- as.character(utils::methods("measure_mcse"))
     m <- gsub("^measure_mcse\\.", "", m)
     return(m[m != "default"])
+  }
+
+  if (missing(...)) {
+    if (is.character(measure)) {
+      return(utils::getS3method("measure_mcse", measure))
+    }
   }
 
   if (is.character(measure)) {
@@ -483,5 +495,5 @@ measure_mcse.positive_likelihood_ratio <- function(measure, ...) positive_likeli
 measure_mcse.negative_likelihood_ratio <- function(measure, ...) negative_likelihood_ratio_mcse
 #' @export
 measure_mcse.default <- function(measure, ...) {
-  stop(paste0("Unknown measure: ", measure))
+  stop(paste0("Unknown measure: ", measure), call. = FALSE)
 }
