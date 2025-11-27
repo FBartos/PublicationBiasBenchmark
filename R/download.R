@@ -48,7 +48,7 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
 
   # add a warning for missing token
   if (Sys.getenv("OSF_PAT") == "")
-    stop("Please set up 'OSF_PAT' environmental variable. The file download is unreliable otherwise. See '?osfr::osf_auth' for instructions.", call. = FALSE)
+    stop("Please set up 'OSF_PAT' environment variable. The file download is unreliable otherwise. See '?osfr::osf_auth' for instructions.", call. = FALSE)
 
   path <- .get_path()
 
