@@ -438,10 +438,10 @@ measure.default <- function(measure, ...) {
 #'
 #' @return A function that computes the MCSE of the requested measure, or a character vector of measure names.
 #' @export
-measure_se <- function(measure, ...) {
+measure_mcse <- function(measure, ...) {
   if (missing(measure)) {
-    m <- as.character(utils::methods("measure_se"))
-    m <- gsub("^measure_se\\.", "", m)
+    m <- as.character(utils::methods("measure_mcse"))
+    m <- gsub("^measure_mcse\\.", "", m)
     return(m[m != "default"])
   }
 
@@ -449,39 +449,39 @@ measure_se <- function(measure, ...) {
     # Create a copy to avoid modifying the original object if it's not just a string
     m <- measure
     class(m) <- measure
-    UseMethod("measure_se", m)
+    UseMethod("measure_mcse", m)
   } else {
-    UseMethod("measure_se")
+    UseMethod("measure_mcse")
   }
 }
 
 #' @export
-measure_se.bias <- function(measure, ...) bias_mcse
+measure_mcse.bias <- function(measure, ...) bias_mcse
 #' @export
-measure_se.relative_bias <- function(measure, ...) relative_bias_mcse
+measure_mcse.relative_bias <- function(measure, ...) relative_bias_mcse
 #' @export
-measure_se.mse <- function(measure, ...) mse_mcse
+measure_mcse.mse <- function(measure, ...) mse_mcse
 #' @export
-measure_se.rmse <- function(measure, ...) rmse_mcse
+measure_mcse.rmse <- function(measure, ...) rmse_mcse
 #' @export
-measure_se.empirical_variance <- function(measure, ...) empirical_variance_mcse
+measure_mcse.empirical_variance <- function(measure, ...) empirical_variance_mcse
 #' @export
-measure_se.empirical_se <- function(measure, ...) empirical_se_mcse
+measure_mcse.empirical_se <- function(measure, ...) empirical_se_mcse
 #' @export
-measure_se.coverage <- function(measure, ...) coverage_mcse
+measure_mcse.coverage <- function(measure, ...) coverage_mcse
 #' @export
-measure_se.power <- function(measure, ...) power_mcse
+measure_mcse.power <- function(measure, ...) power_mcse
 #' @export
-measure_se.mean_ci_width <- function(measure, ...) mean_ci_width_mcse
+measure_mcse.mean_ci_width <- function(measure, ...) mean_ci_width_mcse
 #' @export
-measure_se.interval_score <- function(measure, ...) interval_score_mcse
+measure_mcse.interval_score <- function(measure, ...) interval_score_mcse
 #' @export
-measure_se.convergence <- function(measure, ...) power_mcse
+measure_mcse.convergence <- function(measure, ...) power_mcse
 #' @export
-measure_se.positive_likelihood_ratio <- function(measure, ...) positive_likelihood_ratio_mcse
+measure_mcse.positive_likelihood_ratio <- function(measure, ...) positive_likelihood_ratio_mcse
 #' @export
-measure_se.negative_likelihood_ratio <- function(measure, ...) negative_likelihood_ratio_mcse
+measure_mcse.negative_likelihood_ratio <- function(measure, ...) negative_likelihood_ratio_mcse
 #' @export
-measure_se.default <- function(measure, ...) {
+measure_mcse.default <- function(measure, ...) {
   stop(paste0("Unknown measure: ", measure))
 }
