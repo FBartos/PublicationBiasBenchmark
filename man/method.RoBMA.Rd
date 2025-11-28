@@ -26,7 +26,9 @@ Bayesian model-averaging to combine results across several complementary
 publication bias adjustment methods. See
 \insertCite{maier2023robust;textual}{PublicationBiasBenchmark} and
 \insertCite{bartos2023robust;textual}{PublicationBiasBenchmark} for
-details.
+details. If \code{"study_id"} column is included in the data input,
+the method uses multilevel parameterization as described in
+\insertCite{bartos2025robust;textual}{PublicationBiasBenchmark}.
 
 Note that the prior settings is dispatched based on \code{"es_type"} column attached
 to the dataset. The resulting estimates are then summarized on the same scale
