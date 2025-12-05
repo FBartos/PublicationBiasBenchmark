@@ -991,7 +991,7 @@ hypothesis was true. A higher power indicates a better method.
 
 ## Session Info
 
-This report was compiled on Wed Nov 26 14:20:34 2025 (UTC) using the
+This report was compiled on Fri Dec 05 12:33:25 2025 (UTC) using the
 following computational environment
 
 ``` r
@@ -1020,11 +1020,11 @@ sessionInfo()
     ## 
     ## other attached packages:
     ## [1] scales_1.4.0                   ggdist_3.3.3                  
-    ## [3] ggplot2_4.0.1                  PublicationBiasBenchmark_0.1.2
+    ## [3] ggplot2_4.0.1                  PublicationBiasBenchmark_0.1.3
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] generics_0.1.4       sandwich_3.1-1       sass_0.4.10         
-    ##  [4] xml2_1.5.0           stringi_1.8.7        lattice_0.22-7      
+    ##  [4] xml2_1.5.1           stringi_1.8.7        lattice_0.22-7      
     ##  [7] httpcode_0.3.0       digest_0.6.39        magrittr_2.0.4      
     ## [10] evaluate_1.0.5       grid_4.5.2           RColorBrewer_1.1-3  
     ## [13] fastmap_1.2.0        jsonlite_2.0.0       crul_1.6.0          
@@ -1032,7 +1032,7 @@ sessionInfo()
     ## [19] viridisLite_0.4.2    textshaping_1.0.4    jquerylib_0.1.4     
     ## [22] Rdpack_2.6.4         cli_3.6.5            rlang_1.1.6         
     ## [25] triebeard_0.4.1      rbibutils_2.4        withr_3.0.2         
-    ## [28] cachem_1.1.0         yaml_2.3.10          tools_4.5.2         
+    ## [28] cachem_1.1.0         yaml_2.3.11          tools_4.5.2         
     ## [31] memoise_2.0.1        kableExtra_1.4.0     curl_7.0.0          
     ## [34] vctrs_0.6.5          R6_2.6.1             clubSandwich_0.6.1  
     ## [37] zoo_1.8-14           lifecycle_1.0.4      stringr_1.6.0       
@@ -1042,6 +1042,6 @@ sessionInfo()
     ## [49] gtable_0.3.6         Rcpp_1.1.0           glue_1.8.0          
     ## [52] systemfonts_1.3.1    xfun_0.54            tibble_3.3.0        
     ## [55] rstudioapi_0.17.1    knitr_1.50           farver_2.1.2        
-    ## [58] htmltools_0.5.8.1    labeling_0.4.3       svglite_2.2.2       
+    ## [58] htmltools_0.5.9      labeling_0.4.3       svglite_2.2.2       
     ## [61] rmarkdown_2.30       compiler_4.5.2       S7_0.2.1            
     ## [64] distributional_0.5.0

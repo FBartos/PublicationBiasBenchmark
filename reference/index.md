@@ -37,6 +37,10 @@
   [`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
   [`download_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
   : Download Datasets/Results/Measures of a DGM
+- [`measure()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measure.md)
+  : Get performance measure function
+- [`measure_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measure_mcse.md)
+  : Get performance measure MCSE function
 - [`bias()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
   [`bias_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)
   [`relative_bias()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measures.md)

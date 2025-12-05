@@ -3,7 +3,9 @@
 Implements the robust Bayesian meta-analysis (RoBMA) method that uses
 Bayesian model-averaging to combine results across several complementary
 publication bias adjustment methods. See Maier et al. (2023) and Bartoš
-et al. (2023) for details.
+et al. (2023) for details. If `"study_id"` column is included in the
+data input, the method uses multilevel parameterization as described in
+Bartoš et al. (2025) .
 
 Note that the prior settings is dispatched based on `"es_type"` column
 attached to the dataset. The resulting estimates are then summarized on
@@ -63,6 +65,12 @@ The following settings are implemented
 
 ## References
 
+Bartoš F, Maier M, Wagenmakers E (2025). “Robust Bayesian multilevel
+meta-analysis: Adjusting for publication bias in the presence of
+dependent effect sizes.” *ArXiV Preprint*.
+[doi:10.31234/osf.io/9tgp2_v1](https://doi.org/10.31234/osf.io/9tgp2_v1)
+.  
+  
 Bartoš F, Maier M, Wagenmakers E, Doucouliagos H, Stanley TD (2023).
 “Robust Bayesian meta-analysis: Model-averaging across complementary
 publication bias adjustment methods.” *Research Synthesis Methods*,
