@@ -30,6 +30,8 @@ Single-row data frame with standardized output columns:
 \item{bias_p_value}{P-value for publication bias test}
 \item{used_ar_ci}{Whether Anderson-Rubin CI was used}
 \item{ar_ci_available}{Whether AR CI was computed successfully}
+\item{instrument_strength}{Instrument strength classification returned by
+MAIVE or derived from the first-stage F-statistic}
 }
 }
 \description{
@@ -57,11 +59,19 @@ precision is endogenous due to p-hacking or selective reporting.
 The Anderson-Rubin confidence interval is robust to weak instruments and
 is automatically computed for unweighted IV estimators when feasible
 (n < 5000). For weighted estimators or large samples, standard CIs are used.
+PublicationBiasBenchmark targets MAIVE 0.2.4 and persists upstream MAIVE
+warnings in the standardized \code{note} column.
 
 WAIVE extends MAIVE by downweighting: (1) negative residuals (spurious
 precision) using exponential decay, and (2) extreme residuals (|z| > 2)
 as potential outliers. This provides additional robustness against
 publication bias and outliers.
+When IV is used and the first-stage F-statistic is numeric and below 10,
+PublicationBiasBenchmark blanks the standardized inferential outputs
+(\code{estimate}, \code{standard_error}, \code{ci_lower}, \code{ci_upper},
+\code{p_value}) to \code{NA} while keeping \code{convergence = TRUE}. These
+rows remain available as diagnostics and are treated as missing estimates in
+downstream performance summaries rather than as convergence failures.
 
 Available settings (see method_settings.MAIVE()):
 \describe{
@@ -101,5 +111,5 @@ method_settings("MAIVE")
 \code{\link[=run_method]{run_method()}}, \code{\link[=method_settings]{method_settings()}}, \code{\link[=method_extra_columns]{method_extra_columns()}}
 }
 \author{
-Petr Čala \email{cala.p@seznam.cz}
+Petr Cala \email{cala.p@seznam.cz}
 }
