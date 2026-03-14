@@ -9,9 +9,9 @@ maive_unique_strings <- function(x) {
 }
 
 maive_validate_input <- function(data) {
-  yi <- data$yi
-  sei <- data$sei
-  ni <- data$ni
+  yi       <- data[["yi"]]
+  sei      <- data[["sei"]]
+  ni       <- data[["ni"]]
   study_id <- data[["study_id"]]
 
   if (is.null(yi) || length(yi) == 0) {
@@ -68,8 +68,12 @@ maive_validate_input <- function(data) {
     Ns = ni
   )
 
-  if (!is.null(study_id)) {
-    maive_data$study_id <- study_id
+  if (!is.null(study_id)){
+    if (length(unique(study_id)) >= (length(study_id) - 3)) {
+      message("'study_id' input ignored because the number of studies matches the number of clusters")
+    } else {
+      maive_data$study_id <- study_id      
+    }
   }
 
   list(
