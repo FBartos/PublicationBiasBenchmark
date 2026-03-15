@@ -148,11 +148,11 @@ TRUE upon successfully computation of the results file
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
 # Download DGM results
+# Requires OSF 'OSF_PAT' environment variable.
 dgm_name <- "no_bias"
 download_dgm_results(dgm_name)
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
 
 # Basic usage
 compute_measures(
@@ -161,8 +161,6 @@ compute_measures(
   method_setting  = c("default", "default", "default"),
   measures        = c("bias", "mse", "coverage")
 )
-#> Computing bias...
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
 
 # With method replacements for non-converged results
 method_replacements <- list(
@@ -178,7 +176,5 @@ compute_measures(
   method_replacements = method_replacements,
   measures            = c("bias", "mse")
 )
-#> Computing bias...
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
-# }
+} # }
 ```
