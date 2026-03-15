@@ -56,6 +56,10 @@ effect size distributions of only statistically significant studies.”
 *Psychological Methods*, **20**(3), 293–309.
 [doi:10.1037/met0000025](https://doi.org/10.1037/met0000025) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

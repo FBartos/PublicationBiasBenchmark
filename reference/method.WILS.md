@@ -54,6 +54,10 @@ statistical significance: Weighted and iterative least squares.”
 *Psychological Methods*, **29**(2), 407–420.
 [doi:10.1037/met0000502](https://doi.org/10.1037/met0000502) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

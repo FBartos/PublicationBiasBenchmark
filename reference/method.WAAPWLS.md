@@ -39,6 +39,10 @@ Stanley TD, Doucouliagos H, Ioannidis JP (2017). “Finding the power to
 reduce publication bias.” *Statistics in Medicine*, **36**(10),
 1580-1598. [doi:10.1002/sim.7228](https://doi.org/10.1002/sim.7228) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

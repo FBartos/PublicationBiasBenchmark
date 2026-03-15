@@ -43,6 +43,10 @@ Bom PR, Rachinger H (2019). “A kinked meta-regression model for
 publication bias correction.” *Research Synthesis Methods*, **10**(4),
 497-514. [doi:10.1002/jrsm.1352](https://doi.org/10.1002/jrsm.1352) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

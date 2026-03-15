@@ -120,3 +120,8 @@ meta-analytic estimators.” *Research Synthesis Methods*, **12**(2),
 
 [`dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/dgm.md),
 [`validate_dgm_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/validate_dgm_setting.md)
+
+## Author
+
+František Bartoš <f.bartos96@gmail.com> (adapted from Hong and Reed
+2021)

@@ -82,6 +82,10 @@ Addressing publication bias with model-averaging.” *Psychological
 Methods*, **28**(1), 107-122.
 [doi:10.1037/met0000405](https://doi.org/10.1037/met0000405) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

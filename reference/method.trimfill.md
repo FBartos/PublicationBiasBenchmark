@@ -44,6 +44,10 @@ The following settings are implemented
 There are no references for Rd macro `\insertAllCites` on this help
 page.
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

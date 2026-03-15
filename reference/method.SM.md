@@ -55,6 +55,10 @@ effect size in the presence of publication bias.” *Psychometrika*,
 **60**(3), 419–435.
 [doi:10.1007/BF02294384](https://doi.org/10.1007/BF02294384) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

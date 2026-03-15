@@ -37,6 +37,10 @@ reduce publication selection bias.” *Research Synthesis Methods*,
 **5**(1), 60–78.
 [doi:10.1002/jrsm.1095](https://doi.org/10.1002/jrsm.1095) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

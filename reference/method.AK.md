@@ -63,6 +63,10 @@ Andrews I, Kasy M (2019). “Identification of and correction for
 publication bias.” *American Economic Review*, **109**(8), 2766–2794.
 [doi:10.1257/aer.20180310](https://doi.org/10.1257/aer.20180310) .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r
@@ -79,7 +83,7 @@ print(result)
 #>   method  estimate standard_error   ci_lower  ci_upper    p_value BF
 #> 1     AK 0.1239951     0.07280359 -0.1892534 0.4372437 0.09217477 NA
 #>   convergence note tau_estimate      tau2_se   bias_coefficient
-#> 1        TRUE   NA            0 1.084652e-10 0.0685673164368531
+#> 1        TRUE   NA            0 1.084652e-10 0.0685673164403796
 #>   bias_coefficient_se version method_setting
-#> 1   0.110251775397694     AK1        default
+#> 1   0.110251775402335     AK1        default
 ```

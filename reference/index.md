@@ -74,6 +74,8 @@
   : Endogenous Kink Method
 - [`method(`*`<FMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.FMA.md)
   : Fixed Effects Meta-Analysis Method
+- [`method(`*`<MAIVE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MAIVE.md)
+  : MAIVE: Meta-Analysis Instrumental Variable Estimator
 - [`method(`*`<PEESE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PEESE.md)
   : PEESE (Precision-Effect Estimate with Standard Errors) Method
 - [`method(`*`<PET>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PET.md)

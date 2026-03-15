@@ -23,27 +23,29 @@ column are applied in order until convergence is achieved or all
 replacement options are exhausted. An em-dash `—` indicates no
 replacement (the method is assumed to always converge).
 
-| Method             | Replacement Sequence                      |
-|:-------------------|:------------------------------------------|
-| mean (default)     | —                                         |
-| FMA (default)      | —                                         |
-| RMA (default)      | FMA (default)                             |
-| PET (default)      | WLS (default) → FMA (default)             |
-| PEESE (default)    | WLS (default) → FMA (default)             |
-| PETPEESE (default) | WLS (default) → FMA (default)             |
-| WLS (default)      | FMA (default)                             |
-| WILS (default)     | WLS (default) → FMA (default)             |
-| WAAPWLS (default)  | WLS (default) → FMA (default)             |
-| trimfill (default) | RMA (default) → FMA (default)             |
-| SM (3PSM)          | RMA (default) → FMA (default)             |
-| SM (4PSM)          | SM (3PSM) → RMA (default) → FMA (default) |
-| puniform (default) | RMA (default) → FMA (default)             |
-| puniform (star)    | RMA (default) → FMA (default)             |
-| pcurve (default)   | RMA (default) → FMA (default)             |
-| EK (default)       | WLS (default) → FMA (default)             |
-| AK (AK1)           | RMA (default) → FMA (default)             |
-| AK (AK2)           | AK (AK1) → RMA (default) → FMA (default)  |
-| RoBMA (PSMA)       | RMA (default) → FMA (default)             |
+| Method             | Replacement Sequence                               |
+|:-------------------|:---------------------------------------------------|
+| mean (default)     | —                                                  |
+| FMA (default)      | —                                                  |
+| RMA (default)      | FMA (default)                                      |
+| PET (default)      | WLS (default) → FMA (default)                      |
+| PEESE (default)    | WLS (default) → FMA (default)                      |
+| PETPEESE (default) | WLS (default) → FMA (default)                      |
+| WLS (default)      | FMA (default)                                      |
+| WILS (default)     | WLS (default) → FMA (default)                      |
+| WAAPWLS (default)  | WLS (default) → FMA (default)                      |
+| trimfill (default) | RMA (default) → FMA (default)                      |
+| SM (3PSM)          | RMA (default) → FMA (default)                      |
+| SM (4PSM)          | SM (3PSM) → RMA (default) → FMA (default)          |
+| puniform (default) | RMA (default) → FMA (default)                      |
+| puniform (star)    | RMA (default) → FMA (default)                      |
+| pcurve (default)   | RMA (default) → FMA (default)                      |
+| EK (default)       | WLS (default) → FMA (default)                      |
+| AK (AK1)           | RMA (default) → FMA (default)                      |
+| AK (AK2)           | AK (AK1) → RMA (default) → FMA (default)           |
+| RoBMA (PSMA)       | RMA (default) → FMA (default)                      |
+| MAIVE (default)    | PETPEESE (default) → WLS (default) → FMA (default) |
+| MAIVE (WAIVE)      | PETPEESE (default) → WLS (default) → FMA (default) |
 
 The choice of replacement methods is based on:
 

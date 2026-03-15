@@ -31,3 +31,5 @@ Authors:
 - Samuel Pawel ([ORCID](https://orcid.org/0000-0003-2779-320X))
 
 - Björn S. Siepe ([ORCID](https://orcid.org/0000-0002-9558-4648))
+
+- Petr Čala

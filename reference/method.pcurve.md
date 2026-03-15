@@ -52,6 +52,10 @@ Correcting for publication bias using only significant results.”
 [doi:10.1177/1745691614553988](https://doi.org/10.1177/1745691614553988)
 .
 
+## Author
+
+František Bartoš <f.bartos96@gmail.com>
+
 ## Examples
 
 ``` r

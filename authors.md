@@ -9,10 +9,12 @@
 
 - **Björn S. Siepe**. Author. [](https://orcid.org/0000-0002-9558-4648)
 
+- **Petr Čala**. Author.
+
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/FBartos/PublicationBiasBenchmark/blob/v0.1.3/inst/CITATION)
+[`inst/CITATION`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/inst/CITATION)
 
 Bartoš, F., Pawel, S., & Siepe, B. S. (2025). Living synthetic
 benchmarks: A neutral and cumulative framework for simulation studies.
@@ -27,12 +29,12 @@ arXiv Preprint. https://doi.org/10.48550/arXiv.2510.19489
     }
 
 Bartoš, F., Pawel, S., & Siepe, B. S. (2025). PublicationBiasBenchmark:
-Benchmark for publication bias correction methods (version 0.1.3).
+Benchmark for publication bias correction methods (version 0.2.0).
 https://cran.r-project.org/package=PublicationBiasBenchmark
 
     @Manual{,
       title = {PublicationBiasBenchmark: Benchmark for publication bias correction methods},
       author = {Franti\v{s}ek Barto\v{s} and Samuel Pawel and Bj\"orn S. Siepe},
-      note = {version 0.1.3},
+      note = {version 0.2.0},
       url = {https://cran.r-project.org/package=PublicationBiasBenchmark},
     }
