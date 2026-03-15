@@ -244,6 +244,8 @@ See `methods("method")` for the full list:
 - `"AK"`: Andrews & Kasy selection models (AK1, AK2) (Andrews & Kasy,
   2019. 
 - `"RoBMA"`: Robust Bayesian Meta-Analysis (Bartoš et al., 2023)
+- `"MAIVE"`: Meta Analysis Instrumental Variable Estimator (Irsova et
+  al., 2025)
 
 ### Available Performance Measures
 
@@ -307,6 +309,11 @@ Duval, S. J., & Tweedie, R. L. (2000). Trim and fill: A simple
 funnel-plot-based method of testing and adjusting for publication bias
 in meta-analysis. *Biometrics*, *56*(2), 455–463.
 <https://doi.org/10.1111/j.0006-341X.2000.00455.x>
+
+Irsova, Z., Bom, P. R., Havranek, T., & Rachinger, H. (2025). Spurious
+precision in meta-analysis of observational research. *Nature
+Communications*, *16*, 8454.
+<https://doi.org/10.1038/s41467-025-63261-0>
 
 Simonsohn, U., Nelson, L. D., & Simmons, J. P. (2014). P-curve and
 effect size: Correcting for publication bias using only significant

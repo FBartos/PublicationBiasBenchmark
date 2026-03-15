@@ -28,13 +28,14 @@ arXiv Preprint. https://doi.org/10.48550/arXiv.2510.19489
       note = {Working paper},
     }
 
-Bartoš, F., Pawel, S., & Siepe, B. S. (2025). PublicationBiasBenchmark:
-Benchmark for publication bias correction methods (version 0.2.0).
+Bartoš, F., Pawel, S., Siepe, B. S., Čala, P. (2025).
+PublicationBiasBenchmark: Benchmark for publication bias correction
+methods (version 0.2.0).
 https://cran.r-project.org/package=PublicationBiasBenchmark
 
     @Manual{,
       title = {PublicationBiasBenchmark: Benchmark for publication bias correction methods},
-      author = {Franti\v{s}ek Barto\v{s} and Samuel Pawel and Bj\"orn S. Siepe},
+      author = {Franti\v{s}ek Barto\v{s} and Samuel Pawel and Bj\"orn S. Siepe and Petr \v{C}ala},
       note = {version 0.2.0},
       url = {https://cran.r-project.org/package=PublicationBiasBenchmark},
     }

@@ -4,7 +4,7 @@ Implements the MAIVE method for publication bias correction using
 instrumental variable estimation with variance instrumentation. MAIVE
 addresses spurious precision in meta-analysis by instrumenting standard
 errors with inverse sample sizes, providing consistent estimates even
-when precision is manipulated through p-hacking.
+when precision is manipulated through p-hacking (Irsova et al. 2025) .
 
 The method implements several estimators:
 
@@ -162,8 +162,11 @@ Available settings (see method_settings.MAIVE()):
 
 ## References
 
-There are no references for Rd macro `\insertAllCites` on this help
-page.
+Irsova Z, Bom PR, Havranek T, Rachinger H (2025). “Spurious precision in
+meta-analysis of observational research.” *Nature Communications*,
+**16**, 8454.
+[doi:10.1038/s41467-025-63261-0](https://doi.org/10.1038/s41467-025-63261-0)
+.
 
 ## See also
 
