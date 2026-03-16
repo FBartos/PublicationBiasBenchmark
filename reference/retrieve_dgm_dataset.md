@@ -34,14 +34,12 @@ A data.frame
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   # get condition 1, repetition 1
   retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
 
   # get condition 1, all repetitions
   retrieve_dgm_dataset("no_bias", condition_id = 1)
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
-# }
+} # }
 
 ```

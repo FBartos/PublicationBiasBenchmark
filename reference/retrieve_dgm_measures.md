@@ -56,17 +56,14 @@ A data.frame
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   # get bias measures for all methods and conditions
   retrieve_dgm_measures("no_bias", measure = "bias")
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
 
   # get all measures for RMA method
   retrieve_dgm_measures("no_bias", method = "RMA")
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
 
   # get MSE measures for PET method in condition 1
   retrieve_dgm_measures("no_bias", measure = "mse", method = "PET", condition_id = 1)
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
-# }
+} # }
 ```

@@ -63,8 +63,7 @@ download_dgm_measures(
 ## Examples
 
 ``` r
-# \donttest{
+if (FALSE) { # \dontrun{
   download_dgm_datasets("no_bias")
-#> Error: The resources location needs to be specified via the `PublicationBiasBenchmark.options(resources_directory = '/path/')` function.
-# }
+} # }
 ```
