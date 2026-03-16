@@ -1,5 +1,7 @@
 #' @title puniform (P-Uniform) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the p-uniform method for publication bias detection and correction.
 #' P-uniform uses the distribution of p-values from significant studies to test

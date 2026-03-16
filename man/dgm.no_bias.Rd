@@ -39,3 +39,6 @@ presented in Appendix B of
 \seealso{
 \code{\link[=dgm]{dgm()}}, \code{\link[=validate_dgm_setting]{validate_dgm_setting()}}
 }
+\author{
+František Bartoš \email{f.bartos96@gmail.com}
+}

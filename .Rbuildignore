@@ -2,6 +2,7 @@
 ^renv\.lock$
 ^.*\.Rproj$
 ^\.github
+^\.git
 ^\.vscode
 README.Rmd
 README.html

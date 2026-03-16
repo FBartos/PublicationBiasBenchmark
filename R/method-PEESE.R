@@ -1,5 +1,7 @@
 #' @title PEESE (Precision-Effect Estimate with Standard Errors) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the Precision-Effect Estimate with Standard Errors method for
 #' publication bias correction. PEESE regresses effect sizes against standard

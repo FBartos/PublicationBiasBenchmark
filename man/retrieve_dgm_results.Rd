@@ -33,7 +33,7 @@ repetition and condition from a dgm. The pre-computed results must be already st
 locally. See \code{\link[=download_dgm_results]{download_dgm_results()}} function for more guidance.
 }
 \examples{
-\donttest{
+\dontrun{
   # get condition 1, repetition 1 for default method setting
   retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
 

@@ -1,5 +1,7 @@
 #' @title AK Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the Andrews & Kasy (AK) method for publication bias correction in meta-analysis.
 #' The AK method categorizes estimated effects into groups with different probabilities of being

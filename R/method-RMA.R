@@ -1,5 +1,7 @@
 #' @title Random Effects Meta-Analysis Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the publication bias-unadjusted random-effects meta-analysis.
 #'

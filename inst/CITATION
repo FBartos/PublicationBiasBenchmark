@@ -16,12 +16,12 @@ bibentry(
 bibentry(
   bibtype  = "Manual",
   title    = "PublicationBiasBenchmark: Benchmark for publication bias correction methods",
-  author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe",
+  author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe and Petr \\v{C}ala",
   year     = sub("-.*", "", meta$Date),
   note     = sprintf("version %s", meta$Version),
   url      = "https://cran.r-project.org/package=PublicationBiasBenchmark",
   textVersion = paste(
-    "Bartoš, F., Pawel, S., & Siepe, B. S. (2025).",
+    "Bartoš, F., Pawel, S., Siepe, B. S., Čala, P. (2025).",
     sprintf("PublicationBiasBenchmark: Benchmark for publication bias correction methods (version %s).", meta$Version),
     "https://cran.r-project.org/package=PublicationBiasBenchmark"
   ),

@@ -1,7 +1,7 @@
 Package: PublicationBiasBenchmark
 Type: Package
 Title: Benchmark for Publication Bias Correction Methods
-Version: 0.1.3
+Version: 0.2.0
 Maintainer: František Bartoš <f.bartos96@gmail.com>
 Authors@R: c(
     person(given = "František",
@@ -16,7 +16,10 @@ Authors@R: c(
     person(given = "Björn S.",
            family = "Siepe",
            role = "aut",
-           comment = c(ORCID = "0000-0002-9558-4648"))
+           comment = c(ORCID = "0000-0002-9558-4648")),
+    person(given = "Petr",
+           family = "Čala",
+           role = "aut")
     )
 Description: Implements a unified interface for benchmarking meta-analytic
     publication bias correction methods through simulation studies (see 
@@ -43,7 +46,8 @@ Imports:
     clubSandwich,
     lmtest,
     puniform,
-    Rdpack
+    Rdpack,
+    MAIVE
 Suggests:
     RoBMA,
     testthat (>= 3.0.0),

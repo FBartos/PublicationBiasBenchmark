@@ -1,6 +1,8 @@
 #' @title PET-PEESE (Precision-Effect Test and Precision-Effect Estimate with
 #'  Standard Errors) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the Precision-Effect Test and Precision-Effect Estimate with
 #' Standard Errors (PET-PEESE) regresses effect sizes against standard errors^2 to

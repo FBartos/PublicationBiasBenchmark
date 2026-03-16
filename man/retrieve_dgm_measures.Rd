@@ -36,7 +36,7 @@ Data-Generating Mechanism (DGM). The pre-computed measures must be already store
 locally. See \code{\link[=download_dgm_measures]{download_dgm_measures()}} function for more guidance.
 }
 \examples{
-\donttest{
+\dontrun{
   # get bias measures for all methods and conditions
   retrieve_dgm_measures("no_bias", measure = "bias")
 

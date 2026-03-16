@@ -30,8 +30,8 @@ if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
 
 # Specify methods to show in the results
 methods_settings <- data.frame(
-  method   = c("mean",    "FMA",     "RMA",     "PET",     "PEESE",   "PETPEESE", "WLS",     "WILS",    "WAAPWLS", "trimfill", "SM",   "SM",   "puniform",  "puniform", "pcurve",  "EK",      "AK",  "AK",  "RoBMA"),
-  settings = c("default", "default", "default", "default", "default", "default",  "default", "default", "default", "default",  "3PSM", "4PSM", "default",   "star",     "default", "default", "AK1", "AK2", "PSMA")
+  method   = c("mean",    "FMA",     "RMA",     "PET",     "PEESE",   "PETPEESE", "WLS",     "WILS",    "WAAPWLS", "trimfill", "SM",   "SM",   "puniform",  "puniform", "pcurve",  "EK",      "AK",  "AK",  "RoBMA", "MAIVE", "MAIVE"),
+  settings = c("default", "default", "default", "default", "default", "default",  "default", "default", "default", "default",  "3PSM", "4PSM", "default",   "star",     "default", "default", "AK1", "AK2", "PSMA", "default", "WAIVE")
 )
 methods_settings_labels <- with(methods_settings, paste0(method, " (", settings, ")"))
 

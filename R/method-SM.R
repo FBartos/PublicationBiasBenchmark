@@ -1,5 +1,7 @@
 #' @title SM (Selection Models) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements selection models for publication bias correction in meta-analysis.
 #' The method first fits a random effects meta-analysis model, then applies

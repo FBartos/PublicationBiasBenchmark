@@ -215,6 +215,7 @@ See `methods("method")` for the full list:
 - `"puniform"`: P-uniform [@vanassen2015meta] and P-uniform* [@vanaert2025puniform]
 - `"AK"`: Andrews & Kasy selection models (AK1, AK2) [@andrews2019identification]
 - `"RoBMA"`: Robust Bayesian Meta-Analysis [@bartos2023robust]
+- `"MAIVE"`: Meta Analysis Instrumental Variable Estimator [@irsova2025spurious]
 
 
 ### Available Performance Measures

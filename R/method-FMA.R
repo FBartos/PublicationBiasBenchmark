@@ -1,5 +1,7 @@
 #' @title Fixed Effects Meta-Analysis Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the publication bias-unadjusted fixed effects meta-analysis.
 #'

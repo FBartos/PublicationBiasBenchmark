@@ -88,8 +88,9 @@ It provides a clean and extensible interface for computing standard simulation
 performance measures.
 }
 \examples{
-\donttest{
+\dontrun{
 # Download DGM results
+# Requires OSF 'OSF_PAT' environment variable.
 dgm_name <- "no_bias"
 download_dgm_results(dgm_name)
 

@@ -1,5 +1,7 @@
 #' @title WLS (Weighted Least Squares) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the Weighted Least Squares method for meta-analysis.
 #' WLS fits a weighted regression model with effect sizes as the outcome

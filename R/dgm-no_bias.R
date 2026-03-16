@@ -1,5 +1,7 @@
 #' @title Normal Unbiased Data-Generating Mechanism
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' An example data-generating mechanism to simulate effect sizes without
 #' publication bias.

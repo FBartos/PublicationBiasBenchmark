@@ -24,6 +24,7 @@ Authors:
 \itemize{
   \item Samuel Pawel (\href{https://orcid.org/0000-0003-2779-320X}{ORCID})
   \item Björn S. Siepe (\href{https://orcid.org/0000-0002-9558-4648}{ORCID})
+  \item Petr Čala
 }
 
 }

@@ -1,5 +1,7 @@
 #' @title Carter et al. (2019) Data-Generating Mechanism
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com} (adapted from Hong and Reed 2021)
+#'
 #' @description
 #' This data-generating mechanism simulates primary studies estimating treatment
 #' effects using Cohen's d. The observed effect size is modeled as a fixed mean

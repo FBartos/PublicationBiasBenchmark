@@ -1,5 +1,7 @@
 #' @title pcurve (P-Curve) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the p-Curve method which analyzes the distribution of p-values from significant studies to
 #' assess whether the significant findings reflect true effects or QRP/publication bias.

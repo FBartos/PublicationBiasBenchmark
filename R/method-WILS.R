@@ -1,5 +1,7 @@
 #' @title Weighted and Iterated Least Squares (WILS) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the weighted and iterated least squares (WILS) method for publication
 #' bias correction in meta-analysis. The method is based on the idea of using excess statistical

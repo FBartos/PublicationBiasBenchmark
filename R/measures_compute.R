@@ -543,8 +543,9 @@ method_condition_results_replacement <- function(method_condition_results, metho
 #' @return TRUE upon successfully computation of the results file
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Download DGM results
+#' # Requires OSF 'OSF_PAT' environment variable.
 #' dgm_name <- "no_bias"
 #' download_dgm_results(dgm_name)
 #'

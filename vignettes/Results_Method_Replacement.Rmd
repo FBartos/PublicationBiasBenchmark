@@ -48,7 +48,9 @@ replacement_df <- data.frame(
     "EK (default)",
     "AK (AK1)",
     "AK (AK2)",
-    "RoBMA (PSMA)"
+    "RoBMA (PSMA)",
+    "MAIVE (default)",
+    "MAIVE (WAIVE)"
   ),
   `Replacement Sequence` = c(
     "—",
@@ -69,7 +71,9 @@ replacement_df <- data.frame(
     "WLS (default) → FMA (default)",
     "RMA (default) → FMA (default)",
     "AK (AK1) → RMA (default) → FMA (default)",
-    "RMA (default) → FMA (default)"
+    "RMA (default) → FMA (default)",
+    "PETPEESE (default) → WLS (default) → FMA (default)",
+    "PETPEESE (default) → WLS (default) → FMA (default)"
   ),
   check.names = FALSE
 )

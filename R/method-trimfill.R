@@ -1,5 +1,7 @@
 #' @title Trim-and-Fill Meta-Analysis Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the trim-and-fill method for adjusting publication bias
 #' in meta-analysis using the metafor package.

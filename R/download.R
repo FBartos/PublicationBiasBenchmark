@@ -17,7 +17,7 @@
 #' @return \code{TRUE} if the download was successful, otherwise an error is raised.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   download_dgm_datasets("no_bias")
 #' }
 #'
@@ -156,7 +156,7 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
 #' @return A data.frame
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # get condition 1, repetition 1
 #'   retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 #'
@@ -219,7 +219,7 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL){
 #' @return A data.frame
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # get condition 1, repetition 1 for default method setting
 #'   retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
 #'
@@ -302,7 +302,7 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
 #' @return A data.frame
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # get bias measures for all methods and conditions
 #'   retrieve_dgm_measures("no_bias", measure = "bias")
 #'

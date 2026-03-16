@@ -50,7 +50,7 @@ To set the location permanently, specify the PublicationBiasBenchmark_RESOURCES 
 variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
 }
 \examples{
-\donttest{
+\dontrun{
   download_dgm_datasets("no_bias")
 }
 

@@ -1,5 +1,7 @@
 #' @title Alinaghi and Reed (2018) Data-Generating Mechanism
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com} (adapted from Hong and Reed 2021)
+#'
 #' @description
 #' This data-generating mechanism simulates univariate regression studies where a variable X
 #' affects a continuous outcome Y. Each study estimates the coefficient of X, which consists

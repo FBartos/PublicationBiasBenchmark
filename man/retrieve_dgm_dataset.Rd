@@ -23,7 +23,7 @@ condition from a dgm. The pre-simulated datasets must be already stored
 locally. See \link{download_dgm} function for more guidance.
 }
 \examples{
-\donttest{
+\dontrun{
   # get condition 1, repetition 1
   retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 

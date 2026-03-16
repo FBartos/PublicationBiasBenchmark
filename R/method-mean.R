@@ -1,5 +1,7 @@
 #' @title Mean Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the unweighted mean method. I.e., the mean of observed effect sizes.
 #'

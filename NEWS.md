@@ -1,5 +1,9 @@
+# 0.2.0
+## Features
+ - Added MAIVE method (by Petr Čala)
+
 # 0.1.3
-## New Features
+## Features
  - Added `measure()` function to list available performance measures (renamed from `measures()`).
  - Added `measure_mcse()` function to list available performance measure MCSE functions.
  - Implemented S3 methods for `measure()` and `measure_mcse()` to retrieve specific functions (e.g., `measure("bias")`, `measure_mcse("bias")`).

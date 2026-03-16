@@ -1,5 +1,7 @@
 #' @title Bom and Rachinger (2019) Data-Generating Mechanism
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com} (adapted from Hong and Reed 2021)
+#'
 #' @description
 #' Simulates univariate regression environments to estimate the effect of
 #' X1 on Y (parameter alpha1). Effect heterogeneity is introduced via an omitted

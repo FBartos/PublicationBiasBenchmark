@@ -1,5 +1,7 @@
 #' @title Endogenous Kink Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the endogenous kink (EK) method proposed by Bom and Rachinger for
 #' publication bias correction in meta-analysis. This method modifies the PET-PEESE

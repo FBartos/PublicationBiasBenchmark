@@ -1,5 +1,7 @@
 #' @title WAAPWLS (Weighted Average of Adequately Powered Studies) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the WAAP-WLS method for meta-analysis, which combines WLS and WAAP approaches.
 #' First fits a WLS model to all studies, then identifies high-powered studies based on

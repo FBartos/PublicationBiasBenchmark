@@ -1,5 +1,7 @@
 #' @title Stanley, Doucouliagos, and Ioannidis (2017) Data-Generating Mechanism
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com} (adapted from Hong and Reed 2021)
+#'
 #' @description
 #' Simulates two scenarios for meta-analysis studies investigating the effect
 #' of a treatment in:

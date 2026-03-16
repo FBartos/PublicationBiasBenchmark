@@ -1,5 +1,7 @@
 #' @title PET (Precision-Effect Test) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the Precision-Effect Test for publication bias correction.
 #' PET regresses effect sizes against standard errors to test for and correct

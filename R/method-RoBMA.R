@@ -1,5 +1,7 @@
 #' @title Robust Bayesian Meta-Analysis (RoBMA) Method
 #'
+#' @author František Bartoš \email{f.bartos96@@gmail.com}
+#'
 #' @description
 #' Implements the robust Bayesian meta-analysis (RoBMA) method that uses
 #' Bayesian model-averaging to combine results across several complementary

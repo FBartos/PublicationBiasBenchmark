@@ -38,3 +38,6 @@ print(result)
 \references{
 \insertAllCited{}
 }
+\author{
+František Bartoš \email{f.bartos96@gmail.com}
+}
