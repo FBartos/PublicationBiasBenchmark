@@ -59,9 +59,9 @@ data <- data.frame(
   es_type = "SMD"
 )
 
-# Apply RoBMA method
-result <- run_method("RoBMA", data)
-print(result)
+# Apply RoBMA method (requires RoBMA 3.6.1 version of the package)
+#result <- run_method("RoBMA", data)
+#print(result)
 }
 }
 \references{

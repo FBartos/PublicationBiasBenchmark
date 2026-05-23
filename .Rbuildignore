@@ -16,3 +16,5 @@ README.html
 ^vignettes/_results-.*\.Rmd$
 ^doc$
 ^Meta$
+^\.positai$
+^\.claude$

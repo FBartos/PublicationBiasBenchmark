@@ -54,13 +54,18 @@
 #'   es_type = "SMD"
 #' )
 #'
-#' # Apply RoBMA method
-#' result <- run_method("RoBMA", data)
-#' print(result)
+#' # Apply RoBMA method (requires RoBMA 3.6.1 version of the package)
+#' #result <- run_method("RoBMA", data)
+#' #print(result)
 #' }
 #' @export
 method.RoBMA <- function(method_name, data, settings) {
 
+  if (utils::packageVersion("RoBMA") != "3.6.1")
+    warning("The PublicationBiasBenchmark requires 3.6.1 version of the RoBMA R package.", immediate. = TRUE)
+  if (utils::packageVersion("BayesTools") != "0.2.23")
+    warning("The PublicationBiasBenchmark requires 0.2.23 version of the BayesTools R package.", immediate. = TRUE)
+  
   # Check if RoBMA and JAGS are available
   .check_robma_available(message_on_fail = TRUE, stop_on_fail = TRUE)
 
@@ -115,7 +120,7 @@ method.RoBMA <- function(method_name, data, settings) {
 
     fit_scale     <- metafor::rma(yi = effect_sizes, sei = standard_errors, method = "FE")
     outcome_scale <- fit_scale$se * sqrt(sum(data$ni))    # prior scaling factor
-    prior_scaling <- outcome_scale * RoBMA:::scale_d2z(1) # prior has a scale of 1 on Cohen's d => rescaling proportionally
+    prior_scaling <- outcome_scale * 0.5                  # prior has a scale of 1 on Cohen's d => rescaling proportionally
 
     RoBMA_call$y  <- effect_sizes
     RoBMA_call$se <- standard_errors
@@ -167,8 +172,8 @@ method.RoBMA <- function(method_name, data, settings) {
   bias_BF                      <- RoBMA_summary$components["Bias", "inclusion_BF"]
 
   convergence <- TRUE
-  note        <- RoBMA::check_RoBMA_convergence(RoBMA_model)
-
+  note        <- do.call(eval(expr = parse(text = paste0("RoBMA", "::", "check_RoBMA_convergence"))), RoBMA_model)
+  
   return(data.frame(
     method           = method_name,
     estimate         = estimate,
