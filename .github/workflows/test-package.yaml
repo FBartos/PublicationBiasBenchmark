@@ -34,7 +34,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::testthat, any::devtools
+          extra-packages: |
+            BayesTools=url::https://cran.r-project.org/src/contrib/Archive/BayesTools/BayesTools_0.2.23.tar.gz
+            RoBMA=url::https://cran.r-project.org/src/contrib/Archive/RoBMA/RoBMA_3.6.1.tar.gz
+            any::testthat
+            any::devtools
           dependencies: '"all"'
 
       - name: Run tests

@@ -37,7 +37,16 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, any::devtools, any::DT, any::kableExtra, any::ggplot2, any::ggdist, local::.
+          extra-packages: |
+            BayesTools=url::https://cran.r-project.org/src/contrib/Archive/BayesTools/BayesTools_0.2.23.tar.gz
+            RoBMA=url::https://cran.r-project.org/src/contrib/Archive/RoBMA/RoBMA_3.6.1.tar.gz
+            any::pkgdown
+            any::devtools
+            any::DT
+            any::kableExtra
+            any::ggplot2
+            any::ggdist
+            local::.
           needs: website
 
       - name: Build site
