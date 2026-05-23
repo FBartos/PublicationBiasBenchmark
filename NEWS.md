@@ -1,3 +1,7 @@
+# 0.2.1
+## Fixes
+ - Fix RoBMA and BayesTools version
+
 # 0.2.0
 ## Features
  - Added MAIVE method (by Petr Čala)
