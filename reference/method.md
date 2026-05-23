@@ -67,6 +67,7 @@ to query which additional columns a particular method returns.
 ## Examples
 
 ``` r
+
 data <- data.frame(
   yi = c(0.2, 0.3, 0.1, 0.4),
   sei = c(0.1, 0.15, 0.08, 0.12)

@@ -57,6 +57,7 @@ columns are used:
 ## Examples
 
 ``` r
+
 simulate_dgm("Carter2019", 1)
 #>             yi        sei  ni es_type
 #> 1   0.02957667 0.15340138 170     SMD

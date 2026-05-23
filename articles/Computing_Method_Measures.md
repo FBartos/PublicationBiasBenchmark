@@ -65,6 +65,7 @@ simulation studies.
 ### Step 1: Set Up Your Environment
 
 ``` r
+
 library(PublicationBiasBenchmark)
 
 # Specify path to the directory containing results
@@ -76,6 +77,7 @@ PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
 Specify which DGMs to process and which methods to compute measures for:
 
 ``` r
+
 # List of DGMs to evaluate
 dgm_names <- c(
   "Stanley2017",
@@ -98,6 +100,7 @@ Process each DGM to compute both standard and replacement performance
 measures:
 
 ``` r
+
 for (dgm_name in dgm_names) {
   
   # Download precomputed results for existing methods (for replacements)

@@ -1,6 +1,7 @@
 # Using Presimulated Datasets
 
 ``` r
+
 library(PublicationBiasBenchmark)
 ```
 
@@ -76,6 +77,7 @@ You can view the specific conditions for each DGM using the
 function:
 
 ``` r
+
 # View conditions for the Stanley2017 DGM
 conditions <- dgm_conditions("Stanley2017")
 head(conditions)
@@ -92,6 +94,7 @@ from the package repository. The
 function downloads the datasets for a specified DGM:
 
 ``` r
+
 # Specify path to the directory containing resources
 PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
 
@@ -118,6 +121,7 @@ You can retrieve a specific simulated meta-analytic dataset by
 specifying the condition and repetition:
 
 ``` r
+
 # Retrieve first repetition of condition 1
 dataset <- retrieve_dgm_dataset(
   dgm = "Stanley2017",
@@ -140,6 +144,7 @@ To retrieve all simulation repetitions for a specific condition, omit
 the `repetition_id` argument:
 
 ``` r
+
 # Retrieve all repetitions for condition 1
 all_reps <- retrieve_dgm_dataset(
   dgm = "Stanley2017",

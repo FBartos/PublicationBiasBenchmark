@@ -40,6 +40,7 @@ This is the core function that implements your data-generating
 mechanism. Here is the `no_bias` implementation as an example:
 
 ``` r
+
 #' @title Normal Unbiased Data-Generating Mechanism
 #'
 #' @description
@@ -128,6 +129,7 @@ This function validates that all required parameters are provided and
 have valid values:
 
 ``` r
+
 #' @export
 validate_dgm_setting.no_bias <- function(dgm_name, settings) {
 
@@ -173,6 +175,7 @@ validate_dgm_setting.no_bias <- function(dgm_name, settings) {
 This function defines pre-specified conditions for benchmarking studies:
 
 ``` r
+
 #' @export
 dgm_conditions.no_bias <- function(dgm_name) {
 
@@ -201,6 +204,7 @@ reproducibility and continuity of the benchmark.
 Once implemented, your DGM can be used through a unified interface:
 
 ``` r
+
 # Use with custom settings
 data <- simulate_dgm("no_bias", list(
   mean_effect = 0.2,

@@ -1,6 +1,7 @@
 # Using Precomputed Results
 
 ``` r
+
 library(PublicationBiasBenchmark)
 ```
 
@@ -59,6 +60,7 @@ view the specific conditions for each DGM using the
 function:
 
 ``` r
+
 # View conditions for the Stanley2017 DGM
 conditions <- dgm_conditions("Stanley2017")
 head(conditions)
@@ -76,6 +78,7 @@ the package repository. The
 function downloads the raw results for a specified DGM:
 
 ``` r
+
 # Download precomputed results for the Stanley2017 DGM
 download_dgm_results("Stanley2017")
 ```
@@ -102,6 +105,7 @@ You can retrieve results for a specific method, condition, and
 repetition:
 
 ``` r
+
 # Retrieve results for the first repetition of condition 1 for RMA method
 retrieve_dgm_results(
   dgm            = "Stanley2017",
@@ -121,6 +125,7 @@ from applying the RMA method to the first simulated dataset in condition
 To retrieve all repetitions for a specific condition and method:
 
 ``` r
+
 # Retrieve all repetitions for condition 1 of RMA method
 condition_1_results <- retrieve_dgm_results(
   dgm            = "Stanley2017",
@@ -140,6 +145,7 @@ hist(condition_1_results$estimate,
 To retrieve all repetitions for a method:
 
 ``` r
+
 # Retrieve all results for PET-PEESE method
 pet_peese_results <- retrieve_dgm_results(
   dgm            = "Stanley2017",
@@ -154,6 +160,7 @@ To retrieve all results across all conditions, methods, and repetitions,
 simply omit all filtering arguments:
 
 ``` r
+
 # Retrieve all results
 df <- retrieve_dgm_results("Stanley2017")
 ```

@@ -1,6 +1,7 @@
 # Using Precomputed Measures
 
 ``` r
+
 library(PublicationBiasBenchmark)
 ```
 
@@ -55,6 +56,7 @@ the specific conditions for each DGM using the
 function:
 
 ``` r
+
 # View conditions for the Stanley2017 DGM
 conditions <- dgm_conditions("Stanley2017")
 head(conditions)
@@ -68,6 +70,7 @@ from the package repository. The
 function downloads the measures for a specified DGM:
 
 ``` r
+
 # Download precomputed measures for the Stanley2017 DGM
 download_dgm_measures("Stanley2017")
 ```
@@ -90,6 +93,7 @@ exactly the data you need.
 You can retrieve measures for a specific method and condition:
 
 ``` r
+
 # Retrieve bias measures for RMA method in condition 1
 retrieve_dgm_measures(
   dgm            = "Stanley2017",
@@ -111,6 +115,7 @@ To retrieve all measures across all conditions and methods, simply omit
 the filtering arguments:
 
 ``` r
+
 # Retrieve all measures across all conditions and methods
 df <- retrieve_dgm_measures("Stanley2017")
 ```
@@ -128,6 +133,7 @@ This returns a comprehensive data frame with columns:
 You can also filter by method name:
 
 ``` r
+
 # Retrieve all measures for PET-PEESE method
 pet_peese_results <- retrieve_dgm_measures(
   dgm    = "Stanley2017",
@@ -142,6 +148,7 @@ compare method performance. Here’s an example that creates a multi-panel
 plot comparing all methods across all conditions:
 
 ``` r
+
 # Retrieve all measures across all conditions and methods
 df <- retrieve_dgm_measures("Stanley2017")
 

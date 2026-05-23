@@ -97,24 +97,8 @@ data <- data.frame(
   es_type = "SMD"
 )
 
-# Apply RoBMA method
-result <- run_method("RoBMA", data)
-#> Loading required namespace: runjags
-#> Loading required namespace: mvtnorm
-print(result)
-#>   method   estimate standard_error ci_lower  ci_upper p_value        BF
-#> 1  RoBMA 0.07245329             NA        0 0.2827614      NA 0.7532874
-#>   convergence note tau_estimate tau_ci_lower tau_ci_upper    tau_BF
-#> 1        TRUE TRUE   0.04087817            0     0.252459 0.4609204
-#>                                                                               bias_SM_coefficient
-#> 1 1, 0.91543706489259, 0.831569767534035, 0.804442561500065, 0.814358728230785, 0.847369579189188
-#>                                                                           bias_SM_coefficient_ci_lower
-#> 1 1, 0.189202106868124, 0.0413680937549003, 0.0211984484761842, 0.0217220354856666, 0.0223131588475772
-#>   bias_SM_coefficient_ci_upper                 bias_PP_coefficient
-#> 1             1, 1, 1, 1, 1, 1 0.695002655675012, 3.60584982099692
-#>   bias_PP_coefficient_ci_lower      bias_PP_coefficient_ci_upper  bias_BF
-#> 1                         0, 0 2.9168083740665, 22.8263307590521 5.263982
-#>   method_setting
-#> 1        default
+# Apply RoBMA method (requires RoBMA 3.6.1 version of the package)
+#result <- run_method("RoBMA", data)
+#print(result)
 # }
 ```

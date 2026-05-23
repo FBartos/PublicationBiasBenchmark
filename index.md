@@ -70,12 +70,14 @@ The rest of this file overviews the main features of the package.
 Install the released CRAN version
 
 ``` r
+
 install.packages("PublicationBiasBenchmark")
 ```
 
 Install latest development version from GitHub
 
 ``` r
+
 remotes::install_github("FBartos/PublicationBiasBenchmark")
 ```
 
@@ -88,12 +90,14 @@ infrastructure etc are reflected in patch updates.
 ## Usage
 
 ``` r
+
 library(PublicationBiasBenchmark)
 ```
 
 ### Simulating From Existing Data-Generating Mechanisms
 
 ``` r
+
 # Obtain a data.frame with pre-defined conditions
 dgm_conditions("Stanley2017")
 
@@ -107,6 +111,7 @@ run_method("RMA", df)
 ### Using Pre-Simulated Datasets
 
 ``` r
+
 # download the pre-simulated datasets
 # (the intended location for storing the package resources needs to be specified)
 PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
@@ -119,6 +124,7 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 ### Using Pre-Computed Results
 
 ``` r
+
 # download the pre-computed results
 download_dgm_results("no_bias")
 
@@ -132,6 +138,7 @@ retrieve_dgm_results("no_bias")
 ### Using Pre-Computed Measures
 
 ``` r
+
 # download the pre-computed measures
 download_dgm_measures("no_bias")
 
@@ -145,6 +152,7 @@ retrieve_dgm_measures("no_bias")
 ### Simulating From an Existing DGM With Custom Settings
 
 ``` r
+
 # define sim setting
 sim_settings <- list(
   n_studies     = 100,

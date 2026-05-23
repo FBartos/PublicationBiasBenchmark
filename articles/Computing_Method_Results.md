@@ -61,6 +61,7 @@ First, ensure you’re working in the correct directory and have the
 package loaded:
 
 ``` r
+
 library(PublicationBiasBenchmark)
 
 # Specify path to the directory containing results
@@ -73,6 +74,7 @@ Specify which DGMs you want to compute results for and your method
 details:
 
 ``` r
+
 # List of DGMs to evaluate
 dgm_names <- c(
   "Stanley2017",
@@ -91,6 +93,7 @@ method_setting <- "default"  # Or other setting name if you have multiple
 Download the presimulated datasets for all DGMs:
 
 ``` r
+
 # Download datasets for all DGMs
 for (dgm_name in dgm_names) {
   message("Downloading datasets for: ", dgm_name)
@@ -109,6 +112,7 @@ You will most likely adapt this code to run parallel/using a job
 scheduler on a cluster.
 
 ``` r
+
 # Set seed for reproducibility
 set.seed(1)
 

@@ -37,6 +37,7 @@ This is the core function that implements your statistical method. Here
 is the PET implementation as an example:
 
 ``` r
+
 #' @title PET (Precision-Effect Test) Method
 #'
 #' @description
@@ -143,6 +144,7 @@ If your method does not provide certain values (e.g., Bayes factor), use
 This function defines the available configurations for your method:
 
 ``` r
+
 #' @export
 method_settings.PET <- function(method_name) {
   
@@ -163,6 +165,7 @@ For an example of a method that defines several settings we can examine
 the random effects meta-analysis (RMA) method:
 
 ``` r
+
 # Example with multiple settings (from RMA method)
 method_settings.RMA <- function(method_name) {
   
@@ -185,6 +188,7 @@ This function specifies additional columns that your method returns
 beyond the required ones:
 
 ``` r
+
 #' @export
 method_extra_columns.PET <- function(method_name) {
   c("bias_coefficient", "bias_p_value")
@@ -203,6 +207,7 @@ Use `character(0)` if your method has no extra columns
 Once implemented, your method can be used through a unified interface:
 
 ``` r
+
 # Create example data
 data <- data.frame(
   yi  = c(0.2, 0.3, 0.1, 0.4, 0.25),
