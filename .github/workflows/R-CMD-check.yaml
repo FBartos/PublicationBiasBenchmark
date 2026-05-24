@@ -49,6 +49,7 @@ jobs:
             RoBMA=url::https://cran.r-project.org/src/contrib/Archive/RoBMA/RoBMA_3.6.1.tar.gz
             any::rcmdcheck
           dependencies: '"all"'
+          install-pandoc: false
 
       - uses: r-lib/actions/check-r-package@v2
         with:

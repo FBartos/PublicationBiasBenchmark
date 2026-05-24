@@ -43,6 +43,7 @@ jobs:
             any::testthat
             any::devtools
           dependencies: '"all"'
+          install-pandoc: false
 
       - name: Run tests
         run: |

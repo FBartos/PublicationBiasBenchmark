@@ -19,6 +19,8 @@ runs:
         for lib in "$jags_prefix"/lib/*.dylib; do
           sudo ln -sf "$lib" "/usr/local/lib/$(basename "$lib")"
         done
+        sudo rm -rf /usr/local/lib/JAGS
+        sudo ln -s "$jags_prefix/lib/JAGS" /usr/local/lib/JAGS
 
         echo "$jags_prefix/bin" >> "$GITHUB_PATH"
         {
