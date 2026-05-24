@@ -1,0 +1,94 @@
+name: Set up JAGS
+description: Install JAGS and configure library paths for packages that link to it.
+runs:
+  using: composite
+  steps:
+    - name: Install JAGS on macOS
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        brew install jags
+        jags_prefix="$(brew --prefix jags)"
+        pkg-config --modversion jags
+
+        # CRAN macOS rjags binaries can look for JAGS in /usr/local/lib even
+        # when Homebrew installs it under /opt/homebrew on arm64 runners.
+        sudo mkdir -p /usr/local/lib
+        for lib in "$jags_prefix"/lib/*.dylib; do
+          sudo ln -sf "$lib" "/usr/local/lib/$(basename "$lib")"
+        done
+
+        echo "$jags_prefix/bin" >> "$GITHUB_PATH"
+        {
+          echo "JAGS_HOME=$jags_prefix"
+          echo "PKG_CONFIG_PATH=$jags_prefix/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+        } >> "$GITHUB_ENV"
+
+    - name: Install JAGS on Windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = "Stop"
+
+        function Test-JagsInstaller {
+          param([string]$Path)
+
+          if (!(Test-Path $Path)) {
+            return $false
+          }
+          if ((Get-Item $Path).Length -lt 20MB) {
+            return $false
+          }
+
+          $magic = [System.IO.File]::ReadAllBytes($Path)[0..1]
+          return ($magic[0] -eq 0x4D -and $magic[1] -eq 0x5A)
+        }
+
+        $jagsRoot = "C:\Program Files\JAGS\JAGS-4.3.2"
+        $installer = Join-Path $env:RUNNER_TEMP "JAGS-4.3.2.exe"
+        $urls = @(
+          "https://master.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.3.2.exe?viasf=1",
+          "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download"
+        )
+
+        $downloaded = $false
+        foreach ($url in $urls) {
+          Remove-Item $installer -ErrorAction SilentlyContinue
+          try {
+            Invoke-WebRequest `
+              -Uri $url `
+              -Headers @{ "User-Agent" = "Mozilla/5.0" } `
+              -MaximumRedirection 10 `
+              -OutFile $installer
+
+            if (Test-JagsInstaller $installer) {
+              $downloaded = $true
+              break
+            }
+
+            Write-Warning "Downloaded file from ${url} was not a Windows installer."
+          } catch {
+            Write-Warning "Failed to download JAGS from ${url}: $($_.Exception.Message)"
+          }
+        }
+
+        if (!$downloaded) {
+          throw "Could not download a valid JAGS installer."
+        }
+
+        $process = Start-Process `
+          -FilePath $installer `
+          -ArgumentList "/S" `
+          -Wait `
+          -PassThru
+        if ($process.ExitCode -ne 0) {
+          throw "JAGS installer failed with exit code $($process.ExitCode)."
+        }
+        if (!(Test-Path "$jagsRoot\include\distribution\ArrayDist.h")) {
+          throw "JAGS headers not found under $jagsRoot."
+        }
+
+        Add-Content -Path $env:GITHUB_ENV -Value "JAGS_ROOT=/c/progra~1/JAGS/JAGS-4.3.2"
+        Add-Content -Path $env:GITHUB_PATH -Value "$jagsRoot\x64\bin"

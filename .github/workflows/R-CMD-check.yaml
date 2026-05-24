@@ -39,34 +39,8 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Install JAGS on macOS
-        if: runner.os == 'macOS'
-        run: |
-          brew install jags
-          pkg-config --modversion jags
-
-      - name: Install JAGS on Windows
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-          $jagsRoot = "C:\Program Files\JAGS\JAGS-4.3.2"
-          $installer = Join-Path $env:RUNNER_TEMP "JAGS-4.3.2.exe"
-          Invoke-WebRequest `
-            -Uri "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download" `
-            -OutFile $installer
-          if ((Get-Item $installer).Length -lt 1MB) {
-            throw "JAGS installer download looks incomplete."
-          }
-          Start-Process `
-            -FilePath $installer `
-            -ArgumentList "/S" `
-            -Wait
-          if (!(Test-Path "$jagsRoot\include\distribution\ArrayDist.h")) {
-            throw "JAGS headers not found under $jagsRoot."
-          }
-          Add-Content -Path $env:GITHUB_ENV -Value "JAGS_ROOT=/c/progra~1/JAGS/JAGS-4.3.2"
-          Add-Content -Path $env:GITHUB_PATH -Value "$jagsRoot\x64\bin"
+      - name: Set up JAGS
+        uses: ./.github/actions/setup-jags
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
