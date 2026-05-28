@@ -4,7 +4,8 @@ context("Basic tests of methods")
 # Methods to skip for computational resource reasons
 # These methods are computationally intensive and would slow down the test suite
 SKIP_METHODS_COMPUTATIONAL <- c(
-  "RoBMA"   # Bayesian MCMC sampling - computationally intensive
+  "RoBMA",  # Bayesian MCMC sampling - computationally intensive
+  "RTMA"    # Stan-based Bayesian sampling - computationally intensive
 )
 
 test_that("All method implementations have required S3 methods", {

@@ -1,3 +1,9 @@
+# 0.3.0
+## Features
+ - Added RTMA method
+ - Added MAN method
+ - Added MMPH method 
+ 
 # 0.2.1
 ## Fixes
  - Fix RoBMA and BayesTools version
