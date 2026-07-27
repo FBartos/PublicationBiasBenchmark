@@ -23,6 +23,12 @@
 #'   \code{alpha_select = 0.05}, posterior interval level
 #'   \code{ci_level = 0.95}, Stan control settings
 #'   \code{adapt_delta = 0.98}, \code{max_treedepth = 20},
+#'   \code{parallelize = FALSE}},
+#'   \item{\code{"relaxed"}}{RTMA with affirmative results defined by
+#'   positive direction \code{favor_positive = TRUE} and statistical significance
+#'   \code{alpha_select = 0.05}, posterior interval level
+#'   \code{ci_level = 0.95}, relaxed Stan control settings
+#'   \code{adapt_delta = 0.95}, \code{max_treedepth = 15},
 #'   \code{parallelize = FALSE}}
 #' }
 #'
@@ -120,6 +126,13 @@ method_settings.RTMA <- function(method_name) {
       alpha_select   = 0.05,
       ci_level       = 0.95,
       stan_control   = list(adapt_delta = 0.98, max_treedepth = 20),
+      parallelize    = FALSE
+    ),
+    "relaxed" = list(
+      favor_positive = TRUE,
+      alpha_select   = 0.05,
+      ci_level       = 0.95,
+      stan_control   = list(adapt_delta = 0.95, max_treedepth = 15),
       parallelize    = FALSE
     )
   )

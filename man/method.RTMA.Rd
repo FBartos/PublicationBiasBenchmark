@@ -31,6 +31,12 @@ positive direction \code{favor_positive = TRUE} and statistical significance
 \code{alpha_select = 0.05}, posterior interval level
 \code{ci_level = 0.95}, Stan control settings
 \code{adapt_delta = 0.98}, \code{max_treedepth = 20},
+\code{parallelize = FALSE}},
+\item{\code{"relaxed"}}{RTMA with affirmative results defined by
+positive direction \code{favor_positive = TRUE} and statistical significance
+\code{alpha_select = 0.05}, posterior interval level
+\code{ci_level = 0.95}, relaxed Stan control settings
+\code{adapt_delta = 0.95}, \code{max_treedepth = 15},
 \code{parallelize = FALSE}}
 }
 }
