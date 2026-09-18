@@ -3,6 +3,11 @@
  - Added RTMA method
  - Added MAN method
  - Added MMPH method 
+ - Added `fit_limit` argument to `run_method()` that aborts a fit exceeding the
+   given number of minutes and returns a standard failure result with
+   `note = "time limit exceeded with <fit_limit> minutes"`. The fit runs in a
+   reused background R process so that methods sitting in compiled sampling
+   code (RoBMA, RTMA, MMPH) can be stopped as well.
  
 # 0.2.1
 ## Fixes

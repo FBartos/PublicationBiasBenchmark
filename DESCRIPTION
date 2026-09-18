@@ -37,6 +37,7 @@ Depends:
     R (>= 3.5.0)
 Imports:
     stats,
+    callr,
     metafor,
     osfr,
     MASS,
@@ -54,6 +55,7 @@ Imports:
     Rdpack
 Suggests:
     RoBMA (<= 3.6.1),
+    pkgload,
     BayesTools (<= 0.2.23),
     testthat (>= 3.0.0),
     rmarkdown,

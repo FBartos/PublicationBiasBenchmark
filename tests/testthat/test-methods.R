@@ -246,3 +246,39 @@ test_that("Method run_method handles errors gracefully", {
     )
   }
 })
+
+test_that("run_method() aborts a fit that exceeds 'fit_limit'", {
+
+  skip_on_cran()
+
+  # RTMA samples with Stan, i.e. inside compiled code that R's own elapsed-time
+  # limit cannot interrupt. A thousand estimates take well over a minute to fit,
+  # so the limit must be what ends the call. It is one of the methods skipped
+  # above for being computationally intensive, which is not a concern here
+  # precisely because the fit is never allowed to finish.
+  set.seed(1)
+  sei  <- runif(1000, 0.05, 0.50)
+  data <- data.frame(yi = rnorm(1000, 0.3, sqrt(0.2^2 + sei^2)), sei = sei)
+
+  elapsed <- system.time(
+    result <- run_method("RTMA", data, "default", silent = TRUE, fit_limit = 10 / 60)
+  )[["elapsed"]]
+
+  # the limit ended the fit rather than the fit running to completion
+  expect_lt(elapsed, 20)
+  expect_match(result$note, "^time limit exceeded with ")
+
+  # the failure result follows the schema of a successful RTMA result, so that
+  # results still rbind() across repetitions
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_equal(
+    names(result),
+    c("method", "estimate", "standard_error", "ci_lower", "ci_upper", "p_value",
+      "BF", "convergence", "note", get_method_extra_columns("RTMA"), "method_setting")
+  )
+  expect_equal(result$method, "RTMA")
+  expect_equal(result$method_setting, "default")
+  expect_false(result$convergence)
+  expect_true(is.na(result$estimate))
+})

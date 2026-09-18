@@ -4,7 +4,13 @@
 \alias{run_method}
 \title{Generic method function for publication bias correction}
 \usage{
-run_method(method_name, data, settings = NULL, silent = FALSE)
+run_method(
+  method_name,
+  data,
+  settings = NULL,
+  silent = FALSE,
+  fit_limit = NULL
+)
 }
 \arguments{
 \item{method_name}{Character string specifying the method type}
@@ -16,6 +22,13 @@ containing method-specific settings. An emty input will result in running the
 default (first implemented) version of the method.}
 
 \item{silent}{Logical indicating whether error messages from the method should be suppressed.}
+
+\item{fit_limit}{Optional numeric giving the maximum time, in minutes, that
+the method is allowed to run. \code{NULL} (the default) or a non-finite value
+imposes no limit. When the limit is exceeded, the fit is aborted and a
+failure result with \code{convergence = FALSE} and
+\code{note = "time limit exceeded with <fit_limit> minutes"} is returned. See the
+Time Limits section for the mechanism and its platform differences.}
 }
 \value{
 A data frame with standardized method results
@@ -27,6 +40,27 @@ See
 \href{../doc/Adding_New_Methods.html}{\code{vignette("Adding_New_Methods", package = "PublicationBiasBenchmark")}}
 for details of extending the package with new methods
 }
+\section{Time Limits}{
+
+Methods that spend their time inside compiled sampling code (\code{RoBMA} via
+JAGS, \code{RTMA} and \code{MMPH} via Stan) do not return to R's evaluator and
+therefore cannot be stopped by R's own elapsed-time limit. \code{fit_limit} is
+consequently enforced by evaluating the method in a separate R process
+(\link[callr:r_session]{callr::r_session}) that is killed once the limit passes, which stops a fit
+regardless of what it is executing, on every platform.
+
+That process is started on the first limited fit and reused by the following
+ones, adding roughly 0.05 seconds per fit; it is discarded and replaced
+whenever a fit is killed or the process dies. A fit that exceeds the limit
+therefore leaves no work behind, but also keeps nothing from the fits before
+it.
+
+The worker has its own random number stream, which is seeded from the calling
+session for every fit. Results of methods that use randomness stay
+reproducible from the calling session's seed, but differ from those obtained
+without a limit.
+}
+
 \section{Output Structure}{
 
 The returned data frame follows a standardized schema that downstream

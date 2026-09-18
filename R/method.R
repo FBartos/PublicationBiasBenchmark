@@ -13,6 +13,31 @@
 #' containing method-specific settings. An emty input will result in running the
 #' default (first implemented) version of the method.
 #' @param silent Logical indicating whether error messages from the method should be suppressed.
+#' @param fit_limit Optional numeric giving the maximum time, in minutes, that
+#' the method is allowed to run. `NULL` (the default) or a non-finite value
+#' imposes no limit. When the limit is exceeded, the fit is aborted and a
+#' failure result with `convergence = FALSE` and
+#' `note = "time limit exceeded with <fit_limit> minutes"` is returned. See the
+#' Time Limits section for the mechanism and its platform differences.
+#'
+#' @section Time Limits:
+#' Methods that spend their time inside compiled sampling code (`RoBMA` via
+#' JAGS, `RTMA` and `MMPH` via Stan) do not return to R's evaluator and
+#' therefore cannot be stopped by R's own elapsed-time limit. `fit_limit` is
+#' consequently enforced by evaluating the method in a separate R process
+#' ([callr::r_session]) that is killed once the limit passes, which stops a fit
+#' regardless of what it is executing, on every platform.
+#'
+#' That process is started on the first limited fit and reused by the following
+#' ones, adding roughly 0.05 seconds per fit; it is discarded and replaced
+#' whenever a fit is killed or the process dies. A fit that exceeds the limit
+#' therefore leaves no work behind, but also keeps nothing from the fits before
+#' it.
+#'
+#' The worker has its own random number stream, which is seeded from the calling
+#' session for every fit. Results of methods that use randomness stay
+#' reproducible from the calling session's seed, but differ from those obtained
+#' without a limit.
 #'
 #' @section Output Structure:
 #' The returned data frame follows a standardized schema that downstream
@@ -42,7 +67,7 @@
 #' )
 #' result <- run_method("RMA", data, "default")
 #' @export
-run_method <- function(method_name, data, settings = NULL, silent = FALSE) {
+run_method <- function(method_name, data, settings = NULL, silent = FALSE, fit_limit = NULL) {
 
   # Allow calling methods with pre-specified `settings`
   if (length(settings) == 1 && is.character(settings)) {
@@ -55,8 +80,12 @@ run_method <- function(method_name, data, settings = NULL, silent = FALSE) {
     settings_name <- "<custom>"
   }
 
-  # Call the method with the pre-specified settings
-  results <- try(method(method_name, data, settings), silent = silent)
+  # Call the method with the pre-specified settings, optionally under a time limit
+  if (.limit_is_set(fit_limit)) {
+    results <- .method_with_limit(method_name, data, settings, silent, fit_limit)
+  } else {
+    results <- try(method(method_name, data, settings), silent = silent)
+  }
 
   # In case of error, return the error message and append the method specific columns
   if (inherits(results, "try-error")) {
