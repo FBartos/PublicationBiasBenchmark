@@ -38,7 +38,8 @@
 #' If multiple elements are specified within the vectors, these replacements are applied consecutively
 #' in case the previous replacements also failed to converge.
 #' Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.
-#' @param n_repetitions Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.
+#' @param n_repetitions Number of repetitions in each condition. Used to verify that the results contain all
+#' repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to \code{1000}.
 #' @param overwrite Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist
 #' @param ... Additional arguments passed to measure functions
 #'
@@ -156,6 +157,9 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
           method_setting = replacement_setting
         )
 
+        # Check that all repetitions are available
+        .check_repetitions(method_replacements_results[[method_name]][[replacement_key]], conditions$condition_id, n_repetitions, replacement_key)
+
         # Precompute H0 rejection
         if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
           if ("power_test_type" %in% names(replacement_spec)) {
@@ -217,6 +221,9 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     )
     if (!all(columns_required %in% names(method_results)))
       stop(sprintf("The following columns are undefined: %1$s,", columns_required[!columns_required %in% names(method_results)]))
+
+    # Check that all repetitions are available
+    .check_repetitions(method_results, conditions$condition_id, n_repetitions, paste0(this_method, "-", this_method_setting))
 
     # Precompute H0 rejection
     # this needs to be done before merging potential method replacement because they
@@ -557,6 +564,21 @@ method_condition_results_replacement <- function(method_condition_results, metho
   p_value <- ifelse(ci_lower > 0 | ci_upper < 0, 0, 1)
   p_value[is.na(ci_lower) | is.na(ci_upper)] <- NA
   return(p_value)
+}
+
+# Throw an error if any condition misses some repetitions (i.e., rows are absent from the results,
+# not merely non-converged) to prevent computing measures from partial results
+.check_repetitions <- function(results, condition_ids, n_repetitions, method_label) {
+  repetitions <- split(results[["repetition_id"]], factor(results[["condition_id"]], levels = condition_ids))
+  n_missing   <- vapply(repetitions, function(r) sum(!seq_len(n_repetitions) %in% r), integer(1))
+  if (any(n_missing > 0)) {
+    n_missing <- n_missing[n_missing > 0]
+    stop(sprintf(
+      "Results for method %1$s are missing repetitions in %2$i condition(s) (condition_id: number of missing repetitions): %3$s",
+      method_label, length(n_missing), paste0(names(n_missing), ": ", n_missing, collapse = ", ")
+    ), call. = FALSE)
+  }
+  return(invisible(TRUE))
 }
 
 #' Compute Multiple Performance measures for a DGM

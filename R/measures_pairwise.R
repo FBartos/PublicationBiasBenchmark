@@ -137,6 +137,9 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
           method         = replacement_method,
           method_setting = replacement_setting
         )
+
+        # Check that all repetitions are available
+        .check_repetitions(method_replacements_results[[method_name]][[replacement_key]], conditions$condition_id, n_repetitions, replacement_key)
       }
     }
   }
@@ -158,6 +161,9 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     if (!all(columns_required %in% names(method_results)))
       stop(sprintf("The following columns are undefined: %s",
                    paste(columns_required[!columns_required %in% names(method_results)], collapse = ", ")))
+
+    # Check that all repetitions are available
+    .check_repetitions(method_results, conditions$condition_id, n_repetitions, method_key)
 
     # Apply replacements if specified
     if (!is.null(method_replacements)) {

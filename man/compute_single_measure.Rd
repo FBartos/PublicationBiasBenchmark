@@ -79,7 +79,8 @@ If multiple elements are specified within the vectors, these replacements are ap
 in case the previous replacements also failed to converge.
 Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.}
 
-\item{n_repetitions}{Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.}
+\item{n_repetitions}{Number of repetitions in each condition. Used to verify that the results contain all
+repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
