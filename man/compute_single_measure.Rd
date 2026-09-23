@@ -44,8 +44,9 @@ compute_single_measure(
 \item{measure_mcse_fun}{Function to compute the MCSE for the measure}
 
 \item{power_test_type}{Character vector specifying the test type for power computation:
-"p_value" (default) or "bayes_factor" for each method. If a single value is provided, it is
-repeated for all methods.}
+"p_value" (default), "bayes_factor", or "ci" for each method. The "ci" option is intended
+for methods reporting only confidence intervals and rejects H0 if the confidence interval
+excludes zero. If a single value is provided, it is repeated for all methods.}
 
 \item{estimate_col}{Character string specifying the column name containing parameter estimates. Default is "estimate"}
 

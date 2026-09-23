@@ -14,8 +14,9 @@
 #' @param measure_fun Function to compute the measure
 #' @param measure_mcse_fun Function to compute the MCSE for the measure
 #' @param power_test_type Character vector specifying the test type for power computation:
-#' "p_value" (default) or "bayes_factor" for each method. If a single value is provided, it is
-#' repeated for all methods.
+#' "p_value" (default), "bayes_factor", or "ci" for each method. The "ci" option is intended
+#' for methods reporting only confidence intervals and rejects H0 if the confidence interval
+#' excludes zero. If a single value is provided, it is repeated for all methods.
 #' @param power_threshold_p_value Numeric threshold for power computation with p-values.
 #' Default is 0.05 (reject H0 if p < 0.05).
 #' @param power_threshold_bayes_factor Numeric threshold for power computation with Bayes factors.
@@ -82,8 +83,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
   }
 
   # Validate power test type
-  if (!all(power_test_type %in% c("p_value", "bayes_factor")))
-    stop("power_test_type must be either 'p_value' or 'bayes_factor'")
+  if (!all(power_test_type %in% c("p_value", "bayes_factor", "ci")))
+    stop("power_test_type must be either 'p_value', 'bayes_factor', or 'ci'")
   if (length(power_test_type) != 1 && length(power_test_type) != length(method))
     stop("power_test_type must be either a single value or have the same length as method")
   if (length(power_test_type) == 1) {
@@ -164,7 +165,20 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
               replacement_power_test_type <- replacement_spec$power_test_type[i]
             }
           } else {
-            replacement_power_test_type <- power_test_type
+            # Use the power_test_type of the replaced method
+            replacement_power_test_type <- power_test_type[match(method_name, paste0(method, "-", method_setting))]
+            # Skip replacements for methods that are not computed
+            if (is.na(replacement_power_test_type))
+              next
+          }
+
+          # CI-based tests are converted into 0/1 p-values (0 = CI excludes zero) and evaluated as p-values
+          if (replacement_power_test_type == "ci") {
+            method_replacements_results[[method_name]][[replacement_key]][[p_value_col]] <- .ci_to_p_value(
+              ci_lower = method_replacements_results[[method_name]][[replacement_key]][[ci_lower_col]],
+              ci_upper = method_replacements_results[[method_name]][[replacement_key]][[ci_upper_col]]
+            )
+            replacement_power_test_type <- "p_value"
           }
 
           if (replacement_power_test_type == "p_value") {
@@ -174,7 +188,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
             test_statistic <- method_replacements_results[[method_name]][[replacement_key]][[bf_col]]
             reject_h0      <- test_statistic > power_threshold_bayes_factor
           } else
-            stop(paste0("power_test_type must be either 'p_value' or 'bayes_factor' for replacement method ", replacement_key))
+            stop(paste0("power_test_type must be either 'p_value', 'bayes_factor', or 'ci' for replacement method ", replacement_key))
 
           method_replacements_results[[method_name]][[replacement_key]][["h0_rejected"]] <- reject_h0
         }
@@ -208,6 +222,16 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     # this needs to be done before merging potential method replacement because they
     # might use different power_test_type and power_threshold values
     if (measure_name %in% c("power", "positive_likelihood_ratio", "negative_likelihood_ratio")) {
+
+      # CI-based tests are converted into 0/1 p-values (0 = CI excludes zero) and evaluated as p-values
+      if (power_test_type[i] == "ci") {
+        method_results[[p_value_col]] <- .ci_to_p_value(
+          ci_lower = method_results[[ci_lower_col]],
+          ci_upper = method_results[[ci_upper_col]]
+        )
+        power_test_type[i] <- "p_value"
+      }
+
       if (power_test_type[i] == "p_value") {
         test_statistic <- method_results[[p_value_col]]
         reject_h0      <- test_statistic < power_threshold_p_value
@@ -525,6 +549,14 @@ method_condition_results_replacement <- function(method_condition_results, metho
   attr(method_condition_results, "replaced") <- replaced
 
   return(method_condition_results)
+}
+
+# Convert confidence intervals into 0/1 p-values for testing H0: effect = 0
+# (0 = CI excludes zero, 1 = CI includes zero, NA = either bound missing)
+.ci_to_p_value <- function(ci_lower, ci_upper) {
+  p_value <- ifelse(ci_lower > 0 | ci_upper < 0, 0, 1)
+  p_value[is.na(ci_lower) | is.na(ci_upper)] <- NA
+  return(p_value)
 }
 
 #' Compute Multiple Performance measures for a DGM

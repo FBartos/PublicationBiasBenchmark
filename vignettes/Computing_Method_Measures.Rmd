@@ -202,7 +202,7 @@ for (dgm_name in dgm_names) {
 - **dgm_name**: Name of the data-generating mechanism
 - **method**: Vector of method names
 - **method_setting**: Vector of method settings (must match length of `method`)
-- **power_test_type**: How significance is determined (`"p_value"` or `"bayes_factor"`)
+- **power_test_type**: How significance is determined (`"p_value"`, `"bayes_factor"`, or `"ci"` for methods reporting only confidence intervals, i.e., the null hypothesis is rejected if the confidence interval excludes zero)
 
 ### Measure Selection
 
