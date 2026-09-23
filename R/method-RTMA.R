@@ -83,7 +83,7 @@ method.RTMA <- function(method_name, data, settings) {
   tau_n_eff        <- rtma_stats[rtma_stats$param == "tau", "n_eff"]
   tau_r_hat        <- rtma_stats[rtma_stats$param == "tau", "r_hat"]
 
-  convergence    <- isTRUE(estimate_n_eff > 500 && estimate_r_hat < 0.01)
+  convergence    <- isTRUE(estimate_n_eff > 500 && estimate_r_hat < 1.01)
   divergent_iter <- sum(rstan::get_divergent_iterations(rtma_fit$fits))
 
   return(data.frame(
