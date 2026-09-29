@@ -242,6 +242,12 @@ create_empty_result <- function(method_name, note, extra_columns = NULL) {
   return(base_result)
 }
 
+# MCMC convergence of the effect size parameter: R-hat below `max_r_hat` and
+# effective sample size above `min_ess` (missing diagnostics are non-converged)
+.mcmc_convergence <- function(r_hat, ess, max_r_hat, min_ess) {
+  !is.na(r_hat) & !is.na(ess) & r_hat < max_r_hat & ess > min_ess
+}
+
 
 #' @title Method Extra Columns
 #'

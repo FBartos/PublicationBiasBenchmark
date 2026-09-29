@@ -330,8 +330,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
         condition_id   = condition
       )
 
-      if (!isFALSE(replaced))
-        result_df[["replaced"]] <- replaced
+      if (length(method_replacements) > 0L)
+        result_df[["replaced"]] <- if (isFALSE(replaced) || is.null(replaced)) NA_character_ else replaced
 
       # Filter for converged results if we're not computing convergence measure
       if (measure_name != "convergence") {

@@ -282,3 +282,33 @@ test_that("run_method() aborts a fit that exceeds 'fit_limit'", {
   expect_false(result$convergence)
   expect_true(is.na(result$estimate))
 })
+
+test_that("MCMC methods specify convergence thresholds in all settings", {
+
+  for (method_name in c("MMPH", "RTMA")) {
+    for (setting_name in names(method_settings(method_name))) {
+      settings <- get_method_setting(method_name, setting_name)
+      expect_true(
+        all(c("max_r_hat", "min_ess") %in% names(settings)),
+        info = paste0("method_settings('", method_name, "')$", setting_name, " misses convergence thresholds")
+      )
+    }
+  }
+
+  expect_equal(get_method_setting("MMPH", "default")[c("max_r_hat", "min_ess")], list(max_r_hat = 1.05, min_ess = 300))
+  expect_equal(get_method_setting("RTMA", "default")[c("max_r_hat", "min_ess")], list(max_r_hat = 1.01, min_ess = 500))
+  expect_equal(get_method_setting("RTMA", "relaxed")[c("max_r_hat", "min_ess")], list(max_r_hat = 1.05, min_ess = 300))
+})
+
+test_that("MCMC convergence thresholds are applied to the effect size diagnostics", {
+
+  expect_equal(
+    .mcmc_convergence(
+      r_hat     = c(1.00, 1.02, 1.00, 1.01, NA,  1.00),
+      ess       = c(600,  600,  400,  600,  600, NA),
+      max_r_hat = 1.01,
+      min_ess   = 500
+    ),
+    c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE)
+  )
+})
