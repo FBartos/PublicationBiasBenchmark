@@ -31,14 +31,20 @@ positive direction \code{favor_positive = TRUE} and statistical significance
 \code{alpha_select = 0.05}, posterior interval level
 \code{ci_level = 0.95}, Stan control settings
 \code{adapt_delta = 0.98}, \code{max_treedepth = 20},
-\code{parallelize = FALSE}},
+\code{parallelize = FALSE}, and convergence thresholds
+\code{max_r_hat = 1.01} and \code{min_ess = 500}},
 \item{\code{"relaxed"}}{RTMA with affirmative results defined by
 positive direction \code{favor_positive = TRUE} and statistical significance
 \code{alpha_select = 0.05}, posterior interval level
 \code{ci_level = 0.95}, relaxed Stan control settings
 \code{adapt_delta = 0.95}, \code{max_treedepth = 15},
-\code{parallelize = FALSE}}
+\code{parallelize = FALSE}, and relaxed convergence thresholds
+\code{max_r_hat = 1.05} and \code{min_ess = 300}}
 }
+
+A fit is considered converged if the R-hat of the effect size is below
+\code{max_r_hat} and its effective sample size is above \code{min_ess}.
+Both thresholds must be specified with custom settings.
 }
 \examples{
 \donttest{

@@ -19,8 +19,13 @@
 #'   \item{\code{"default"}}{MMPH with Stan control settings
 #'   \code{control = list(adapt_delta = 0.95, max_treedepth = 15)},
 #'   \code{warmup = 2000}, and \code{iter = 4000}, and
-#'   \code{chains = 3}}
+#'   \code{chains = 3}, and convergence thresholds \code{max_r_hat = 1.05}
+#'   and \code{min_ess = 300}}
 #' }
+#'
+#' A fit is considered converged if the R-hat of the effect size is below
+#' \code{max_r_hat} and its effective sample size is above \code{min_ess}.
+#' Both thresholds must be specified with custom settings.
 #'
 #' @references
 #'  \insertAllCited{}
@@ -49,8 +54,11 @@ method.MMPH <- function(method_name, data, settings) {
   # Check input
   if (length(effect_sizes) < 2)
     stop("At least 2 estimates required for PHMA analysis", call. = FALSE)
+  if (is.null(settings$max_r_hat) || is.null(settings$min_ess))
+    stop("MMPH settings must specify the 'max_r_hat' and 'min_ess' convergence thresholds", call. = FALSE)
 
-  publipha_call    <- settings
+  # Convergence thresholds are applied after fitting (not passed to publipha::phma())
+  publipha_call    <- settings[!names(settings) %in% c("max_r_hat", "min_ess")]
   publipha_call$yi <- effect_sizes
   publipha_call$vi <- standard_errors^2
   publipha_call$refresh <- 0
@@ -71,6 +79,7 @@ method.MMPH <- function(method_name, data, settings) {
   tau_n_eff        <- fit_summary[rownames(fit_summary) == "tau", "n_eff"]
   tau_r_hat        <- fit_summary[rownames(fit_summary) == "tau", "Rhat"]
 
+  convergence    <- .mcmc_convergence(estimate_r_hat, estimate_n_eff, settings$max_r_hat, settings$min_ess)
   divergent_iter <- sum(rstan::get_divergent_iterations(fit))
 
   return(data.frame(
@@ -81,7 +90,7 @@ method.MMPH <- function(method_name, data, settings) {
     ci_upper         = estimate_uci,
     p_value          = NA,
     BF               = NA,
-    convergence      = TRUE,
+    convergence      = convergence,
     note             = NA,
     estimate_median  = estimate_median,
     estimate_n_eff   = estimate_n_eff,
@@ -104,7 +113,10 @@ method_settings.MMPH <- function(method_name) {
       chains   = 3,
       warmup   = 2000,
       iter     = 4000,
-      control  = list(adapt_delta = 0.95, max_treedepth = 15)
+      control  = list(adapt_delta = 0.95, max_treedepth = 15),
+      # convergence thresholds (not passed to publipha::phma())
+      max_r_hat = 1.05,
+      min_ess   = 300
     )
   )
 

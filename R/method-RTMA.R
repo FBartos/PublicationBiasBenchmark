@@ -23,14 +23,20 @@
 #'   \code{alpha_select = 0.05}, posterior interval level
 #'   \code{ci_level = 0.95}, Stan control settings
 #'   \code{adapt_delta = 0.98}, \code{max_treedepth = 20},
-#'   \code{parallelize = FALSE}},
+#'   \code{parallelize = FALSE}, and convergence thresholds
+#'   \code{max_r_hat = 1.01} and \code{min_ess = 500}},
 #'   \item{\code{"relaxed"}}{RTMA with affirmative results defined by
 #'   positive direction \code{favor_positive = TRUE} and statistical significance
 #'   \code{alpha_select = 0.05}, posterior interval level
 #'   \code{ci_level = 0.95}, relaxed Stan control settings
 #'   \code{adapt_delta = 0.95}, \code{max_treedepth = 15},
-#'   \code{parallelize = FALSE}}
+#'   \code{parallelize = FALSE}, and relaxed convergence thresholds
+#'   \code{max_r_hat = 1.05} and \code{min_ess = 300}}
 #' }
+#'
+#' A fit is considered converged if the R-hat of the effect size is below
+#' \code{max_r_hat} and its effective sample size is above \code{min_ess}.
+#' Both thresholds must be specified with custom settings.
 #'
 #' @references
 #'  \insertAllCited{}
@@ -57,8 +63,11 @@ method.RTMA <- function(method_name, data, settings) {
 
   if (length(effect_sizes) < 1)
     stop("At least 1 estimate required for RTMA analysis", call. = FALSE)
+  if (is.null(settings$max_r_hat) || is.null(settings$min_ess))
+    stop("RTMA settings must specify the 'max_r_hat' and 'min_ess' convergence thresholds", call. = FALSE)
 
-  call_args     <- settings
+  # Convergence thresholds are applied after fitting (not passed to phacking::phacking_meta())
+  call_args     <- settings[!names(settings) %in% c("max_r_hat", "min_ess")]
   call_args$yi  <- effect_sizes
   call_args$sei <- standard_errors
 
@@ -83,7 +92,7 @@ method.RTMA <- function(method_name, data, settings) {
   tau_n_eff        <- rtma_stats[rtma_stats$param == "tau", "n_eff"]
   tau_r_hat        <- rtma_stats[rtma_stats$param == "tau", "r_hat"]
 
-  convergence    <- isTRUE(estimate_n_eff > 500 && estimate_r_hat < 1.01)
+  convergence    <- .mcmc_convergence(estimate_r_hat, estimate_n_eff, settings$max_r_hat, settings$min_ess)
   divergent_iter <- sum(rstan::get_divergent_iterations(rtma_fit$fits))
 
   return(data.frame(
@@ -126,14 +135,20 @@ method_settings.RTMA <- function(method_name) {
       alpha_select   = 0.05,
       ci_level       = 0.95,
       stan_control   = list(adapt_delta = 0.98, max_treedepth = 20),
-      parallelize    = FALSE
+      parallelize    = FALSE,
+      # convergence thresholds (not passed to phacking::phacking_meta())
+      max_r_hat      = 1.01,
+      min_ess        = 500
     ),
     "relaxed" = list(
       favor_positive = TRUE,
       alpha_select   = 0.05,
       ci_level       = 0.95,
       stan_control   = list(adapt_delta = 0.95, max_treedepth = 15),
-      parallelize    = FALSE
+      parallelize    = FALSE,
+      # convergence thresholds (not passed to phacking::phacking_meta())
+      max_r_hat      = 1.05,
+      min_ess        = 300
     )
   )
 

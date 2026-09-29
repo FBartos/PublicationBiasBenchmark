@@ -27,8 +27,13 @@ The following settings are implemented \describe{
 \item{\code{"default"}}{MMPH with Stan control settings
 \code{control = list(adapt_delta = 0.95, max_treedepth = 15)},
 \code{warmup = 2000}, and \code{iter = 4000}, and
-\code{chains = 3}}
+\code{chains = 3}, and convergence thresholds \code{max_r_hat = 1.05}
+and \code{min_ess = 300}}
 }
+
+A fit is considered converged if the R-hat of the effect size is below
+\code{max_r_hat} and its effective sample size is above \code{min_ess}.
+Both thresholds must be specified with custom settings.
 }
 \examples{
 \donttest{
