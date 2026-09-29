@@ -79,7 +79,7 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
     current_files <- list.files(data_path)
     osf_files     <- osf_files[!osf_files$name %in% current_files,]
 
-    if(nrow(osf_files) == 0) {
+    if (nrow(osf_files) == 0) {
       if (progress) message("All files are already downloaded.")
       return(invisible(TRUE))
     }
@@ -100,31 +100,35 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
       return(invisible(FALSE))
   }
 
-  # download the files
-  # to allow for recovery in the case of errors, delete the local files manually on overwrite
-  if (overwrite) {
-    unlink(data_path)
-  }
-
-  # add error catching and restart on failure
-  done      <- FALSE
+  # Retry only files that did not arrive intact. Files already present before
+  # this call were excluded above, so pending downloads can be overwritten.
+  pending   <- osf_files
   iteration <- 0
-  while (!done && iteration < max_try) {
+  while (nrow(pending) > 0 && iteration < max_try) {
+    try(osfr::osf_download(pending, path = data_path, conflicts = "overwrite", progress = progress), silent = TRUE)
 
-    # skip files already present
-    files_done  <- list.files(data_path)
-    osf_files   <- osf_files[!osf_files$name %in% current_files,]
+    complete <- vapply(seq_len(nrow(pending)), function(i) {
+      file <- file.path(data_path, pending$name[i])
+      if (!file.exists(file)) return(FALSE)
 
-    if (length(osf_files) == 0)
-      break
+      expected_size <- pending$meta[[i]]$attributes$size
+      if (!identical(as.numeric(file.info(file)$size), as.numeric(expected_size))) return(FALSE)
 
-    done      <- try(osfr::osf_download(osf_files, path = data_path, conflicts = ifelse(overwrite, "overwrite", "skip"), progress = progress))
-    done      <- !inherits(done, "try-error")
+      if (what == "measures") {
+        expected_md5 <- pending$meta[[i]]$attributes$extra$hashes$md5
+        if (length(expected_md5) == 1 && nzchar(expected_md5))
+          return(identical(unname(tools::md5sum(file)), expected_md5))
+      }
+      TRUE
+    }, logical(1))
+
+    pending   <- pending[!complete,]
     iteration <- iteration + 1
   }
 
-  if (iteration == max_try)
-    warning("Maximum number of restarts reached. Some files might be missing.")
+  if (nrow(pending) > 0)
+    stop(sprintf("Could not download complete %s files after %d attempts: %s",
+                 what, iteration, paste(pending$name, collapse = ", ")))
 
   return(invisible(TRUE))
 }
