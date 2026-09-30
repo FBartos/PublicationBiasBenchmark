@@ -3,13 +3,19 @@
 This function provides a unified interface to various publication bias
 correction methods. The specific method is determined by the first
 argument. See
-[[`vignette("Adding_New_Methods", package = "PublicationBiasBenchmark")`](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.md)](https://fbartos.github.io/PublicationBiasBenchmark/doc/Adding_New_Methods.md)
+[`vignette("Adding_New_Methods", package = "PublicationBiasBenchmark")`](https://fbartos.github.io/PublicationBiasBenchmark/doc/Adding_New_Methods.md)
 for details of extending the package with new methods
 
 ## Usage
 
 ``` r
-run_method(method_name, data, settings = NULL, silent = FALSE)
+run_method(
+  method_name,
+  data,
+  settings = NULL,
+  silent = FALSE,
+  fit_limit = NULL
+)
 ```
 
 ## Arguments
@@ -33,9 +39,41 @@ run_method(method_name, data, settings = NULL, silent = FALSE)
   Logical indicating whether error messages from the method should be
   suppressed.
 
+- fit_limit:
+
+  Optional numeric giving the maximum time, in minutes, that the method
+  is allowed to run. `NULL` (the default) or a non-finite value imposes
+  no limit. When the limit is exceeded, the fit is aborted and a failure
+  result with `convergence = FALSE` and
+  `note = "time limit exceeded with <fit_limit> minutes"` is returned.
+  See the Time Limits section for the mechanism and its platform
+  differences.
+
 ## Value
 
 A data frame with standardized method results
+
+## Time Limits
+
+Methods that spend their time inside compiled sampling code (`RoBMA` via
+JAGS, `RTMA` and `MMPH` via Stan) do not return to R's evaluator and
+therefore cannot be stopped by R's own elapsed-time limit. `fit_limit`
+is consequently enforced by evaluating the method in a separate R
+process
+([callr::r_session](https://callr.r-lib.org/reference/r_session.html))
+that is killed once the limit passes, which stops a fit regardless of
+what it is executing, on every platform.
+
+That process is started on the first limited fit and reused by the
+following ones, adding roughly 0.05 seconds per fit; it is discarded and
+replaced whenever a fit is killed or the process dies. A fit that
+exceeds the limit therefore leaves no work behind, but also keeps
+nothing from the fits before it.
+
+The worker has its own random number stream, which is seeded from the
+calling session for every fit. Results of methods that use randomness
+stay reproducible from the calling session's seed, but differ from those
+obtained without a limit.
 
 ## Output Structure
 

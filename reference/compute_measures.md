@@ -57,8 +57,10 @@ compute_measures(
 - power_test_type:
 
   Character vector specifying the test type for power computation:
-  "p_value" (default) or "bayes_factor" for each method. If a single
-  value is provided, it is repeated for all methods.
+  "p_value" (default), "bayes_factor", or "ci" for each method. The "ci"
+  option is intended for methods reporting only confidence intervals and
+  rejects H0 if the confidence interval excludes zero. If a single value
+  is provided, it is repeated for all methods.
 
 - power_threshold_p_value:
 
@@ -128,8 +130,9 @@ compute_measures(
 
 - n_repetitions:
 
-  Number of repetitions in each condition. Necessary method replacement.
-  Defaults to `1000`.
+  Number of repetitions in each condition. Used to verify that the
+  results contain all repetitions (an error is thrown if any repetition
+  is missing) and for method replacement. Defaults to `1000`.
 
 - overwrite:
 

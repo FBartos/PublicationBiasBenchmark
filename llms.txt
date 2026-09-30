@@ -254,6 +254,9 @@ See `methods("method")` for the full list:
 - `"RoBMA"`: Robust Bayesian Meta-Analysis (Bartoš et al., 2023)
 - `"MAIVE"`: Meta Analysis Instrumental Variable Estimator (Irsova et
   al., 2025)
+- `"MAN"`: Meta-Analysis of Nonaffirmative Studies (Mathur &
+  VanderWeele, 2020)
+- `"RTMA"`: Right-Truncated Meta-Analysis (Mathur, 2024)
 
 ### Available Performance Measures
 
@@ -322,6 +325,15 @@ Irsova, Z., Bom, P. R., Havranek, T., & Rachinger, H. (2025). Spurious
 precision in meta-analysis of observational research. *Nature
 Communications*, *16*, 8454.
 <https://doi.org/10.1038/s41467-025-63261-0>
+
+Mathur, M. B. (2024). P-hacking in meta-analyses: A formalization and
+new meta-analytic methods. *Research Synthesis Methods*, *15*(3),
+483–499. <https://doi.org/10.1002/jrsm.1701>
+
+Mathur, M. B., & VanderWeele, T. J. (2020). Sensitivity analysis for
+publication bias in meta-analyses. *Journal of the Royal Statistical
+Society Series C: Applied Statistics*, *69*(5), 1091–1119.
+<https://doi.org/10.1111/rssc.12440>
 
 Simonsohn, U., Nelson, L. D., & Simmons, J. P. (2014). P-curve and
 effect size: Correcting for publication bias using only significant
@@ -433,6 +445,10 @@ estimating effect size in the presence of publication bias.
   : Fixed Effects Meta-Analysis Method
 - [`method(`*`<MAIVE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MAIVE.md)
   : MAIVE: Meta-Analysis Instrumental Variable Estimator
+- [`method(`*`<MAN>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MAN.md)
+  : Meta-Analysis of Nonaffirmative Studies (MAN) Method
+- [`method(`*`<MMPH>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MMPH.md)
+  : Mixture Model of P-Hacking (MMPH)
 - [`method(`*`<PEESE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PEESE.md)
   : PEESE (Precision-Effect Estimate with Standard Errors) Method
 - [`method(`*`<PET>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PET.md)
@@ -442,6 +458,8 @@ estimating effect size in the presence of publication bias.
   Standard Errors) Method
 - [`method(`*`<RMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RMA.md)
   : Random Effects Meta-Analysis Method
+- [`method(`*`<RTMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RTMA.md)
+  : Right-Truncated Meta-Analysis (RTMA) Method
 - [`method()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.md)
   : Method Method
 - [`method(`*`<RoBMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RoBMA.md)

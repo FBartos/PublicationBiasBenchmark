@@ -76,6 +76,10 @@
   : Fixed Effects Meta-Analysis Method
 - [`method(`*`<MAIVE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MAIVE.md)
   : MAIVE: Meta-Analysis Instrumental Variable Estimator
+- [`method(`*`<MAN>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MAN.md)
+  : Meta-Analysis of Nonaffirmative Studies (MAN) Method
+- [`method(`*`<MMPH>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.MMPH.md)
+  : Mixture Model of P-Hacking (MMPH)
 - [`method(`*`<PEESE>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PEESE.md)
   : PEESE (Precision-Effect Estimate with Standard Errors) Method
 - [`method(`*`<PET>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.PET.md)
@@ -85,6 +89,8 @@
   Standard Errors) Method
 - [`method(`*`<RMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RMA.md)
   : Random Effects Meta-Analysis Method
+- [`method(`*`<RTMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RTMA.md)
+  : Right-Truncated Meta-Analysis (RTMA) Method
 - [`method()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.md)
   : Method Method
 - [`method(`*`<RoBMA>`*`)`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method.RoBMA.md)

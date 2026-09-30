@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -237,10 +237,14 @@ scheduler on a cluster.</p>
 <span>      <span class="op">]</span></span>
 <span>      </span>
 <span>      <span class="co"># Apply your method (error handling is done internally)</span></span>
+<span>      <span class="co"># `fit_limit` (in minutes) aborts a fit that runs too long and returns a</span></span>
+<span>      <span class="co"># failure result instead, which keeps a single slow repetition from</span></span>
+<span>      <span class="co"># stalling the whole run; drop it to let every fit run to completion</span></span>
 <span>      <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_method.html">run_method</a></span><span class="op">(</span></span>
 <span>        method_name <span class="op">=</span> <span class="va">method_name</span>,</span>
 <span>        data        <span class="op">=</span> <span class="va">repetition_data</span>,</span>
-<span>        settings    <span class="op">=</span> <span class="va">method_setting</span></span>
+<span>        settings    <span class="op">=</span> <span class="va">method_setting</span>,</span>
+<span>        fit_limit   <span class="op">=</span> <span class="fl">60</span></span>
 <span>      <span class="op">)</span></span>
 <span>      </span>
 <span>      <span class="co"># Attach metadata</span></span>
@@ -326,7 +330,7 @@ into the benchmark</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

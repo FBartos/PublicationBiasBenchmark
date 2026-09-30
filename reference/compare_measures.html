@@ -11,7 +11,7 @@ It provides a clean and extensible interface for comparing method performance.">
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,7 +127,8 @@ Defaults to <code>NULL</code>, i.e., omitting repetitions without converged resu
 
 
 <dt id="arg-n-repetitions">n_repetitions<a class="anchor" aria-label="anchor" href="#arg-n-repetitions"></a></dt>
-<dd><p>Number of repetitions in each condition. Necessary method replacement. Defaults to <code>1000</code>.</p></dd>
+<dd><p>Number of repetitions in each condition. Used to verify that the results contain all
+repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to <code>1000</code>.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
@@ -153,7 +154,7 @@ Defaults to <code>FALSE</code>, which means only missing files will be downloade
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

@@ -3,7 +3,7 @@
 This function provides a unified interface to various data-generating
 mechanisms for simulation studies. The specific DGM is determined by the
 first argument. See
-[[`vignette("Adding_New_DGMs", package = "PublicationBiasBenchmark")`](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.md)](https://fbartos.github.io/PublicationBiasBenchmark/doc/Adding_New_DGMs.md)
+[`vignette("Adding_New_DGMs", package = "PublicationBiasBenchmark")`](https://fbartos.github.io/PublicationBiasBenchmark/doc/Adding_New_DGMs.md)
 for details of extending the package with new DGMs.
 
 ## Usage
@@ -63,40 +63,40 @@ columns are used:
 ``` r
 
 simulate_dgm("Carter2019", 1)
-#>              yi       sei  ni es_type
-#> 1   0.007637488 0.4472152  20     SMD
-#> 2   0.179673222 0.1829422 120     SMD
-#> 3   0.093579427 0.4266347  22     SMD
-#> 4   0.057188571 0.3923124  26     SMD
-#> 5  -0.052892856 0.4472918  20     SMD
-#> 6   0.040592673 0.1482651 182     SMD
-#> 7   0.147353405 0.2890666  48     SMD
-#> 8   0.029867798 0.0889158 506     SMD
-#> 9  -0.064986328 0.3163112  40     SMD
-#> 10 -0.129336528 0.3089292  42     SMD
+#>             yi       sei  ni es_type
+#> 1   0.25755982 0.2961040  46     SMD
+#> 2  -0.05721959 0.2540522  62     SMD
+#> 3   0.09504104 0.3537529  32     SMD
+#> 4  -0.17554980 0.1964935 104     SMD
+#> 5   0.30564833 0.2120459  90     SMD
+#> 6   0.31696664 0.3803304  28     SMD
+#> 7  -0.09158760 0.1451713 190     SMD
+#> 8  -0.06960250 0.2020917  98     SMD
+#> 9  -0.61713792 0.4577352  20     SMD
+#> 10 -0.14039321 0.1783935 126     SMD
 
 simulate_dgm("Carter2019", list(mean_effect = 0, effect_heterogeneity = 0,
                        bias = "high", QRP = "high", n_studies = 10))
 #>            yi       sei  ni es_type
-#> 1  1.00556181 0.3781218  32     SMD
-#> 2  0.08461967 0.2086119  92     SMD
-#> 3  0.36956727 0.1594920 160     SMD
-#> 4  1.12632130 0.5165476  18     SMD
-#> 5  0.78400899 0.3294138  40     SMD
-#> 6  0.08363017 0.2295215  76     SMD
-#> 7  0.51244062 0.2191765  86     SMD
-#> 8  0.99811889 0.3668715  34     SMD
-#> 9  0.89897768 0.3733193  32     SMD
-#> 10 0.54598650 0.2149387  90     SMD
+#> 1  0.67550295 0.2944954  49     SMD
+#> 2  0.30153726 0.1341038 225     SMD
+#> 3  1.66030655 0.6246537  15     SMD
+#> 4  0.61978188 0.2486399  68     SMD
+#> 5  0.47103362 0.2312475  77     SMD
+#> 6  0.03423383 0.2085304  92     SMD
+#> 7  0.22264315 0.2091884  92     SMD
+#> 8  0.33214673 0.1655597 148     SMD
+#> 9  0.60491268 0.2814724  53     SMD
+#> 10 0.44040718 0.1985723 104     SMD
 
 simulate_dgm("Stanley2017", list(environment = "SMD", mean_effect = 0,
                         effect_heterogeneity = 0, bias = 0, n_studies = 5,
                         sample_sizes = c(32,64,125,250,500)))
-#>             yi        sei   ni es_type
-#> 1  0.360739876 0.25202513   64     SMD
-#> 2 -0.688925385 0.18194498  128     SMD
-#> 3 -0.194041430 0.12678842  250     SMD
-#> 4  0.197469917 0.08966044  500     SMD
-#> 5 -0.001791946 0.06324557 1000     SMD
+#>            yi        sei   ni es_type
+#> 1  0.38370008 0.25228991   64     SMD
+#> 2 -0.22342854 0.17732738  128     SMD
+#> 3 -0.10876961 0.12658460  250     SMD
+#> 4  0.20951019 0.08968776  500     SMD
+#> 5  0.08014665 0.06327094 1000     SMD
 
 ```

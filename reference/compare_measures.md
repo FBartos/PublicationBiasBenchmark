@@ -85,8 +85,9 @@ compare_measures(
 
 - n_repetitions:
 
-  Number of repetitions in each condition. Necessary method replacement.
-  Defaults to `1000`.
+  Number of repetitions in each condition. Used to verify that the
+  results contain all repetitions (an error is thrown if any repetition
+  is missing) and for method replacement. Defaults to `1000`.
 
 - overwrite:
 
