@@ -40,7 +40,7 @@ publish_benchmark_release(plan, token = NULL)
 
 \item{replace}{IDs of existing shards intentionally replaced.}
 
-\item{metadata}{Zenodo-native metadata list including creators and licenses.}
+\item{metadata}{Zenodo-native metadata list including creators and rights (license IDs).}
 
 \item{state_directory}{Directory for resumable publication state, outside Git.}
 

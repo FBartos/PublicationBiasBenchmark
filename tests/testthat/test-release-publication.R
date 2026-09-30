@@ -1,3 +1,49 @@
+test_that("native licenses are retained before staging and unsupported fields are rejected", {
+  rights <- list(list(id = "cc-by-4.0"))
+  metadata <- list(rights = rights)
+  response <- list(id = "12345", metadata = list(rights = rights))
+  existing <- list()
+  posted <- NULL
+  local_mocked_bindings(.zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+    if (method == "GET" && startsWith(path, "user/")) return(list(hits = list(hits = existing)))
+    if (method == "GET") return(existing[[1]])
+    posted <<- body
+    response
+  })
+  plan <- list(metadata = metadata, catalog = list(release = "test.1"), sandbox = FALSE)
+  expect_identical(.create_component_record(plan, "Title", "Description", "test-token"), "12345")
+  expect_identical(posted$metadata$rights, rights)
+  expect_null(posted$metadata$licenses)
+  response$metadata$rights <- NULL
+  expect_error(.create_component_record(plan, "Title", "Description", "test-token"), "did not retain")
+  existing <- list(list(id = "12345", metadata = list(title = "Title")))
+  expect_error(.create_component_record(plan, "Title", "Description", "test-token"), "did not retain")
+  existing[[1]]$metadata$rights <- rights
+  expect_identical(.create_component_record(plan, "Title", "Description", "test-token"), "12345")
+  plan$metadata <- list()
+  expect_error(.create_component_record(plan, "Title", "Description", "test-token"), "Include a license")
+  expect_error(plan_benchmark_release("test.1", list(), metadata = list(licenses = rights),
+    state_directory = withr::local_tempdir()), "metadata\\$rights")
+})
+
+test_that("release verification checks licenses in saved staged records", {
+  root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
+  rights <- list(list(id = "cc-by-4.0"))
+  plan <- plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
+    metadata = list(rights = rights), state_directory = file.path(root, "state"))
+  record <- list(metadata = list())
+  local_mocked_bindings(
+    .publication_state = function(plan) list(groups = list(`1` = list(record_id = "12345", published = TRUE))),
+    .zenodo_request = function(method, path, ...) {
+      if (!endsWith(path, "/files")) return(record)
+      list(entries = list(list(key = asset$filename, status = "completed",
+        checksum = paste0("md5:", asset$md5), size = asset$size)))
+    })
+  expect_error(verify_benchmark_release(plan, "test-token"), "did not retain")
+  record$metadata$rights <- rights
+  expect_true(verify_benchmark_release(plan, "test-token"))
+})
+
 test_that("plans reuse existing bytes and require explicit corrections", {
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
   metadata <- list(creators = list(list(person_or_org = list(name = "Tester", type = "organizational"))))

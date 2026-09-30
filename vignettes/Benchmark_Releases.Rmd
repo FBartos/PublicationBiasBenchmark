@@ -97,7 +97,7 @@ files <- prepare_benchmark_resources("no_bias", kinds = c("results", "measures")
 metadata <- list(
   creators = list(list(person_or_org = list(type = "personal",
     given_name = "Your", family_name = "Name"))),
-  licenses = list(list(id = "cc-by-4.0"))
+  rights = list(list(id = "cc-by-4.0"))
 )
 plan <- plan_benchmark_release("2026.2", files, previous = "2026.1",
   metadata = metadata, state_directory = "resources/publication/2026.2")

@@ -110,7 +110,7 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
 #' @param conditions Named list of frozen DGM condition data frames.
 #' @param previous Previous release identifier or catalog, or NULL for the baseline.
 #' @param replace IDs of existing shards intentionally replaced.
-#' @param metadata Zenodo-native metadata list including creators and licenses.
+#' @param metadata Zenodo-native metadata list including creators and rights (license IDs).
 #' @param state_directory Directory for resumable publication state, outside Git.
 #' @param max_files Maximum uploaded files per component record (at most 100).
 #' @param max_bytes Maximum component size (at most 50 billion bytes).
@@ -133,6 +133,8 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
                                    package_version = as.character(utils::packageVersion("PublicationBiasBenchmark")),
                                    source_commit = NULL, provenance = NULL) {
   if (!.scalar_string(release) || !grepl("^[A-Za-z0-9._-]+$", release)) stop("Invalid release identifier.", call. = FALSE)
+  if (!is.null(metadata$licenses) || !is.null(metadata$license))
+    stop("Zenodo-native license metadata belongs in metadata$rights, not license or licenses.", call. = FALSE)
   if (max_files < 1 || max_files > 100 || max_files %% 1 || max_bytes <= 0 || max_bytes > 50e9)
     stop("Packing limits exceed the default Zenodo quota.", call. = FALSE)
   base <- if (is.null(previous)) NULL else benchmark_catalog(previous)
@@ -264,14 +266,33 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   invisible(TRUE)
 }
 
+.verify_record_rights <- function(record, metadata) {
+  for (expected in metadata$rights) {
+    retained <- vapply(record$metadata$rights, function(right) {
+      if (!is.null(expected$id)) identical(right$id, expected$id) else identical(right$title, expected$title)
+    }, logical(1))
+    if (!any(retained)) stop("Zenodo did not retain the requested license metadata.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 .create_component_record <- function(plan, title, description, token) {
+  metadata <- plan$metadata
+  if (!length(metadata$rights)) stop("Include a license in metadata$rights before staging a release.", call. = FALSE)
   # Recover a draft after a lost create response instead of creating duplicates.
   query <- utils::URLencode(paste0('metadata.title:"', title, '"'), reserved = TRUE)
   existing <- .zenodo_request("GET", paste0("user/records?q=", query, "&size=100"), token, plan$sandbox)
   matches <- Filter(function(x) identical(x$metadata$title, title), existing$hits$hits)
   if (length(matches) > 1L) stop("Multiple records match this publication batch.", call. = FALSE)
-  if (length(matches)) return(as.character(matches[[1]]$id))
-  metadata <- plan$metadata
+  if (length(matches)) {
+    id <- as.character(matches[[1]]$id)
+    record <- tryCatch(.zenodo_request("GET", paste0("records/", id, "/draft"), token, plan$sandbox),
+      zenodo_http_error = function(error) {
+        if (error$status == 404L) .zenodo_request("GET", paste0("records/", id), token, plan$sandbox) else stop(error)
+      })
+    .verify_record_rights(record, metadata)
+    return(id)
+  }
   metadata$title <- title; metadata$description <- description
   metadata$version <- plan$catalog$release
   metadata$resource_type <- list(id = "dataset")
@@ -280,6 +301,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   draft <- .zenodo_request("POST", "records", token, plan$sandbox,
                            list(metadata = metadata, access = list(record = "public", files = "public"),
                                 files = list(enabled = TRUE)))
+  .verify_record_rights(draft, metadata)
   as.character(draft$id)
 }
 
@@ -405,6 +427,9 @@ verify_benchmark_release <- function(plan, token = NULL) {
   for (i in seq_along(plan$groups)) {
     record <- state$groups[[as.character(i)]]
     if (is.null(record)) stop("The release has not been fully staged.", call. = FALSE)
+    metadata <- .zenodo_request("GET", paste0("records/", record$record_id,
+      if (!isTRUE(record$published)) "/draft" else ""), token, plan$sandbox)
+    .verify_record_rights(metadata, plan$metadata)
     suffix <- if (isTRUE(record$published)) "/files" else "/draft/files"
     files <- .zenodo_request("GET", paste0("records/", record$record_id, suffix), token, plan$sandbox)
     for (asset in plan$groups[[i]]) {
@@ -455,6 +480,7 @@ publish_benchmark_release <- function(plan, token = NULL) {
     state$catalog_record$published <- TRUE; .save_publication_state(plan, state)
   }
   record <- .zenodo_request("GET", paste0("records/", state$catalog_record$record_id), token, plan$sandbox)
+  .verify_record_rights(record, plan$metadata)
   result <- list(release = catalog$release, record_id = state$catalog_record$record_id,
                   catalog_sha256 = catalog_asset$sha256,
                   doi = if (!is.null(record$pids$doi$identifier)) record$pids$doi$identifier else record$doi)
