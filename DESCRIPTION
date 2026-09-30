@@ -58,6 +58,7 @@ Suggests:
     pkgload,
     BayesTools (<= 0.2.23),
     testthat (>= 3.0.0),
+    withr,
     rmarkdown,
     knitr,
     kableExtra,
