@@ -28,6 +28,8 @@ benchmarks\
 
 Datasets, results, and measures are released through Zenodo. Each package version pins a verified benchmark release; the original [OSF source](https://doi.org/10.17605/OSF.IO/EXF3M) is retained as provenance.
 
+The migrated baseline is [benchmark release 2026.1](https://doi.org/10.5281/zenodo.23070787), the default in package version 0.4.0. Cite this release DOI to identify the exact data and results used.
+
 For the methodology of living synthetic benchmarks please cite:
 
 > Bartoš, F., Pawel, S., & Siepe, B. S. (2025). Living synthetic
@@ -38,7 +40,7 @@ For the publication bias benchmark R package please cite:
 
 > Bartoš, F., Pawel, S., & Siepe, B. S. (2025).
 > PublicationBiasBenchmark: Benchmark for publication bias correction
-> methods (version 0.1.0).
+> methods (version 0.4.0).
 > <https://github.com/FBartos/PublicationBiasBenchmark>
 
 Overviews of the benchmark results are available as articles on the
@@ -200,7 +202,7 @@ run_method("RMA", df)
 - `run_method()`: Estimates method on a supplied data according to the
   specified settings.
 - `method_settings()`: Lists prespecified settings of the method.
-- `download_dgm_results()`: Downloads pre-computed results from the OSF
+- `download_dgm_results()`: Downloads pre-computed results from the Zenodo
   repository.
 - `retrieve_dgm_results()`: Retrieves the pre-computed results of a
   given method, condition, and repetition from the cached Zenodo

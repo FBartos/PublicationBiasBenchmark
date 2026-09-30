@@ -1,4 +1,11 @@
 {
-  "default_release": null,
-  "releases": []
+  "default_release": "2026.1",
+  "releases": [
+    {
+      "release": "2026.1",
+      "record_id": "23070787",
+      "catalog_sha256": "40e72cdf642a023956e53c3e58117ba6c23840e56f5f7d394cf8d47360f1e07f",
+      "doi": "10.5281/zenodo.23070787"
+    }
+  ]
 }
