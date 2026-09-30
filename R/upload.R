@@ -367,7 +367,7 @@ stage_benchmark_release <- function(plan, token = NULL) {
   token <- .publication_token(plan, token)
   state <- .publication_state(plan)
   catalog <- plan$catalog
-  asset_indices <- setNames(seq_along(catalog$assets), vapply(catalog$assets, `[[`, character(1), "id"))
+  asset_indices <- stats::setNames(seq_along(catalog$assets), vapply(catalog$assets, `[[`, character(1), "id"))
   for (i in seq_along(plan$groups)) {
     key <- as.character(i); group <- plan$groups[[i]]
     if (is.null(state$groups[[key]])) {
