@@ -19,3 +19,5 @@ README.html
 ^Meta$
 ^\.positai$
 ^\.claude$
+^tools$
+^\.Renviron$

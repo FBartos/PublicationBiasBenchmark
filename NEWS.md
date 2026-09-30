@@ -1,3 +1,11 @@
+# 0.4.0
+## Features
+ - Migrated benchmark storage to append-only Zenodo records and complete release catalogs.
+ - Added separate downloads by DGM and method, checksum verification, shared caching, and explicit release selection.
+ - Added resumable release planning, staging, verification, and publication for distributed shards.
+ - Preserved source provenance and partitioned performance measures by method and setting.
+ - Added explicit local result access for unpublished computations.
+
 # 0.3.0
 ## Features
  - Added RTMA method

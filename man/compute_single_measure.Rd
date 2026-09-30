@@ -25,6 +25,8 @@ compute_single_measure(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
+  results_source = "release",
+  release = NULL,
   ...
 )
 }
@@ -83,6 +85,11 @@ Defaults to \code{NULL}, i.e., omitting repetitions without converged results on
 repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
+
+\item{results_source}{"release" reads published results; "local" reads unpublished
+distributed outputs under resources_directory/DGM/results.}
+
+\item{release}{Benchmark release identifier or catalog, passed to the result reader.}
 
 \item{...}{Additional arguments passed to measure functions}
 }

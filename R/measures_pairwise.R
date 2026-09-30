@@ -7,7 +7,6 @@
 #' closer to the true value than method B, it gets a score of 1, if further it
 #' gets 0, and if equal it gets 0.5.
 #'
-#' @inheritParams download_dgm_datasets
 #' @inheritParams compute_single_measure
 #' @inheritParams compute_measures
 #'
@@ -19,7 +18,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
                                    estimate_col = "estimate", true_effect_col = "mean_effect",
                                    convergence_col = "convergence",
                                    method_replacements = NULL,
-                                   n_repetitions = 1000, overwrite = FALSE, ...) {
+                                   n_repetitions = 1000, overwrite = FALSE,
+                                   results_source = "release", release = NULL, ...) {
 
   # Validate that method and method_setting have the same length
   if (length(method) != length(method_setting))
@@ -27,7 +27,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 
   # Get DGM conditions
   if (is.null(conditions))
-    conditions <- dgm_conditions(dgm_name)
+    conditions <- if (results_source == "release") .catalog_conditions(benchmark_catalog(release), dgm_name) else dgm_conditions(dgm_name)
 
   # Validate method_replacements
   if (!is.null(method_replacements)) {
@@ -135,7 +135,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
         method_replacements_results[[method_name]][[replacement_key]] <- retrieve_dgm_results(
           dgm_name       = dgm_name,
           method         = replacement_method,
-          method_setting = replacement_setting
+          method_setting = replacement_setting,
+          source = results_source, release = release
         )
 
         # Check that all repetitions are available
@@ -153,7 +154,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_results <- retrieve_dgm_results(
       dgm_name       = dgm_name,
       method         = this_method,
-      method_setting = this_method_setting
+      method_setting = this_method_setting,
+      source = results_source, release = release
     )
 
     # Check that all pre-specified columns exist
@@ -308,7 +310,6 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 #' measures for a Data-Generating Mechanism (DGM) and saves the results to CSV files.
 #' It provides a clean and extensible interface for comparing method performance.
 #'
-#' @inheritParams download_dgm_datasets
 #' @inheritParams compute_single_measure
 #' @inheritParams compute_measures
 #'
@@ -320,7 +321,8 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              estimate_col = "estimate", true_effect_col = "mean_effect",
                              convergence_col = "convergence",
                              method_replacements = NULL,
-                             n_repetitions = 1000, overwrite = FALSE, conditions = NULL) {
+                             n_repetitions = 1000, overwrite = FALSE, conditions = NULL,
+                             results_source = "release", release = NULL) {
 
   # Input validation downstream
   # Define all available comparison measures if not specified
@@ -373,7 +375,9 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       convergence_col     = convergence_col,
       method_replacements = method_replacements,
       n_repetitions       = n_repetitions,
-      overwrite           = overwrite
+      overwrite           = overwrite,
+      results_source      = results_source,
+      release             = release
     )
 
     # Save results (measure_result already contains combined existing + new results if applicable)

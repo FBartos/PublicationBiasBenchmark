@@ -23,7 +23,9 @@ compute_measures(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  conditions = NULL
+  conditions = NULL,
+  results_source = "release",
+  release = NULL
 )
 }
 \arguments{
@@ -79,6 +81,11 @@ repetitions (an error is thrown if any repetition is missing) and for method rep
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
 \item{conditions}{Data frame of conditions from dgm_conditions()}
+
+\item{results_source}{"release" reads published results; "local" reads unpublished
+distributed outputs under resources_directory/DGM/results.}
+
+\item{release}{Benchmark release identifier or catalog, passed to the result reader.}
 }
 \value{
 TRUE upon successfully computation of the results file
@@ -92,7 +99,7 @@ performance measures.
 \examples{
 \dontrun{
 # Download DGM results
-# Requires OSF 'OSF_PAT' environment variable.
+# Public downloads require no token.
 dgm_name <- "no_bias"
 download_dgm_results(dgm_name)
 

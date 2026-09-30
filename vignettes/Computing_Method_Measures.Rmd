@@ -94,7 +94,14 @@ Process each DGM to compute both standard and replacement performance measures:
 for (dgm_name in dgm_names) {
   
   # Download precomputed results for existing methods (for replacements)
-  download_dgm_results(dgm_name)
+  download_dgm_results(dgm_name, method = c("RMA", "FMA"))
+  # Make verified replacement results available beside your unpublished outputs.
+  for (replacement in c("RMA", "FMA")) {
+    replacement_results <- retrieve_dgm_results(dgm_name, method = replacement, method_setting = "default")
+    write.csv(replacement_results,
+      file.path(PublicationBiasBenchmark.get_option("resources_directory"), dgm_name,
+                "results", paste0(replacement, "-default.csv")), row.names = FALSE)
+  }
   
   ### Simple performance metrics ----
   # Compute primary measures (not dependent on CI or power)
@@ -114,7 +121,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    results_source  = "local"
   )
   
   # If your method does not return CI or hypothesis test, skip these measures
@@ -134,7 +142,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    results_source  = "local"
   )
   
   
@@ -168,7 +177,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    results_source  = "local"
   )
   
   # If your method does not return CI or hypothesis test, skip these measures
@@ -189,7 +199,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    results_source  = "local"
   )
   
 }
@@ -219,6 +230,10 @@ for (dgm_name in dgm_names) {
 - **convergence_col**: Column name for convergence indicator (default: `"convergence"`)
 
 ### Control Parameters
+
+- **results_source**: Use `"local"` for unpublished outputs under `resources_directory/DGM/results`, or `"release"` for published catalog-selected results. The default is `"release"`.
+- **release**: Pin the published input release explicitly. Its frozen conditions are used when `conditions` is omitted.
+
 
 - **n_repetitions**: Expected number of repetitions per condition (default: 1000)
 - **verbose**: Whether to print progress messages (default: TRUE)

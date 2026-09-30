@@ -63,7 +63,7 @@ Each condition represents a unique combination of simulation parameters (e.g., t
 
 ## Downloading Precomputed Results
 
-Before accessing the precomputed results, you need to download them from the package repository. The [`download_dgm()`](../reference/download_dgm.html) function downloads the raw results for a specified DGM:
+Before accessing the precomputed results, you need to download them from the package repository. The [`download_dgm_results()`](../reference/download_dgm.html) function downloads the raw results for a specified DGM:
 
 ```{r, eval=FALSE}
 # Download precomputed results for the Stanley2017 DGM
@@ -71,8 +71,10 @@ download_dgm_results("Stanley2017")
 ```
 
 **Note**: Raw results files are significantly larger than the summarized measures files. Each DGM may require several hundred megabytes of storage space. 
+Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
+Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
 The results are downloaded to a local cache directory and are automatically available for subsequent analysis.
-You only need to download them once, unless the benchmark was updated with new method.
+You only need to download them once, for each release. A newer release reuses unchanged cached files.
 The download function will display progress information and the total size of files being downloaded. 
 
 ## Retrieving Precomputed Results

@@ -1,0 +1,155 @@
+---
+title: "Benchmark Releases"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Benchmark Releases}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+Each benchmark release is a complete catalog of separately downloadable files.
+The installed package pins a default release. A new release uploads only new or
+corrected files and refers to unchanged files in earlier Zenodo records. Cite the
+catalog record's version DOI and record the benchmark release you used.
+
+## Download exactly what you need
+
+```{r}
+library(PublicationBiasBenchmark)
+PublicationBiasBenchmark.options(resources_directory = "resources")
+list_benchmark_releases()
+release <- "2026.1"
+
+# One DGM's simulated datasets, including all repetitions.
+download_dgm_datasets("no_bias", release = release)
+dataset <- retrieve_dgm_dataset("no_bias", condition_id = 1,
+                                repetition_id = 1, release = release)
+
+# One DGM and method's raw results. All distributed shards are combined.
+download_dgm_results("no_bias", method = "RMA", release = release)
+results <- retrieve_dgm_results("no_bias", method = "RMA", release = release)
+
+# One DGM and method's measures. No other methods' tables are downloaded.
+download_dgm_measures("no_bias", method = "RMA", release = release)
+measures <- retrieve_dgm_measures("no_bias", method = "RMA", release = release)
+```
+
+Dataset files are partitioned by condition. Results are partitioned by method
+and setting, with separate files allowed for distributed jobs. Measures are wide
+tables partitioned by method and setting, with separate ordinary and replacement
+variants. Downloading a measure such as bias can fetch that method's other measure
+columns; it never fetches another method's results or measures. Metadata and the
+unaltered OSF archive are separate resource kinds.
+
+Zenodo records are storage containers, not download bundles. The package packs
+files into additional records as the file-count or byte limit is reached. Sharing
+a record never forces users to download its other files.
+
+```{r}
+list_benchmark_resources(release, "no_bias", "results", method = "RMA")
+verify_benchmark_resources(release, "no_bias", "results", method = "RMA")
+catalog <- benchmark_catalog(release)
+catalog$conditions$no_bias
+```
+
+The catalog pins the condition definitions, file hashes, producing package version
+when known, and source provenance. Historical generation versions remain unknown
+where the archive does not establish them. The package version assembling a
+release is recorded separately. Existing method/version fields inside results
+remain authoritative.
+
+The cache contains `releases/<release>/release.json` and
+`cache/<sha256>/<filename>`. Readers use the selected catalog and verify cached
+bytes before reading. Reusing a resources directory across package versions is
+safe: unrelated files are never included by scanning the cache. An incomplete
+download, an overlapping shard, or a requested unavailable condition/repetition
+raises an error. Download functions repair corrupt cached files automatically.
+
+## Publish distributed computations
+
+Workers write unpublished files beneath `resources_directory/DGM/results`. A CSV
+shard contains one method and setting, and has unique condition/repetition keys.
+Workers must use disjoint keys; report the package version that actually generated
+each batch. Use `source = "local"` with result readers, and
+`results_source = "local"` when computing measures from these unpublished files.
+Publishing is done by a maintainer after the workers finish.
+
+```{r}
+# Describe individual worker outputs without combining them.
+files <- list(
+  benchmark_resource("worker-01.csv", "no_bias", "results",
+    method = "myMethod", method_setting = "default", package_version = "0.4.0",
+    id = "no_bias/results/myMethod-default/batch-01"),
+  benchmark_resource("worker-02.csv", "no_bias", "results",
+    method = "myMethod", method_setting = "default", package_version = "0.4.0",
+    id = "no_bias/results/myMethod-default/batch-02")
+)
+
+# Alternatively, discover local shards and split locally computed measures.
+files <- prepare_benchmark_resources("no_bias", kinds = c("results", "measures"),
+  output_directory = "resources/prepared", package_version = "0.4.0")
+
+metadata <- list(
+  creators = list(list(person_or_org = list(type = "personal",
+    given_name = "Your", family_name = "Name"))),
+  licenses = list(list(id = "cc-by-4.0"))
+)
+plan <- plan_benchmark_release("2026.2", files, previous = "2026.1",
+  metadata = metadata, state_directory = "resources/publication/2026.2")
+lengths(plan$groups) # files per new component record
+
+# ZENODO_TOKEN is read from the environment, never saved into state.
+stage_benchmark_release(plan)
+verify_benchmark_release(plan)
+entry <- publish_benchmark_release(plan)
+```
+
+Keep publication state for retries. Running the same plan again resumes pending
+uploads, verifies completed files, and recovers published records after lost
+responses. Files in completed drafts are never replaced when their hashes differ.
+The catalog is published only after every new component's public bytes pass both
+SHA-256 and MD5 verification. Publication creates a new catalog DOI; it does not
+overwrite a previous record.
+
+A correction to an existing logical shard requires its ID in `replace`. The new
+catalog selects corrected bytes; earlier catalogs retain the old references. Frozen
+condition definitions cannot change for existing IDs. Add a new DGM identifier if
+a definition changes. Replacement measures that depend on a corrected result
+must be recomputed and explicitly replaced as part of the same release.
+
+After publication, add `entry` to `inst/extdata/benchmark-releases.json` and set
+`default_release` for the next package release. A catalog file can also be used
+directly with `release = "/path/to/release.json"`. Concurrent publishers must use
+distinct release identifiers; only one maintainer publishes a given plan.
+
+## OSF baseline
+
+The migration retains every original OSF file and source hash. Original mixed
+method measure tables remain in `archive`; per-method tables provide the public
+reader interface. Canonical frozen conditions repair a truncated Bom2019 CSV and
+misassigned Carter2019 metadata. Four WILS example files had `method_setting`
+incorrectly labelled `default`; explicit corrected files preserve every numerical
+token, and the original files remain archived. The worker mapping, archived
+measures and reproduced fits establish the example setting. No archived numerical
+results are recalculated as part of migration.
+
+Maintainer migration commands, run from the repository root:
+
+```{bash, eval=FALSE}
+python -m pip install --target resources/migration/python-libs requests
+python tools/migrate_osf.py inventory
+python tools/migrate_osf.py fetch
+Rscript --vanilla tools/prepare_migration.R
+Rscript --vanilla tools/audit_migration.R
+Rscript --vanilla tools/publish_migration.R
+```
+
+Preparation also requires `data.table`, `digest`, and `jsonlite`; auditing and
+publication use `pkgload` and the package's dependencies. Keep the ignored
+`resources/migration` directory until public verification and registry pinning
+finish. The publication script reads the project's Git-excluded `.Renviron`,
+resumes the saved plan, verifies public files and writes the registry entry.

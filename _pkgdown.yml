@@ -24,6 +24,8 @@ navbar:
     tutorials:
       text: How To
       menu:
+      - text: Benchmark Releases
+        href: articles/Benchmark_Releases.html
       - text: Add New DGMs
         href: articles/Adding_New_DGMs.html
       - text: Add New Methods

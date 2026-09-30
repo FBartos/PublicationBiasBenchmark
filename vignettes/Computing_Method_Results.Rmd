@@ -40,13 +40,13 @@ Before computing results, ensure that:
 
 ## Directory Structure
 
-The benchmark uses the following directory structure for storing results:
+Published input datasets are read from the verified release cache. Newly computed outputs use the following local directory structure. Distributed jobs may write separate CSV shards beneath `results/`; each shard must contain a single method and setting with unique condition/repetition keys.
 
 ```
 resources/
 ├── {DGM_NAME}/
 │   ├── data/
-│   │   └── {condition_id}.csv          # Presimulated datasets
+│   │   └── {condition_id}.csv          # Unpublished local datasets
 │   ├── results/
 │   │   └── {METHOD}-{SETTING}.csv      # Method results
 │   └── metadata/

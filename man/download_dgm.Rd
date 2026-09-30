@@ -5,53 +5,73 @@
 \alias{download_dgm_datasets}
 \alias{download_dgm_results}
 \alias{download_dgm_measures}
-\title{Download Datasets/Results/Measures of a DGM}
+\alias{download_dgm_metadata}
+\title{Download Benchmark Datasets, Results, and Measures}
 \usage{
 download_dgm_datasets(
   dgm_name,
   overwrite = FALSE,
   progress = TRUE,
-  max_try = 10
+  max_try = 10,
+  release = NULL,
+  condition_id = NULL
 )
 
 download_dgm_results(
   dgm_name,
   overwrite = FALSE,
   progress = TRUE,
-  max_try = 10
+  max_try = 10,
+  method = NULL,
+  method_setting = NULL,
+  release = NULL
 )
 
 download_dgm_measures(
   dgm_name,
   overwrite = FALSE,
   progress = TRUE,
-  max_try = 10
+  max_try = 10,
+  method = NULL,
+  method_setting = NULL,
+  release = NULL,
+  measure = NULL,
+  replacement = NULL
+)
+
+download_dgm_metadata(
+  dgm_name,
+  overwrite = FALSE,
+  progress = TRUE,
+  max_try = 10,
+  release = NULL
 )
 }
 \arguments{
-\item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
+\item{dgm_name}{DGM name.}
 
-\item{overwrite}{Logical indicating whether to overwrite existing files.
-Defaults to \code{FALSE}, which means only missing files will be downloaded.}
+\item{overwrite}{Re-download selected files even if their cached copies verify.}
 
-\item{progress}{Logical indicating whether to show progress downloading files.
-Defaults to \code{TRUE}.}
+\item{progress}{Display download progress.}
 
-\item{max_try}{Integet specifying how many times should the function attempt reconnecting to OSF upon failure.}
+\item{max_try}{Maximum attempts per file.}
+
+\item{release}{Release identifier or catalog; NULL uses the package default.}
+
+\item{condition_id}{Optional condition ID(s) for datasets.}
+
+\item{method}{Optional method name(s); NULL selects all available methods.}
+
+\item{method_setting}{Optional method setting(s).}
+
+\item{measure}{Optional measure name(s); pairwise comparisons require "pairwise".}
+
+\item{replacement}{Whether replacement measures are selected; NULL downloads both variants.}
 }
 \value{
-\code{TRUE} if the download was successful, otherwise an error is raised.
+Invisible TRUE on success or FALSE when an interactive download is declined.
 }
 \description{
-This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM)
-from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved
-to the location specified via \code{PublicationBiasBenchmark.options(resources_directory = "/path/")}.
-To set the location permanently, specify the PublicationBiasBenchmark_RESOURCES environment
-variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
-}
-\examples{
-\dontrun{
-  download_dgm_datasets("no_bias")
-}
-
+Download immutable catalog-selected files. Each file is checked
+against its size, SHA-256, and MD5. Public downloads require no token.
 }

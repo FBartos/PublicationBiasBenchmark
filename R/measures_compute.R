@@ -41,6 +41,9 @@
 #' @param n_repetitions Number of repetitions in each condition. Used to verify that the results contain all
 #' repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to \code{1000}.
 #' @param overwrite Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist
+#' @param results_source "release" reads published results; "local" reads unpublished
+#' distributed outputs under resources_directory/DGM/results.
+#' @param release Benchmark release identifier or catalog, passed to the result reader.
 #' @param ... Additional arguments passed to measure functions
 #'
 #' @return TRUE upon successfully computation of the results file
@@ -54,7 +57,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
                                    p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                                    power_threshold_p_value = 0.05, power_threshold_bayes_factor = 10,
                                    method_replacements = NULL, n_repetitions = 1000,
-                                   overwrite = FALSE, ...) {
+                                   overwrite = FALSE, results_source = "release", release = NULL, ...) {
 
   # Validate that method and method_setting have the same length
   if (length(method) != length(method_setting))
@@ -62,7 +65,7 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 
   # Get DGM conditions
   if (is.null(conditions))
-    conditions <- dgm_conditions(dgm_name)
+    conditions <- if (results_source == "release") .catalog_conditions(benchmark_catalog(release), dgm_name) else dgm_conditions(dgm_name)
 
   # Validate method_replacements
   if (!is.null(method_replacements)) {
@@ -154,7 +157,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
         method_replacements_results[[method_name]][[replacement_key]] <- retrieve_dgm_results(
           dgm_name       = dgm_name,
           method         = replacement_method,
-          method_setting = replacement_setting
+          method_setting = replacement_setting,
+          source = results_source, release = release
         )
 
         # Check that all repetitions are available
@@ -209,7 +213,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_results <- retrieve_dgm_results(
       dgm_name       = dgm_name,
       method         = this_method,
-      method_setting = this_method_setting
+      method_setting = this_method_setting,
+      source = results_source, release = release
     )
 
     # Check that all pre-specified columns exist
@@ -599,7 +604,7 @@ method_condition_results_replacement <- function(method_condition_results, metho
 #' @examples
 #' \dontrun{
 #' # Download DGM results
-#' # Requires OSF 'OSF_PAT' environment variable.
+#' # Public downloads require no token.
 #' dgm_name <- "no_bias"
 #' download_dgm_results(dgm_name)
 #'
@@ -635,7 +640,8 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              ci_lower_col = "ci_lower", ci_upper_col = "ci_upper",
                              p_value_col = "p_value", bf_col = "BF", convergence_col = "convergence",
                              method_replacements = NULL, n_repetitions = 1000,
-                             overwrite = FALSE, conditions = NULL) {
+                             overwrite = FALSE, conditions = NULL,
+                             results_source = "release", release = NULL) {
 
   # Define all available measures if not specified
   if (is.null(measures))
@@ -673,7 +679,9 @@ compute_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       convergence_col           = convergence_col,
       method_replacements       = method_replacements,
       n_repetitions             = n_repetitions,
-      overwrite                 = overwrite
+      overwrite                 = overwrite,
+      results_source            = results_source,
+      release                   = release
     )
 
     if (verbose)

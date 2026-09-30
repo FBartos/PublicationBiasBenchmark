@@ -65,8 +65,9 @@ Before accessing the precomputed measures, you need to download them from the pa
 download_dgm_measures("Stanley2017")
 ```
 
+Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
 The measures are downloaded to a local cache directory and are automatically available for subsequent analysis. 
-You only need to download them once, unless the benchmark measures were updated with a new method (in that case, you need to specify `overwrite = TRUE` argument).
+You only need to download them once, for each release. Selecting a new release fetches only files whose checksums are not already cached; `overwrite = TRUE` is unnecessary.
 
 ## Retrieving Precomputed Measures
 
