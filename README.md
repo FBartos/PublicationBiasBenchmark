@@ -19,11 +19,11 @@ status](https://www.r-pkg.org/badges/version/PublicationBiasBenchmark)](https://
 
 **PublicationBiasBenchmark** is an R package for benchmarking
 publication bias correction methods through simulation studies. It
-provides:  
-- Predefined data-generating mechanisms from the literature  
-- Functions for running meta-analytic methods on simulated data  
+provides:\
+- Predefined data-generating mechanisms from the literature\
+- Functions for running meta-analytic methods on simulated data\
 - Pre-simulated datasets and pre-computed results for reproducible
-benchmarks  
+benchmarks\
 - Tools for visualizing and comparing method performance
 
 All datasets and results are hosted on OSF:
@@ -249,13 +249,17 @@ See `methods("method")` for the full list:
 - `"EK"`: Endogenous Kink (Bom & Rachinger, 2019)
 - `"SM"`: Selection Models (3PSM, 4PSM) (Vevea & Hedges, 1995)
 - `"pcurve"`: P-curve (Simonsohn et al., 2014)
-- `"puniform"`: P-uniform (van Assen et al., 2015) and P-uniform\* (van
-  Aert & van Assen, 2025)
+- `"puniform"`: P-uniform (<span class="nocase">van Assen et
+  al.</span>, 2015) and P-uniform\* (<span class="nocase">van Aert & van
+  Assen</span>, 2025)
 - `"AK"`: Andrews & Kasy selection models (AK1, AK2) (Andrews & Kasy,
   2019)
 - `"RoBMA"`: Robust Bayesian Meta-Analysis (Bartoš et al., 2023)
 - `"MAIVE"`: Meta Analysis Instrumental Variable Estimator (Irsova et
   al., 2025)
+- `"MAN"`: Meta-Analysis of Nonaffirmative Studies (Mathur &
+  VanderWeele, 2020)
+- `"RTMA"`: Right-Truncated Meta-Analysis (Mathur, 2024)
 
 ### Available Performance Measures
 
@@ -354,6 +358,23 @@ Communications*, *16*, 8454.
 
 </div>
 
+<div id="ref-mathur2024phacking" class="csl-entry">
+
+Mathur, M. B. (2024). P-hacking in meta-analyses: A formalization and
+new meta-analytic methods. *Research Synthesis Methods*, *15*(3),
+483–499. <https://doi.org/10.1002/jrsm.1701>
+
+</div>
+
+<div id="ref-mathur2020sensitivity" class="csl-entry">
+
+Mathur, M. B., & VanderWeele, T. J. (2020). Sensitivity analysis for
+publication bias in meta-analyses. *Journal of the Royal Statistical
+Society Series C: Applied Statistics*, *69*(5), 1091–1119.
+<https://doi.org/10.1111/rssc.12440>
+
+</div>
+
 <div id="ref-simonsohn2014pcurve" class="csl-entry">
 
 Simonsohn, U., Nelson, L. D., & Simmons, J. P. (2014). P-curve and
@@ -390,19 +411,19 @@ power to reduce publication bias. *Statistics in Medicine*, *36*(10),
 
 <div id="ref-vanaert2025puniform" class="csl-entry">
 
-van Aert, R. C. M., & van Assen, M. A. L. M. (2025). Correcting for
-publication bias in a meta-analysis with the p-uniform\* method.
-*Psychonomic Bulletin & Review*.
+<span class="nocase">van Aert, R. C. M., & van Assen, M. A. L. M.</span>
+(2025). Correcting for publication bias in a meta-analysis with the
+p-uniform\* method. *Psychonomic Bulletin & Review*.
 <https://osf.io/preprints/metaarxiv/zqjr9/>
 
 </div>
 
 <div id="ref-vanassen2015meta" class="csl-entry">
 
-van Assen, M. A. L. M., van Aert, R. C. M., & Wicherts, J. M. (2015).
-Meta-analysis using effect size distributions of only statistically
-significant studies. *Psychological Methods*, *20*(3), 293–309.
-<https://doi.org/10.1037/met0000025>
+<span class="nocase">van Assen, M. A. L. M., van Aert, R. C. M., &
+Wicherts, J. M.</span> (2015). Meta-analysis using effect size
+distributions of only statistically significant studies. *Psychological
+Methods*, *20*(3), 293–309. <https://doi.org/10.1037/met0000025>
 
 </div>
 

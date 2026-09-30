@@ -4,7 +4,8 @@ context("Basic tests of methods")
 # Methods to skip for computational resource reasons
 # These methods are computationally intensive and would slow down the test suite
 SKIP_METHODS_COMPUTATIONAL <- c(
-  "RoBMA"   # Bayesian MCMC sampling - computationally intensive
+  "RoBMA",  # Bayesian MCMC sampling - computationally intensive
+  "RTMA"    # Stan-based Bayesian sampling - computationally intensive
 )
 
 test_that("All method implementations have required S3 methods", {
@@ -244,4 +245,83 @@ test_that("Method run_method handles errors gracefully", {
       info = paste0("run_method('", method_name, "') note should contain error information")
     )
   }
+})
+
+test_that("run_method() aborts a fit that exceeds 'fit_limit'", {
+
+  skip_on_cran()
+
+  # RTMA samples with Stan, i.e. inside compiled code that R's own elapsed-time
+  # limit cannot interrupt. A thousand estimates take well over a minute to fit,
+  # so the limit must be what ends the call. It is one of the methods skipped
+  # above for being computationally intensive, which is not a concern here
+  # precisely because the fit is never allowed to finish.
+  set.seed(1)
+  sei  <- runif(1000, 0.05, 0.50)
+  data <- data.frame(yi = rnorm(1000, 0.3, sqrt(0.2^2 + sei^2)), sei = sei)
+
+  elapsed <- system.time(
+    result <- run_method("RTMA", data, "default", silent = TRUE, fit_limit = 10 / 60)
+  )[["elapsed"]]
+
+  # the limit ended the fit rather than the fit running to completion
+  expect_lt(elapsed, 20)
+  expect_match(result$note, "^time limit exceeded with ")
+
+  # the failure result follows the schema of a successful RTMA result, so that
+  # results still rbind() across repetitions
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_equal(
+    names(result),
+    c("method", "estimate", "standard_error", "ci_lower", "ci_upper", "p_value",
+      "BF", "convergence", "note", get_method_extra_columns("RTMA"), "method_setting")
+  )
+  expect_equal(result$method, "RTMA")
+  expect_equal(result$method_setting, "default")
+  expect_false(result$convergence)
+  expect_true(is.na(result$estimate))
+})
+
+test_that("run_method() accepts a limit with floating-point milliseconds", {
+
+  test_data <- data.frame(
+    yi = c(0.2, 0.3, 0.1, 0.4, 0.25),
+    sei = c(0.1, 0.15, 0.08, 0.12, 0.11)
+  )
+
+  result <- run_method("RMA", test_data, "default", silent = TRUE, fit_limit = 31 / 60)
+
+  expect_true(result$convergence)
+  expect_equal(result$estimate, run_method("RMA", test_data, "default", silent = TRUE)$estimate)
+})
+
+test_that("MCMC methods specify convergence thresholds in all settings", {
+
+  for (method_name in c("MMPH", "RTMA")) {
+    for (setting_name in names(method_settings(method_name))) {
+      settings <- get_method_setting(method_name, setting_name)
+      expect_true(
+        all(c("max_r_hat", "min_ess") %in% names(settings)),
+        info = paste0("method_settings('", method_name, "')$", setting_name, " misses convergence thresholds")
+      )
+    }
+  }
+
+  expect_equal(get_method_setting("MMPH", "default")[c("max_r_hat", "min_ess")], list(max_r_hat = 1.05, min_ess = 300))
+  expect_equal(get_method_setting("RTMA", "default")[c("max_r_hat", "min_ess")], list(max_r_hat = 1.01, min_ess = 500))
+  expect_equal(get_method_setting("RTMA", "relaxed")[c("max_r_hat", "min_ess")], list(max_r_hat = 1.05, min_ess = 300))
+})
+
+test_that("MCMC convergence thresholds are applied to the effect size diagnostics", {
+
+  expect_equal(
+    .mcmc_convergence(
+      r_hat     = c(1.00, 1.02, 1.00, 1.01, NA,  1.00),
+      ess       = c(600,  600,  400,  600,  600, NA),
+      max_r_hat = 1.01,
+      min_ess   = 500
+    ),
+    c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE)
+  )
 })

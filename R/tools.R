@@ -47,8 +47,10 @@ safe_merge <- function(df_list) {
     df_temp[["method_setting"]]  <- NULL
     df_temp[["condition_id"]]    <- NULL
 
+    measure_name <- sub("_mcse$", "", grep("_mcse$", names(df_temp), value = TRUE))
+
     colnames(df_temp)[colnames(df_temp) %in% c("replaced", "n_valid")] <- paste0(
-      colnames(df_temp)[colnames(df_temp) %in% c("replaced", "n_valid")], "_", colnames(df_temp)[2]
+      colnames(df_temp)[colnames(df_temp) %in% c("replaced", "n_valid")], "_", measure_name
     )
 
     df_out <- merge(df_out, df_temp, by = "merge_id", all.x = TRUE, all.y = TRUE)

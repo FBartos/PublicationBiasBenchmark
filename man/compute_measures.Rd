@@ -38,8 +38,9 @@ compute_measures(
 \item{verbose}{Print detailed progress of the calculation.}
 
 \item{power_test_type}{Character vector specifying the test type for power computation:
-"p_value" (default) or "bayes_factor" for each method. If a single value is provided, it is
-repeated for all methods.}
+"p_value" (default), "bayes_factor", or "ci" for each method. The "ci" option is intended
+for methods reporting only confidence intervals and rejects H0 if the confidence interval
+excludes zero. If a single value is provided, it is repeated for all methods.}
 
 \item{power_threshold_p_value}{Numeric threshold for power computation with p-values.
 Default is 0.05 (reject H0 if p < 0.05).}
@@ -72,7 +73,8 @@ If multiple elements are specified within the vectors, these replacements are ap
 in case the previous replacements also failed to converge.
 Defaults to \code{NULL}, i.e., omitting repetitions without converged results on method-by-method basis.}
 
-\item{n_repetitions}{Number of repetitions in each condition. Necessary method replacement. Defaults to \code{1000}.}
+\item{n_repetitions}{Number of repetitions in each condition. Used to verify that the results contain all
+repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to \code{1000}.}
 
 \item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 

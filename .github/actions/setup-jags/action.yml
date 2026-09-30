@@ -9,18 +9,18 @@ runs:
       run: |
         set -euo pipefail
 
-        brew install jags
-        jags_prefix="$(brew --prefix jags)"
-        pkg-config --modversion jags
+        # RoBMA 3.6.1 uses the JAGS 4.x module interface. The signed
+        # universal macOS package is built for R 4.3 and later.
+        installer="$RUNNER_TEMP/JAGS-4.3.2.pkg"
+        curl --fail --location --retry 3 --retry-all-errors \
+          --output "$installer" \
+          "https://downloads.sourceforge.net/project/mcmc-jags/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg"
+        echo '14d171621a582d29a7e6ce11eccf853170367c17d41554e07b88abed76a2fb7e  '"$installer" | shasum -a 256 -c -
+        sudo installer -pkg "$installer" -target /
 
-        # CRAN macOS rjags binaries can look for JAGS in /usr/local/lib even
-        # when Homebrew installs it under /opt/homebrew on arm64 runners.
-        sudo mkdir -p /usr/local/lib
-        for lib in "$jags_prefix"/lib/*.dylib; do
-          sudo ln -sf "$lib" "/usr/local/lib/$(basename "$lib")"
-        done
-        sudo rm -rf /usr/local/lib/JAGS
-        sudo ln -s "$jags_prefix/lib/JAGS" /usr/local/lib/JAGS
+        jags_prefix="/usr/local"
+        PKG_CONFIG_PATH="$jags_prefix/lib/pkgconfig:${PKG_CONFIG_PATH:-}" \
+          pkg-config --modversion jags | grep -x '4.3.2'
 
         echo "$jags_prefix/bin" >> "$GITHUB_PATH"
         {
@@ -51,8 +51,7 @@ runs:
         $jagsRoot = "C:\Program Files\JAGS\JAGS-4.3.2"
         $installer = Join-Path $env:RUNNER_TEMP "JAGS-4.3.2.exe"
         $urls = @(
-          "https://master.dl.sourceforge.net/project/mcmc-jags/JAGS/4.x/Windows/JAGS-4.3.2.exe?viasf=1",
-          "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.2.exe/download"
+          "https://github.com/r-universe-org/actions/releases/download/JAGS-4.3.2/JAGS-4.3.2.exe"
         )
 
         $downloaded = $false
@@ -78,6 +77,10 @@ runs:
 
         if (!$downloaded) {
           throw "Could not download a valid JAGS installer."
+        }
+        $expectedHash = "197f3b32f35462fdbbb566035f459bade6c61207fb2bada265be1504c0fa414f"
+        if ((Get-FileHash $installer -Algorithm SHA256).Hash -ne $expectedHash) {
+          throw "JAGS installer checksum did not match the release asset."
         }
 
         $process = Start-Process `
