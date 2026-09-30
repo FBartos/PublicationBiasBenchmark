@@ -156,7 +156,7 @@ for (dgm_name in dgm_names) {
         method_name = method_name,
         data        = repetition_data,
         settings    = method_setting,
-        fit_limit   = 10
+        fit_limit   = 60
       )
       
       # Attach metadata
