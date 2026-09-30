@@ -107,7 +107,7 @@
     try(PublicationBiasBenchmark::method(method_name, data, settings), silent = silent)
   }, list(method_name, data, settings, silent, seed))
 
-  state <- session$poll_process(fit_limit * 60 * 1000)
+  state <- session$poll_process(round(fit_limit * 60 * 1000))
 
   # Still running once the limit passed: kill the worker outright
   if (!identical(state, "ready")) {

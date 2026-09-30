@@ -283,6 +283,19 @@ test_that("run_method() aborts a fit that exceeds 'fit_limit'", {
   expect_true(is.na(result$estimate))
 })
 
+test_that("run_method() accepts a limit with floating-point milliseconds", {
+
+  test_data <- data.frame(
+    yi = c(0.2, 0.3, 0.1, 0.4, 0.25),
+    sei = c(0.1, 0.15, 0.08, 0.12, 0.11)
+  )
+
+  result <- run_method("RMA", test_data, "default", silent = TRUE, fit_limit = 31 / 60)
+
+  expect_true(result$convergence)
+  expect_equal(result$estimate, run_method("RMA", test_data, "default", silent = TRUE)$estimate)
+})
+
 test_that("MCMC methods specify convergence thresholds in all settings", {
 
   for (method_name in c("MMPH", "RTMA")) {

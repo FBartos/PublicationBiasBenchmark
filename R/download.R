@@ -126,9 +126,12 @@ download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
     iteration <- iteration + 1
   }
 
-  if (nrow(pending) > 0)
+  if (nrow(pending) > 0) {
+    # Remove rejected files so a later call does not skip them as already downloaded.
+    unlink(file.path(data_path, pending$name))
     stop(sprintf("Could not download complete %s files after %d attempts: %s",
                  what, iteration, paste(pending$name, collapse = ", ")))
+  }
 
   return(invisible(TRUE))
 }
