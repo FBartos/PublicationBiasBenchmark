@@ -88,4 +88,14 @@ test_that("wide measures retain the original condition availability of each metr
   expect_equal(retrieve_dgm_measures("no_bias", "power", release = catalog)$condition_id, 2L)
   expect_equal(retrieve_dgm_measures("no_bias", "bias", release = catalog)$condition_id, 1:2)
   expect_error(retrieve_dgm_measures("no_bias", "power", condition_id = 1, release = catalog), "unavailable")
+  catalog$assets[[1]]$measure_conditions$bias <- NULL
+  expect_equal(retrieve_dgm_measures("no_bias", "bias", release = catalog)$condition_id, 1:2)
+  expect_equal(retrieve_dgm_measures("no_bias", "power", release = catalog)$condition_id, 2L)
+})
+test_that("benchmark conditions come from the selected release", {
+  root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
+  catalog <- test_catalog(list(asset))
+  catalog$conditions$no_bias$mean_effect <- c(10, 20)
+  expect_equal(benchmark_conditions("no_bias", catalog)$mean_effect, c(10, 20))
+  expect_false(identical(benchmark_conditions("no_bias", catalog), dgm_conditions("no_bias")))
 })

@@ -14,7 +14,8 @@ knitr::opts_chunk$set(eval = FALSE)
 Each benchmark release is a complete catalog of separately downloadable files.
 The installed package pins a default release. A new release uploads only new or
 corrected files and refers to unchanged files in earlier Zenodo records. Cite the
-catalog record's version DOI and record the benchmark release you used.
+catalog record's version DOI, available from `list_benchmark_releases()`, and
+record the benchmark release you used.
 
 ## Download exactly what you need
 
@@ -53,7 +54,7 @@ a record never forces users to download its other files.
 list_benchmark_resources(release, "no_bias", "results", method = "RMA")
 verify_benchmark_resources(release, "no_bias", "results", method = "RMA")
 catalog <- benchmark_catalog(release)
-catalog$conditions$no_bias
+benchmark_conditions("no_bias", release)
 ```
 
 The catalog pins the condition definitions, file hashes, producing package version
@@ -111,6 +112,9 @@ entry <- publish_benchmark_release(plan)
 Keep publication state for retries. Running the same plan again resumes pending
 uploads, verifies completed files, and recovers published records after lost
 responses. Files in completed drafts are never replaced when their hashes differ.
+Staging initializes new files in batches, reuses empty pending entries, and honors
+Zenodo's rate-limit wait headers. Other uncertain failures are recovered by running
+the same plan again.
 The catalog is published only after every new component's public bytes pass both
 SHA-256 and MD5 verification. Publication creates a new catalog DOI; it does not
 overwrite a previous record.
@@ -137,19 +141,8 @@ token, and the original files remain archived. The worker mapping, archived
 measures and reproduced fits establish the example setting. No archived numerical
 results are recalculated as part of migration.
 
-Maintainer migration commands, run from the repository root:
-
-```{bash, eval=FALSE}
-python -m pip install --target resources/migration/python-libs requests
-python tools/migrate_osf.py inventory
-python tools/migrate_osf.py fetch
-Rscript --vanilla tools/prepare_migration.R
-Rscript --vanilla tools/audit_migration.R
-Rscript --vanilla tools/publish_migration.R
-```
-
-Preparation also requires `data.table`, `digest`, and `jsonlite`; auditing and
-publication use `pkgload` and the package's dependencies. Keep the ignored
-`resources/migration` directory until public verification and registry pinning
-finish. The publication script reads the project's Git-excluded `.Renviron`,
-resumes the saved plan, verifies public files and writes the registry entry.
+The one-off migration scripts and source copies are retained locally outside Git.
+Subsequent releases use the package's preparation and publication functions shown
+above. Keep the publication state directory until public verification and registry
+pinning finish; it allows an interrupted upload to resume without replacing
+completed files.

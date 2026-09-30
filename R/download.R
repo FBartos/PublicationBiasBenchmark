@@ -203,7 +203,11 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
     data <- safe_rbind(lapply(seq_along(assets), function(i) {
       asset <- assets[[i]]; table <- .read_catalog_asset(asset, paths[i])
       if (!is.null(asset$measure_conditions)) {
-        available <- unlist(asset$measure_conditions[intersect(measure, names(asset$measure_conditions))])
+        selected <- intersect(measure, c(asset$measure, unlist(asset$measures)))
+        available <- unlist(lapply(selected, function(metric) {
+          covered <- asset$measure_conditions[[metric]]
+          if (is.null(covered)) asset$condition_ids else covered
+        }))
         table <- table[table$condition_id %in% available, , drop = FALSE]
       }
       table

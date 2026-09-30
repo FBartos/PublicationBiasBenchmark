@@ -72,8 +72,11 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
         asset <- benchmark_resource(path, dgm_name, "measures", group$method[1], group$method_setting[1],
           package_version = package_version, replacement = replacement, measures = metrics)
         key <- paste(group$method[1], group$method_setting[1], sep = "/")
-        asset$measure_conditions <- lapply(coverage, function(x) as.list(x[[key]]))
-        asset$measures <- as.list(names(Filter(length, asset$measure_conditions)))
+        measure_conditions <- lapply(coverage, function(x) as.list(x[[key]]))
+        asset$measures <- as.list(names(Filter(length, measure_conditions)))
+        # Full coverage is the default; store only each metric's exceptions.
+        asset$measure_conditions <- Filter(function(ids) !setequal(unlist(ids), unlist(asset$condition_ids)), measure_conditions)
+        if (!length(asset$measure_conditions)) asset$measure_conditions <- NULL
         add(asset, paste0(label, ".csv"))
       }
     }

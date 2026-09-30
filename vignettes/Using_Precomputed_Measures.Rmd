@@ -48,11 +48,11 @@ The precomputed results are organized by data-generating mechanism (DGM), with e
 ## Available Data-Generating Mechanisms
 
 The package includes precomputed measures for several DGMs.
-You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
+You can view the specific conditions for each DGM using the [`benchmark_conditions()`](../reference/benchmark_catalog.html) function:
 
 ```{r, eval=FALSE}
 # View conditions for the Stanley2017 DGM
-conditions <- dgm_conditions("Stanley2017")
+conditions <- benchmark_conditions("Stanley2017")
 head(conditions)
 ```
 
@@ -127,7 +127,7 @@ Once you have retrieved the measures, you can create visualizations to compare m
 df <- retrieve_dgm_measures("Stanley2017")
 
 # Retrieve conditions to identify null vs. alternative hypotheses
-conditions <- dgm_conditions("Stanley2017")
+conditions <- benchmark_conditions("Stanley2017")
 
 # Create readable method labels
 df$label <- with(df, paste0(method, " (", method_setting, ")"))

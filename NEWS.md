@@ -2,7 +2,7 @@
 ## Features
  - Migrated benchmark storage to append-only Zenodo records and complete release catalogs.
  - Added separate downloads by DGM and method, checksum verification, shared caching, and explicit release selection.
- - Added resumable release planning, staging, verification, and publication for distributed shards.
+ - Added resumable release planning, batch staging, verification, and publication for distributed shards, including Zenodo rate-limit handling.
  - Preserved source provenance and partitioned performance measures by method and setting.
  - Added explicit local result access for unpublished computations.
 

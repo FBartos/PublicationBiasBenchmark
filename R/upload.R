@@ -203,23 +203,40 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
 
 .zenodo_request <- function(method, path, token, sandbox = FALSE, body = NULL) {
   url <- paste0(.zenodo_base(sandbox), "/", path)
-  headers <- httr::add_headers(Authorization = paste("Bearer", token), Accept = "application/json")
+  # Record metadata has a native representation; file endpoints only accept JSON.
+  accept <- if (grepl("^records(/[0-9]+(/draft)?)?$", path)) "application/vnd.inveniordm.v1+json" else "application/json"
+  headers <- httr::add_headers(Authorization = paste("Bearer", token), Accept = accept)
   for (attempt in seq_len(5L)) {
     response <- httr::VERB(method, url, headers, body = body, encode = "json", httr::timeout(180))
-    # Retry read-only requests; uncertain mutations are recovered through state.
-    if (method != "GET" || !httr::status_code(response) %in% c(429L, 500L, 502L, 503L, 504L) || attempt == 5L) break
-    Sys.sleep(min(30, 2^(attempt - 1L)))
+    status <- httr::status_code(response)
+    # A rate-limited mutation was rejected; other uncertain mutations use state.
+    retry <- status == 429L || (method == "GET" && status %in% c(500L, 502L, 503L, 504L))
+    if (!retry || attempt == 5L) break
+    Sys.sleep(.zenodo_retry_delay(httr::headers(response), status, attempt))
   }
   status <- httr::status_code(response)
   if (status >= 400) {
     # Do not print request objects: they contain the authorization header.
-    detail <- try(httr::content(response, as = "parsed", encoding = "UTF-8"), silent = TRUE)
+    detail <- try(httr::content(response, as = "parsed", type = "application/json", encoding = "UTF-8"), silent = TRUE)
     message <- if (is.list(detail) && .scalar_string(detail$message)) detail$message else "request rejected"
     stop(structure(list(message = paste0("Zenodo ", method, " failed (HTTP ", status, "): ", message),
-                        call = NULL, status = status), class = c("zenodo_http_error", "error", "condition")))
+                        call = NULL, status = status, errors = if (is.list(detail)) detail$errors else NULL),
+                   class = c("zenodo_http_error", "error", "condition")))
   }
   if (status == 204) return(invisible(NULL))
-  httr::content(response, as = "parsed", encoding = "UTF-8")
+  httr::content(response, as = "parsed", type = "application/json", encoding = "UTF-8")
+}
+
+.zenodo_retry_delay <- function(headers, status, attempt) {
+  if (status == 429L) {
+    delay <- suppressWarnings(as.numeric(headers[["retry-after"]]))
+    if (length(delay) == 1L && is.finite(delay) && delay >= 0) return(delay)
+    reset <- suppressWarnings(as.numeric(headers[["x-ratelimit-reset"]]))
+    if (length(reset) == 1L && is.finite(reset) && reset > as.numeric(Sys.time()))
+      return(reset - as.numeric(Sys.time()) + 1)
+    return(60)
+  }
+  min(30, 2^(attempt - 1L))
 }
 
 .save_publication_state <- function(plan, state) {
@@ -258,6 +275,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   metadata$title <- title; metadata$description <- description
   metadata$version <- plan$catalog$release
   metadata$resource_type <- list(id = "dataset")
+  if (is.null(metadata$publisher)) metadata$publisher <- "Zenodo"
   if (is.null(metadata$publication_date)) metadata$publication_date <- as.character(Sys.Date())
   draft <- .zenodo_request("POST", "records", token, plan$sandbox,
                            list(metadata = metadata, access = list(record = "public", files = "public"),
@@ -269,30 +287,60 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   url <- paste0(.zenodo_base(sandbox), "/records/", record_id, "/draft/files/",
                  utils::URLencode(filename, reserved = TRUE), "/content")
   stream <- file(path, "rb"); on.exit(close(stream), add = TRUE)
-  handle <- curl::new_handle(upload = TRUE, customrequest = "PUT", infilesize = file.info(path)$size,
-                             readfunction = function(n) readBin(stream, "raw", n = n),
-                             connecttimeout = 30, low_speed_limit = 1, low_speed_time = 180)
-  curl::handle_setheaders(handle, Authorization = paste("Bearer", token), `Content-Type` = "application/octet-stream")
-  response <- curl::curl_fetch_memory(url, handle)
-  if (response$status_code >= 400) stop("Zenodo file upload failed (HTTP ", response$status_code, ").", call. = FALSE)
+  for (attempt in seq_len(5L)) {
+    seek(stream, 0, origin = "start")
+    handle <- curl::new_handle(upload = TRUE, customrequest = "PUT", infilesize = file.info(path)$size,
+                               readfunction = function(n) readBin(stream, "raw", n = n),
+                               connecttimeout = 30, low_speed_limit = 1, low_speed_time = 180)
+    curl::handle_setheaders(handle, Authorization = paste("Bearer", token), `Content-Type` = "application/octet-stream")
+    response <- curl::curl_fetch_memory(url, handle)
+    if (response$status_code != 429L || attempt == 5L) break
+    Sys.sleep(.zenodo_retry_delay(curl::parse_headers_list(response$headers), 429L, attempt))
+  }
+  if (response$status_code >= 400)
+    stop(structure(list(message = paste0("Zenodo file upload failed (HTTP ", response$status_code, ")."),
+                        call = NULL, status = response$status_code), class = c("zenodo_http_error", "error", "condition")))
   invisible(TRUE)
 }
 
 .stage_file <- function(plan, record_id, asset, token) {
+  .stage_files(plan, record_id, list(asset), token)
+}
+
+.stage_files <- function(plan, record_id, assets, token) {
   files <- .zenodo_request("GET", paste0("records/", record_id, "/draft/files"), token, plan$sandbox)
-  entry <- .zenodo_file_entry(files, asset$filename)
-  if (.zenodo_entry_verified(entry, asset)) return(invisible(TRUE))
-  if (!is.null(entry)) {
-    if (!identical(entry$status, "pending")) stop("Existing draft file differs; refusing to overwrite it.", call. = FALSE)
-    .zenodo_request("DELETE", paste0("records/", record_id, "/draft/files/", utils::URLencode(asset$filename, reserved = TRUE)), token, plan$sandbox)
+  pending <- Filter(function(asset) {
+    entry <- .zenodo_file_entry(files, asset$filename)
+    if (.zenodo_entry_verified(entry, asset)) return(FALSE)
+    if (!is.null(entry) && !identical(entry$status, "pending"))
+      stop("Existing draft file differs; refusing to overwrite it.", call. = FALSE)
+    if (!.file_verified(asset$local_path, asset$sha256, asset$size, asset$md5))
+      stop("Local staged file changed.", call. = FALSE)
+    TRUE
+  }, assets)
+  initialize <- Filter(function(asset) {
+    entry <- .zenodo_file_entry(files, asset$filename)
+    is.null(entry) || (!.zenodo_entry_bytes_verified(entry, asset) &&
+      (!is.null(entry$size) || !is.null(entry$checksum)))
+  }, pending)
+  for (asset in initialize) {
+    if (!is.null(.zenodo_file_entry(files, asset$filename)))
+      .zenodo_request("DELETE", paste0("records/", record_id, "/draft/files/", utils::URLencode(asset$filename, reserved = TRUE)), token, plan$sandbox)
   }
-  if (!.file_verified(asset$local_path, asset$sha256, asset$size, asset$md5)) stop("Local staged file changed.", call. = FALSE)
-  .zenodo_request("POST", paste0("records/", record_id, "/draft/files"), token, plan$sandbox, list(list(key = asset$filename)))
-  .zenodo_upload(asset$local_path, record_id, asset$filename, token, plan$sandbox)
-  entry <- .zenodo_request("POST", paste0("records/", record_id, "/draft/files/",
-                           utils::URLencode(asset$filename, reserved = TRUE), "/commit"), token, plan$sandbox)
-  if (!.zenodo_entry_verified(entry, asset))
-    stop("Zenodo uploaded-file verification failed.", call. = FALSE)
+  # Initialize a record's new files together; completed files remain untouched.
+  if (length(initialize)) .zenodo_request("POST", paste0("records/", record_id, "/draft/files"), token, plan$sandbox,
+                                         lapply(initialize, function(asset) list(key = asset$filename)))
+  for (asset in pending) {
+    # Empty pending keys are reusable; an upload whose response was lost can be
+    # committed directly when its stored bytes already match the planned file.
+    if (!.zenodo_entry_bytes_verified(.zenodo_file_entry(files, asset$filename), asset))
+      .zenodo_upload(asset$local_path, record_id, asset$filename, token, plan$sandbox)
+    entry <- .zenodo_request("POST", paste0("records/", record_id, "/draft/files/",
+                             utils::URLencode(asset$filename, reserved = TRUE), "/commit"), token, plan$sandbox)
+    if (!.zenodo_entry_verified(entry, asset))
+      stop("Zenodo uploaded-file verification failed.", call. = FALSE)
+    message("Staged ", paste(c(asset$dgm, asset$kind, asset$filename), collapse = "/"))
+  }
   invisible(TRUE)
 }
 
@@ -305,8 +353,11 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
 }
 
 .zenodo_entry_verified <- function(entry, asset) {
-  !is.null(entry) && identical(entry$status, "completed") &&
-    identical(entry$checksum, paste0("md5:", asset$md5)) &&
+  !is.null(entry) && identical(entry$status, "completed") && .zenodo_entry_bytes_verified(entry, asset)
+}
+
+.zenodo_entry_bytes_verified <- function(entry, asset) {
+  !is.null(entry) && identical(entry$checksum, paste0("md5:", asset$md5)) &&
     is.numeric(entry$size) && length(entry$size) == 1L && !is.na(entry$size) && entry$size == asset$size
 }
 
@@ -316,6 +367,7 @@ stage_benchmark_release <- function(plan, token = NULL) {
   token <- .publication_token(plan, token)
   state <- .publication_state(plan)
   catalog <- plan$catalog
+  asset_indices <- setNames(seq_along(catalog$assets), vapply(catalog$assets, `[[`, character(1), "id"))
   for (i in seq_along(plan$groups)) {
     key <- as.character(i); group <- plan$groups[[i]]
     if (is.null(state$groups[[key]])) {
@@ -331,20 +383,17 @@ stage_benchmark_release <- function(plan, token = NULL) {
       .save_publication_state(plan, state)
     }
     if (!isTRUE(record$published)) {
-      for (asset in group) {
-        .stage_file(plan, record$record_id, asset, token)
-        message("Staged ", asset$dgm, "/", asset$kind, "/", asset$filename)
-      }
+      .stage_files(plan, record$record_id, group, token)
     }
     for (asset in group) {
-      index <- which(vapply(catalog$assets, function(x) identical(x$id, asset$id), logical(1)))
+      index <- asset_indices[[asset$id]]
       catalog$assets[[index]]$record_id <- record$record_id
     }
   }
   catalog$assets <- lapply(catalog$assets, function(x) { x$local_path <- NULL; x })
   .validate_catalog(catalog)
   jsonlite::write_json(catalog, file.path(plan$state_directory, "release.json"), auto_unbox = TRUE,
-                       pretty = TRUE, null = "null", digits = NA, dataframe = "rows")
+                       pretty = FALSE, null = "null", digits = NA, dataframe = "rows")
   catalog
 }
 

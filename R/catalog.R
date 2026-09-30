@@ -4,12 +4,13 @@
 #' default catalog; another release or a local catalog can be selected explicitly.
 #' @param release Benchmark release identifier, path to a catalog JSON file, or
 #' a catalog list. NULL uses the benchmark_release package option.
-#' @param dgm_name Optional DGM name.
+#' @param dgm_name DGM name (optional when listing resources).
 #' @param kind Optional resource kind: data, results, measures, metadata, or archive.
 #' @param method Optional method name(s).
 #' @param method_setting Optional method setting(s).
 #' @return list_benchmark_releases returns a data frame. benchmark_catalog returns
 #' a validated list; list_benchmark_resources returns a data frame of file references.
+#' benchmark_conditions returns the release's frozen condition data frame.
 #' @name benchmark_catalog
 NULL
 
@@ -23,10 +24,10 @@ NULL
 #' @export
 list_benchmark_releases <- function() {
   registry <- .release_registry()
-  if (!length(registry$releases)) return(data.frame(release = character(), record_id = character(),
+  if (!length(registry$releases)) return(data.frame(release = character(), record_id = character(), doi = character(),
                                                   catalog_sha256 = character()))
   do.call(rbind, lapply(registry$releases, function(x) {
-    data.frame(release = x$release, record_id = as.character(x$record_id),
+    data.frame(release = x$release, record_id = as.character(x$record_id), doi = if (is.null(x$doi)) NA_character_ else x$doi,
                catalog_sha256 = x$catalog_sha256, stringsAsFactors = FALSE)
   }))
 }
@@ -103,6 +104,12 @@ benchmark_catalog <- function(release = NULL) {
     })
     as.data.frame(x, stringsAsFactors = FALSE)
   }))
+}
+
+#' @rdname benchmark_catalog
+#' @export
+benchmark_conditions <- function(dgm_name, release = NULL) {
+  .catalog_conditions(benchmark_catalog(release), dgm_name)
 }
 
 .select_assets <- function(catalog, dgm_name = NULL, kind = NULL, method = NULL,

@@ -57,11 +57,11 @@ Accessing the presimulated datasets allows you to:
 
 The package includes presimulated datasets for several DGMs. See the [Adding New DGMs](Adding_New_DGMs.html) vignette for details on the individual DGMs and their simulation designs.
 
-You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
+You can view the specific conditions for each DGM using the [`benchmark_conditions()`](../reference/benchmark_catalog.html) function:
 
 ```{r, eval=FALSE}
 # View conditions for the Stanley2017 DGM
-conditions <- dgm_conditions("Stanley2017")
+conditions <- benchmark_conditions("Stanley2017")
 head(conditions)
 ```
 

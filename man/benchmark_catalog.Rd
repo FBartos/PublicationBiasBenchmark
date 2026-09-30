@@ -3,12 +3,15 @@
 \name{benchmark_catalog}
 \alias{benchmark_catalog}
 \alias{list_benchmark_releases}
+\alias{benchmark_conditions}
 \alias{list_benchmark_resources}
 \title{Inspect Benchmark Releases and Resources}
 \usage{
 list_benchmark_releases()
 
 benchmark_catalog(release = NULL)
+
+benchmark_conditions(dgm_name, release = NULL)
 
 list_benchmark_resources(
   release = NULL,
@@ -22,7 +25,7 @@ list_benchmark_resources(
 \item{release}{Benchmark release identifier, path to a catalog JSON file, or
 a catalog list. NULL uses the benchmark_release package option.}
 
-\item{dgm_name}{Optional DGM name.}
+\item{dgm_name}{DGM name (optional when listing resources).}
 
 \item{kind}{Optional resource kind: data, results, measures, metadata, or archive.}
 
@@ -33,6 +36,7 @@ a catalog list. NULL uses the benchmark_release package option.}
 \value{
 list_benchmark_releases returns a data frame. benchmark_catalog returns
 a validated list; list_benchmark_resources returns a data frame of file references.
+benchmark_conditions returns the release's frozen condition data frame.
 }
 \description{
 Benchmark releases are complete catalogs of immutable files.

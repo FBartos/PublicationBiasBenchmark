@@ -96,3 +96,85 @@ test_that("local distributed results remain separate and measures are partitione
   expect_equal(sort(vapply(per_method, `[[`, character(1), "method")), c("A", "B"))
   for (asset in per_method) expect_equal(unique(.read_resource_csv(asset$local_path)$method), asset$method)
 })
+
+test_that("batch staging resumes partial records and leaves completed files untouched", {
+  root <- withr::local_tempdir()
+  assets <- lapply(1:3, function(i) test_resource(root, paste0(i, ".csv"), ids = (2*i-1):(2*i)))
+  plan <- list(sandbox = FALSE)
+  entries <- list(); batches <- list(); uploads <- character(); deleted <- character(); reads <- 0L; interrupt <- TRUE
+  local_mocked_bindings(
+    .zenodo_upload = function(path, record_id, filename, ...) { uploads <<- c(uploads, filename) },
+    .zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+      filename <- utils::URLdecode(tail(strsplit(path, "/", fixed = TRUE)[[1]], 1L))
+      if (method == "GET") { reads <<- reads + 1L; return(list(entries = unname(entries))) }
+      if (method == "DELETE") { deleted <<- c(deleted, filename); entries[[filename]] <<- NULL; return(NULL) }
+      if (endsWith(path, "/files")) {
+        batches[[length(batches) + 1L]] <<- vapply(body, `[[`, character(1), "key")
+        for (file in body) entries[[file$key]] <<- list(key = file$key, status = "pending")
+        return(NULL)
+      }
+      filename <- utils::URLdecode(strsplit(path, "/", fixed = TRUE)[[1]][5])
+      asset <- Filter(function(x) x$filename == filename, assets)[[1]]
+      entry <- list(key = filename, status = "completed", checksum = paste0("md5:", asset$md5), size = asset$size)
+      entries[[filename]] <<- entry
+      if (interrupt) { interrupt <<- FALSE; stop("lost batch commit response") }
+      entry
+    })
+  expect_error(.stage_files(plan, "12345", assets, "test-token"), "lost batch commit")
+  suppressMessages(.stage_files(plan, "12345", assets, "test-token"))
+  expect_equal(reads, 2L)
+  expect_equal(batches, list(c("1.csv", "2.csv", "3.csv")))
+  expect_equal(uploads, c("1.csv", "2.csv", "3.csv"))
+  expect_equal(deleted, character())
+  entries[["2.csv"]]$checksum <- "md5:changed"
+  expect_error(.stage_files(plan, "12345", assets, "test-token"), "refusing to overwrite")
+  expect_equal(uploads, c("1.csv", "2.csv", "3.csv"))
+  expect_equal(deleted, character())
+})
+
+test_that("explicit rate-limit responses retry rejected mutations", {
+  calls <- 0L
+  testthat::local_mocked_bindings(VERB = function(...) {
+    calls <<- calls + 1L
+    structure(list(status_code = if (calls == 1L) 429L else 201L,
+      headers = structure(list(`retry-after` = "0", `content-type` = "application/json"), class = "insensitive"),
+      content = charToRaw('{"id":"12345"}')), class = "response")
+  }, .package = "httr")
+  expect_equal(.zenodo_request("POST", "records", "test-token")$id, "12345")
+  expect_equal(calls, 2L)
+  expect_equal(.zenodo_retry_delay(list(), 429L, 1L), 60)
+  expect_equal(.zenodo_retry_delay(list(`retry-after` = "12"), 429L, 1L), 12)
+  expect_equal(.zenodo_retry_delay(list(), 503L, 4L), 8)
+})
+
+test_that("stored pending bytes can be committed without another upload", {
+  root <- withr::local_tempdir()
+  asset <- test_resource(root, "pending.csv")
+  entry <- list(key = asset$filename, status = "pending", size = asset$size, checksum = paste0("md5:", asset$md5))
+  commits <- 0L
+  local_mocked_bindings(
+    .zenodo_upload = function(...) stop("Unexpected re-upload"),
+    .zenodo_request = function(method, path, ...) {
+      if (method == "GET") return(list(entries = list(entry)))
+      if (method == "POST" && endsWith(path, "/commit")) {
+        commits <<- commits + 1L; entry$status <- "completed"; return(entry)
+      }
+      stop("Unexpected initialization or deletion")
+    })
+  suppressMessages(.stage_files(list(sandbox = FALSE), "12345", list(asset), "test-token"))
+  expect_equal(commits, 1L)
+})
+
+test_that("native record metadata and JSON file responses are parsed consistently", {
+  accepts <- character()
+  testthat::local_mocked_bindings(VERB = function(method, url, config, ...) {
+    accept <- unname(config$headers["Accept"])
+    accepts <<- c(accepts, accept)
+    structure(list(status_code = 200L,
+      headers = structure(list(`content-type` = accept), class = "insensitive"),
+      content = charToRaw('{"id":"12345"}')), class = "response")
+  }, .package = "httr")
+  expect_equal(.zenodo_request("GET", "records/12345/draft", "test-token")$id, "12345")
+  expect_equal(.zenodo_request("GET", "records/12345/draft/files", "test-token")$id, "12345")
+  expect_equal(accepts, c("application/vnd.inveniordm.v1+json", "application/json"))
+})
