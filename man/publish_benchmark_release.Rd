@@ -5,7 +5,7 @@
 \alias{plan_benchmark_release}
 \alias{stage_benchmark_release}
 \alias{verify_benchmark_release}
-\title{Plan, Stage, and Publish an Append-Only Benchmark Release}
+\title{Plan, Stage, and Publish a Cumulative Benchmark Release}
 \usage{
 plan_benchmark_release(
   release,
@@ -20,7 +20,12 @@ plan_benchmark_release(
   sandbox = FALSE,
   package_version = as.character(utils::packageVersion("PublicationBiasBenchmark")),
   source_commit = NULL,
-  provenance = NULL
+  provenance = NULL,
+  archive = TRUE,
+  community = "publicationbiasbenchmark",
+  catalog_record_id = NULL,
+  catalog_concept_doi = NULL,
+  max_archive_bytes = .archive_byte_limit
 )
 
 stage_benchmark_release(plan, token = NULL)
@@ -56,6 +61,16 @@ publish_benchmark_release(plan, token = NULL)
 
 \item{provenance}{Optional source archive metadata stored in the catalog.}
 
+\item{archive}{Use schema-2 ZIP download units; FALSE retains the legacy publisher.}
+
+\item{community}{Community slug or UUID. Required for archive publication.}
+
+\item{catalog_record_id}{Existing catalog family version ID, required to consolidate a schema-1 release.}
+
+\item{catalog_concept_doi}{Existing catalog family concept DOI.}
+
+\item{max_archive_bytes}{Uncompressed ZIP cap, at most 2,000,000,000 bytes.}
+
 \item{plan}{Release plan.}
 
 \item{token}{Zenodo token; defaults to ZENODO_TOKEN (ZENODO_SANDBOX_TOKEN for sandbox).}
@@ -67,6 +82,8 @@ publication returns a registry entry including the catalog's version DOI and has
 \description{
 A plan combines unchanged references from a previous catalog with
 new files. Changing an existing shard requires listing its ID in replace.
-Only new payloads are uploaded. Publication makes the complete catalog available
-after all component records are public and their files have been verified.
+Archive publication builds complete changed download units, imports unchanged
+ZIPs into native storage versions and continues the native catalog family.
+Publication makes the complete catalog available after public payload/member,
+native rights, DOI relationship and accepted community checks have passed.
 }

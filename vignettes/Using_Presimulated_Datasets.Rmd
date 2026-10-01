@@ -80,6 +80,13 @@ download_dgm_datasets("Stanley2017")
 ```
 
 **Note**: Dataset files can be quite large as they contain all individual study data across many simulation repetitions. Each DGM may require several gigabytes of storage space.
+
+In archive-backed releases, `condition_id` selects the ZIPs containing the requested
+conditions. Each selected ZIP can contain other conditions, potentially all of a
+small DGM's datasets. Extraction and checksum verification are automatic. Verified
+member files are reused across releases, including the direct-file `2026.1` release.
+Use `prune_benchmark_archives()` to remove cached ZIP copies after their selected
+members are verified.
 The datasets are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once.
 
 ## Retrieving Presimulated Datasets

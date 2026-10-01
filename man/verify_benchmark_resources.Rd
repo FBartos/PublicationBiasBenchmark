@@ -18,7 +18,7 @@ a catalog list. NULL uses the benchmark_release package option.}
 
 \item{dgm_name}{DGM name (optional when listing resources).}
 
-\item{kind}{Optional resource kind: data, results, measures, metadata, or archive.}
+\item{kind}{Optional resource kind: data, results, measures, pairwise, metadata, or archive.}
 
 \item{method}{Optional method name(s).}
 

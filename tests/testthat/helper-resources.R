@@ -18,3 +18,5 @@ test_resource <- function(directory, filename, kind = "results", method = "A", i
 
 test_catalog <- function(assets, release = "test.1") list(schema_version = 1L, release = release,
   assets = assets, conditions = list(no_bias = data.frame(condition_id = 1:2, mean_effect = 0)), sandbox = FALSE)
+
+legacy_plan_benchmark_release <- function(...) plan_benchmark_release(..., archive = FALSE)

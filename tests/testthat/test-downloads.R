@@ -99,3 +99,18 @@ test_that("benchmark conditions come from the selected release", {
   expect_equal(benchmark_conditions("no_bias", catalog)$mean_effect, c(10, 20))
   expect_false(identical(benchmark_conditions("no_bias", catalog), dgm_conditions("no_bias")))
 })
+
+test_that("public rate limits respect Retry-After before repairing a cached file", {
+  root <- withr::local_tempdir(); source <- file.path(root, "source")
+  writeBin(charToRaw("verified"), source)
+  sha <- digest::digest(file = source, algo = "sha256", serialize = FALSE)
+  calls <- 0L; waits <- numeric()
+  local_mocked_bindings(.resource_download = function(url, destination, progress) {
+    calls <<- calls + 1L
+    if (calls == 1L) stop(structure(list(message = "rate limited", call = NULL, status = 429L, retry_delay = 60),
+      class = c("resource_http_error", "error", "condition")))
+    file.copy(source, destination)
+  }, .resource_retry_wait = function(time) waits <<- c(waits, time))
+  expect_true(.fetch_verified("https://example.test/file", file.path(root, "target"), sha, 8, max_try = 2L))
+  expect_equal(calls, 2L); expect_equal(waits, 60)
+})

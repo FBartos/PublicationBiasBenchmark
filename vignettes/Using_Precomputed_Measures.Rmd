@@ -68,6 +68,11 @@ download_dgm_measures("Stanley2017")
 Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
 The measures are downloaded to a local cache directory and are automatically available for subsequent analysis. 
 You only need to download them once, for each release. Selecting a new release fetches only files whose checksums are not already cached; `overwrite = TRUE` is unnecessary.
+Archive-backed releases use one measures ZIP per DGM/method/setting, containing
+ordinary and replacement variants. A metric or replacement filter can fetch other
+columns or variants in that ZIP, while retrieval returns only the requested values.
+Other methods' ordinary tables are in separate ZIPs. Pairwise tables are downloaded
+only with an explicit `measure = "pairwise"` selection.
 
 ## Retrieving Precomputed Measures
 

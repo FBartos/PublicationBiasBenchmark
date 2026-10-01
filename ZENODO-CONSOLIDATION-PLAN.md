@@ -1,7 +1,7 @@
 # Zenodo community and storage consolidation plan
 
-Date: 2026-10-01, revised the same day after review. Status: agreed direction,
-awaiting implementation.
+Date: 2026-10-01, revised the same day after review. Status: implementation on
+`codex/zenodo-consolidation`; production checkpoints remain pending.
 
 ## Objective and scope
 
@@ -24,10 +24,12 @@ stop for the user's explicit approval at both checkpoints in the execution order
 - Branch `codex/zenodo-migration` holds this plan; its last code commit is
   `bf1022a`.
 - PR <https://github.com/FBartos/PublicationBiasBenchmark/pull/10> publishes and
-  pins release `2026.1`. Do not extend it: confirm with the user that it is
-  merged, then implement consolidation on a new branch from `master` in a new PR,
-  unless the user directs otherwise.
-- Package version: `0.4.0`; default benchmark release: `2026.1`.
+  pins release `2026.1`. It was still open at the implementation check. The
+  consolidation branch uses that verified code as its baseline and keeps new
+  work out of PR 10. Reconcile the new PR's base after PR 10 is merged.
+- Baseline package version: `0.4.0`; implementation development version:
+  `0.5.0.9000`; default benchmark release remains `2026.1` pending verification
+  and approval of a production consolidation release.
 - Catalog: <https://zenodo.org/records/23070787>, version DOI
   `10.5281/zenodo.23070787`, concept DOI `10.5281/zenodo.23070786`.
 - Public catalog file:
@@ -113,14 +115,17 @@ storage family; the publisher rejects new conditions or new data assets for a
 published DGM. Within a DGM, only method results and measures change: new
 methods or settings, explicit corrections and, later, pairwise tables. An
 explicit correction of a published dataset remains possible through the
-replacement mechanism and republishes the affected data archive.
+replacement mechanism and republishes the affected data archive. Reject a
+correction that retains stale dependent results or ordinary/replacement/pairwise
+measures. Record input IDs/hashes; affected derived assets must be recomputed,
+supplied and explicitly replaced in the same release.
 
 ### Download units
 
 Each storage version contains exactly one ZIP per download unit:
 
 - `data`: contiguous condition ranges, split only as needed to keep each archive
-  within 2 GB of uncompressed members. R's internal `unzip` supports larger
+  within 2,000,000,000 bytes of uncompressed members. R's internal `unzip` supports larger
   archives only partially (see `?unzip`).
 - `results`: one per method/setting.
 - `measures`: one per method/setting, holding both ordinary and replacement
@@ -130,6 +135,9 @@ Each storage version contains exactly one ZIP per download unit:
 - `archive` (original source tables): one per DGM.
 
 Only a unit that exceeds the 2 GB cap is split, into ordered parts.
+Split at member boundaries. Reject a single oversized member with an informative
+error; splitting its containing unit cannot make that member fit. Keep established
+dataset chunk membership where possible, reusing unchanged chunks during corrections.
 
 Estimated from the `2026.1` catalog, with data chunks in parentheses:
 
@@ -263,10 +271,13 @@ Reader behavior:
    needed for missing or corrupt members, and download each once, verifying its
    size, SHA-256 and MD5.
 3. Extract with base R (`utils::unzip(unzip = "internal")`; no new Imports).
-   List the archive first and reject unsafe or undeclared names, links,
+   Inspect the ZIP central directory (base R's listing does not expose file types)
+   and reject unsafe or undeclared names, links,
    duplicates and collisions. Extract needed members one at a time with
    `junkpaths = TRUE` into a fresh temporary directory. Never allow an archive
    member to write outside the intended cache directory.
+   Support flat ASCII regular-file members with store/deflate compression in
+   single-disk, non-ZIP64 archives; reject unsupported formats before extraction.
 4. Verify each extracted member against its catalog size and hashes, then move it
    atomically to the existing `cache/<sha256>/<filename>` path used for schema-1
    files. Existing `2026.1` caches are then reused without new downloads, and

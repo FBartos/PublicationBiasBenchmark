@@ -5,7 +5,7 @@
 #' @param release Benchmark release identifier, path to a catalog JSON file, or
 #' a catalog list. NULL uses the benchmark_release package option.
 #' @param dgm_name DGM name (optional when listing resources).
-#' @param kind Optional resource kind: data, results, measures, metadata, or archive.
+#' @param kind Optional resource kind: data, results, measures, pairwise, metadata, or archive.
 #' @param method Optional method name(s).
 #' @param method_setting Optional method setting(s).
 #' @return list_benchmark_releases returns a data frame. benchmark_catalog returns
@@ -37,7 +37,7 @@ list_benchmark_releases <- function() {
   !grepl("[. ]$", x) && !grepl("^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])([.]|$)", x, ignore.case = TRUE)
 
 .validate_catalog <- function(catalog) {
-  if (!identical(as.integer(catalog$schema_version), 1L) || !.scalar_string(catalog$release))
+  if (length(catalog$schema_version) != 1L || !catalog$schema_version %in% c(1L, 2L) || !.scalar_string(catalog$release))
     stop("Unsupported or invalid benchmark catalog.", call. = FALSE)
   if (!is.list(catalog$assets) || !length(catalog$assets) || !is.list(catalog$conditions))
     stop("A catalog must contain assets and frozen DGM conditions.", call. = FALSE)
@@ -46,8 +46,8 @@ list_benchmark_releases <- function() {
     if (!all(vapply(asset[required], .scalar_string, logical(1))) ||
         !.safe_filename(asset$filename) || !grepl("^[a-f0-9]{64}$", asset$sha256) ||
         !grepl("^[a-f0-9]{32}$", asset$md5) || !grepl("^[0-9]+$", asset$record_id) ||
-        !asset$kind %in% c("data", "results", "measures", "metadata", "archive") ||
-        !is.numeric(asset$size) || length(asset$size) != 1L || is.na(asset$size) || asset$size < 0)
+        !asset$kind %in% c("data", "results", "measures", "pairwise", "metadata", "archive") ||
+        !is.numeric(asset$size) || length(asset$size) != 1L || !is.finite(asset$size) || asset$size < 0)
       stop("Invalid benchmark asset reference.", call. = FALSE)
     if (asset$kind %in% c("results", "measures") &&
         (!.scalar_string(asset$method) || !.scalar_string(asset$method_setting)))
@@ -58,6 +58,7 @@ list_benchmark_releases <- function() {
   }
   ids <- vapply(catalog$assets, `[[`, character(1), "id")
   if (anyDuplicated(ids)) stop("Duplicate asset IDs in the catalog.", call. = FALSE)
+  if (catalog$schema_version == 2L) .validate_archive_catalog(catalog)
   for (dgm in unique(vapply(catalog$assets, `[[`, character(1), "dgm"))) {
     conditions <- .catalog_conditions(catalog, dgm)
     if (!"condition_id" %in% names(conditions) || anyNA(conditions$condition_id) ||
@@ -146,7 +147,10 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
                method_setting = if (is.null(x$method_setting)) "" else x$method_setting,
                filename = x$filename, size = x$size, sha256 = x$sha256,
                record_id = x$record_id,
-               url = .zenodo_file_url(x$record_id, x$filename, isTRUE(catalog$sandbox)),
+               url = .resource_reference_url(catalog, x),
+               archive_id = if (is.null(x$archive_id)) NA_character_ else x$archive_id,
+               archive_filename = if (is.null(x$archive_id)) NA_character_ else .catalog_archive(catalog, x$archive_id)$filename,
+               download_size = if (is.null(x$archive_id)) x$size else .catalog_archive(catalog, x$archive_id)$size,
                package_version = if (is.null(x$package_version)) NA_character_ else x$package_version,
                stringsAsFactors = FALSE)
   }))
@@ -170,7 +174,19 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
 }
 
 .resource_download <- function(url, destination, progress) {
-  curl::curl_download(url, destination, quiet = !progress, mode = "wb")
+  handle <- curl::new_handle(connecttimeout = 30, low_speed_limit = 1, low_speed_time = 180,
+                             noprogress = !progress)
+  response <- curl::curl_fetch_disk(url, destination, handle = handle)
+  if (response$status_code >= 400L) {
+    delay <- if (response$status_code == 429L) .zenodo_retry_delay(curl::parse_headers_list(response$headers), 429L, 1L) else NULL
+    stop(structure(list(message = paste0("Public resource download failed (HTTP ", response$status_code, ")."),
+      call = NULL, status = response$status_code, retry_delay = delay), class = c("resource_http_error", "error", "condition")))
+  }
+  invisible(TRUE)
+}
+.resource_retry_wait <- function(delay) {
+  while (delay > 0) { Sys.sleep(min(60, delay)); delay <- delay - min(60, delay) }
+  invisible(TRUE)
 }
 
 .fetch_verified <- function(url, destination, sha256, size = NULL, md5 = NULL,
@@ -194,7 +210,11 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
       if (file.exists(backup)) unlink(backup)
       return(invisible(TRUE))
     }
-    if (attempt < max_try) Sys.sleep(min(30, 2^(attempt - 1L)))
+    if (attempt < max_try) {
+      condition <- if (inherits(downloaded, "try-error")) attr(downloaded, "condition") else NULL
+      delay <- if (inherits(condition, "resource_http_error") && identical(condition$status, 429L)) condition$retry_delay else min(30, 2^(attempt - 1L))
+      .resource_retry_wait(delay)
+    }
   }
   stop("Could not download and verify '", basename(destination), "' after ", max_try, " attempts.", call. = FALSE)
 }
@@ -216,7 +236,14 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
 #' @export
 verify_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NULL,
                                        method = NULL, method_setting = NULL) {
-  assets <- .select_assets(benchmark_catalog(release), dgm_name, kind, method, method_setting)
+  catalog <- benchmark_catalog(release)
+  assets <- .select_assets(catalog, dgm_name, kind, method, method_setting)
   data.frame(id = vapply(assets, `[[`, character(1), "id"),
-             verified = vapply(assets, function(x) .file_verified(.asset_cache_path(x), x$sha256, x$size, x$md5), logical(1)))
+             verified = vapply(assets, function(x) .file_verified(.asset_cache_path(x), x$sha256, x$size, x$md5), logical(1)),
+             archive_id = vapply(assets, function(x) if (is.null(x$archive_id)) NA_character_ else x$archive_id, character(1)),
+             archive_verified = vapply(assets, function(x) {
+               if (is.null(x$archive_id)) return(NA)
+               a <- .catalog_archive(catalog, x$archive_id)
+               .file_verified(.archive_cache_path(a), a$sha256, a$size, a$md5)
+             }, logical(1)))
 }

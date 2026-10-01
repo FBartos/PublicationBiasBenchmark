@@ -1,6 +1,8 @@
 #' @title Download Benchmark Datasets, Results, and Measures
-#' @description Download immutable catalog-selected files. Each file is checked
-#' against its size, SHA-256, and MD5. Public downloads require no token.
+#' @description Download immutable catalog-selected direct files or ZIP units.
+#' Archives and extracted members are checked against size, SHA-256 and MD5.
+#' A condition/metric filter may fetch other members of its selected unit.
+#' Public downloads require no token; verified member caches avoid new downloads.
 #' @param dgm_name DGM name.
 #' @param overwrite Re-download selected files even if their cached copies verify.
 #' @param progress Display download progress.
@@ -50,7 +52,8 @@ download_dgm_metadata <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
                              method = NULL, method_setting = NULL, release = NULL,
                              condition_id = NULL, measure = NULL, replacement = NULL) {
   catalog <- benchmark_catalog(release)
-  assets <- .select_assets(catalog, dgm_name, what, method, method_setting, replacement, measure)
+  kind <- if (what == "measures" && identical(measure, "pairwise")) c("measures", "pairwise") else what
+  assets <- .select_assets(catalog, dgm_name, kind, method, method_setting, replacement, measure)
   if (what == "measures" && !identical(measure, "pairwise"))
     assets <- Filter(function(x) !identical(x$measure, "pairwise"), assets)
   if (!is.null(condition_id)) {
@@ -58,22 +61,18 @@ download_dgm_metadata <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
     assets <- Filter(function(x) any(unlist(x$condition_ids) %in% condition_id), assets)
   }
   if (!length(assets)) stop("No files match the requested selection.", call. = FALSE)
-  pending <- Filter(function(x) overwrite || !.file_verified(.asset_cache_path(x), x$sha256, x$size, x$md5), assets)
-  if (!length(pending)) {
+  pending <- .pending_downloads(catalog, assets, overwrite)
+  if (!length(pending$assets)) {
     if (progress) message("All selected files are cached and verified.")
     return(invisible(TRUE))
   }
-  if (interactive() && PublicationBiasBenchmark.get_option("prompt_for_download")) {
+  if (pending$files > 0L && interactive() && PublicationBiasBenchmark.get_option("prompt_for_download")) {
     answer <- readline(sprintf("Download %d files (%.2f MB) for %s from release %s? [Y/n] ",
-                                length(pending), sum(vapply(pending, `[[`, numeric(1), "size"))/1024^2,
+                                pending$files, pending$bytes/1024^2,
                                 dgm_name, catalog$release))
     if (nzchar(answer) && !tolower(substr(answer, 1, 1)) %in% "y") return(invisible(FALSE))
   }
-  for (asset in pending) {
-    .fetch_verified(.zenodo_file_url(asset$record_id, asset$filename, isTRUE(catalog$sandbox)),
-                    .asset_cache_path(asset), asset$sha256, asset$size, asset$md5,
-                    progress, max_try, overwrite)
-  }
+  .download_catalog_assets(catalog, assets, progress, max_try, overwrite)
   invisible(TRUE)
 }
 
@@ -193,7 +192,8 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
   source <- match.arg(source)
   if (source == "local") return(.retrieve_local_dgm_measures(dgm_name, measure, method, method_setting, condition_id, replacement))
   catalog <- benchmark_catalog(release)
-  assets <- .select_assets(catalog, dgm_name, "measures", method, method_setting, replacement, measure)
+  kind <- if (identical(measure, "pairwise")) c("measures", "pairwise") else "measures"
+  assets <- .select_assets(catalog, dgm_name, kind, method, method_setting, replacement, measure)
   if (!identical(measure, "pairwise")) assets <- Filter(function(x) !identical(x$measure, "pairwise"), assets)
   if (!length(assets)) stop("No ordinary measures match the selection.", call. = FALSE)
   if (is.null(measure)) {

@@ -4,7 +4,7 @@
 #' describe the exact bytes; package_version describes generation, not migration.
 #' @param path Local file path.
 #' @param dgm_name DGM name.
-#' @param kind data, results, measures, metadata, or archive.
+#' @param kind data, results, measures, pairwise, metadata, or archive.
 #' @param method Method identifier for results/measures.
 #' @param method_setting Method setting identifier.
 #' @param condition_ids Conditions covered by the file.
@@ -12,11 +12,12 @@
 #' @param replacement Whether the file contains replacement measures.
 #' @param measures Measures present in a wide measures file.
 #' @param id Stable logical shard identifier; defaults to DGM/kind/basename.
+#' @param dependencies Optional IDs of input assets used to compute this asset.
 #' @return A file descriptor for plan_benchmark_release.
 #' @export
 benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setting = NULL,
                                condition_ids = NULL, package_version = NULL, replacement = FALSE,
-                               measures = NULL, id = NULL) {
+                               measures = NULL, id = NULL, dependencies = NULL) {
   if (!file.exists(path) || dir.exists(path)) stop("Resource file does not exist.", call. = FALSE)
   if (is.null(id)) id <- paste(dgm_name, kind, basename(path), sep = "/")
   asset <- list(id = id, dgm = dgm_name, kind = kind, filename = basename(path),
@@ -25,7 +26,8 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
                 md5 = unname(tools::md5sum(path)), record_id = "0", method = method,
                 method_setting = method_setting, condition_ids = as.list(condition_ids),
                 package_version = package_version, replacement = replacement,
-                measures = as.list(measures), local_path = normalizePath(path, winslash = "/"))
+                measures = as.list(measures), dependencies = as.list(dependencies), dependencies_explicit = !is.null(dependencies),
+                local_path = normalizePath(path, winslash = "/"))
   if (kind == "data") {
     data <- .read_resource_csv(path)
     if (!"repetition_id" %in% names(data) || !length(condition_ids))
@@ -40,6 +42,12 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
       ids <- unique(data$repetition_id[data$condition_id == condition])
       list(condition_id = condition, repetitions = length(ids), ranges = .repetition_ranges(ids))
     })
+  } else if (kind == "pairwise") {
+    data <- .read_resource_csv(path)
+    .reject_duplicate_keys(data, c("method_a", "method_b", "condition_id"), "pairwise")
+    if (!nrow(data)) stop("Pairwise tables must contain rows.", call. = FALSE)
+    asset$condition_ids <- as.list(sort(unique(data$condition_id)))
+    asset$rows <- nrow(data); asset$measure <- "pairwise"
   } else if (kind %in% c("results", "measures")) {
     data <- .validate_resource_rows(asset)
     asset$condition_ids <- as.list(sort(unique(data$condition_id)))
@@ -100,11 +108,13 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
   invisible(TRUE)
 }
 
-#' @title Plan, Stage, and Publish an Append-Only Benchmark Release
+#' @title Plan, Stage, and Publish a Cumulative Benchmark Release
 #' @description A plan combines unchanged references from a previous catalog with
 #' new files. Changing an existing shard requires listing its ID in replace.
-#' Only new payloads are uploaded. Publication makes the complete catalog available
-#' after all component records are public and their files have been verified.
+#' Archive publication builds complete changed download units, imports unchanged
+#' ZIPs into native storage versions and continues the native catalog family.
+#' Publication makes the complete catalog available after public payload/member,
+#' native rights, DOI relationship and accepted community checks have passed.
 #' @param release New benchmark release identifier.
 #' @param files List of descriptors returned by benchmark_resource.
 #' @param conditions Named list of frozen DGM condition data frames.
@@ -118,6 +128,11 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
 #' @param package_version Package version assembling the release (generation stamps remain per file).
 #' @param source_commit Source commit for the frozen DGM definitions.
 #' @param provenance Optional source archive metadata stored in the catalog.
+#' @param archive Use schema-2 ZIP download units; FALSE retains the legacy publisher.
+#' @param community Community slug or UUID. Required for archive publication.
+#' @param catalog_record_id Existing catalog family version ID, required to consolidate a schema-1 release.
+#' @param catalog_concept_doi Existing catalog family concept DOI.
+#' @param max_archive_bytes Uncompressed ZIP cap, at most 2,000,000,000 bytes.
 #' @param plan Release plan.
 #' @param token Zenodo token; defaults to ZENODO_TOKEN (ZENODO_SANDBOX_TOKEN for sandbox).
 #' @return plan_benchmark_release returns a plan; staging returns the staged catalog;
@@ -131,13 +146,17 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
                                    replace = character(), metadata, state_directory,
                                    max_files = 100L, max_bytes = 50e9, sandbox = FALSE,
                                    package_version = as.character(utils::packageVersion("PublicationBiasBenchmark")),
-                                   source_commit = NULL, provenance = NULL) {
+                                   source_commit = NULL, provenance = NULL, archive = TRUE,
+                                   community = "publicationbiasbenchmark", catalog_record_id = NULL,
+                                   catalog_concept_doi = NULL, max_archive_bytes = .archive_byte_limit) {
   if (!.scalar_string(release) || !grepl("^[A-Za-z0-9._-]+$", release)) stop("Invalid release identifier.", call. = FALSE)
   if (!is.null(metadata$licenses) || !is.null(metadata$license))
     stop("Zenodo-native license metadata belongs in metadata$rights, not license or licenses.", call. = FALSE)
   if (max_files < 1 || max_files > 100 || max_files %% 1 || max_bytes <= 0 || max_bytes > 50e9)
     stop("Packing limits exceed the default Zenodo quota.", call. = FALSE)
   base <- if (is.null(previous)) NULL else benchmark_catalog(previous)
+  if (is.null(source_commit) && !is.null(base)) source_commit <- base$source_commit
+  if (is.null(provenance) && !is.null(base)) provenance <- base$provenance
   if (anyDuplicated(vapply(files, `[[`, character(1), "id"))) stop("Duplicate input shard IDs.", call. = FALSE)
   if (!is.null(base) && identical(base$release, release)) stop("A new release needs a new identifier.", call. = FALSE)
   if (!is.null(base) && !identical(isTRUE(base$sandbox), sandbox)) stop("Cannot mix sandbox and production records.", call. = FALSE)
@@ -146,7 +165,21 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   for (file in files) {
     old <- which(vapply(assets, function(x) identical(x$id, file$id), logical(1)))
     if (length(old)) {
-      if (identical(assets[[old]]$sha256, file$sha256)) next
+      if (!identical(assets[[old]]$dgm, file$dgm) || !identical(assets[[old]]$kind, file$kind))
+        stop("A logical asset cannot change its DGM or resource kind.", call. = FALSE)
+      if (identical(assets[[old]]$sha256, file$sha256)) {
+        if (file$id %in% replace) {
+          if (!.file_verified(file$local_path, file$sha256, file$size, file$md5)) stop("Unverified local file: ", file$filename, call. = FALSE)
+          # Recomputed outputs can legitimately be byte-identical. Keep their
+          # immutable member name/cache identity, but record actual new inputs
+          # and the explicitly supplied producing version.
+          assets[[old]]$dependencies <- file$dependencies
+          assets[[old]]$dependencies_explicit <- file$dependencies_explicit
+          assets[[old]]$package_version <- file$package_version
+          assets[[old]]$local_path <- file$local_path
+        }
+        next
+      }
       if (!file$id %in% replace) stop("Explicit replacement required for shard '", file$id, "'.", call. = FALSE)
       assets <- assets[-old]
     }
@@ -171,6 +204,8 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
                    conditions = conditions, assets = assets)
   .validate_catalog(catalog)
   .validate_plan_coverage(assets)
+  if (archive) return(.plan_archive_release(catalog, base, files, replace, metadata, state_directory,
+    max_files, max_bytes, community, catalog_record_id, catalog_concept_doi, max_archive_bytes))
   groups <- list()
   for (group in split(new_files, vapply(new_files, function(x) paste(x$dgm, x$kind, sep = "/"), character(1)))) {
     part <- list(); bytes <- 0
@@ -206,7 +241,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
 .zenodo_request <- function(method, path, token, sandbox = FALSE, body = NULL) {
   url <- paste0(.zenodo_base(sandbox), "/", path)
   # Record metadata has a native representation; file endpoints only accept JSON.
-  accept <- if (grepl("^records(/[0-9]+(/draft)?)?$", path)) "application/vnd.inveniordm.v1+json" else "application/json"
+  accept <- if (grepl("^(user/)?records(/[0-9]+(/draft|/versions/latest)?)?(\\?|$)", path)) "application/vnd.inveniordm.v1+json" else "application/json"
   headers <- httr::add_headers(Authorization = paste("Bearer", token), Accept = accept)
   for (attempt in seq_len(5L)) {
     response <- httr::VERB(method, url, headers, body = body, encode = "json", httr::timeout(180))
@@ -221,7 +256,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
     # Do not print request objects: they contain the authorization header.
     detail <- try(httr::content(response, as = "parsed", type = "application/json", encoding = "UTF-8"), silent = TRUE)
     message <- if (is.list(detail) && .scalar_string(detail$message)) detail$message else "request rejected"
-    stop(structure(list(message = paste0("Zenodo ", method, " failed (HTTP ", status, "): ", message),
+    stop(structure(list(message = paste0("Zenodo ", method, " ", path, " failed (HTTP ", status, "): ", message),
                         call = NULL, status = status, errors = if (is.list(detail)) detail$errors else NULL),
                    class = c("zenodo_http_error", "error", "condition")))
   }
@@ -244,13 +279,20 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
 .save_publication_state <- function(plan, state) {
   path <- file.path(plan$state_directory, "state.json")
   temporary <- paste0(path, ".tmp")
+  backup <- paste0(path, ".previous")
   jsonlite::write_json(state, temporary, auto_unbox = TRUE, pretty = TRUE, null = "null")
-  if (file.exists(path)) file.remove(path)
-  if (!file.rename(temporary, path)) stop("Cannot save publication state.", call. = FALSE)
+  if (file.exists(backup)) unlink(backup)
+  if (file.exists(path) && !file.rename(path, backup)) stop("Cannot preserve previous publication state.", call. = FALSE)
+  if (!file.rename(temporary, path)) {
+    if (file.exists(backup)) file.rename(backup, path)
+    stop("Cannot save publication state.", call. = FALSE)
+  }
+  if (file.exists(backup)) unlink(backup)
 }
 
 .publication_state <- function(plan) {
   path <- file.path(plan$state_directory, "state.json")
+  if (!file.exists(path) && file.exists(paste0(path, ".previous"))) path <- paste0(path, ".previous")
   if (file.exists(path)) jsonlite::read_json(path, simplifyVector = FALSE) else list(groups = list(), catalog_record = NULL)
 }
 
@@ -386,6 +428,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
 #' @rdname publish_benchmark_release
 #' @export
 stage_benchmark_release <- function(plan, token = NULL) {
+  if (identical(plan$catalog$schema_version, 2L)) return(.stage_archive_release(plan, token))
   token <- .publication_token(plan, token)
   state <- .publication_state(plan)
   catalog <- plan$catalog
@@ -422,6 +465,7 @@ stage_benchmark_release <- function(plan, token = NULL) {
 #' @rdname publish_benchmark_release
 #' @export
 verify_benchmark_release <- function(plan, token = NULL) {
+  if (identical(plan$catalog$schema_version, 2L)) return(.verify_archive_release(plan, token))
   token <- .publication_token(plan, token)
   state <- .publication_state(plan)
   for (i in seq_along(plan$groups)) {
@@ -444,6 +488,7 @@ verify_benchmark_release <- function(plan, token = NULL) {
 #' @rdname publish_benchmark_release
 #' @export
 publish_benchmark_release <- function(plan, token = NULL) {
+  if (identical(plan$catalog$schema_version, 2L)) return(.publish_archive_release(plan, token))
   token <- .publication_token(plan, token)
   stage_benchmark_release(plan, token)
   verify_benchmark_release(plan, token)

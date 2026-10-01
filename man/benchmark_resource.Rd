@@ -14,7 +14,8 @@ benchmark_resource(
   package_version = NULL,
   replacement = FALSE,
   measures = NULL,
-  id = NULL
+  id = NULL,
+  dependencies = NULL
 )
 }
 \arguments{
@@ -22,7 +23,7 @@ benchmark_resource(
 
 \item{dgm_name}{DGM name.}
 
-\item{kind}{data, results, measures, metadata, or archive.}
+\item{kind}{data, results, measures, pairwise, metadata, or archive.}
 
 \item{method}{Method identifier for results/measures.}
 
@@ -37,6 +38,8 @@ benchmark_resource(
 \item{measures}{Measures present in a wide measures file.}
 
 \item{id}{Stable logical shard identifier; defaults to DGM/kind/basename.}
+
+\item{dependencies}{Optional IDs of input assets used to compute this asset.}
 }
 \value{
 A file descriptor for plan_benchmark_release.

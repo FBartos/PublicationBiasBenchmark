@@ -75,6 +75,10 @@ Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin
 Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
 The results are downloaded to a local cache directory and are automatically available for subsequent analysis.
 You only need to download them once, for each release. A newer release reuses unchanged cached files.
+Archive-backed releases fetch results ZIPs only for the selected DGM, method and
+setting. Each ZIP preserves separate worker CSV shards and their producing versions;
+retrieval combines those shards automatically. A condition filter during retrieval
+can select rows from a previously downloaded method/setting archive.
 The download function will display progress information and the total size of files being downloaded. 
 
 ## Retrieving Precomputed Results

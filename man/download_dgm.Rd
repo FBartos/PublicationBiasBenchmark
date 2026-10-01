@@ -72,6 +72,8 @@ download_dgm_metadata(
 Invisible TRUE on success or FALSE when an interactive download is declined.
 }
 \description{
-Download immutable catalog-selected files. Each file is checked
-against its size, SHA-256, and MD5. Public downloads require no token.
+Download immutable catalog-selected direct files or ZIP units.
+Archives and extracted members are checked against size, SHA-256 and MD5.
+A condition/metric filter may fetch other members of its selected unit.
+Public downloads require no token; verified member caches avoid new downloads.
 }

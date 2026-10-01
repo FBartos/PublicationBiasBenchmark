@@ -22,14 +22,14 @@ test_that("native licenses are retained before staging and unsupported fields ar
   expect_identical(.create_component_record(plan, "Title", "Description", "test-token"), "12345")
   plan$metadata <- list()
   expect_error(.create_component_record(plan, "Title", "Description", "test-token"), "Include a license")
-  expect_error(plan_benchmark_release("test.1", list(), metadata = list(licenses = rights),
+  expect_error(legacy_plan_benchmark_release("test.1", list(), metadata = list(licenses = rights),
     state_directory = withr::local_tempdir()), "metadata\\$rights")
 })
 
 test_that("release verification checks licenses in saved staged records", {
   root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
   rights <- list(list(id = "cc-by-4.0"))
-  plan <- plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
+  plan <- legacy_plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
     metadata = list(rights = rights), state_directory = file.path(root, "state"))
   record <- list(metadata = list())
   local_mocked_bindings(
@@ -48,40 +48,40 @@ test_that("plans reuse existing bytes and require explicit corrections", {
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
   metadata <- list(creators = list(list(person_or_org = list(name = "Tester", type = "organizational"))))
   base <- test_catalog(list(a))
-  plan <- plan_benchmark_release("test.2", list(a), previous = base, metadata = metadata,
+  plan <- legacy_plan_benchmark_release("test.2", list(a), previous = base, metadata = metadata,
                                  state_directory = file.path(root, "unchanged"))
   expect_length(plan$groups, 0)
   expect_identical(plan$catalog$assets[[1]]$record_id, "12345")
   corrected <- test_resource(root, "A.csv", ids = 3:4)
-  expect_error(plan_benchmark_release("test.2", list(corrected), previous = base, metadata = metadata,
+  expect_error(legacy_plan_benchmark_release("test.2", list(corrected), previous = base, metadata = metadata,
     state_directory = file.path(root, "correction")), "Explicit replacement")
-  plan <- plan_benchmark_release("test.2", list(corrected), previous = base, replace = a$id,
+  plan <- legacy_plan_benchmark_release("test.2", list(corrected), previous = base, replace = a$id,
     metadata = metadata, state_directory = file.path(root, "correction"))
   expect_length(plan$groups, 1)
   expect_identical(base$assets[[1]]$sha256, a$sha256)
   overlap <- test_resource(root, "other.csv", ids = 4:5)
-  expect_error(plan_benchmark_release("test.3", list(corrected, overlap), conditions = base$conditions,
+  expect_error(legacy_plan_benchmark_release("test.3", list(corrected, overlap), conditions = base$conditions,
     metadata = metadata, state_directory = file.path(root, "overlap")), "Overlapping")
   conditions <- base$conditions; conditions$no_bias$mean_effect[1] <- 1
-  expect_error(plan_benchmark_release("test.3", list(), previous = base, conditions = conditions,
+  expect_error(legacy_plan_benchmark_release("test.3", list(), previous = base, conditions = conditions,
     metadata = metadata, state_directory = file.path(root, "changed-conditions")), "frozen condition")
 })
 
 test_that("packing respects both file and byte quotas and rejects changed sources", {
   root <- withr::local_tempdir(); assets <- lapply(1:5, function(i) test_resource(root, paste0(i, ".csv"), ids = (2*i-1):(2*i)))
-  plan <- plan_benchmark_release("test.1", assets, conditions = test_catalog(assets)$conditions,
+  plan <- legacy_plan_benchmark_release("test.1", assets, conditions = test_catalog(assets)$conditions,
     metadata = list(), state_directory = file.path(root, "state"), max_files = 2)
   expect_equal(lengths(plan$groups), c(2L, 2L, 1L))
-  expect_error(plan_benchmark_release("test.1", assets, conditions = plan$catalog$conditions,
+  expect_error(legacy_plan_benchmark_release("test.1", assets, conditions = plan$catalog$conditions,
     metadata = list(), state_directory = file.path(root, "small"), max_bytes = 1), "file exceeds")
   writeLines("changed", assets[[1]]$local_path)
-  expect_error(plan_benchmark_release("test.1", assets, conditions = plan$catalog$conditions,
+  expect_error(legacy_plan_benchmark_release("test.1", assets, conditions = plan$catalog$conditions,
     metadata = list(), state_directory = file.path(root, "changed")), "Unverified local")
 })
 
 test_that("interrupted commits resume without uploading completed files or publishing twice", {
   root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
-  plan <- plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
+  plan <- legacy_plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
     metadata = list(), state_directory = file.path(root, "state"))
   entries <- list(); remote <- list(); published <- character(); uploads <- 0L; creations <- 0L; interrupt <- TRUE
   local_mocked_bindings(
