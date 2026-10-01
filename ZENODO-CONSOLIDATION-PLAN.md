@@ -79,6 +79,14 @@ release `2026.1`, all record/concept DOIs and all native version indices stayed
 unchanged. The superseded filename entries were removed after the corrected
 catalog was publicly verified, and a fresh default package download passed.
 
+Final implementation hardening reuses parsed, validated catalogs by SHA-256
+while verifying cached bytes on every lookup and bounding the in-memory cache
+to two snapshots. Pull-request website builds use read-only permissions;
+deployment runs in a separate job only for trusted events. The README's package
+citation is generated from CITATION with synchronized authors, year and version.
+The user requested that PR 11 remain ready for review, so the release guide's
+public website deployment follows the eventual merge.
+
 The preliminary schema-1 source catalog referenced these same 2,216 assets
 across 40 storage records. Its SHA-256 was
 `40e72cdf642a023956e53c3e58117ba6c23840e56f5f7d394cf8d47360f1e07f`.

@@ -42,4 +42,5 @@ benchmark_conditions returns the release's frozen condition data frame.
 Benchmark releases are complete catalogs of immutable files.
 Public downloads do not require a Zenodo token. A package release pins its
 default catalog; another release or a local catalog can be selected explicitly.
+Parsed catalogs are reused by content hash; cached bytes are verified before use.
 }

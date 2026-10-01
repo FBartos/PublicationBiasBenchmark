@@ -2,6 +2,7 @@
 #' @description Benchmark releases are complete catalogs of immutable files.
 #' Public downloads do not require a Zenodo token. A package release pins its
 #' default catalog; another release or a local catalog can be selected explicitly.
+#' Parsed catalogs are reused by content hash; cached bytes are verified before use.
 #' @param release Benchmark release identifier, path to a catalog JSON file, or
 #' a catalog list. NULL uses the benchmark_release package option.
 #' @param dgm_name DGM name (optional when listing resources).
@@ -13,6 +14,30 @@
 #' benchmark_conditions returns the release's frozen condition data frame.
 #' @name benchmark_catalog
 NULL
+
+.catalog_cache <- new.env(parent = emptyenv())
+.catalog_cache$keys <- character()
+.catalog_cache$values <- list()
+
+.read_validated_catalog <- function(path, expected_sha256 = NULL) {
+  bytes <- readBin(path, "raw", n = file.info(path)$size)
+  sha256 <- digest::digest(bytes, algo = "sha256", serialize = FALSE)
+  if (!is.null(expected_sha256) && !identical(sha256, expected_sha256))
+    stop("Catalog checksum changed before parsing.", call. = FALSE)
+  catalog <- .catalog_cache$values[[sha256]]
+  if (is.null(catalog)) {
+    json <- rawToChar(bytes)
+    Encoding(json) <- "UTF-8"
+    catalog <- .validate_catalog(jsonlite::fromJSON(json, simplifyVector = FALSE))
+    .catalog_cache$values[[sha256]] <- catalog
+  }
+  # Keep the two most recently used snapshots for current/previous comparisons.
+  # The cache contains only objects validated from these exact hashed bytes.
+  keys <- unique(c(sha256, .catalog_cache$keys))
+  .catalog_cache$keys <- keys[seq_len(min(length(keys), 2L))]
+  .catalog_cache$values <- .catalog_cache$values[.catalog_cache$keys]
+  catalog
+}
 
 .release_registry <- function() {
   path <- system.file("extdata", "benchmark-releases.json", package = "PublicationBiasBenchmark")
@@ -80,7 +105,7 @@ benchmark_catalog <- function(release = NULL) {
   if (is.null(release)) release <- PublicationBiasBenchmark.get_option("benchmark_release")
   if (is.list(release)) return(.validate_catalog(release))
   if (.scalar_string(release) && file.exists(release))
-    return(.validate_catalog(jsonlite::read_json(release, simplifyVector = FALSE)))
+    return(.read_validated_catalog(release))
   registry <- .release_registry()
   if (is.null(release)) release <- registry$default_release
   if (!.scalar_string(release)) stop("No published benchmark release has been configured.", call. = FALSE)
@@ -90,7 +115,7 @@ benchmark_catalog <- function(release = NULL) {
   cached <- file.path(.get_path(), "releases", release, "release.json")
   .fetch_verified(.zenodo_file_url(entry$record_id, "release.json"), cached,
                   sha256 = entry$catalog_sha256, progress = FALSE)
-  catalog <- .validate_catalog(jsonlite::read_json(cached, simplifyVector = FALSE))
+  catalog <- .read_validated_catalog(cached, entry$catalog_sha256)
   if (!identical(catalog$release, release)) stop("Catalog release ID does not match its registry entry.", call. = FALSE)
   catalog
 }

@@ -1,32 +1,33 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
-on:
+'on':
   push:
     branches: [main, master]
-  pull_request_target:
+  pull_request:
+    branches: [main, master]
   release:
     types: [published]
   workflow_dispatch:
 
 name: pkgdown
 
-permissions: read-all
+permissions:
+  contents: read
+
+concurrency:
+  group: pkgdown-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    environment: external-pr-testing
-    # Only restrict concurrency for non-PR jobs
-    concurrency:
-      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -53,8 +54,34 @@ jobs:
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
+      - name: Upload site
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-site
+          path: docs
+          include-hidden-files: true
+
+  deploy:
+    needs: pkgdown
+    if: >-
+      github.event_name == 'release' ||
+      (github.event_name != 'pull_request' &&
+       github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Download site
+        uses: actions/download-artifact@v4
+        with:
+          name: pkgdown-site
+          path: docs
+
       - name: Deploy to GitHub pages 🚀
-        if: github.event_name != 'pull_request_target'
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           clean: false

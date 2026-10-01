@@ -6,6 +6,9 @@
  - Reject frozen-DGM growth and stale results/measures after input corrections; preserve per-worker producing versions.
  - Consolidated release 2026.1 into five DGM storage records with 266 independent ZIPs, verified the replacement catalog checksum and withdrew the 40 superseded storage records.
  - Clarified ZIP names with dataset condition ranges and original source tables; number all ambiguous split parts consistently from 001.
+ - Cache parsed, validated catalogs by their exact SHA-256 while continuing to verify cached bytes before use.
+ - Build pull request websites with read-only permissions and publish only from a separate trusted deployment job.
+ - Generate the README package citation from CITATION so its authors, year and version stay synchronized.
 
 # PublicationBiasBenchmark 0.4.0
 ## Features

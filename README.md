@@ -44,10 +44,10 @@ For the methodology of living synthetic benchmarks please cite:
 
 For the publication bias benchmark R package please cite:
 
-> Bartoš, F., Pawel, S., & Siepe, B. S. (2025).
-> PublicationBiasBenchmark: Benchmark for publication bias correction
-> methods (version 0.4.0).
-> <https://github.com/FBartos/PublicationBiasBenchmark>
+> Bartoš F, Pawel S, Siepe BS, Čala P (2026). *PublicationBiasBenchmark:
+> Benchmark for publication bias correction methods*. version
+> 0.5.0.9000,
+> <https://cran.r-project.org/package=PublicationBiasBenchmark>.
 
 Overviews of the benchmark results are available as articles on the
 package website:
