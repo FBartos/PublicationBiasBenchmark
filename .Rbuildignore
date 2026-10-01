@@ -20,3 +20,4 @@ README.html
 ^\.positai$
 ^\.claude$
 ^\.Renviron$
+^ZENODO-CONSOLIDATION-PLAN\.md$
