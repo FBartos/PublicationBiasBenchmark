@@ -1,66 +1,83 @@
 # Zenodo community and storage consolidation plan
 
-Date: 2026-10-01, revised the same day after review. Status: implementation on
-`codex/zenodo-consolidation`; production checkpoints remain pending.
+Date: 2026-10-01, revised the same day after review. Status: release `2026.1`
+published and verified; all 40 superseded storage records withdrawn. The full
+implementation is in PR 11 on `codex/zenodo-consolidation`. Initial-release
+replacement and withdrawal were explicitly authorized by the user.
 
 ## Objective and scope
 
 Give PublicationBiasBenchmark a permanent Zenodo community home, a clear release
 history and a small number of meaningful storage records. Publish cumulative
 releases by adding only new or corrected download units. Preserve all existing
-results, their provenance and the ability to select an exact historical release.
+results and their provenance. The final initial release is `2026.1`; the
+preliminary direct-file uploads are superseded before the package PR is merged.
+Future releases preserve exact historical snapshots through native versioning.
 
-This is a handoff for an agent on another machine. Implement the package reader,
-publisher, documentation and production consolidation described below. Adding
-this plan did not change published records or settings. One-off migration
+This plan records the agreed package reader, publisher, documentation and
+production consolidation. The implementation and final publication evidence
+are recorded below. One-off migration
 scripts, credentials, downloaded data, ZIPs and publication state must stay
 outside Git. Reusable package functions and their tests belong in the
-repository. Production records mint permanent DOIs that cannot be deleted, so
-stop for the user's explicit approval at both checkpoints in the execution order.
+repository. DOI identifiers remain persistent even when a superseded record is
+withdrawn. The user explicitly approved replacement of the preliminary catalog
+and withdrawal of the 40 old storage records after replacement verification.
 
-## Current state and portable starting point
+## Published state and source inventory
 
 - Repository: <https://github.com/FBartos/PublicationBiasBenchmark>.
-- Branch `codex/zenodo-migration` holds this plan; its last code commit is
-  `bf1022a`.
-- PR <https://github.com/FBartos/PublicationBiasBenchmark/pull/10> publishes and
-  pins release `2026.1`. It was still open at the implementation check. The
-  consolidation branch uses that verified code as its baseline and keeps new
-  work out of PR 10. Reconcile the new PR's base after PR 10 is merged.
+- Branch `codex/zenodo-consolidation` contains the full implementation, including
+  the original migration from `codex/zenodo-migration`.
+- PR <https://github.com/FBartos/PublicationBiasBenchmark/pull/11> consolidates
+  the migration and ZIP/versioning implementation in one PR against `master`.
+  PR 10 was closed as superseded; PR 11 contains all of its commits and changes.
 - Baseline package version: `0.4.0`; implementation development version:
-  `0.5.0.9000`; default benchmark release remains `2026.1` pending verification
-  and approval of a production consolidation release.
+  `0.5.0.9000`; default benchmark release is the verified consolidated `2026.1`.
 - Catalog: <https://zenodo.org/records/23070787>, version DOI
   `10.5281/zenodo.23070787`, concept DOI `10.5281/zenodo.23070786`.
 - Public catalog file:
   <https://zenodo.org/records/23070787/files/release.json?download=1>.
 - Catalog SHA-256:
-  `40e72cdf642a023956e53c3e58117ba6c23840e56f5f7d394cf8d47360f1e07f`.
+  `6f80176c04630d9c0d822b051ef9f5d4cf0e55e527baa6cae3164444359f7599`.
 - Registry: `inst/extdata/benchmark-releases.json`.
-- The catalog references 2,216 payload files across 40 storage records, about
-  28.098 GB uncompressed. There is also one catalog record: 41 records in total,
-  each with a version DOI and a concept DOI. DOIs are assigned to records, not
-  each file.
+- The catalog references 2,216 logical assets in 266 ZIPs across five DGM
+  storage records: 10.100 GB compressed and 28.098 GB uncompressed. Including
+  the catalog, there are six active record families. DOIs identify records,
+  not individual files.
 - All 1,965 original OSF files are preserved, alongside canonical metadata and
   derived per-method measures. Public bytes were verified against sizes, SHA-256
-  and MD5; all 41 records have CC BY 4.0 recorded in native `metadata.rights`.
+  and MD5; all six active records have CC BY 4.0 in native `metadata.rights`.
 - The five DGMs are `no_bias`, `Alinaghi2018`, `Bom2019`, `Carter2019` and
   `Stanley2017`.
 - In `2026.1`, results are one CSV per DGM/method/setting (largest 362 MB),
   measures are one CSV per DGM/method/setting/variant, and no pairwise measure
   assets exist.
-- The records currently link to OSF provenance, but lack explicit release/storage
-  `isPartOf` and `hasPart` relationships and community membership.
-- The current publisher (`R/upload.R`) creates a new catalog record for every
-  release and new component records for every batch. It has no native
-  versioning, file import, file deletion or community support yet.
+- All six active families retain OSF provenance, have explicit release/storage
+  `isPartOf` and `hasPart` relationships, and belong to the project community.
+- The publisher supports native versions, importing unchanged ZIPs, draft file
+  deletion, resumable uploads, community inclusion and public verification.
 
-Use the verified public `2026.1` catalog and its file references as the source
-inventory. It is available through `benchmark_catalog("2026.1")`; every resource
-kind, including `metadata` and `archive`, must be considered. Do not depend on
-ignored migration files from the original machine, and do not repeat simulations
-or require OSF uploads. If a referenced public file is unavailable or fails its
-hash, stop that migration step and report the exact affected asset.
+| DGM | Storage record | Concept DOI |
+| --- | --- | --- |
+| `no_bias` | [23084892](https://zenodo.org/records/23084892) | `10.5281/zenodo.23084891` |
+| `Alinaghi2018` | [23084300](https://zenodo.org/records/23084300) | `10.5281/zenodo.23084299` |
+| `Bom2019` | [23084514](https://zenodo.org/records/23084514) | `10.5281/zenodo.23084513` |
+| `Carter2019` | [23084605](https://zenodo.org/records/23084605) | `10.5281/zenodo.23084604` |
+| `Stanley2017` | [23084850](https://zenodo.org/records/23084850) | `10.5281/zenodo.23084849` |
+
+Every public ZIP and all 2,216 members passed size, SHA-256 and MD5 verification.
+Anonymous dataset, result and measure retrieval matched the original values
+for all five DGMs. Each of the 40 superseded records was checked against the
+source inventory immediately before withdrawal and confirmed retired afterward.
+The community includes all six active families; its About/curation pages were
+updated and its access/review settings preserved.
+
+The preliminary schema-1 source catalog referenced these same 2,216 assets
+across 40 storage records. Its SHA-256 was
+`40e72cdf642a023956e53c3e58117ba6c23840e56f5f7d394cf8d47360f1e07f`.
+The complete inventory, including `metadata` and `archive`, was verified before
+packing without repeating simulations or requiring OSF uploads. The public
+`benchmark_catalog("2026.1")` now resolves the final schema-2 snapshot.
 
 The original machine has optional local audit/state files beneath
 `resources/migration/`, including `publication/plan.rds` and `publication/state.json`.
@@ -139,7 +156,7 @@ Split at member boundaries. Reject a single oversized member with an informative
 error; splitting its containing unit cannot make that member fit. Keep established
 dataset chunk membership where possible, reusing unchanged chunks during corrections.
 
-Estimated from the `2026.1` catalog, with data chunks in parentheses:
+Verified final packing, with data chunks in parentheses:
 
 | DGM | ZIPs |
 | --- | --- |
@@ -152,8 +169,8 @@ Estimated from the `2026.1` catalog, with data chunks in parentheses:
 Each record keeps 43-54 free file slots, roughly 20 more method/settings per DGM
 at two ZIPs each. The largest DGM, `Carter2019`, holds about 12.4 GB
 uncompressed: 8.66 GB of datasets and 3.60 GB of results. The `archive` kind is
-only 0.28 GB across all DGMs. Recalculate exact archive counts and compressed
-sizes during implementation; these estimates do not promise unlimited growth.
+only 0.28 GB across all DGMs. These counts leave room for future methods, while
+each future publication must still pass the quota checks.
 
 ### Versioning
 
@@ -176,23 +193,28 @@ for a DGM references that version's record ID, including archives first
 uploaded to an earlier version; imported bytes and hashes are identical. This
 keeps `hasPart` exact and makes the snapshot each release uses unambiguous.
 
-### Catalog family and historical records
+### Final initial release and superseded uploads
 
-Continue the existing catalog family rooted at record `23070787` using native
-versioning (`POST /records/{id}/versions`), not the current publisher's
-new-record path. The first consolidated catalog is a **new benchmark release**
-with a new release identifier and version DOI. Retain `2026.1` and its hash
-unchanged in the package registry. Inspect existing remote versions/drafts
-before choosing the next release identifier; `2026.2` is a candidate, not a
-reserved identifier. Future catalogs are complete cumulative snapshots even
-though payload uploads contain only changed units.
+Retain catalog record `23070787` and its version/concept DOIs. Replace its
+preliminary schema-1 `release.json` with the verified archive-backed `2026.1`
+catalog through Zenodo's supported grace-period file-modification workflow.
+This is a one-off initial-release correction, not the normal future publisher.
+Its checksum changes; update the sole package registry entry after public
+verification. Development checkouts pinned to the old checksum cannot fetch
+the replacement catalog. Preserve the original catalog and complete source
+inventory locally for the migration audit.
 
-The current 40 storage records and their DOIs remain historical. Consolidation
-creates a new active layout; it cannot erase previously minted identifiers or
-make global Zenodo search contain only six records. Do not delete, withdraw,
-restrict or overwrite the existing baseline to improve search appearance.
-Consolidation re-uploads every `2026.1` payload, compressed, into the new
-families, which stay on Zenodo permanently alongside the historical records.
+Publish the five DGM storage families and verify every anonymous public ZIP and
+member before replacing the catalog. Then verify fresh package reads. Only
+after those checks, withdraw the 40 superseded storage records as explicitly
+authorized by the user. Their DOI citations remain as tombstones; they are not
+erased or reused. Verify each old record contains only its inventoried source
+files before withdrawal, and do not submit support requests outside the
+owner's immediate-deletion policy.
+
+Future releases use native new catalog/storage versions and complete cumulative
+snapshots. Their payload uploads contain only changed units, and their published
+historical snapshots are retained.
 
 ### Quotas
 
@@ -218,12 +240,12 @@ requires. Keep source archives and metadata separate from normal downloads.
 Use predictable unique ZIP names, for example:
 
 ```text
-Carter2019--data--c0001-0180--2026.2.zip
-Carter2019--results--RMA--default--2026.2.zip
-Carter2019--measures--RMA--default--2026.2.zip
-Carter2019--pairwise--2026.3.zip
-Carter2019--metadata--2026.2.zip
-Carter2019--archive--2026.2.zip
+Carter2019--data--c0001-0180--2026.1.zip
+Carter2019--results--RMA--default--2026.1.zip
+Carter2019--measures--RMA--default--2026.1.zip
+Carter2019--pairwise--2026.2.zip
+Carter2019--metadata--2026.1.zip
+Carter2019--archive--2026.1.zip
 ```
 
 The suffix names the release that first published that revision of the unit.
@@ -250,8 +272,8 @@ sufficient.
 ## Catalog schema and package reader changes
 
 Introduce a versioned catalog extension, preferably schema version 2, while
-retaining support for current schema version 1 and its direct CSV downloads.
-An old release remains usable explicitly after the default changes.
+retaining support for schema version 1 and its direct CSV downloads. Future
+published releases remain usable explicitly after the default changes.
 
 Keep logical `assets` and their IDs, coverage, row counts, hashes, method fields,
 replacement/measure metadata and generation provenance. Add a physical archive
@@ -316,8 +338,8 @@ advertised slug support. Follow actual returned links and response schemas.
 
 Include the existing catalog family and the consolidated DGM storage families in
 the community, and use PublicationBiasBenchmark as their branded community. Keep
-the historical storage records accessible through the old catalog; there is no
-need to populate the community with every historical storage part immediately.
+the superseded initial storage records out of the community and withdraw them
+after the replacement is verified. Future historical versions remain accessible.
 Use consistent titles and keywords identifying DGM, release and storage role.
 Native version families should provide coherent history instead of one unrelated
 record family per update.
@@ -410,15 +432,17 @@ Execute in this order:
    and the existing catalog family, and set branding. Confirm actual accepted
    membership, not merely a successful submission response. Confirm native
    rights and `isPartOf` relationships. Retry incomplete steps from saved state.
-7. Create the new catalog version in the family rooted at `23070787`, with its
+7. For this initial replacement, edit the existing catalog `23070787` through
+   the supported grace-period workflow, keeping release `2026.1` and adding its
    `hasPart` relationships. Publish it only after the payload and community
    checks pass. Verify its public bytes/hash, rights, relationships and
    membership. Run fresh anonymous package downloads from the new catalog in an
    isolated cache.
-8. **Checkpoint 2: user approval.** Report the release DOI/hash and verification
-   evidence. Only after approval, add the verified registry entry, retain the old
-   entry and change the package default. Update release/package metadata and
-   documentation to the actual published identifiers and versions.
+8. Report the release DOI/hash and verification evidence; update the `2026.1`
+   registry entry to the replacement checksum. Withdraw the 40 superseded
+   storage records under the user's explicit authorization, confirming that
+   replacement data remains publicly readable and each old record is retired.
+   Update package metadata and documentation to the actual published state.
 
 Publishing payloads before the catalog is a recoverable intermediate state. A
 failed inclusion or verification must not advertise an incomplete new default.
@@ -433,7 +457,7 @@ replacement mechanism for logical corrections, including dependent measures.
 | `R/download.R` | Archive-aware selection/downloads and unchanged retrieval interfaces |
 | `R/upload.R` | Unit ZIP planning and persistence, DGM families, native catalog/storage versions, files-import and deletion, relationships, community workflow, frozen-DGM checks and state recovery |
 | `R/prepare-resources.R` | Preserve distributed shard preparation and provenance handling |
-| `inst/extdata/benchmark-releases.json` | Preserve 2026.1 and pin the verified new release |
+| `inst/extdata/benchmark-releases.json` | Pin the verified consolidated 2026.1 catalog checksum |
 | `tests/testthat/test-downloads.R` | Reader, selection, integrity, cache reuse and backwards compatibility tests |
 | `tests/testthat/test-release-publication.R` | Packing, unit replacement, version import, metadata and recovery tests |
 | `vignettes/Benchmark_Releases.Rmd` | Replace the current raw-file/many-record explanation with the agreed layout |
@@ -445,7 +469,7 @@ coverage, cache or publication logic. Keep migration-only scripts outside Git.
 
 ## Acceptance and verification
 
-- Both the old schema-1 `2026.1` catalog and the new archive-backed catalog work.
+- Schema-1 compatibility fixtures and the final archive-backed `2026.1` catalog work.
 - Each of the three download selections fetches only the allowed DGM/kind/method
   archives. A dataset condition filter fetches only the data archives containing
   that condition. Settings/replacement filters work, and pairwise tables stay a
@@ -471,7 +495,7 @@ coverage, cache or publication logic. Keep migration-only scripts outside Git.
   cache reuse work on Windows and Linux.
 - Public record pages show consistent community branding, useful titles and
   release relationships. The About page explains where to start and how to cite.
-- Both user checkpoints were passed with explicit approval.
+- The initial-release replacement and old-record withdrawal have explicit user approval.
 - Run the relevant package tests, R CMD check and a package website build with
   the result articles, then confirm existing CI checks. Use small fixtures for
   routine automated tests; production audit covers the full migrated inventory.

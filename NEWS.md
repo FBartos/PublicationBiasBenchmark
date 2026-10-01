@@ -4,7 +4,7 @@
  - Added complete download-unit packing, persisted ZIP builds and per-DGM quota reports.
  - Added native storage/catalog versioning, file import and superseded ZIP removal, resumable community inclusion and DOI relationships.
  - Reject frozen-DGM growth and stale results/measures after input corrections; preserve per-worker producing versions.
- - The verified 2026.1 release remains the package default pending production consolidation and approval.
+ - Consolidated release 2026.1 into five DGM storage records with 266 independent ZIPs, verified the replacement catalog checksum and withdrew the 40 superseded storage records.
 
 # PublicationBiasBenchmark 0.4.0
 ## Features

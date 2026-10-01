@@ -114,3 +114,22 @@ test_that("catalog preflight rejects concurrent releases before storage mutation
   drafts <- list(list(id = "3", metadata = list(title = "Other release")))
   expect_error(.reconcile_catalog_base(plan, "test-token"), "unrelated catalog draft")
 })
+
+test_that("native tags use subjects and read-only vocabulary fields are not resubmitted", {
+  plan <- list(sandbox = TRUE, catalog = list(release = "test.1"),
+    metadata = list(rights = list(list(id = "cc-by-4.0", icon = "cc-by-icon")), keywords = list("legacy-tag")))
+  metadata <- .record_metadata(plan, "Title", "Description")
+  expect_null(metadata$keywords)
+  expect_true("legacy-tag" %in% vapply(metadata$subjects, `[[`, character(1), "subject"))
+  posted <- NULL
+  local_mocked_bindings(.zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+    if (method == "GET") return(list(metadata = metadata, access = list(record = "public", files = "public",
+      embargo = list(active = FALSE, reason = NULL))))
+    posted <<- body
+    list(metadata = body$metadata, errors = list(list(field = "files.enabled", messages = list("Missing uploaded files."))))
+  })
+  .update_draft_metadata(plan, "1", metadata, "test-token")
+  expect_null(posted$files)
+  expect_identical(posted$metadata$rights, list(list(id = "cc-by-4.0")))
+  expect_null(posted$access$embargo$reason)
+})

@@ -24,7 +24,10 @@
   metadata <- plan$metadata
   if (!length(metadata$rights)) stop("Include a license in metadata$rights before staging a release.", call. = FALSE)
   metadata$title <- title; metadata$description <- description; metadata$version <- plan$catalog$release
-  metadata$keywords <- as.list(unique(c(unlist(metadata$keywords), "PublicationBiasBenchmark", plan$catalog$release)))
+  tags <- unique(c(unlist(metadata$keywords), "PublicationBiasBenchmark", plan$catalog$release))
+  metadata$keywords <- NULL
+  metadata$subjects <- unname(c(metadata$subjects, lapply(tags, function(x) list(subject = x))))
+  metadata$subjects <- metadata$subjects[!duplicated(vapply(metadata$subjects, function(x) x$subject, character(1)))]
   metadata$resource_type <- list(id = "dataset")
   if (is.null(metadata$publisher)) metadata$publisher <- "Zenodo"
   if (is.null(metadata$publication_date)) metadata$publication_date <- as.character(Sys.Date())
@@ -42,6 +45,12 @@
   inherited_metadata <- draft$metadata
   for (field in names(metadata)) inherited_metadata[field] <- metadata[field]
   metadata <- inherited_metadata
+  # Native GET responses expand controlled vocabularies with UI-only fields.
+  # Submit identifiers, not those read-only expansions, when editing a record.
+  if (length(metadata$rights)) metadata$rights <- lapply(metadata$rights, function(right) {
+    if (!is.null(right$id)) list(id = right$id) else right
+  })
+  if (!is.null(metadata$resource_type$id)) metadata$resource_type <- list(id = metadata$resource_type$id)
   inherited <- draft$metadata$related_identifiers
   related <- c(inherited, metadata$related_identifiers)
   if (length(related)) {
@@ -49,10 +58,21 @@
     if (any(vapply(metadata$related_identifiers, function(x) identical(x$relation_type$id, "haspart"), logical(1))))
       related <- c(Filter(function(x) !identical(x$relation_type$id, "haspart"), inherited), metadata$related_identifiers)
     related <- related[!duplicated(vapply(related, function(x) paste(x$identifier, x$relation_type$id, sep = "/"), character(1)))]
-    metadata$related_identifiers <- unname(related)
+    metadata$related_identifiers <- unname(lapply(related, function(x) {
+      if (!is.null(x$relation_type$id)) x$relation_type <- list(id = x$relation_type$id)
+      x
+    }))
+  }
+  access <- list(record = draft$access$record, files = draft$access$files)
+  if (!is.null(draft$access$embargo)) {
+    access$embargo <- Filter(Negate(is.null), draft$access$embargo)
   }
   result <- .zenodo_request("PUT", paste0("records/", id, "/draft"), token, plan$sandbox,
-    list(metadata = metadata, access = draft$access, files = list(enabled = TRUE)))
+    list(metadata = metadata, access = access))
+  errors <- Filter(function(x) !(identical(x$field, "files.enabled") &&
+    all(unlist(x$messages) %in% "Missing uploaded files.")), result$errors)
+  if (length(errors)) stop("Zenodo draft metadata validation failed: ",
+    paste(vapply(errors, function(x) paste0(x$field, ": ", paste(unlist(x$messages), collapse = "; ")), character(1)), collapse = ", "), call. = FALSE)
   .verify_record_rights(result, plan$metadata)
   result
 }
@@ -216,7 +236,7 @@
     title <- paste0("PublicationBiasBenchmark: ", dgm, " storage (", catalog$release, ")")
     description <- "Benchmark storage snapshot. Download datasets by DGM and results or measures by method/setting using PublicationBiasBenchmark. Cite the exact benchmark release catalog version DOI. Original source provenance and generation versions are preserved in that catalog."
     metadata <- .record_metadata(plan, title, description, related)
-    metadata$keywords <- as.list(unique(c(unlist(metadata$keywords), dgm, "benchmark-storage")))
+    metadata$subjects <- unname(c(metadata$subjects, list(list(subject = dgm), list(subject = "benchmark-storage"))))
     id <- .ensure_family_version(plan, key, base_id, title, description, metadata, token)
     archives <- Filter(function(x) identical(x$dgm, dgm), catalog$archives)
     if (!.record_is_published(plan, id, token)) {

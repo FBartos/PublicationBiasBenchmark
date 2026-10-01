@@ -39,8 +39,8 @@ download_dgm_measures("no_bias", method = "RMA", release = release)
 measures <- retrieve_dgm_measures("no_bias", method = "RMA", release = release)
 ```
 
-Release `2026.1` uses direct CSV downloads (catalog schema 1). Schema-2 releases
-use one storage family per DGM, with separate ZIPs for datasets, each method/setting's
+Release `2026.1` uses catalog schema 2 and one storage family per DGM,
+with separate ZIPs for datasets, each method/setting's
 results, each method/setting's measures, metadata and the original source archive.
 Ordinary and replacement measures share a ZIP; pairwise tables require an explicit
 `measure = "pairwise"` selection. Individual distributed CSV shards keep their
@@ -49,7 +49,8 @@ original bytes inside each ZIP and are combined by the retrieval functions.
 A dataset condition filter can download other conditions in its containing ZIP,
 potentially all of a small DGM's datasets. A measure filter can download other
 measure columns and both replacement variants for the selected method/setting.
-These downloads never include another DGM's datasets or another method's ordinary
+The reader also supports schema-1 direct-file catalogs. These downloads never
+include another DGM's datasets or another method's ordinary
 results/measures. Sharing a Zenodo record never forces downloading its other ZIPs.
 ZIPs are capped at 2,000,000,000 uncompressed bytes and split at file boundaries.
 An individual larger file must be prepared as smaller worker shards.
@@ -165,8 +166,10 @@ the package version building a ZIP is recorded separately.
 Use `ZENODO_SANDBOX_TOKEN` with `sandbox = TRUE` and a dedicated sandbox community
 for integration tests; the production community UUID does not exist there.
 Before production publication, review the persisted packing report, complete
-asset audit, proposed metadata and sandbox evidence. Production writes and the
-subsequent package-default switch have separate user approval checkpoints.
+asset audit, proposed metadata and sandbox evidence. The initial consolidation
+was authorized as a replacement of the preliminary `2026.1` uploads: the catalog
+retains its DOI with a new checksum, and the 40 old storage records are withdrawn
+only after replacement verification. Their DOI pages remain tombstones.
 
 After verified publication and approval, add `entry` to `inst/extdata/benchmark-releases.json` and set
 `default_release` for the next package release. A catalog file can also be used
@@ -175,10 +178,14 @@ distinct release identifiers; only one maintainer publishes a given plan.
 
 ## OSF baseline
 
-The verified baseline is [release 2026.1](https://doi.org/10.5281/zenodo.23070787),
-the default benchmark release in package version 0.4.0. Its catalog references
-2,216 files across 40 component records (28.098 GB), including all 1,965 original
-OSF files. The catalog is a separate Zenodo record.
+The verified baseline is [release 2026.1](https://doi.org/10.5281/zenodo.23070787).
+Its catalog references 2,216 logical files in 266 ZIPs across five DGM storage
+records: 10.100 GB compressed and 28.098 GB uncompressed, including all 1,965
+original OSF files. The catalog is a separate Zenodo record. Preliminary
+direct-file uploads were superseded before the package PR was merged; their
+40 storage records were withdrawn after verifying the consolidated replacement.
+Development checkouts pinned to the preliminary catalog checksum cannot fetch
+the replacement catalog; update to the consolidated registry entry.
 
 The migration retains every original OSF file and source hash. Original mixed
 method measure tables remain in `archive`; per-method tables provide the public
