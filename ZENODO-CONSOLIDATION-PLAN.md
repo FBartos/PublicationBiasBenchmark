@@ -38,7 +38,7 @@ and withdrawal of the 40 old storage records after replacement verification.
 - Public catalog file:
   <https://zenodo.org/records/23070787/files/release.json?download=1>.
 - Catalog SHA-256:
-  `6f80176c04630d9c0d822b051ef9f5d4cf0e55e527baa6cae3164444359f7599`.
+  `cfc79db6b6c29062848603d0703004d68414928df7b0eee01db54803287fa99e`.
 - Registry: `inst/extdata/benchmark-releases.json`.
 - The catalog references 2,216 logical assets in 266 ZIPs across five DGM
   storage records: 10.100 GB compressed and 28.098 GB uncompressed. Including
@@ -71,6 +71,13 @@ for all five DGMs. Each of the 40 superseded records was checked against the
 source inventory immediately before withdrawal and confirmed retired afterward.
 The community includes all six active families; its About/curation pages were
 updated and its access/review settings preserved.
+
+An authorized filename correction renamed 13 dataset ZIPs and five source-table
+ZIPs in these existing records. Every renamed public ZIP retained its original
+size, SHA-256 and MD5. The catalog checksum changed to reference the new names;
+release `2026.1`, all record/concept DOIs and all native version indices stayed
+unchanged. The superseded filename entries were removed after the corrected
+catalog was publicly verified, and a fresh default package download passed.
 
 The preliminary schema-1 source catalog referenced these same 2,216 assets
 across 40 storage records. Its SHA-256 was
@@ -240,17 +247,19 @@ requires. Keep source archives and metadata separate from normal downloads.
 Use predictable unique ZIP names, for example:
 
 ```text
-Carter2019--data--c0001-0180--2026.1.zip
+Carter2019--datasets--conditions-0001-0180--2026.1.zip
 Carter2019--results--RMA--default--2026.1.zip
 Carter2019--measures--RMA--default--2026.1.zip
 Carter2019--pairwise--2026.2.zip
 Carter2019--metadata--2026.1.zip
-Carter2019--archive--2026.1.zip
+Carter2019--source-tables--2026.1.zip
 ```
 
 The suffix names the release that first published that revision of the unit.
-Append `--part-002` and so on when a unit is split. Condition ranges and
-releases are illustrative. Reject method or setting identifiers containing `--`.
+Distinct condition ranges identify dataset chunks without redundant part
+numbers. For splits with identical ranges, or units without condition ranges,
+number every part starting with `--part-001`. Condition ranges and releases are
+illustrative. Reject method or setting identifiers containing `--`.
 Record packaging version and batch metadata in the catalog's archive
 descriptors, not in filenames.
 

@@ -5,6 +5,7 @@
  - Added native storage/catalog versioning, file import and superseded ZIP removal, resumable community inclusion and DOI relationships.
  - Reject frozen-DGM growth and stale results/measures after input corrections; preserve per-worker producing versions.
  - Consolidated release 2026.1 into five DGM storage records with 266 independent ZIPs, verified the replacement catalog checksum and withdrew the 40 superseded storage records.
+ - Clarified ZIP names with dataset condition ranges and original source tables; number all ambiguous split parts consistently from 001.
 
 # PublicationBiasBenchmark 0.4.0
 ## Features

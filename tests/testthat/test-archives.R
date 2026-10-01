@@ -55,6 +55,28 @@ test_that("packing combines measure variants, partitions scope and preserves exa
   expect_error(archive_test_plan(withr::local_tempdir(), list(a)), "cannot contain")
 })
 
+test_that("archive names distinguish dataset ranges and number ambiguous splits consistently", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir()
+  a <- test_resource(root, "condition-1.csv", "data", condition = 1L)
+  b <- test_resource(root, "condition-2.csv", "data", condition = 2L)
+  data <- archive_test_plan(withr::local_tempdir(), list(a, b), max_archive_bytes = a$size)
+  expect_setequal(vapply(data$catalog$archives, `[[`, character(1), "filename"),
+    c("no_bias--datasets--conditions-0001-0001--test.1.zip", "no_bias--datasets--conditions-0002-0002--test.1.zip"))
+  b <- test_resource(root, "condition-1-next.csv", "data", condition = 1L, ids = 3:4)
+  repeated <- archive_test_plan(withr::local_tempdir(), list(a, b), max_archive_bytes = a$size)
+  expect_setequal(vapply(repeated$catalog$archives, `[[`, character(1), "filename"),
+    c("no_bias--datasets--conditions-0001-0001--test.1--part-001.zip",
+      "no_bias--datasets--conditions-0001-0001--test.1--part-002.zip"))
+  a <- test_resource(root, "A-first.csv")
+  b <- test_resource(root, "A-second.csv", ids = 3:4)
+  results <- archive_test_plan(withr::local_tempdir(), list(a, b), max_archive_bytes = a$size)
+  expect_setequal(vapply(results$catalog$archives, `[[`, character(1), "filename"),
+    c("no_bias--results--A--default--test.1--part-001.zip", "no_bias--results--A--default--test.1--part-002.zip"))
+  source <- archive_test_plan(withr::local_tempdir(), list(test_resource(root, "source.csv", "archive")))
+  expect_identical(source$catalog$archives[[1]]$filename, "no_bias--source-tables--test.1.zip")
+})
+
 test_that("ZIP validation rejects link types, undeclared members and truncation before extraction", {
   skip_if_not_installed("zip")
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")

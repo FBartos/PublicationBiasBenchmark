@@ -120,17 +120,22 @@
   }
   invisible(TRUE)
 }
-.build_release_archive <- function(plan, unit, part, assets, base) {
+.archive_filename <- function(unit, assets, release, part = 1L, numbered = FALSE) {
+  prefix <- if (assets[[1]]$kind == "data") paste0(assets[[1]]$dgm, "--datasets") else
+    if (assets[[1]]$kind == "archive") paste0(assets[[1]]$dgm, "--source-tables") else unit
+  suffix <- if (assets[[1]]$kind == "data") {
+    conditions <- sort(unique(unlist(lapply(assets, `[[`, "condition_ids"))))
+    sprintf("--conditions-%04d-%04d", min(conditions), max(conditions))
+  } else ""
+  paste0(prefix, suffix, "--", release, if (numbered) sprintf("--part-%03d", part), ".zip")
+}
+.build_release_archive <- function(plan, unit, part, assets, base, numbered = FALSE, filename_part = part) {
   if (!requireNamespace("zip", quietly = TRUE)) stop("Install the suggested 'zip' package to build publication archives.", call. = FALSE)
   members <- lapply(assets, function(x) list(id = x$id, filename = x$filename, size = x$size, sha256 = x$sha256, md5 = x$md5))
   if (any(!vapply(assets, function(x) .portable_filename(x$filename), logical(1))) ||
       anyDuplicated(tolower(vapply(assets, `[[`, character(1), "filename"))))
     stop("Archives require unique, flat, portable ASCII member filenames.", call. = FALSE)
-  suffix <- if (assets[[1]]$kind == "data") {
-    conditions <- sort(unique(unlist(lapply(assets, `[[`, "condition_ids"))))
-    sprintf("--c%04d-%04d", min(conditions), max(conditions))
-  } else ""
-  filename <- paste0(unit, suffix, "--", plan$catalog$release, if (part > 1L) sprintf("--part-%03d", part), ".zip")
+  filename <- .archive_filename(unit, assets, plan$catalog$release, filename_part, numbered)
   if (!.portable_filename(filename)) stop("Download unit cannot form a portable ZIP filename.", call. = FALSE)
   directory <- file.path(plan$state_directory, "archives"); dir.create(directory, recursive = TRUE, showWarnings = FALSE)
   path <- file.path(directory, filename); descriptor_path <- paste0(path, ".json")
@@ -250,7 +255,15 @@
       }
       if (length(remaining)) stop("Unexpected new dataset members in a frozen DGM.", call. = FALSE)
     } else parts <- .split_archive_members(assets, max_archive_bytes, data = assets[[1]]$kind == "data")
-    for (i in seq_along(parts)) archives[[length(archives) + 1L]] <- .build_release_archive(plan, unit, i, parts[[i]], base)
+    stems <- vapply(parts, function(xs) .archive_filename(unit, xs, plan$catalog$release), character(1))
+    for (i in seq_along(parts)) {
+      # A distinct condition range already identifies a dataset chunk. Number
+      # only indistinguishable ranges, or split units without condition ranges.
+      matches <- which(stems == stems[i])
+      numbered <- length(matches) > 1L
+      archives[[length(archives) + 1L]] <- .build_release_archive(plan, unit, i, parts[[i]], base,
+        numbered = numbered, filename_part = match(i, matches))
+    }
   }
   # Every archive in a changed DGM will be imported/rebound to one new version.
   changed <- unique(changed)

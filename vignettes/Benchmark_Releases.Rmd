@@ -55,6 +55,12 @@ results/measures. Sharing a Zenodo record never forces downloading its other ZIP
 ZIPs are capped at 2,000,000,000 uncompressed bytes and split at file boundaries.
 An individual larger file must be prepared as smaller worker shards.
 
+Dataset ZIP names state their condition range, such as
+`Alinaghi2018--datasets--conditions-0001-0041--2026.1.zip`. Original tables are
+packaged as `Alinaghi2018--source-tables--2026.1.zip`. Part numbers are needed
+only when the condition range cannot distinguish the files; every such part
+is numbered, starting with `part-001`.
+
 ```{r}
 list_benchmark_resources(release, "no_bias", "results", method = "RMA")
 verify_benchmark_resources(release, "no_bias", "results", method = "RMA")
