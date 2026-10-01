@@ -197,8 +197,10 @@
       stop("New data, metadata or source archive assets are not allowed for a published DGM.", call. = FALSE)
     .validate_release_dependencies(catalog$assets, base, files, replace)
   }
-  state_directory <- normalizePath(state_directory, winslash = "/", mustWork = FALSE)
   dir.create(state_directory, recursive = TRUE, showWarnings = FALSE)
+  # Resolve symlinks/Windows short names only after the directory exists, so
+  # the initial plan and a resumed plan have the same canonical fingerprint.
+  state_directory <- normalizePath(state_directory, winslash = "/", mustWork = TRUE)
   catalog$schema_version <- 2L
   plan <- list(catalog = catalog, previous = base, metadata = metadata, state_directory = state_directory,
     sandbox = isTRUE(catalog$sandbox), community = community, max_files = max_files, max_bytes = max_bytes,
