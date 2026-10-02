@@ -449,3 +449,65 @@ test_that("the release catalog family sentence is added once per concept DOI", {
   expect_match(.with_family_sentence(NULL, "10.5281/zenodo.900"), "^ Release catalog family")
   expect_match(.with_family_sentence("A link https://doi.org/10.5281/zenodo.900 inside.", "10.5281/zenodo.900"), "^A link https://doi.org/10.5281/zenodo.900 inside.$")
 })
+
+## Transport level: libcurl against a real socket server ----------------------------------------
+
+# A base-R HTTP server (callr background process, 127.0.0.1 only for the client) that
+# ignores Range and streams a body in paced chunks; it records how much it sent and
+# whether the client closed the connection before the end.
+range_ignoring_server <- function(port, ready, log, total) {
+  socket <- serverSocket(port)
+  on.exit(close(socket), add = TRUE)
+  writeLines("ready", ready)
+  connection <- socketAccept(socket, blocking = TRUE, open = "r+b", timeout = 60)
+  on.exit(try(close(connection), silent = TRUE), add = TRUE)
+  request <- raw()
+  repeat {
+    byte <- readBin(connection, "raw", 1L)
+    if (!length(byte)) break
+    request <- c(request, byte); n <- length(request)
+    if (n >= 4L && identical(request[(n - 3L):n], as.raw(c(13, 10, 13, 10)))) break
+  }
+  header <- sprintf("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: %d\r\nConnection: close\r\n\r\n", total)
+  writeBin(charToRaw(header), connection)
+  chunk <- raw(16384); sent <- 0
+  outcome <- tryCatch({
+    while (sent < total) {
+      writeBin(chunk, connection); sent <- sent + length(chunk); Sys.sleep(0.01)
+      # A closed peer shows as a readable socket that yields no data.
+      if (socketSelect(list(connection), FALSE, 0) && !length(readBin(connection, "raw", 1L))) stop("peer closed")
+    }
+    "complete"
+  }, error = function(error) conditionMessage(error))
+  saw_range <- grepl("\r\nrange: bytes=0-0", tolower(rawToChar(request)), fixed = TRUE)
+  writeLines(c(outcome, format(sent, scientific = FALSE), as.character(saw_range)), log)
+}
+
+test_that("the range probe stops reading a 5 MB body that a real server streams although Range was sent", {
+  skip_on_cran()
+  skip_if_not_installed("callr")
+  skip_if(getRversion() < "4.0.0", "serverSocket() needs R 4.0")
+  server <- NULL
+  for (attempt in 1:5) {
+    port <- sample(20000:60000, 1L)
+    ready <- withr::local_tempfile(); log <- withr::local_tempfile()
+    server <- callr::r_bg(range_ignoring_server, args = list(port = port, ready = ready, log = log, total = 5000000L))
+    for (i in 1:100) if (file.exists(ready) || !server$is_alive()) break else Sys.sleep(0.1)
+    if (file.exists(ready)) break
+    try(server$kill(), silent = TRUE); server <- NULL
+  }
+  skip_if(is.null(server), "no local port could be bound")
+  withr::defer(if (server$is_alive()) server$kill())
+  answer <- .resource_range_probe(sprintf("http://127.0.0.1:%d/archive.zip", port))
+  # The response is 200 with the whole length announced; only the first 64 KiB are read.
+  expect_identical(answer$status, 200L)
+  expect_identical(answer$headers[["content-length"]], "5000000")
+  expect_lte(answer$bytes, 65537L)
+  expect_gt(answer$bytes, 0L)
+  server$wait(30000)
+  expect_false(server$is_alive())
+  report <- readLines(log)
+  expect_identical(report[3], "TRUE")                  # the request carried Range: bytes=0-0
+  expect_identical(report[1], "peer closed")           # the client hung up before the end ...
+  expect_lt(as.numeric(report[2]), 5000000)            # ... after receiving a small part of the body
+})
