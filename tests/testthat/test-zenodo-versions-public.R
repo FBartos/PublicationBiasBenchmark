@@ -437,17 +437,21 @@ test_that("the community page backup exists before the PUT and the default backu
   expect_identical(formals(update_benchmark_community_pages)$backup_directory, NULL)
 })
 
-test_that("the default backup directory follows the R version", {
+test_that("before R 4.0 the default backup directory is below the home folder", {
   expect_identical(.r_version(), getRversion())
-  local_mocked_bindings(.r_version = function() package_version("4.0.0"))
-  expect_identical(.default_backup_directory(), tools::R_user_dir("PublicationBiasBenchmark", "data"))
-  local_mocked_bindings(.r_version = function() package_version("4.6.0"))
-  expect_identical(.default_backup_directory(), tools::R_user_dir("PublicationBiasBenchmark", "data"))
-  # R before 4.0 has no tools::R_user_dir(): a directory below the home folder is used instead.
-  local_mocked_bindings(.r_version = function() package_version("3.6.3"))
-  expect_identical(.default_backup_directory(), file.path(path.expand("~"), ".PublicationBiasBenchmark"))
-  local_mocked_bindings(.r_version = function() package_version("3.5.0"))
-  expect_identical(.default_backup_directory(), file.path(path.expand("~"), ".PublicationBiasBenchmark"))
+  # R before 4.0 has no tools::R_user_dir(); the fallback never calls it, whatever R runs the test.
+  for (version in c("3.6.3", "3.5.0")) {
+    local_mocked_bindings(.r_version = function() package_version(version))
+    expect_identical(.default_backup_directory(), file.path(path.expand("~"), ".PublicationBiasBenchmark"))
+  }
+})
+
+test_that("from R 4.0 the default backup directory is the user's data directory for the package", {
+  skip_if(getRversion() < "4.0.0", "tools::R_user_dir() needs R 4.0")
+  for (version in c("4.0.0", "4.6.0")) {
+    local_mocked_bindings(.r_version = function() package_version(version))
+    expect_identical(.default_backup_directory(), tools::R_user_dir("PublicationBiasBenchmark", "data"))
+  }
 })
 
 test_that("omitting backup_directory writes the backup to the version-dependent default", {
@@ -499,10 +503,12 @@ range_ignoring_server <- function(port, ready, log, total) {
   }
   header <- sprintf("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: %d\r\nConnection: close\r\n\r\n", total)
   writeBin(charToRaw(header), connection)
-  chunk <- raw(16384); sent <- 0
+  sent <- 0
   outcome <- tryCatch({
     while (sent < total) {
-      writeBin(chunk, connection); sent <- sent + length(chunk); Sys.sleep(0.01)
+      # The last chunk is capped so that exactly `total` bytes are announced and sent.
+      size <- min(16384, total - sent)
+      writeBin(raw(size), connection); sent <- sent + size; Sys.sleep(0.01)
       # A closed peer shows as a readable socket that yields no data.
       if (socketSelect(list(connection), FALSE, 0) && !length(readBin(connection, "raw", 1L))) stop("peer closed")
     }
@@ -539,6 +545,8 @@ test_that("the range probe stops reading a 5 MB body that a real server streams 
   expect_false(server$is_alive())
   report <- readLines(log)
   expect_identical(report[3], "TRUE")                  # the request carried Range: bytes=0-0
-  expect_identical(report[1], "peer closed")           # the client hung up before the end ...
-  expect_lt(as.numeric(report[2]), 5000000)            # ... after receiving a small part of the body
+  # Any outcome but "complete" (a FIN seen as end of input, or a read/write error) means the client
+  # hung up before the end, after the server had sent only a small part of the body.
+  expect_false(identical(report[1], "complete"))
+  expect_lt(as.numeric(report[2]), 5000000)
 })
