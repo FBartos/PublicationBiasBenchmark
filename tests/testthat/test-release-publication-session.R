@@ -664,3 +664,79 @@ test_that("both verify paths stop when the staged catalog belongs to another rel
   }
   expect_identical(requests$count, 0L)
 })
+
+## Rollback of a failed verification ---------------------------------------------------------
+
+test_that("a first version that cannot be removed is not reported as restored", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  local_mocked_bindings(.file_remove = function(path) 1L)
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE), error = conditionMessage)
+  expect_false(grepl("the previous version was restored", message, fixed = TRUE))
+  expect_match(message, paste0("restoring the previous version failed, so ", path, " holds the unverified new bytes"), fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "new bytes")
+  local_mocked_bindings(.file_remove = function(path) unlink(path))
+  expect_match(tryCatch(.write_file_verified(path, charToRaw("newer"), verify = function(p) FALSE), error = conditionMessage),
+               "the previous version was restored", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "new bytes")
+  unlink(path)
+  expect_match(tryCatch(.write_file_verified(path, charToRaw("first"), verify = function(p) FALSE), error = conditionMessage),
+               "the previous version was restored", fixed = TRUE)
+  expect_false(file.exists(path))
+})
+
+test_that("a restoration only counts when the destination then holds the previous bytes", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  .write_file_verified(path, charToRaw("old bytes"))
+  # The restore rename claims success but leaves the new bytes in place.
+  renames <- 0L
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL,
+    .file_rename = function(from, to) { renames <<- renames + 1L; if (renames == 1L) file.rename(from, to) else TRUE })
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE), error = conditionMessage)
+  expect_false(grepl("the previous version was restored", message, fixed = TRUE))
+  expect_match(message, paste0(path, " holds the unverified new bytes"), fixed = TRUE)
+  expect_match(message, "the previous bytes are in ", fixed = TRUE)
+  previous <- list.files(root, pattern = "^plan[.]rds-previous-.*[.]tmp$", full.names = TRUE)
+  expect_length(previous, 1L); expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
+  # The previous bytes cannot even be written next to the file: reported, nothing renamed.
+  unlink(previous)
+  local_mocked_bindings(.file_rename = function(from, to) file.rename(from, to))
+  .write_file_verified(path, charToRaw("old bytes"))
+  local_mocked_bindings(.read_bytes = function(path) {
+    if (grepl("-previous-", path, fixed = TRUE)) stop("cannot read back") else readBin(path, "raw", file.info(path)$size)
+  })
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE), error = conditionMessage)
+  expect_match(message, "restoring the previous version failed", fixed = TRUE)
+  expect_false(grepl("the previous bytes are in", message, fixed = TRUE))
+  expect_length(list.files(root, pattern = "-previous-"), 0L)
+})
+
+test_that("a failed verification with the installed file held open reports the file that remains (Windows)", {
+  skip_if_not(.Platform$OS.type == "windows", "an open file only blocks removal and replacement on Windows")
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds"); history <- file.path(root, "history")
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL)
+  hold <- NULL
+  opener <- function(p) { hold <<- file(p, "rb"); FALSE }
+  # First version: the file cannot be deleted while it is open.
+  message <- tryCatch(.write_file_verified(path, charToRaw("first bytes"), verify = opener), error = conditionMessage)
+  close(hold)
+  expect_false(grepl("the previous version was restored", message, fixed = TRUE))
+  expect_match(message, paste0("restoring the previous version failed, so ", path, " holds the unverified new bytes"), fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "first bytes")
+  # Replacement: the previous bytes cannot be renamed over the open file and stay intact next to it.
+  .write_file_verified(path, charToRaw("old bytes"), history_dir = history)
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = opener, history_dir = history), error = conditionMessage)
+  close(hold)
+  expect_match(message, paste0(path, " holds the unverified new bytes"), fixed = TRUE)
+  previous <- list.files(root, pattern = "^plan[.]rds-previous-.*[.]tmp$", full.names = TRUE)
+  expect_length(previous, 1L)
+  expect_match(message, "the previous bytes are in ", fixed = TRUE)
+  expect_match(message, basename(previous), fixed = TRUE)
+  expect_match(message, "keeps every version", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
+  expect_identical(rawToChar(.read_bytes(path)), "new bytes")
+  # Without an open handle the same failure is restored completely.
+  unlink(previous); .write_file_verified(path, charToRaw("old bytes"))
+  expect_match(tryCatch(.write_file_verified(path, charToRaw("newest"), verify = function(p) FALSE), error = conditionMessage),
+               "the previous version was restored", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "old bytes")
+})

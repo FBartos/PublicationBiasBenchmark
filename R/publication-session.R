@@ -180,6 +180,8 @@
 .file_rename <- function(from, to) file.rename(from, to)
 .file_retry_wait <- function(seconds) Sys.sleep(seconds)
 
+.file_remove <- function(path) suppressWarnings(unlink(path))
+
 .retry_file_operation <- function(operation, attempts = 5L, wait = 0.2) {
   for (attempt in seq_len(attempts)) {
     done <- tryCatch(isTRUE(suppressWarnings(operation())), error = function(error) FALSE)
@@ -253,19 +255,30 @@
   }, error = function(error) { reason <<- conditionMessage(error); FALSE })
   if (!installed) {
     # The previous bytes are first written completely next to the file, so a
-    # failing restore leaves them under a name that the message reports.
+    # failing restore leaves them under a name that the message reports. A
+    # restoration only counts when the destination then holds exactly them (or,
+    # for a first version, is gone); any failure while restoring is reported.
     previous <- NULL
-    restored <- if (is.null(old)) { unlink(path); !file.exists(path) } else {
-      previous <- tempfile(paste0(name, "-previous-"), tmpdir = dirname(path), fileext = ".tmp")
-      saved <- tryCatch({ writeBin(old, previous); identical(.read_bytes(previous), old) },
-                        error = function(error) FALSE, warning = function(warning) FALSE)
-      if (!saved) { unlink(previous); previous <- NULL }
-      saved && .retry_file_operation(function() .file_rename(previous, path))
-    }
+    restored <- tryCatch({
+      if (is.null(old)) {
+        .file_remove(path)
+        !file.exists(path)
+      } else {
+        previous <- tempfile(paste0(name, "-previous-"), tmpdir = dirname(path), fileext = ".tmp")
+        saved <- tryCatch({ writeBin(old, previous); identical(.read_bytes(previous), old) },
+                          error = function(error) FALSE, warning = function(warning) FALSE)
+        if (!saved) { unlink(previous); previous <- NULL }
+        saved && .retry_file_operation(function() .file_rename(previous, path)) &&
+          identical(.read_bytes(path), old)
+      }
+    }, error = function(error) FALSE)
+    previous_left <- !is.null(previous) && file.exists(previous)
+    holds_new <- !restored && file.exists(path) && identical(tryCatch(.read_bytes(path), error = function(error) NULL), bytes)
     stop("The new ", name, " failed verification", if (!is.null(reason)) paste0(" (", reason, ")"),
          if (restored) "; the previous version was restored." else paste0(
-           "; restoring the previous version failed, so ", path, " holds the unverified new bytes",
-           if (!is.null(previous)) paste0("; the previous bytes are in ", previous),
+           "; restoring the previous version failed, so ", path,
+           if (holds_new) " holds the unverified new bytes" else " does not hold the previous bytes",
+           if (previous_left) paste0("; the previous bytes are in ", previous),
            if (!is.null(history_dir)) paste0("; the history in ", history_dir, " keeps every version"),
            "."), call. = FALSE)
   }
