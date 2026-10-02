@@ -84,3 +84,53 @@ test_that("catalog memoization retains at most two validated snapshots", {
   expect_length(cache$values, 2L)
   expect_length(cache$keys, 2L)
 })
+
+test_that("a verified cached release catalog is hashed once and neither re-verified nor fetched", {
+  root <- withr::local_tempdir(); source <- withr::local_tempdir()
+  asset <- test_resource(source, "A.csv")
+  path <- file.path(source, "catalog.json")
+  jsonlite::write_json(test_catalog(list(asset)), path, auto_unbox = TRUE, dataframe = "rows", null = "null")
+  pin <- digest::digest(file = path, algo = "sha256", serialize = FALSE)
+  counts <- new.env(); counts$downloads <- 0L; counts$fetches <- 0L; counts$verifications <- 0L
+  fetch <- .fetch_verified; verified <- .file_verified
+  local_mocked_bindings(.catalog_cache = catalog_test_cache(), .get_path = function() root,
+    .release_registry = function() list(default_release = "test.1",
+      releases = list(list(release = "test.1", record_id = "12345", catalog_sha256 = pin))),
+    .resource_download = function(url, destination, progress) {
+      counts$downloads <- counts$downloads + 1L
+      file.copy(path, destination, overwrite = TRUE)
+    },
+    .fetch_verified = function(...) { counts$fetches <- counts$fetches + 1L; fetch(...) },
+    .file_verified = function(...) { counts$verifications <- counts$verifications + 1L; verified(...) })
+  first <- benchmark_catalog("test.1")
+  expect_equal(c(counts$downloads, counts$fetches), c(1L, 1L))
+  counts$fetches <- 0L; counts$verifications <- 0L
+  expect_identical(benchmark_catalog("test.1"), first)
+  expect_equal(c(counts$downloads, counts$fetches, counts$verifications), c(1L, 0L, 0L))
+})
+
+test_that("a changed cached catalog raises a classed checksum error and is repaired by one fetch", {
+  root <- withr::local_tempdir(); source <- withr::local_tempdir()
+  asset <- test_resource(source, "A.csv")
+  path <- file.path(source, "catalog.json")
+  jsonlite::write_json(test_catalog(list(asset)), path, auto_unbox = TRUE, dataframe = "rows", null = "null")
+  pin <- digest::digest(file = path, algo = "sha256", serialize = FALSE)
+  expect_error(.read_validated_catalog(path, strrep("0", 64)), class = "catalog_checksum_error")
+  expect_error(.read_validated_catalog(path, strrep("0", 64)), "Catalog checksum changed before parsing")
+  expect_s3_class(tryCatch(.read_validated_catalog(path, strrep("0", 64)), error = identity), "error")
+  fetches <- 0L; fetch <- .fetch_verified
+  local_mocked_bindings(.catalog_cache = catalog_test_cache(), .get_path = function() root,
+    .release_registry = function() list(default_release = "test.1",
+      releases = list(list(release = "test.1", record_id = "12345", catalog_sha256 = pin))),
+    .resource_download = function(url, destination, progress) file.copy(path, destination, overwrite = TRUE),
+    .fetch_verified = function(...) { fetches <<- fetches + 1L; fetch(...) })
+  cached <- file.path(root, "releases", "test.1")
+  dir.create(cached, recursive = TRUE); writeLines("{}", file.path(cached, "release.json"))
+  expect_equal(benchmark_catalog("test.1")$release, "test.1")
+  expect_equal(fetches, 1L)
+  expect_true(.file_verified(file.path(cached, "release.json"), pin))
+  # Parseable bytes that fail validation are not a checksum problem and are not replaced.
+  expect_error(.read_validated_catalog(path, pin), NA)
+  bad <- file.path(source, "bad.json"); writeLines("{\"schema_version\": 9}", bad)
+  expect_error(.read_validated_catalog(bad, digest::digest(file = bad, algo = "sha256", serialize = FALSE)), "Unsupported or invalid")
+})

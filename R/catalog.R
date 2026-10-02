@@ -23,7 +23,8 @@ NULL
   bytes <- readBin(path, "raw", n = file.info(path)$size)
   sha256 <- digest::digest(bytes, algo = "sha256", serialize = FALSE)
   if (!is.null(expected_sha256) && !identical(sha256, expected_sha256))
-    stop("Catalog checksum changed before parsing.", call. = FALSE)
+    stop(structure(list(message = "Catalog checksum changed before parsing.", call = NULL),
+                   class = c("catalog_checksum_error", "error", "condition")))
   catalog <- .catalog_cache$values[[sha256]]
   if (is.null(catalog)) {
     json <- rawToChar(bytes)
@@ -113,9 +114,17 @@ benchmark_catalog <- function(release = NULL) {
   if (length(entry) != 1L) stop("Unknown benchmark release '", release, "'. Use a catalog file for an unlisted release.", call. = FALSE)
   entry <- entry[[1]]
   cached <- file.path(.get_path(), "releases", release, "release.json")
-  .fetch_verified(.zenodo_file_url(entry$record_id, "release.json"), cached,
-                  sha256 = entry$catalog_sha256, progress = FALSE)
-  catalog <- .read_validated_catalog(cached, entry$catalog_sha256)
+  # A cached catalog is hashed once while it is read. Only a missing or changed
+  # file is downloaded again, and the fresh bytes are verified by the transfer.
+  catalog <- NULL
+  if (file.exists(cached))
+    catalog <- tryCatch(.read_validated_catalog(cached, entry$catalog_sha256),
+                        catalog_checksum_error = function(error) NULL)
+  if (is.null(catalog)) {
+    .fetch_verified(.zenodo_file_url(entry$record_id, "release.json"), cached,
+                    sha256 = entry$catalog_sha256, progress = FALSE, overwrite = TRUE)
+    catalog <- .read_validated_catalog(cached, entry$catalog_sha256)
+  }
   if (!identical(catalog$release, release)) stop("Catalog release ID does not match its registry entry.", call. = FALSE)
   catalog
 }
@@ -166,19 +175,26 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
                                      method = NULL, method_setting = NULL) {
   catalog <- benchmark_catalog(release)
   assets <- .select_assets(catalog, dgm_name, kind, method, method_setting)
-  do.call(rbind, lapply(assets, function(x) {
-    data.frame(id = x$id, dgm = x$dgm, kind = x$kind,
-               method = if (is.null(x$method)) "" else x$method,
-               method_setting = if (is.null(x$method_setting)) "" else x$method_setting,
-               filename = x$filename, size = x$size, sha256 = x$sha256,
-               record_id = x$record_id,
-               url = .resource_reference_url(catalog, x),
-               archive_id = if (is.null(x$archive_id)) NA_character_ else x$archive_id,
-               archive_filename = if (is.null(x$archive_id)) NA_character_ else .catalog_archive(catalog, x$archive_id)$filename,
-               download_size = if (is.null(x$archive_id)) x$size else .catalog_archive(catalog, x$archive_id)$size,
-               package_version = if (is.null(x$package_version)) NA_character_ else x$package_version,
-               stringsAsFactors = FALSE)
-  }))
+  index <- .archive_index(catalog)
+  # One archive lookup per asset; columns are built directly instead of binding
+  # one data frame per asset. unlist() keeps the integer/double typing of sizes
+  # that row-binding produced.
+  archives <- lapply(assets, function(x) if (is.null(x$archive_id)) NULL else .catalog_archive(catalog, x$archive_id, index))
+  text <- function(field) vapply(assets, function(x) if (is.null(x[[field]])) "" else x[[field]], character(1))
+  data.frame(id = vapply(assets, `[[`, character(1), "id"), dgm = vapply(assets, `[[`, character(1), "dgm"),
+             kind = vapply(assets, `[[`, character(1), "kind"),
+             method = text("method"), method_setting = text("method_setting"),
+             filename = vapply(assets, `[[`, character(1), "filename"),
+             size = unlist(lapply(assets, `[[`, "size")),
+             sha256 = vapply(assets, `[[`, character(1), "sha256"),
+             record_id = vapply(assets, `[[`, character(1), "record_id"),
+             url = vapply(assets, .resource_reference_url, character(1), catalog = catalog, index = index),
+             archive_id = vapply(assets, function(x) if (is.null(x$archive_id)) NA_character_ else x$archive_id, character(1)),
+             archive_filename = vapply(archives, function(a) if (is.null(a)) NA_character_ else a$filename, character(1)),
+             download_size = unlist(lapply(seq_along(assets), function(i)
+               if (is.null(archives[[i]])) assets[[i]]$size else archives[[i]]$size)),
+             package_version = vapply(assets, function(x) if (is.null(x$package_version)) NA_character_ else x$package_version, character(1)),
+             stringsAsFactors = FALSE)
 }
 
 .zenodo_file_url <- function(record_id, filename, sandbox = FALSE) {
@@ -214,17 +230,68 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
   invisible(TRUE)
 }
 
+# libcurl error classes (see curl:::libcurl_error_codes) that a repeated request
+# cannot fix: certificate/TLS verification, unsupported protocol, malformed URL
+# and a failing local write.
+.permanent_curl_errors <- c(
+  "curl_error_peer_failed_verification", "curl_error_ssl_certproblem", "curl_error_ssl_cacert_badfile",
+  "curl_error_ssl_issuer_error", "curl_error_ssl_pinnedpubkeynotmatch", "curl_error_ssl_invalidcertstatus",
+  "curl_error_ssl_crl_badfile", "curl_error_unsupported_protocol", "curl_error_url_malformat",
+  "curl_error_write_error")
+.dns_curl_error <- "curl_error_couldnt_resolve_host"
+
+# Classify a failed download attempt: "permanent" (stop now), "dns" (stop after
+# a few attempts), "rate_limited" (wait for the server delay) or "transient"
+# (back off). A transfer that completed but failed verification has no condition.
+.classify_download_failure <- function(condition, attempt, retry_not_found = 0L) {
+  if (inherits(condition, "resource_http_error")) {
+    status <- condition$status
+    if (!is.numeric(status) || length(status) != 1L || is.na(status)) return("transient")
+    if (status %in% c(403L, 404L) && attempt <= retry_not_found) return("transient")
+    if (status == 429L) return("rate_limited")
+    if (status %in% c(408L, 425L)) return("transient")
+    if ((status >= 400L && status < 500L) || status %in% c(501L, 505L)) return("permanent")
+    return("transient")
+  }
+  if (inherits(condition, .permanent_curl_errors)) return("permanent")
+  if (inherits(condition, .dns_curl_error)) return("dns")
+  "transient"
+}
+
+.download_failure_message <- function(class, condition, file, url) {
+  detail <- if (is.null(condition)) "" else paste0(" Underlying error: ", conditionMessage(condition))
+  status <- if (inherits(condition, "resource_http_error")) condition$status else NA_integer_
+  if (class == "dns")
+    return(paste0("Cannot reach ", sub("^[A-Za-z][A-Za-z0-9+.-]*://([^/:?#]*).*$", "\\1", url),
+                  "; check the network connection.", detail))
+  if (!is.na(status) && status %in% c(404L, 410L))
+    return(paste0(file, " is not available on Zenodo (HTTP ", status, "); the release may have been withdrawn ",
+                  "or the catalog is outdated. Update PublicationBiasBenchmark or select another release ",
+                  "with list_benchmark_releases().", detail))
+  paste0("Download of '", file, "' failed with a permanent error and will not be retried.", detail)
+}
+
+# Download into a temporary file and install it only after size and hash
+# verification. Permanent failures stop at once; DNS failures stop after three
+# attempts; other failures back off, and rate limits wait for the server delay.
+# retry_not_found: number of attempts on which HTTP 403/404 count as transient
+# (a freshly published file may not be served yet); HTTP 410 is always permanent.
 .fetch_verified <- function(url, destination, sha256, size = NULL, md5 = NULL,
-                            progress = TRUE, max_try = 10, overwrite = FALSE) {
+                            progress = TRUE, max_try = 10, overwrite = FALSE, retry_not_found = 0L) {
   if (!is.numeric(max_try) || length(max_try) != 1L || is.na(max_try) || max_try < 1 || max_try %% 1 != 0)
     stop("max_try must be a positive integer.", call. = FALSE)
+  if (!is.numeric(retry_not_found) || length(retry_not_found) != 1L || is.na(retry_not_found) ||
+      retry_not_found < 0 || retry_not_found %% 1 != 0)
+    stop("retry_not_found must be a non-negative integer.", call. = FALSE)
   if (!overwrite && .file_verified(destination, sha256, size, md5)) return(invisible(TRUE))
   dir.create(dirname(destination), recursive = TRUE, showWarnings = FALSE)
   temporary <- tempfile("transfer-", tmpdir = dirname(destination))
   on.exit(unlink(temporary), add = TRUE)
+  condition <- NULL
   for (attempt in seq_len(max_try)) {
     downloaded <- try(.resource_download(url, temporary, progress), silent = TRUE)
-    if (!inherits(downloaded, "try-error") && .file_verified(temporary, sha256, size, md5)) {
+    failed <- inherits(downloaded, "try-error")
+    if (!failed && .file_verified(temporary, sha256, size, md5)) {
       # The old file is retained until a replacement has passed verification.
       backup <- paste0(temporary, ".previous")
       if (file.exists(destination) && !file.rename(destination, backup)) stop("Cannot replace cached file.", call. = FALSE)
@@ -235,20 +302,24 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
       if (file.exists(backup)) unlink(backup)
       return(invisible(TRUE))
     }
+    condition <- if (failed) attr(downloaded, "condition") else NULL
+    class <- .classify_download_failure(condition, attempt, retry_not_found)
+    if (class == "permanent" || (class == "dns" && (attempt >= 3L || attempt >= max_try)))
+      stop(.download_failure_message(class, condition, basename(destination), url), call. = FALSE)
     if (attempt < max_try) {
-      condition <- if (inherits(downloaded, "try-error")) attr(downloaded, "condition") else NULL
-      delay <- if (inherits(condition, "resource_http_error") && identical(condition$status, 429L)) condition$retry_delay else min(30, 2^(attempt - 1L))
+      delay <- if (class == "rate_limited" && is.numeric(condition$retry_delay)) condition$retry_delay else min(30, 2^(attempt - 1L))
       .resource_retry_wait(delay)
     }
   }
-  stop("Could not download and verify '", basename(destination), "' after ", max_try, " attempts.", call. = FALSE)
+  stop("Could not download and verify '", basename(destination), "' after ", max_try, " attempts",
+       if (is.null(condition)) "." else paste0(" (last error: ", conditionMessage(condition), ")."), call. = FALSE)
 }
 
 .cached_asset_files <- function(assets) {
   paths <- vapply(assets, .asset_cache_path, character(1))
   valid <- vapply(seq_along(assets), function(i) {
     x <- assets[[i]]
-    .file_verified(paths[i], x$sha256, x$size, x$md5)
+    .file_verified(paths[i], x$sha256, x$size)
   }, logical(1))
   if (!all(valid)) stop("Missing or unverified resources: ", paste(basename(paths[!valid]), collapse = ", "),
                          ". Download the requested resources first.", call. = FALSE)
@@ -263,12 +334,13 @@ verify_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = N
                                        method = NULL, method_setting = NULL) {
   catalog <- benchmark_catalog(release)
   assets <- .select_assets(catalog, dgm_name, kind, method, method_setting)
+  index <- .archive_index(catalog)
   data.frame(id = vapply(assets, `[[`, character(1), "id"),
              verified = vapply(assets, function(x) .file_verified(.asset_cache_path(x), x$sha256, x$size, x$md5), logical(1)),
              archive_id = vapply(assets, function(x) if (is.null(x$archive_id)) NA_character_ else x$archive_id, character(1)),
              archive_verified = vapply(assets, function(x) {
                if (is.null(x$archive_id)) return(NA)
-               a <- .catalog_archive(catalog, x$archive_id)
+               a <- .catalog_archive(catalog, x$archive_id, index)
                .file_verified(.archive_cache_path(a), a$sha256, a$size, a$md5)
              }, logical(1)))
 }

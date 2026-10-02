@@ -1,14 +1,21 @@
 # Archive members deliberately use the same content-addressed cache as schema 1.
 .archive_byte_limit <- 2000000000
 .portable_filename <- function(x) .safe_filename(x) && grepl("^[ -~]+$", x) && nchar(x, type = "bytes") <= 240L
-.catalog_archive <- function(catalog, id) {
-  matches <- Filter(function(x) identical(x$id, id), catalog$archives)
-  if (length(matches) != 1L) stop("Unknown or duplicate archive reference: ", id, call. = FALSE)
-  matches[[1]]
+# Archives by ID. IDs are unique in a validated schema-2 catalog (schema 1 has none).
+.archive_index <- function(catalog) {
+  archives <- catalog$archives
+  if (!length(archives)) return(list())
+  stats::setNames(archives, vapply(archives, function(x) if (.scalar_string(x$id)) x$id else "", character(1)))
+}
+.catalog_archive <- function(catalog, id, index = .archive_index(catalog)) {
+  archive <- if (.scalar_string(id)) index[[id]] else NULL
+  if (is.null(archive)) stop("Unknown or duplicate archive reference: ", id, call. = FALSE)
+  archive
 }
 .archive_cache_path <- function(archive) file.path(.get_path(), "archives", archive$sha256, archive$filename)
-.resource_reference_url <- function(catalog, asset) {
-  reference <- if (is.null(asset$archive_id)) asset else .catalog_archive(catalog, asset$archive_id)
+.resource_reference_url <- function(catalog, asset, index = NULL) {
+  reference <- if (is.null(asset$archive_id)) asset else
+    .catalog_archive(catalog, asset$archive_id, if (is.null(index)) .archive_index(catalog) else index)
   .zenodo_file_url(reference$record_id, reference$filename, isTRUE(catalog$sandbox))
 }
 .validate_archive_catalog <- function(catalog) {
@@ -33,13 +40,16 @@
     if (sum(vapply(archive$members, `[[`, numeric(1), "size")) > .archive_byte_limit)
       stop("Archive exceeds the 2,000,000,000-byte uncompressed cap.", call. = FALSE)
   }
+  index <- .archive_index(catalog)
+  member_files <- lapply(index, function(a) vapply(a$members, function(m) m$filename, character(1)))
   for (asset in catalog$assets) {
     if (!.scalar_string(asset$archive_id)) stop("Schema 2 assets need archive references.", call. = FALSE)
-    archive <- .catalog_archive(catalog, asset$archive_id)
-    member <- Filter(function(x) identical(x$filename, asset$filename), archive$members)
+    archive <- .catalog_archive(catalog, asset$archive_id, index)
+    position <- match(asset$filename, member_files[[asset$archive_id]])
     if (!identical(archive$dgm, asset$dgm) || !identical(archive$unit, .archive_unit(asset)) ||
-        !identical(archive$record_id, asset$record_id) || length(member) != 1L ||
-        !identical(member[[1]]$sha256, asset$sha256) || !identical(member[[1]]$md5, asset$md5) || member[[1]]$size != asset$size)
+        !identical(archive$record_id, asset$record_id) || is.na(position) ||
+        !identical(archive$members[[position]]$sha256, asset$sha256) ||
+        !identical(archive$members[[position]]$md5, asset$md5) || archive$members[[position]]$size != asset$size)
       stop("Logical asset differs from its archive member inventory.", call. = FALSE)
   }
   for (dgm in unique(vapply(catalog$archives, `[[`, character(1), "dgm"))) {
@@ -50,12 +60,21 @@
       stop("Colliding physical archive filenames.", call. = FALSE)
   }
   asset_ids <- vapply(catalog$assets, `[[`, character(1), "id")
-  for (asset in catalog$assets) for (input in asset$dependencies) {
-    if (!is.list(input) || !.scalar_string(input$id) || !input$id %in% asset_ids)
-      stop("Invalid computation input reference.", call. = FALSE)
-    source <- catalog$assets[[match(input$id, asset_ids)]]
+  asset_dgms <- vapply(catalog$assets, `[[`, character(1), "dgm")
+  asset_kinds <- vapply(catalog$assets, `[[`, character(1), "kind")
+  asset_hashes <- vapply(catalog$assets, `[[`, character(1), "sha256")
+  for (asset in catalog$assets) {
+    if (!length(asset$dependencies)) next
+    # One lookup per asset, not one per input edge.
+    input_ids <- vapply(asset$dependencies, function(input)
+      if (is.list(input) && .scalar_string(input$id)) input$id else NA_character_, character(1))
+    position <- match(input_ids, asset_ids)
+    if (anyNA(position)) stop("Invalid computation input reference.", call. = FALSE)
     kind <- if (asset$kind == "results") "data" else if (asset$kind %in% c("measures", "pairwise")) "results" else NULL
-    if (!identical(source$dgm, asset$dgm) || !identical(source$kind, kind) || !identical(source$sha256, input$sha256))
+    input_hashes <- vapply(asset$dependencies, function(input)
+      if (.scalar_string(input$sha256)) input$sha256 else NA_character_, character(1))
+    if (is.null(kind) || any(asset_dgms[position] != asset$dgm) || any(asset_kinds[position] != kind) ||
+        anyNA(input_hashes) || any(asset_hashes[position] != input_hashes))
       stop("Invalid or stale computation input hash.", call. = FALSE)
   }
   invisible(TRUE)
@@ -114,54 +133,85 @@
   invisible(TRUE)
 }
 
-.install_member <- function(source, asset) {
-  destination <- .asset_cache_path(asset)
-  dir.create(dirname(destination), recursive = TRUE, showWarnings = FALSE)
-  # Copy onto the destination filesystem before renaming; tempdir may be on a
-  # different drive. Retain a corrupt previous copy until the replacement is ready.
-  staged <- tempfile("member-", tmpdir = dirname(destination)); backup <- paste0(staged, ".previous")
-  on.exit(unlink(c(staged, backup)), add = TRUE)
-  if (!file.copy(source, staged) || !.file_verified(staged, asset$sha256, asset$size, asset$md5))
-    stop("Archive member failed size or hash verification: ", asset$filename, call. = FALSE)
-  if (file.exists(destination) && !file.rename(destination, backup)) stop("Cannot replace cached member.", call. = FALSE)
-  if (!file.rename(staged, destination)) {
-    if (file.exists(backup)) file.rename(backup, destination)
-    stop("Cannot install verified archive member.", call. = FALSE)
-  }
-  invisible(TRUE)
+# Failures that point at the archive bytes themselves (as opposed to installing
+# members), so a cached ZIP may be fetched again.
+.archive_content_error <- function(message) {
+  structure(list(message = message, call = NULL), class = c("archive_content_error", "error", "condition"))
 }
+# Members are staged in a directory inside the resource cache (same filesystem as
+# their destinations), verified once there, and installed by renaming. On Windows
+# a rename replaces an existing file and fails, leaving it unchanged, when the
+# destination is open; a corrupt previous copy therefore stays until replaced.
 .extract_archive_members <- function(path, archive, assets) {
-  .zip_inventory(path, archive$members)
-  directory <- tempfile("extract-"); dir.create(directory)
+  tryCatch(suppressWarnings(.zip_inventory(path, archive$members)),
+           error = function(error) stop(.archive_content_error(conditionMessage(error))))
+  cache <- file.path(.get_path(), "cache")
+  dir.create(cache, recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(cache)) stop("Cannot create the resource cache directory: ", cache, call. = FALSE)
+  directory <- tempfile("extract-", tmpdir = cache)
+  if (!dir.create(directory)) stop("Cannot create a staging directory in the resource cache.", call. = FALSE)
   on.exit(unlink(directory, recursive = TRUE), add = TRUE)
   for (asset in assets) {
-    extracted <- utils::unzip(path, files = asset$filename, exdir = directory, junkpaths = TRUE, unzip = "internal")
+    extracted <- suppressWarnings(tryCatch(
+      utils::unzip(path, files = asset$filename, exdir = directory, junkpaths = TRUE, unzip = "internal"),
+      error = function(error) character()))
     target <- file.path(directory, asset$filename)
     if (length(extracted) != 1L || !.file_verified(target, asset$sha256, asset$size, asset$md5))
-      stop("Archive member failed size or hash verification: ", asset$filename, call. = FALSE)
-    .install_member(target, asset); unlink(target)
+      stop(.archive_content_error(paste0("Archive member failed size or hash verification: ", asset$filename)))
+    destination <- .asset_cache_path(asset)
+    dir.create(dirname(destination), recursive = TRUE, showWarnings = FALSE)
+    if (!suppressWarnings(file.rename(target, destination)))
+      stop("Cannot install verified archive member (is it open in another program?): ", asset$filename, call. = FALSE)
   }
   invisible(TRUE)
 }
+# Abandoned staging directories (interrupted extractions) are removed after a day.
+.remove_stale_extractions <- function(max_age = 24 * 3600) {
+  directories <- list.files(file.path(.get_path(), "cache"), pattern = "^extract-", full.names = TRUE)
+  directories <- directories[dir.exists(directories)]
+  if (!length(directories)) return(invisible(character()))
+  age <- as.numeric(difftime(Sys.time(), file.info(directories)$mtime, units = "secs"))
+  stale <- directories[!is.na(age) & age > max_age]
+  unlink(stale, recursive = TRUE)
+  invisible(stale)
+}
+# Cached copies are checked by size and SHA-256 only; MD5 is checked on fresh
+# transfers and extraction. transfers are the archives that must be downloaded.
 .pending_downloads <- function(catalog, assets, overwrite = FALSE) {
-  pending <- Filter(function(x) overwrite || !.file_verified(.asset_cache_path(x), x$sha256, x$size, x$md5), assets)
+  pending <- Filter(function(x) overwrite || !.file_verified(.asset_cache_path(x), x$sha256, x$size), assets)
   ids <- unique(vapply(Filter(function(x) !is.null(x$archive_id), pending), `[[`, character(1), "archive_id"))
-  archives <- lapply(ids, function(id) .catalog_archive(catalog, id))
-  transfers <- Filter(function(a) overwrite || !.file_verified(.archive_cache_path(a), a$sha256, a$size, a$md5), archives)
+  index <- .archive_index(catalog)
+  archives <- lapply(ids, function(id) .catalog_archive(catalog, id, index))
+  transfers <- Filter(function(a) overwrite || !.file_verified(.archive_cache_path(a), a$sha256, a$size), archives)
   direct <- Filter(function(x) is.null(x$archive_id), pending)
-  list(assets = pending, archives = archives, bytes = sum(vapply(c(direct, transfers), `[[`, numeric(1), "size")),
+  list(assets = pending, archives = archives, transfers = transfers,
+       bytes = sum(vapply(c(direct, transfers), `[[`, numeric(1), "size")),
        files = length(direct) + length(transfers))
 }
-.download_catalog_assets <- function(catalog, assets, progress = TRUE, max_try = 10, overwrite = FALSE) {
-  pending <- .pending_downloads(catalog, assets, overwrite)
+# pending: the result of .pending_downloads() for the same arguments, when the
+# caller already has it (avoids hashing every cached file twice).
+.download_catalog_assets <- function(catalog, assets, progress = TRUE, max_try = 10, overwrite = FALSE, pending = NULL) {
+  if (is.null(pending)) pending <- .pending_downloads(catalog, assets, overwrite)
+  .remove_stale_extractions()
+  index <- .archive_index(catalog)
+  # Pending files are known to need a transfer, so the destination is not re-hashed.
   for (asset in Filter(function(x) is.null(x$archive_id), pending$assets))
-    .fetch_verified(.resource_reference_url(catalog, asset), .asset_cache_path(asset), asset$sha256, asset$size, asset$md5,
-                    progress, max_try, overwrite)
+    .fetch_verified(.resource_reference_url(catalog, asset, index), .asset_cache_path(asset), asset$sha256, asset$size, asset$md5,
+                    progress, max_try, overwrite = TRUE)
+  transfer_ids <- vapply(pending$transfers, `[[`, character(1), "id")
   for (archive in pending$archives) {
     path <- .archive_cache_path(archive)
-    .fetch_verified(.zenodo_file_url(archive$record_id, archive$filename, isTRUE(catalog$sandbox)), path,
-                    archive$sha256, archive$size, archive$md5, progress, max_try, overwrite)
-    .extract_archive_members(path, archive, Filter(function(x) identical(x$archive_id, archive$id), pending$assets))
+    members <- Filter(function(x) identical(x$archive_id, archive$id), pending$assets)
+    fetch <- function() .fetch_verified(.zenodo_file_url(archive$record_id, archive$filename, isTRUE(catalog$sandbox)), path,
+                                        archive$sha256, archive$size, archive$md5, progress, max_try, overwrite = TRUE)
+    fetched <- archive$id %in% transfer_ids
+    if (fetched) fetch()
+    tryCatch(.extract_archive_members(path, archive, members), archive_content_error = function(error) {
+      # A freshly verified transfer cannot be repaired by fetching it again.
+      if (fetched) stop(error)
+      fetch()
+      .extract_archive_members(path, archive, members)
+    })
   }
   invisible(TRUE)
 }

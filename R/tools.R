@@ -1,14 +1,25 @@
 is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
 
+# Collision-free composite key for a method and its setting. The byte length of
+# the method makes the key injective for any strings (unlike "a.b"/"c" versus
+# "a"/"b.c" under a plain separator) and the function is vectorised.
+.method_key <- function(method, method_setting) {
+  method <- as.character(method)
+  paste0(nchar(method, type = "bytes"), ":", method, "/", method_setting)
+}
+
 safe_rbind <- function(df_list) {
 
-  # Remove empty data.frames
-  nrows   <- sapply(df_list, nrow)
+  if (!length(df_list))
+    return(NULL)
 
-  if (all(nrows) == 0)
+  # Remove empty data.frames
+  nrows   <- vapply(df_list, nrow, integer(1))
+
+  if (all(nrows == 0L))
     return(df_list[[1]])
 
-  df_list <- df_list[nrows > 0]
+  df_list <- df_list[nrows > 0L]
 
   if (length(df_list) == 1)
     return(df_list[[1]])

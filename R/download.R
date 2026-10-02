@@ -72,7 +72,7 @@ download_dgm_metadata <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
                                 dgm_name, catalog$release))
     if (nzchar(answer) && !tolower(substr(answer, 1, 1)) %in% "y") return(invisible(FALSE))
   }
-  .download_catalog_assets(catalog, assets, progress, max_try, overwrite)
+  .download_catalog_assets(catalog, assets, progress, max_try, overwrite, pending = pending)
   invisible(TRUE)
 }
 
@@ -109,13 +109,18 @@ download_dgm_metadata <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
 }
 
 .check_requested_coverage <- function(data, conditions = NULL, repetitions = NULL) {
-  groups <- split(data, interaction(data$method, data$method_setting, drop = TRUE))
-  for (group in groups) {
-    selected <- if (is.null(conditions)) unique(group$condition_id) else conditions
-    if (length(setdiff(selected, group$condition_id))) stop("Requested conditions are unavailable for a selected method/setting.", call. = FALSE)
-    if (!is.null(repetitions)) for (condition in selected)
-      if (length(setdiff(repetitions, group$repetition_id[group$condition_id == condition])))
-        stop("Requested repetitions are unavailable for a selected method/setting/condition.", call. = FALSE)
+  # Single pass: rows are split once per method/setting and, when repetitions
+  # are requested, once per condition within it.
+  for (rows in split(seq_len(nrow(data)), .method_key(data$method, data$method_setting))) {
+    available <- data$condition_id[rows]
+    selected <- if (is.null(conditions)) unique(available) else conditions
+    if (length(setdiff(selected, available))) stop("Requested conditions are unavailable for a selected method/setting.", call. = FALSE)
+    if (!is.null(repetitions)) {
+      present <- split(data$repetition_id[rows], available)
+      for (condition in selected)
+        if (length(setdiff(repetitions, present[[as.character(condition)]])))
+          stop("Requested repetitions are unavailable for a selected method/setting/condition.", call. = FALSE)
+    }
   }
 }
 
@@ -164,11 +169,12 @@ retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
   if (source == "local") return(.retrieve_local_dgm_results(dgm_name, method, method_setting, condition_id, repetition_id))
   catalog <- benchmark_catalog(release)
   assets <- .select_assets(catalog, dgm_name, "results", method, method_setting)
+  # Unknown condition IDs are rejected before any shard is read.
+  if (!is.null(condition_id)) .check_release_conditions(catalog, dgm_name, condition_id)
   data <- .read_catalog_assets(assets)
   .reject_duplicate_keys(data, c("method", "method_setting", "condition_id", "repetition_id"), "result")
   .check_requested_coverage(data, condition_id, repetition_id)
   if (!is.null(condition_id)) {
-    .check_release_conditions(catalog, dgm_name, condition_id)
     if (length(setdiff(condition_id, data$condition_id))) stop("Requested result conditions are unavailable.", call. = FALSE)
     data <- data[data$condition_id %in% condition_id, , drop = FALSE]
   }
@@ -196,6 +202,8 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
   assets <- .select_assets(catalog, dgm_name, kind, method, method_setting, replacement, measure)
   if (!identical(measure, "pairwise")) assets <- Filter(function(x) !identical(x$measure, "pairwise"), assets)
   if (!length(assets)) stop("No ordinary measures match the selection.", call. = FALSE)
+  # Unknown condition IDs are rejected before any table is read.
+  if (!is.null(condition_id)) .check_release_conditions(catalog, dgm_name, condition_id)
   if (is.null(measure)) {
     data <- .read_catalog_assets(assets)
   } else {
@@ -226,9 +234,6 @@ retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, metho
       }
     }
   }
-  if (!is.null(condition_id)) {
-    .check_release_conditions(catalog, dgm_name, condition_id)
-    data <- data[data$condition_id %in% condition_id, , drop = FALSE]
-  }
+  if (!is.null(condition_id)) data <- data[data$condition_id %in% condition_id, , drop = FALSE]
   data
 }
