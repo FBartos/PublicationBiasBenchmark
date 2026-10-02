@@ -17,9 +17,12 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
   if (!all(kinds %in% c("data", "results", "measures", "metadata"))) stop("Unsupported local resource kind.", call. = FALSE)
   root <- file.path(.get_path(), dgm_name)
   descriptors <- list()
-  add <- function(asset, relative) {
-    asset$id <- paste(dgm_name, asset$kind, relative, sep = "/")
-    asset$filename <- paste(dgm_name, asset$kind, gsub("[/\\\\]", "__", relative), sep = "__")
+  # The logical ID and the member filename are derived separately: measures use
+  # the extension-free IDs of published releases (<dgm>/measures/<label>) with a
+  # .csv member filename.
+  add <- function(asset, id_relative, file_relative = id_relative) {
+    asset$id <- paste(dgm_name, asset$kind, id_relative, sep = "/")
+    asset$filename <- paste(dgm_name, asset$kind, gsub("[/\\\\]", "__", file_relative), sep = "__")
     descriptors[[length(descriptors) + 1L]] <<- asset
   }
   for (kind in setdiff(kinds, "measures")) {
@@ -53,14 +56,17 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
         if (!is.null(method)) data <- data[data$method %in% method, , drop = FALSE]
         if (!is.null(method_setting)) data <- data[data$method_setting %in% method_setting, , drop = FALSE]
         if (!nrow(data)) next
-        coverage[[metric]] <- split(data$condition_id, paste(data$method, data$method_setting, sep = "/"))
+        coverage[[metric]] <- split(data$condition_id, .method_key(data$method, data$method_setting))
         auxiliary <- intersect(c("n_valid", "replaced"), names(data))
         names(data)[match(auxiliary, names(data))] <- paste0(auxiliary, "_", metric)
         wide <- if (is.null(wide)) data else merge(wide, data, by = keys, all = TRUE, sort = FALSE)
         metrics <- c(metrics, metric)
       }
       if (is.null(wide)) next
-      for (group in split(wide, interaction(wide$method, wide$method_setting, drop = TRUE))) {
+      # Groups are processed in method, then setting order.
+      group_keys <- .method_key(wide$method, wide$method_setting)
+      groups <- split(wide, factor(group_keys, levels = unique(group_keys[order(wide$method, wide$method_setting)])))
+      for (group in groups) {
         temporary <- tempfile("measures-", tmpdir = output_directory, fileext = ".csv")
         utils::write.csv(group, temporary, row.names = FALSE)
         hash <- digest::digest(file = temporary, algo = "sha256", serialize = FALSE)
@@ -71,13 +77,13 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
         if (file.exists(path)) unlink(temporary) else if (!file.rename(temporary, path)) stop("Cannot save prepared measures.", call. = FALSE)
         asset <- benchmark_resource(path, dgm_name, "measures", group$method[1], group$method_setting[1],
           package_version = package_version, replacement = replacement, measures = metrics)
-        key <- paste(group$method[1], group$method_setting[1], sep = "/")
+        key <- .method_key(group$method[1], group$method_setting[1])
         measure_conditions <- lapply(coverage, function(x) as.list(x[[key]]))
         asset$measures <- as.list(names(Filter(length, measure_conditions)))
         # Full coverage is the default; store only each metric's exceptions.
         asset$measure_conditions <- Filter(function(ids) !setequal(unlist(ids), unlist(asset$condition_ids)), measure_conditions)
         if (!length(asset$measure_conditions)) asset$measure_conditions <- NULL
-        add(asset, paste0(label, ".csv"))
+        add(asset, label, paste0(label, ".csv"))
       }
     }
   }

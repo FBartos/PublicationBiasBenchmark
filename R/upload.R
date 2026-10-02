@@ -81,9 +81,32 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
   lapply(seq_along(starts), function(i) list(start = ids[starts[i]], end = ids[ends[i]]))
 }
 
+# Frozen conditions of every published DGM must be reproduced exactly: no DGM
+# may disappear, no condition may be added or removed, and no existing condition
+# definition (columns or values) may change. conditions is a named list of data
+# frames or condition rows; base is the previous catalog (NULL for a baseline).
+.check_frozen_conditions <- function(base, conditions) {
+  if (is.null(base)) return(invisible(TRUE))
+  for (dgm in names(base$conditions)) {
+    if (!length(conditions[[dgm]]))
+      stop("Frozen conditions for published DGM '", dgm, "' are missing.", call. = FALSE)
+    old <- .catalog_conditions(base, dgm)
+    current <- .catalog_conditions(list(conditions = conditions), dgm)
+    index <- match(old$condition_id, current$condition_id)
+    if (nrow(old) != nrow(current) || anyNA(index))
+      stop("New conditions are not allowed for a published DGM; create a new DGM.", call. = FALSE)
+    if (!setequal(names(old), names(current)) ||
+        !identical(jsonlite::toJSON(old, dataframe = "rows", digits = NA),
+                   jsonlite::toJSON(current[index, names(old), drop = FALSE], dataframe = "rows", digits = NA)))
+      stop("Existing frozen condition definitions cannot change between releases.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 .validate_plan_coverage <- function(assets) {
   results <- Filter(function(x) x$kind %in% c("data", "results"), assets)
-  groups <- split(results, vapply(results, function(x) paste(c(x$dgm, x$kind, x$method, x$method_setting), collapse = "/"), character(1)))
+  groups <- split(results, vapply(results, function(x) .method_key(.method_key(x$dgm, x$kind),
+    if (is.null(x$method)) "" else .method_key(x$method, x$method_setting)), character(1)))
   for (group in groups) {
     spans <- list()
     for (asset in group) for (condition in asset$coverage) {
@@ -100,7 +123,7 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
   }
   measures <- Filter(function(x) x$kind == "measures", assets)
   groups <- split(measures, vapply(measures, function(x)
-    paste(x$dgm, x$method, x$method_setting, isTRUE(x$replacement), sep = "/"), character(1)))
+    .method_key(.method_key(x$dgm, x$method), .method_key(x$method_setting, isTRUE(x$replacement))), character(1)))
   for (group in groups) {
     ids <- unlist(lapply(group, `[[`, "condition_ids"))
     if (anyDuplicated(ids)) stop("Overlapping measure shards in the proposed release.", call. = FALSE)
@@ -188,14 +211,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
     new_files[[length(new_files) + 1L]] <- file
   }
   if (is.null(conditions)) conditions <- base$conditions
-  if (!is.null(base)) for (dgm in names(base$conditions)) {
-    old <- .catalog_conditions(base, dgm)
-    current <- .catalog_conditions(list(conditions = conditions), dgm)
-    index <- match(old$condition_id, current$condition_id)
-    if (anyNA(index) || !identical(jsonlite::toJSON(old, dataframe = "rows", digits = NA),
-                                  jsonlite::toJSON(current[index, names(old), drop = FALSE], dataframe = "rows", digits = NA)))
-      stop("Existing frozen condition definitions cannot change between releases.", call. = FALSE)
-  }
+  .check_frozen_conditions(base, conditions)
   catalog <- list(schema_version = 1L, release = release, sandbox = sandbox,
                    previous_release = if (is.null(base)) NULL else base$release,
                    package_version = package_version,
@@ -507,7 +523,8 @@ publish_benchmark_release <- function(plan, token = NULL) {
   for (group in plan$groups) for (asset in group) {
     reference <- Filter(function(x) identical(x$id, asset$id), catalog$assets)[[1]]
     .fetch_verified(.zenodo_file_url(reference$record_id, reference$filename, plan$sandbox),
-                    file.path(verify_dir, asset$sha256), asset$sha256, asset$size, asset$md5, progress = FALSE)
+                    file.path(verify_dir, asset$sha256), asset$sha256, asset$size, asset$md5, progress = FALSE,
+                    retry_not_found = 5L)
   }
   if (is.null(state$catalog_record)) {
     state$catalog_record <- list(record_id = .create_component_record(plan,
@@ -531,7 +548,7 @@ publish_benchmark_release <- function(plan, token = NULL) {
                   doi = if (!is.null(record$pids$doi$identifier)) record$pids$doi$identifier else record$doi)
   .fetch_verified(.zenodo_file_url(result$record_id, "release.json", plan$sandbox),
                   file.path(verify_dir, "release.json"), result$catalog_sha256, catalog_asset$size, catalog_asset$md5,
-                  progress = FALSE)
+                  progress = FALSE, retry_not_found = 5L)
   jsonlite::write_json(result, file.path(plan$state_directory, "registry-entry.json"), auto_unbox = TRUE, pretty = TRUE)
   result
 }

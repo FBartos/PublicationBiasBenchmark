@@ -279,7 +279,7 @@
   for (archive in catalog$archives) {
     path <- file.path(directory, archive$filename)
     .fetch_verified(.zenodo_file_url(archive$record_id, archive$filename, plan$sandbox), path,
-      archive$sha256, archive$size, archive$md5, progress = FALSE, max_try = 3)
+      archive$sha256, archive$size, archive$md5, progress = FALSE, max_try = 3, retry_not_found = 5L)
     .zip_inventory(path, archive$members)
     # Verify every member, not only those needed by a sample reader selection.
     temporary <- tempfile("verify-members-", tmpdir = directory); dir.create(temporary)
@@ -380,7 +380,7 @@
   for (doi in storage_dois) .verify_relationship(record, doi, "haspart")
   result <- list(release = catalog$release, record_id = id, catalog_sha256 = asset$sha256, doi = .zenodo_doi(record), concept_doi = concept)
   .fetch_verified(.zenodo_file_url(id, "release.json", plan$sandbox), file.path(plan$state_directory, "public-verification", "release.json"),
-    asset$sha256, asset$size, asset$md5, progress = FALSE, max_try = 3)
+    asset$sha256, asset$size, asset$md5, progress = FALSE, max_try = 3, retry_not_found = 5L)
   jsonlite::write_json(result, file.path(plan$state_directory, "registry-entry.json"), auto_unbox = TRUE, pretty = TRUE)
   result
 }

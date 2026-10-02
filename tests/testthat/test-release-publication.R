@@ -224,3 +224,75 @@ test_that("native record metadata and JSON file responses are parsed consistentl
   expect_equal(.zenodo_request("GET", "records/12345/draft/files", "test-token")$id, "12345")
   expect_equal(accepts, c("application/vnd.inveniordm.v1+json", "application/json"))
 })
+
+test_that("prepared measures use extension-free IDs and CSV member filenames", {
+  root <- withr::local_tempdir()
+  results <- file.path(root, "no_bias", "results"); measures <- file.path(root, "no_bias", "measures")
+  dir.create(results, recursive = TRUE); dir.create(measures)
+  test_resource(results, "A-1.csv", ids = 1:2)
+  for (file in c("bias.csv", "bias-replacement.csv"))
+    utils::write.csv(data.frame(method = c("A", "B"), method_setting = "default", condition_id = 1,
+      bias = c(.1, .2), bias_mcse = .01, n_valid = 4, replaced = if (grepl("replacement", file)) "C-default=1;" else NA),
+      file.path(measures, file), row.names = FALSE)
+  local_mocked_bindings(.get_path = function() root)
+  assets <- prepare_benchmark_resources("no_bias", output_directory = file.path(root, "prepared"), package_version = "0.4.0")
+  by_kind <- function(kind) Filter(function(x) x$kind == kind, assets)
+  ids <- vapply(by_kind("measures"), `[[`, character(1), "id")
+  files <- vapply(by_kind("measures"), `[[`, character(1), "filename")
+  expect_setequal(ids, c("no_bias/measures/A-default", "no_bias/measures/B-default",
+                         "no_bias/measures/A-default-replacement", "no_bias/measures/B-default-replacement"))
+  expect_setequal(files, c("no_bias__measures__A-default.csv", "no_bias__measures__B-default.csv",
+                           "no_bias__measures__A-default-replacement.csv", "no_bias__measures__B-default-replacement.csv"))
+  expect_equal(files[match(c("no_bias/measures/A-default", "no_bias/measures/B-default-replacement"), ids)],
+               c("no_bias__measures__A-default.csv", "no_bias__measures__B-default-replacement.csv"))
+  # Other kinds keep their relative path (with extension) in the ID.
+  expect_equal(by_kind("results")[[1]]$id, "no_bias/results/A-1.csv")
+  expect_equal(by_kind("results")[[1]]$filename, "no_bias__results__A-1.csv")
+  expect_true(all(vapply(assets, function(x) .safe_filename(x$filename), logical(1))))
+})
+
+test_that("prepared measures keep methods whose identifiers share a joined spelling apart", {
+  root <- withr::local_tempdir(); measures <- file.path(root, "no_bias", "measures")
+  dir.create(measures, recursive = TRUE)
+  utils::write.csv(data.frame(method = c("a.b", "a"), method_setting = c("c", "b.c"), condition_id = 1,
+    bias = c(.1, .2), bias_mcse = .01, n_valid = 4), file.path(measures, "bias.csv"), row.names = FALSE)
+  local_mocked_bindings(.get_path = function() root)
+  assets <- prepare_benchmark_resources("no_bias", kinds = "measures", output_directory = file.path(root, "prepared"))
+  expect_length(assets, 2L)
+  for (asset in assets) {
+    table <- .read_resource_csv(asset$local_path)
+    expect_equal(nrow(table), 1L)
+    expect_equal(c(table$method, table$method_setting), c(asset$method, asset$method_setting))
+    expect_equal(asset$id, paste0("no_bias/measures/", asset$method, "-", asset$method_setting))
+    expect_equal(unlist(asset$condition_ids), 1L)
+  }
+  expect_setequal(vapply(assets, `[[`, character(1), "method"), c("a.b", "a"))
+})
+
+test_that("frozen conditions are checked by one helper for both plan schemas", {
+  root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
+  base <- test_catalog(list(a)); base$conditions$no_bias$label <- c("x", "y")
+  plan <- function(conditions, archive = FALSE) plan_benchmark_release("test.2", list(), previous = base, conditions = conditions,
+    metadata = list(), state_directory = withr::local_tempdir(), archive = archive, community = "test-community")
+  edit <- function(change) { x <- base$conditions; x$no_bias <- change(x$no_bias); x }
+  cases <- list(
+    missing = list(list(), "Frozen conditions for published DGM 'no_bias' are missing."),
+    other_dgm = list(list(other = base$conditions$no_bias), "Frozen conditions for published DGM 'no_bias' are missing."),
+    added_row = list(edit(function(x) rbind(x, data.frame(condition_id = 3L, mean_effect = 0, label = "z"))),
+                     "New conditions are not allowed for a published DGM; create a new DGM."),
+    removed_row = list(edit(function(x) x[1, ]), "New conditions are not allowed for a published DGM; create a new DGM."),
+    replaced_row = list(edit(function(x) { x$condition_id[2] <- 5L; x }), "New conditions are not allowed for a published DGM"),
+    changed_value = list(edit(function(x) { x$mean_effect[1] <- 1; x }),
+                         "Existing frozen condition definitions cannot change between releases."),
+    added_column = list(edit(function(x) { x$extra <- 1; x }), "Existing frozen condition definitions cannot change between releases."),
+    removed_column = list(edit(function(x) x[c("condition_id", "mean_effect")]),
+                          "Existing frozen condition definitions cannot change between releases."))
+  for (name in names(cases)) for (archive in c(FALSE, TRUE))
+    expect_error(plan(cases[[name]][[1]], archive), cases[[name]][[2]], fixed = TRUE, info = paste(name, archive))
+  expect_error(.check_frozen_conditions(base, edit(function(x) x[1, ])), "New conditions", fixed = TRUE)
+  expect_true(.check_frozen_conditions(NULL, list()))
+  # Reordered rows and additional DGMs are allowed.
+  expect_true(.check_frozen_conditions(base, edit(function(x) x[2:1, ])))
+  expect_true(.check_frozen_conditions(base, c(base$conditions, list(new_dgm = data.frame(condition_id = 1L, mean_effect = 0)))))
+  expect_identical(plan(base$conditions)$catalog$conditions, base$conditions)
+})

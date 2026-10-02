@@ -18,10 +18,10 @@
     if (asset$kind %in% c("measures", "pairwise")) {
       # Aggregate over all shards of the methods that actually supplied inputs.
       # An old table cannot depend on a method first introduced in a later release.
-      groups <- unique(vapply(selected, function(x) paste(x$method, x$method_setting, sep = "/"), character(1)))
+      groups <- unique(vapply(selected, function(x) .method_key(x$method, x$method_setting), character(1)))
       selected <- Filter(function(x) x$kind == "results" && identical(x$dgm, asset$dgm) &&
         length(intersect(unlist(x$condition_ids), unlist(asset$condition_ids))) > 0L &&
-        paste(x$method, x$method_setting, sep = "/") %in% groups, assets)
+        .method_key(x$method, x$method_setting) %in% groups, assets)
     }
   } else {
     selected <- Filter(function(x) {
@@ -189,14 +189,6 @@
   for (asset in catalog$assets) for (identifier in c(asset$dgm, asset$method, asset$method_setting))
     if (!.portable_filename(identifier) || grepl("--", identifier, fixed = TRUE)) stop("DGM, method and setting identifiers must be portable and cannot contain '--'.", call. = FALSE)
   if (!is.null(base)) {
-    for (dgm in names(base$conditions)) {
-      old <- .catalog_conditions(base, dgm); current <- .catalog_conditions(catalog, dgm)
-      index <- match(old$condition_id, current$condition_id)
-      if (nrow(old) != nrow(current) || anyNA(index) || !setequal(names(old), names(current)) ||
-          !identical(jsonlite::toJSON(old, dataframe = "rows", digits = NA),
-            jsonlite::toJSON(current[index, names(old), drop = FALSE], dataframe = "rows", digits = NA)))
-        stop("New conditions are not allowed for a published DGM; create a new DGM.", call. = FALSE)
-    }
     old_ids <- vapply(base$assets, `[[`, character(1), "id")
     for (asset in catalog$assets) if (asset$dgm %in% names(base$conditions) && asset$kind %in% c("data", "metadata", "archive") && !asset$id %in% old_ids)
       stop("New data, metadata or source archive assets are not allowed for a published DGM.", call. = FALSE)
@@ -269,10 +261,18 @@
   changed <- unique(changed)
   archives <- lapply(archives, function(x) { if (x$dgm %in% changed) x$record_id <- "0"; x })
   catalog$archives <- archives
+  # Member owners by member ID, built once: each asset must be owned by exactly
+  # one ZIP member carrying its hash.
+  member_owner <- rep(seq_along(archives), vapply(archives, function(a) length(a$members), integer(1)))
+  member_id <- as.character(unlist(lapply(archives, function(a) vapply(a$members, `[[`, character(1), "id")), use.names = FALSE))
+  member_sha <- as.character(unlist(lapply(archives, function(a) vapply(a$members, `[[`, character(1), "sha256")), use.names = FALSE))
+  owners <- split(seq_along(member_id), member_id)
   catalog$assets <- lapply(catalog$assets, function(asset) {
-    matches <- Filter(function(a) any(vapply(a$members, function(m) identical(m$id, asset$id) && identical(m$sha256, asset$sha256), logical(1))), archives)
-    if (length(matches) != 1L) stop("Asset does not map to exactly one ZIP member.", call. = FALSE)
-    asset$archive_id <- matches[[1]]$id; asset$record_id <- matches[[1]]$record_id
+    rows <- owners[[asset$id]]
+    rows <- rows[member_sha[rows] == asset$sha256]
+    if (length(rows) != 1L) stop("Asset does not map to exactly one ZIP member.", call. = FALSE)
+    owner <- archives[[member_owner[rows]]]
+    asset$archive_id <- owner$id; asset$record_id <- owner$record_id
     if (!length(asset$dependencies) && !is.null(base) &&
         (isTRUE(asset$replacement) || asset$kind == "pairwise" || identical(asset$measure, "pairwise"))) {
       old <- Filter(function(x) identical(x$id, asset$id), base$assets)
