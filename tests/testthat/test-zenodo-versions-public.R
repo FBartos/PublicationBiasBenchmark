@@ -527,6 +527,8 @@ test_that("the range probe stops reading a 5 MB body that a real server streams 
   }
   skip_if(is.null(server), "no local port could be bound")
   withr::defer(if (server$is_alive()) server$kill())
+  # libcurl sends even 127.0.0.1 requests to a configured http_proxy; keep the probe local.
+  withr::local_envvar(no_proxy = "127.0.0.1")
   answer <- .resource_range_probe(sprintf("http://127.0.0.1:%d/archive.zip", port))
   # The response is 200 with the whole length announced; only the first 64 KiB are read.
   expect_identical(answer$status, 200L)
