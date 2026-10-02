@@ -26,6 +26,7 @@
 ## Fixes
  - Replacement measures computed with earlier versions could be `NA` (`n_valid` 0) in conditions where the replaced method had no valid runs; the internal `safe_rbind()` discarded the replacement rows in that case and is fixed.
  - `compute_single_measure()` creates the DGM's `measures` folder when it does not exist.
+ - Pairwise comparisons (`compare_single_measure()`, `compare_measures()`) kept only the last condition of every method pair, and fresh runs computed both orientations of each pair; they now give one row per unordered method pair and condition, as runs that add methods to an existing file already did. Recompute existing pairwise files with `overwrite = TRUE`.
  - Methods whose names or settings contain separators such as `.` or `/` are no longer merged in coverage checks, release planning and measure preparation; unknown condition IDs are rejected before any shard is read.
  - The release catalog family sentence of a storage record's description is added once, however often a publication is resumed.
  - Catalog validation and `list_benchmark_resources()` use indexed lookups instead of repeated scans.

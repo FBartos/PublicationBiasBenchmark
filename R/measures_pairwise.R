@@ -81,8 +81,9 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     # Remove self-comparisons
     comparisons_to_compute <- method_pairs[method_pairs$method_a != method_pairs$method_b, ]
 
-    # Remove duplicate pairs (A vs B and B vs A are the same)
-    method_pairs <- method_pairs[!duplicated(t(apply(method_pairs, 1, sort))), ]
+    # Remove duplicate pairs (A vs B and B vs A are the same): one direction per
+    # unordered pair, as when comparisons are added to an existing file
+    comparisons_to_compute <- comparisons_to_compute[!duplicated(t(apply(comparisons_to_compute, 1, sort))), ]
 
   } else {
 
@@ -239,7 +240,9 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 
     for (condition in conditions$condition_id) {
 
-      comparison_out[[idx]] <- data.frame(
+      # One output row per method pair and condition
+      out_idx <- length(comparison_out) + 1L
+      comparison_out[[out_idx]] <- data.frame(
         method_a      = method_a_key,
         method_b      = method_b_key,
         condition_id  = condition,
@@ -293,8 +296,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
       score <- ifelse(dist_a == dist_b, 0.5, ifelse(dist_a > dist_b, 0, 1))
 
       # Update output
-      comparison_out[[idx]]$score         <- mean(score)
-      comparison_out[[idx]]$n_comparisons <- length(score)
+      comparison_out[[out_idx]]$score         <- mean(score)
+      comparison_out[[out_idx]]$n_comparisons <- length(score)
     }
   }
 
