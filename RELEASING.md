@@ -172,25 +172,40 @@ are. Catalogs and state are LF-terminated UTF-8 JSON on every platform. Release
 2026.1 is pinned by its checksum and is never rewritten.
 
 A plan must not be edited after planning: every session recomputes the plan's
-identity (release, community, environment, upload groups, record selectors,
-metadata, packing limits) and refuses a modified plan before any request.
-`verify_benchmark_release()` reads the state first and also stops when a staged
-`release.json` belongs to another release or lists a different archive inventory.
+identity (release, community, environment, the id, name, hashes and size of every
+upload entry, the storage base record of each changed DGM and the earlier catalog's
+schema, record selectors, metadata, packing limits) and refuses a modified plan
+before any request. `verify_benchmark_release()` reads the state first and also
+stops when a staged `release.json` belongs to another release or has a different
+archive or member descriptor (id, name, size, SHA-256, MD5).
 
-**CRLF note.** A run that straddles the upgrade to this version can find a completed
-`release.json` with CRLF line ends in the existing catalog draft, uploaded there by
-an interrupted `publish_benchmark_release()` of the older code (the catalog file is
-uploaded only when publishing, never when staging). The new code writes LF bytes, so
-publishing stops with "Existing draft file differs; refusing to overwrite it". The
-package never deletes completed draft files, so re-planning alone does not help.
-Recover by hand:
+### Releases interrupted by an earlier package version
 
-1. re-plan in a new state directory (plans and states of the older version are
-   rejected anyway);
-2. in the Zenodo web interface open the draft of the catalog record
-   ("PublicationBiasBenchmark release `<release>`") and remove its `release.json`;
-3. stage and verify the new plan, then run `publish_benchmark_release()` with
-   `confirm` again; it uploads the LF `release.json`.
+Finish an in-flight publication with the package version that started it. This
+version refuses plans and states written by earlier versions ("This plan was
+created by an earlier package version; re-plan in a new state directory"), so do
+not upgrade the package in the middle of a release. If a release was interrupted
+by an earlier version and has to be continued with this one, the plan is rebuilt in
+a new state directory and what exists online decides what is possible:
+
+- **Unpublished drafts** of the interrupted run (storage version drafts and the
+  catalog draft) can be discarded in the Zenodo web interface before re-planning in
+  a new state directory; the new plan then creates its own drafts. The package
+  never deletes completed draft files itself.
+- **Published storage versions cannot be changed.** A run interrupted after its
+  storage versions were published needs manual reconciliation: the ZIPs of a
+  re-planned release are rebuilt and will not match the published ones, so the new
+  plan cannot adopt them. Decide how to proceed before re-planning (for example by
+  finishing that release with the older package version).
+- **CRLF `release.json`.** The catalog file is uploaded to the catalog draft only by
+  `publish_benchmark_release()`; staging never uploads it. A completed `release.json`
+  with CRLF line ends can therefore only be in the catalog draft when an older
+  publish was interrupted after uploading it. The new code writes LF bytes, so
+  publishing stops with "Existing draft file differs; refusing to overwrite it".
+  Re-plan in a new state directory, remove that `release.json` from the draft of the
+  catalog record ("PublicationBiasBenchmark release `<release>`") in the Zenodo web
+  interface, then stage and verify the new plan and run `publish_benchmark_release()`
+  with `confirm` again; it uploads the LF `release.json`.
 
 Do not edit files in the state directory.
 
