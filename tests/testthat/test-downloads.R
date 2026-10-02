@@ -115,12 +115,6 @@ test_that("public rate limits respect Retry-After before repairing a cached file
   expect_equal(calls, 2L); expect_equal(waits, 60)
 })
 
-http_failure <- function(status, retry_delay = NULL) structure(list(
-  message = paste0("Public resource download failed (HTTP ", status, ")."), call = NULL,
-  status = status, retry_delay = retry_delay), class = c("resource_http_error", "error", "condition"))
-curl_failure <- function(class, message = "transfer failed") structure(list(message = message, call = NULL),
-  class = c(class, "curl_error", "error", "condition"))
-
 # Run .fetch_verified against a scripted sequence of failures; a NULL entry
 # writes the verified bytes, "corrupt" writes same-size wrong bytes.
 scripted_fetch <- function(failures, max_try = 10, retry_not_found = 0L,
@@ -197,6 +191,8 @@ test_that("server errors, timeouts and corrupt transfers back off and retry", {
   expect_equal(run$calls, 4L); expect_equal(run$waits, c(1, 2, 4))
   expect_match(conditionMessage(run$result), "Could not download and verify 'target.csv' after 4 attempts")
   expect_match(conditionMessage(run$result), "last error: Public resource download failed (HTTP 503)", fixed = TRUE)
+  expect_false(grepl("[.])[.]", conditionMessage(run$result)))
+  expect_match(conditionMessage(run$result), "(HTTP 503)).", fixed = TRUE)
   run <- scripted_fetch(rep(list("corrupt"), 10), max_try = 7)
   expect_equal(run$waits, c(1, 2, 4, 8, 16, 30))
 })
@@ -220,6 +216,12 @@ test_that("retry_not_found retries missing files a bounded number of times but n
   expect_equal(run$calls, 1L); expect_match(conditionMessage(run$result), "HTTP 410")
   run <- scripted_fetch(rep(list(http_failure(404L)), 20), retry_not_found = 5L, max_try = 3)
   expect_equal(run$calls, 3L)
+  # Exhausting the attempts on a missing file still gives the precise message.
+  expect_match(conditionMessage(run$result), "target.csv is not available on Zenodo (HTTP 404)", fixed = TRUE)
+  expect_match(conditionMessage(run$result), "list_benchmark_releases()", fixed = TRUE)
+  # Publication-time fetches allow the five retries: six attempts.
+  run <- scripted_fetch(rep(list(http_failure(404L)), 20), retry_not_found = 5L, max_try = 6)
+  expect_equal(run$calls, 6L); expect_equal(run$waits, c(1, 2, 4, 8, 16))
   run <- scripted_fetch(rep(list(http_failure(404L)), 20))
   expect_equal(run$calls, 1L)
   expect_error(.fetch_verified("https://example.test", tempfile(), "x", retry_not_found = -1), "retry_not_found")

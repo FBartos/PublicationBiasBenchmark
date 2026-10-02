@@ -92,11 +92,14 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
       stop("Frozen conditions for published DGM '", dgm, "' are missing.", call. = FALSE)
     old <- .catalog_conditions(base, dgm)
     current <- .catalog_conditions(list(conditions = conditions), dgm)
+    # Columns first: a supplied table without condition_id (or with other columns)
+    # changes the definitions; it is not a set of new conditions.
+    if (!setequal(names(old), names(current)))
+      stop("Existing frozen condition definitions cannot change between releases.", call. = FALSE)
     index <- match(old$condition_id, current$condition_id)
     if (nrow(old) != nrow(current) || anyNA(index))
       stop("New conditions are not allowed for a published DGM; create a new DGM.", call. = FALSE)
-    if (!setequal(names(old), names(current)) ||
-        !identical(jsonlite::toJSON(old, dataframe = "rows", digits = NA),
+    if (!identical(jsonlite::toJSON(old, dataframe = "rows", digits = NA),
                    jsonlite::toJSON(current[index, names(old), drop = FALSE], dataframe = "rows", digits = NA)))
       stop("Existing frozen condition definitions cannot change between releases.", call. = FALSE)
   }

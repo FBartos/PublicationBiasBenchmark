@@ -142,3 +142,13 @@ test_that("omitted conditions follow the results source", {
                          overwrite = TRUE)
   expect_equal(utils::read.csv(output)$condition_id, 9L)
 })
+
+test_that("computing a measure creates the measures folder of a DGM that has none yet", {
+  root <- withr::local_tempdir()
+  local_mocked_bindings(.get_path = function() root)
+  local_result_reader()
+  expect_false(dir.exists(file.path(root, "no_bias", "measures")))
+  expect_true(source_test_single())
+  expect_true(file.exists(file.path(root, "no_bias", "measures", "bias.csv")))
+  expect_equal(nrow(utils::read.csv(file.path(root, "no_bias", "measures", "bias.csv"))), 1L)
+})

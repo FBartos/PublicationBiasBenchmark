@@ -417,3 +417,42 @@ test_that("plan coverage and derived inputs separate methods whose identifiers c
   inputs <- .asset_inputs(m, list(r1, r2, m))
   expect_equal(vapply(inputs, `[[`, character(1), "id"), "r1")
 })
+
+test_that("listing coerces optional scalar metadata and looks up each archive once per asset", {
+  skip_if_not_installed("zip")
+  originals <- withr::local_tempdir(); state <- withr::local_tempdir()
+  fixture <- archive_fixture(originals, state)
+  public <- .public_catalog(fixture$plan$catalog)
+  # A factor in an in-memory catalog (for example from a data frame) must not break the listing.
+  public$assets <- lapply(public$assets, function(x) { x$package_version <- factor("0.4.0"); x })
+  listing <- list_benchmark_resources(public)
+  expect_type(listing$package_version, "character"); expect_true(all(listing$package_version == "0.4.0"))
+  expect_true(all(listing$method_setting %in% c("", "default")))
+  # One archive lookup per archived asset on top of what validating the catalog needs.
+  lookups <- 0L; original <- .catalog_archive
+  local_mocked_bindings(.catalog_archive = function(...) { lookups <<- lookups + 1L; original(...) })
+  catalog <- .public_catalog(fixture$plan$catalog)
+  lookups <- 0L
+  .validate_catalog(catalog); validation <- lookups
+  lookups <- 0L
+  listing <- list_benchmark_resources(catalog)
+  expect_equal(lookups, validation + sum(!is.na(listing$archive_id)))
+  expect_true(all(grepl("^https://zenodo.org/api/records/[0-9]+/files/.+[.]zip/content$", listing$url[!is.na(listing$archive_id)])))
+})
+
+test_that("abandoned staging directories are cleaned up even when every file is already cached", {
+  skip_if_not_installed("zip")
+  originals <- withr::local_tempdir(); state <- withr::local_tempdir()
+  fixture <- archive_fixture(originals, state); catalog <- fixture$plan$catalog
+  root <- withr::local_tempdir()
+  local_mocked_bindings(.get_path = function() root)
+  calls <- fixture_downloader(fixture$plan)
+  expect_true(download_dgm_results("no_bias", method = "A", release = catalog, progress = FALSE))
+  cache <- file.path(root, "cache")
+  dir.create(file.path(cache, "extract-abandoned")); dir.create(file.path(cache, "extract-recent"))
+  Sys.setFileTime(file.path(cache, "extract-abandoned"), Sys.time() - 3 * 24 * 3600)
+  expect_message(download_dgm_results("no_bias", method = "A", release = catalog), "All selected files are cached and verified")
+  expect_length(calls$urls, 1L)
+  expect_false(dir.exists(file.path(cache, "extract-abandoned")))
+  expect_true(dir.exists(file.path(cache, "extract-recent")))
+})

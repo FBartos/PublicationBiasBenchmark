@@ -20,3 +20,9 @@ test_catalog <- function(assets, release = "test.1") list(schema_version = 1L, r
   assets = assets, conditions = list(no_bias = data.frame(condition_id = 1:2, mean_effect = 0)), sandbox = FALSE)
 
 legacy_plan_benchmark_release <- function(...) plan_benchmark_release(..., archive = FALSE)
+
+http_failure <- function(status, retry_delay = NULL) structure(list(
+  message = paste0("Public resource download failed (HTTP ", status, ")."), call = NULL,
+  status = status, retry_delay = retry_delay), class = c("resource_http_error", "error", "condition"))
+curl_failure <- function(class, message = "transfer failed") structure(list(message = message, call = NULL),
+  class = c(class, "curl_error", "error", "condition"))

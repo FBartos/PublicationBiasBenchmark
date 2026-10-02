@@ -286,6 +286,13 @@ test_that("frozen conditions are checked by one helper for both plan schemas", {
                          "Existing frozen condition definitions cannot change between releases."),
     added_column = list(edit(function(x) { x$extra <- 1; x }), "Existing frozen condition definitions cannot change between releases."),
     removed_column = list(edit(function(x) x[c("condition_id", "mean_effect")]),
+                          "Existing frozen condition definitions cannot change between releases."),
+    # Without condition_id the entry redefines the conditions; it does not add new ones.
+    no_condition_id = list(edit(function(x) x[setdiff(names(x), "condition_id")]),
+                           "Existing frozen condition definitions cannot change between releases."),
+    rows_without_condition_id = list(edit(function(x) list(list(mean_effect = 0, label = "x"), list(mean_effect = 0, label = "y"))),
+                                     "Existing frozen condition definitions cannot change between releases."),
+    renamed_column = list(edit(function(x) { names(x)[names(x) == "label"] <- "tag"; x }),
                           "Existing frozen condition definitions cannot change between releases."))
   for (name in names(cases)) for (archive in c(FALSE, TRUE))
     expect_error(plan(cases[[name]][[1]], archive), cases[[name]][[2]], fixed = TRUE, info = paste(name, archive))
@@ -295,4 +302,25 @@ test_that("frozen conditions are checked by one helper for both plan schemas", {
   expect_true(.check_frozen_conditions(base, edit(function(x) x[2:1, ])))
   expect_true(.check_frozen_conditions(base, c(base$conditions, list(new_dgm = data.frame(condition_id = 1L, mean_effect = 0)))))
   expect_identical(plan(base$conditions)$catalog$conditions, base$conditions)
+})
+
+test_that("method/setting pairs that spell the same measure label are rejected", {
+  root <- withr::local_tempdir(); measures <- file.path(root, "no_bias", "measures")
+  dir.create(measures, recursive = TRUE)
+  local_mocked_bindings(.get_path = function() root)
+  write_measures <- function(method, setting, replacement = FALSE) utils::write.csv(
+    data.frame(method = method, method_setting = setting, condition_id = 1, bias = .1, bias_mcse = .01, n_valid = 4),
+    file.path(measures, paste0("bias", if (replacement) "-replacement", ".csv")), row.names = FALSE)
+  # "a-b" + "c" and "a" + "b-c" both give the label "a-b-c".
+  utils::write.csv(data.frame(method = c("a-b", "a"), method_setting = c("c", "b-c"), condition_id = 1,
+    bias = c(.1, .2), bias_mcse = .01, n_valid = 4), file.path(measures, "bias.csv"), row.names = FALSE)
+  expect_error(prepare_benchmark_resources("no_bias", kinds = "measures", output_directory = file.path(root, "prepared")),
+               "share the measure label 'a-b-c'")
+  # Distinct labels, also across the ordinary and replacement variants, are fine.
+  write_measures(c("a-b", "a"), c("c", "d"))
+  utils::write.csv(data.frame(method = "a", method_setting = "d", condition_id = 1, bias = .1, bias_mcse = .01, n_valid = 4,
+    replaced = "x=1;"), file.path(measures, "bias-replacement.csv"), row.names = FALSE)
+  assets <- prepare_benchmark_resources("no_bias", kinds = "measures", output_directory = file.path(root, "prepared"))
+  expect_setequal(vapply(assets, `[[`, character(1), "id"),
+                  c("no_bias/measures/a-b-c", "no_bias/measures/a-d", "no_bias/measures/a-d-replacement"))
 })

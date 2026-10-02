@@ -46,6 +46,7 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
     files <- list.files(file.path(root, "measures"), pattern = "\\.csv$", full.names = TRUE)
     files <- files[!grepl("pairwise", basename(files))]
     dir.create(output_directory, recursive = TRUE, showWarnings = FALSE)
+    seen_labels <- character()
     for (replacement in c(FALSE, TRUE)) {
       wide <- NULL; metrics <- character(); coverage <- list()
       for (path in files[grepl("replacement", basename(files)) == replacement]) {
@@ -67,10 +68,16 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
       group_keys <- .method_key(wide$method, wide$method_setting)
       groups <- split(wide, factor(group_keys, levels = unique(group_keys[order(wide$method, wide$method_setting)])))
       for (group in groups) {
+        label <- paste0(group$method[1], "-", group$method_setting[1], if (replacement) "-replacement")
+        # The label names the logical ID and the member file: two method/setting
+        # pairs that spell the same label would collide in the release.
+        if (label %in% seen_labels)
+          stop("Several method/setting pairs share the measure label '", label,
+               "'; their measures would collide in the release.", call. = FALSE)
+        seen_labels <- c(seen_labels, label)
         temporary <- tempfile("measures-", tmpdir = output_directory, fileext = ".csv")
         utils::write.csv(group, temporary, row.names = FALSE)
         hash <- digest::digest(file = temporary, algo = "sha256", serialize = FALSE)
-        label <- paste0(group$method[1], "-", group$method_setting[1], if (replacement) "-replacement")
         filename <- paste0(label, "-", hash, ".csv")
         if (!.safe_filename(filename)) { unlink(temporary); stop("Method identifiers cannot form safe filenames.", call. = FALSE) }
         path <- file.path(output_directory, filename)

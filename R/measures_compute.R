@@ -505,7 +505,8 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
     new_results <- safe_rbind(list(new_results, existing_results))
   }
 
-  # Save results
+  # Save results (the measures folder does not exist for a DGM without measures yet)
+  dir.create(output_folder, recursive = TRUE, showWarnings = FALSE)
   utils::write.csv(new_results, file = output_file, row.names = FALSE)
 
   return(invisible(TRUE))

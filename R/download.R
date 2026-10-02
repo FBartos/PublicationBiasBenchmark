@@ -62,6 +62,8 @@ download_dgm_metadata <- function(dgm_name, overwrite = FALSE, progress = TRUE, 
   }
   if (!length(assets)) stop("No files match the requested selection.", call. = FALSE)
   pending <- .pending_downloads(catalog, assets, overwrite)
+  # Abandoned extractions are removed even when everything is already cached.
+  .remove_stale_extractions()
   if (!length(pending$assets)) {
     if (progress) message("All selected files are cached and verified.")
     return(invisible(TRUE))

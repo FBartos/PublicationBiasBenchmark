@@ -180,7 +180,8 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
   # one data frame per asset. unlist() keeps the integer/double typing of sizes
   # that row-binding produced.
   archives <- lapply(assets, function(x) if (is.null(x$archive_id)) NULL else .catalog_archive(catalog, x$archive_id, index))
-  text <- function(field) vapply(assets, function(x) if (is.null(x[[field]])) "" else x[[field]], character(1))
+  # Optional scalar metadata may be a factor or another type in an in-memory catalog.
+  text <- function(field) vapply(assets, function(x) if (is.null(x[[field]])) "" else as.character(x[[field]]), character(1))
   data.frame(id = vapply(assets, `[[`, character(1), "id"), dgm = vapply(assets, `[[`, character(1), "dgm"),
              kind = vapply(assets, `[[`, character(1), "kind"),
              method = text("method"), method_setting = text("method_setting"),
@@ -188,12 +189,15 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
              size = unlist(lapply(assets, `[[`, "size")),
              sha256 = vapply(assets, `[[`, character(1), "sha256"),
              record_id = vapply(assets, `[[`, character(1), "record_id"),
-             url = vapply(assets, .resource_reference_url, character(1), catalog = catalog, index = index),
+             url = vapply(seq_along(assets), function(i) {
+               reference <- if (is.null(archives[[i]])) assets[[i]] else archives[[i]]
+               .zenodo_file_url(reference$record_id, reference$filename, isTRUE(catalog$sandbox))
+             }, character(1)),
              archive_id = vapply(assets, function(x) if (is.null(x$archive_id)) NA_character_ else x$archive_id, character(1)),
              archive_filename = vapply(archives, function(a) if (is.null(a)) NA_character_ else a$filename, character(1)),
              download_size = unlist(lapply(seq_along(assets), function(i)
                if (is.null(archives[[i]])) assets[[i]]$size else archives[[i]]$size)),
-             package_version = vapply(assets, function(x) if (is.null(x$package_version)) NA_character_ else x$package_version, character(1)),
+             package_version = vapply(assets, function(x) if (is.null(x$package_version)) NA_character_ else as.character(x$package_version), character(1)),
              stringsAsFactors = FALSE)
 }
 
@@ -311,8 +315,10 @@ list_benchmark_resources <- function(release = NULL, dgm_name = NULL, kind = NUL
       .resource_retry_wait(delay)
     }
   }
+  if (inherits(condition, "resource_http_error") && isTRUE(condition$status %in% c(404L, 410L)))
+    stop(.download_failure_message("permanent", condition, basename(destination), url), call. = FALSE)
   stop("Could not download and verify '", basename(destination), "' after ", max_try, " attempts",
-       if (is.null(condition)) "." else paste0(" (last error: ", conditionMessage(condition), ")."), call. = FALSE)
+       if (is.null(condition)) "." else paste0(" (last error: ", sub("[.]$", "", conditionMessage(condition)), ")."), call. = FALSE)
 }
 
 .cached_asset_files <- function(assets) {
