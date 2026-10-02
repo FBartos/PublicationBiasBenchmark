@@ -267,11 +267,46 @@
     stop("Zenodo record ", record$id, " did not retain ", relation, " relationship to ", doi, ".", call. = FALSE)
   invisible(TRUE)
 }
+# Identifying fields of catalog entries, one string each, sorted. Sizes are
+# formatted as plain numbers so that a parsed catalog and a plan agree.
+.entry_signatures <- function(items, fields, members = FALSE) {
+  one <- function(x) {
+    values <- vapply(fields, function(field) {
+      value <- unlist(x[[field]])
+      if (is.numeric(value)) format(value, scientific = FALSE, trim = TRUE) else paste(as.character(value), collapse = ",")
+    }, character(1))
+    parts <- paste(values, collapse = "|")
+    if (members) parts <- paste(parts, paste(vapply(x$members, function(m) paste(m$id, m$sha256, sep = ":"), character(1)), collapse = ","), sep = "|")
+    parts
+  }
+  sort(vapply(items, one, character(1)))
+}
+
+# The staged release.json must describe the release and the files of this plan
+# (record IDs differ between a plan and its staged catalog, nothing else may).
+.check_staged_catalog <- function(plan, catalog) {
+  if (!identical(catalog$release, plan$catalog$release))
+    stop("The staged release.json belongs to release '", catalog$release, "', not to this plan's release '",
+         plan$catalog$release, "'; use the state directory of this plan.", call. = FALSE)
+  if (identical(plan$catalog$schema_version, 2L)) {
+    fields <- c("id", "dgm", "filename", "sha256", "md5", "size")
+    if (!identical(.entry_signatures(catalog$archives, fields, TRUE), .entry_signatures(plan$catalog$archives, fields, TRUE)))
+      stop("The staged release.json has a different archive inventory than this plan; re-stage it or use the state directory of this plan.", call. = FALSE)
+  } else {
+    fields <- c("id", "dgm", "kind", "filename", "sha256", "md5", "size")
+    if (!identical(.entry_signatures(catalog$assets, fields), .entry_signatures(plan$catalog$assets, fields)))
+      stop("The staged release.json lists different files than this plan; re-stage it or use the state directory of this plan.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+# State is read and the staged catalog checked before any request is made.
 .verify_archive_release <- function(plan, token = NULL) {
   token <- .publication_token(plan, token)
+  .publication_state(plan, "read")
   path <- file.path(plan$state_directory, "release.json")
   if (!file.exists(path)) stop("The release has not been fully staged.", call. = FALSE)
   catalog <- benchmark_catalog(path)
+  .check_staged_catalog(plan, catalog)
   for (dgm in unique(vapply(catalog$archives, `[[`, character(1), "dgm"))) {
     archives <- Filter(function(x) x$dgm == dgm, catalog$archives); id <- archives[[1]]$record_id
     published <- .record_is_published(plan, id, token)

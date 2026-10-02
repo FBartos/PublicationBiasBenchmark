@@ -525,6 +525,9 @@ verify_benchmark_release <- function(plan, token = NULL) {
 .verify_legacy_release <- function(plan, token = NULL) {
   token <- .publication_token(plan, token)
   state <- .publication_state(plan, "read")
+  # A catalog staged in this state directory must belong to this plan.
+  staged <- file.path(plan$state_directory, "release.json")
+  if (file.exists(staged)) .check_staged_catalog(plan, benchmark_catalog(staged))
   for (i in seq_along(plan$groups)) {
     record <- state$groups[[as.character(i)]]
     if (is.null(record)) stop("The release has not been fully staged.", call. = FALSE)

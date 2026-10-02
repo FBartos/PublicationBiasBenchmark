@@ -549,3 +549,118 @@ test_that("catalogs are verified by reading them back, with the publication bloc
   local_mocked_bindings(.parse_json_bytes = original, .validate_catalog = function(catalog) stop("invalid catalog"))
   expect_error(.write_release_catalog(plan, catalog), "invalid catalog")
 })
+
+## Plan identity is recomputed by the session ------------------------------------------------
+
+test_that("a plan edited after planning is refused under the lock before the gate and any request", {
+  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  gate <- local_mock_gate()
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  edits <- list(
+    release = function(p) { p$catalog$release <- "test.9"; p },
+    sandbox = function(p) { p$sandbox <- TRUE; p },
+    community = function(p) { p$community <- "someone-elses-community"; p },
+    group_membership = function(p) { p$groups <- lapply(p$groups, function(group) group[0]); p },
+    metadata = function(p) { p$metadata$rights <- list(list(id = "mit")); p },
+    packing_limit = function(p) { p$max_files <- 10L; p },
+    catalog_content = function(p) { p$catalog$assets[[1]]$sha256 <- strrep("0", 64); p },
+    catalog_family = function(p) { p$catalog_record_id <- "123"; p },
+    changed_dgms = function(p) { p$changed_dgms <- character(); p },
+    upload_selection = function(p) { p$groups <- list(); p })
+  for (plan in plans) {
+    archive <- identical(plan$catalog$schema_version, 2L)
+    for (name in names(edits)) {
+      if (!archive && name %in% c("catalog_family", "changed_dgms")) next
+      edited <- edits[[name]](plan)
+      expect_identical(edited$identity, plan$identity)   # the stored identity is untouched
+      expect_error(stage_benchmark_release(edited, "t"), "modified after it was planned", info = paste(name, archive))
+      expect_error(publish_benchmark_release(edited, "t", confirm = edited$catalog$release), "modified after it was planned",
+                   info = paste(name, archive))
+      expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = paste(name, archive))
+      expect_false(file.exists(file.path(plan$state_directory, "state.json")), info = paste(name, archive))
+    }
+  }
+  expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+  # The untouched plan, and a copy reloaded from plan.rds, recompute to their stored identity.
+  for (plan in plans) {
+    expect_true(.identity_equal(.plan_identity(plan), plan$identity))
+    expect_true(.identity_equal(.plan_identity(readRDS(file.path(plan$state_directory, "plan.rds"))), plan$identity))
+  }
+})
+
+## Verification checks the state and the staged catalog first -------------------------------
+
+local_no_requests <- function(env = parent.frame()) {
+  seen <- new.env(); seen$count <- 0L
+  testthat::local_mocked_bindings(.zenodo_request = function(...) {
+    seen$count <- seen$count + 1L; stop("A request was issued")
+  }, .env = env)
+  seen
+}
+# A catalog staged for `plan`, with record IDs filled in like a staged release.json.
+staged_catalog <- function(plan) {
+  catalog <- if (identical(plan$catalog$schema_version, 2L)) .public_catalog(plan$catalog) else {
+    plan$catalog$assets <- lapply(plan$catalog$assets, function(x) { x$local_path <- NULL; x }); plan$catalog
+  }
+  catalog
+}
+
+test_that("both verify paths read the state first and stop on bad state before any request", {
+  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  requests <- local_no_requests()
+  for (plan in plans) {
+    path <- file.path(plan$state_directory, "state.json"); schema <- plan$catalog$schema_version
+    # Unreadable state, and missing state with a history, name the newest history file.
+    writeLines("{broken", path)
+    expect_error(verify_benchmark_release(plan, "t"), "unreadable or has an invalid structure", info = schema)
+    history <- file.path(plan$state_directory, "state-history"); dir.create(history, showWarnings = FALSE)
+    writeLines("{}", file.path(history, "20260101T000000.000001-0001-state.json"))
+    expect_error(verify_benchmark_release(plan, "t"), "20260101T000000.000001-0001-state.json", info = schema)
+    unlink(path)
+    expect_error(verify_benchmark_release(plan, "t"), "is missing although history exists", info = schema)
+    unlink(history, recursive = TRUE)
+    # State of another plan.
+    other <- plan; other$identity$fingerprint <- strrep("0", 64)
+    .update_publication_state(other, function(state) { state$versions[["x"]] <- list(record_id = "1"); state })
+    expect_error(verify_benchmark_release(plan, "t"), "belongs to a different plan", info = schema)
+    # State without an identity: allowed to read, with a notice.
+    state <- jsonlite::read_json(path); state$identity <- NULL
+    jsonlite::write_json(state, path, auto_unbox = TRUE)
+    expect_message(expect_error(verify_benchmark_release(plan, "t"), "not been fully staged|A request was issued"),
+                   "no plan identity", info = schema)
+    unlink(c(path, file.path(plan$state_directory, "state-history")), recursive = TRUE)
+  }
+  expect_identical(requests$count, 0L)
+})
+
+test_that("both verify paths stop when the staged catalog belongs to another release or inventory", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plans <- session_plans(root)
+  requests <- local_no_requests()
+  for (plan in plans) {
+    schema <- plan$catalog$schema_version
+    path <- file.path(plan$state_directory, "release.json")
+    catalog <- staged_catalog(plan)
+    # The plan's own staged catalog passes the check.
+    expect_true(.check_staged_catalog(plan, catalog))
+    other_release <- catalog; other_release$release <- "other.release"
+    .write_catalog_file(path, other_release)
+    expect_error(verify_benchmark_release(plan, "t"), "belongs to release 'other.release', not to this plan's release 'test.1'", info = schema)
+    different <- catalog
+    if (identical(schema, 2L)) different$archives[[1]]$filename <- "another-archive.zip" else different$assets[[1]]$sha256 <- strrep("e", 64)
+    .write_catalog_file(path, different)
+    expect_error(verify_benchmark_release(plan, "t"), if (identical(schema, 2L)) "different archive inventory" else "lists different files",
+                 info = schema)
+    if (identical(schema, 2L)) {
+      members <- catalog; members$archives[[1]]$members[[1]]$sha256 <- strrep("d", 64)
+      expect_error(.check_staged_catalog(plan, members), "different archive inventory")
+    }
+    # Record IDs are the one thing a staged catalog may change.
+    staged <- catalog
+    if (identical(schema, 2L)) staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a }) else
+      staged$assets <- lapply(staged$assets, function(a) { a$record_id <- "777"; a })
+    expect_true(.check_staged_catalog(plan, staged))
+  }
+  expect_identical(requests$count, 0L)
+})

@@ -61,8 +61,9 @@
 }
 
 # The only place that checks confirm, takes the publication lock and runs the
-# gate, in this order: confirm (local), token, lock, state identity, gate (the
-# first network action). fn(token, community_id) never locks, gates or confirms.
+# gate, in this order: confirm (local), token, lock, plan identity (recomputed
+# from the plan itself), state identity, gate (the first network action).
+# fn(token, community_id) never locks, gates or confirms.
 .publication_session <- function(plan, token, roles, confirm = NULL, require_confirm = FALSE, fn) {
   if (require_confirm && !(.scalar_string(confirm) && identical(confirm, plan$catalog$release)))
     stop("Publishing is irreversible: run PublicationBiasBenchmark:::verify_benchmark_release(plan) and re-run with confirm = \"",
@@ -74,6 +75,12 @@
     stop("This plan was created by an earlier package version; re-plan in a new state directory.", call. = FALSE)
   if (!.scalar_string(plan$community))
     stop("This plan has no community; re-plan with this package version.", call. = FALSE)
+  # The identity stored in the plan must still describe the plan that is about to
+  # run: a plan edited after planning (release, environment, community, upload
+  # groups, record selectors, metadata, limits) is refused before any request.
+  if (!.identity_equal(.plan_identity(plan), plan$identity))
+    stop("The plan was modified after it was planned: its release, community, environment, upload groups, ",
+         "record selectors, metadata or limits no longer match its identity. Re-plan instead of editing a plan.", call. = FALSE)
   .publication_state(plan, "write")
   community_id <- .require_community_maintainer(plan$community, token, plan$sandbox, roles)
   fn(token, community_id)
@@ -303,14 +310,21 @@
 }
 
 # What a state directory is bound to: the catalog without local paths, the
-# group/archive membership, the packing limits, community, environment, release.
+# group/archive membership, the upload groups and record selectors (the catalog
+# family, the changed DGMs and the base storage records), the metadata, the
+# packing limits, community, environment and release. Planning computes it, and
+# every publication session recomputes it from the plan it is about to execute.
 .plan_identity <- function(plan) {
   archive <- identical(plan$catalog$schema_version, 2L)
-  membership <- if (archive) lapply(plan$catalog$archives, function(a)
-    list(id = a$id, members = vapply(a$members, `[[`, character(1), "id"))) else
-    lapply(plan$groups, function(group) vapply(group, `[[`, character(1), "id"))
+  ids <- function(items) vapply(items, `[[`, character(1), "id")
+  membership <- if (archive) list(
+    archives = lapply(plan$catalog$archives, function(a) list(id = a$id, members = ids(a$members))),
+    uploads = lapply(plan$groups, ids), changed_dgms = plan$changed_dgms,
+    storage_base = lapply(plan$previous$archives, function(a) list(dgm = a$dgm, record_id = a$record_id))) else
+    lapply(plan$groups, ids)
   list(version = 1L, release = plan$catalog$release, sandbox = isTRUE(plan$sandbox), community = plan$community,
        fingerprint = .canonical_fingerprint(list(catalog = .strip_local_paths(plan$catalog), membership = membership,
+         catalog_record_id = plan$catalog_record_id, catalog_concept_doi = plan$catalog_concept_doi, metadata = plan$metadata,
          max_files = plan$max_files, max_bytes = plan$max_bytes, max_archive_bytes = plan$max_archive_bytes,
          community = plan$community, sandbox = isTRUE(plan$sandbox), release = plan$catalog$release)))
 }
