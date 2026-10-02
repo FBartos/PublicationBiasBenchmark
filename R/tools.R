@@ -5,6 +5,8 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) 
 # "a"/"b.c" under a plain separator) and the function is vectorised.
 .method_key <- function(method, method_setting) {
   method <- as.character(method)
+  # Empty input has no keys (paste0() would recycle it into the single key ":/").
+  if (!length(method) && !length(method_setting)) return(character())
   paste0(nchar(method, type = "bytes"), ":", method, "/", method_setting)
 }
 

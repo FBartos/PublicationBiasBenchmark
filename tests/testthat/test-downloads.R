@@ -249,6 +249,9 @@ test_that("composite method keys are injective for separators inside identifiers
   expect_equal(.method_key(c("A", "B"), "x"), c("1:A/x", "1:B/x"))
   keys <- .method_key(rep(c("a", "a.b", "a/b"), each = 3), rep(c("b.c", "c", "b/c"), 3))
   expect_false(anyDuplicated(keys) > 0L)
+  # Empty input yields no keys (as interaction() gave no groups), not one empty key.
+  expect_identical(.method_key(character(), character()), character())
+  expect_identical(.method_key(NULL, NULL), character())
 })
 
 test_that("requested coverage is checked per method and setting even when identifiers contain separators", {
@@ -269,6 +272,9 @@ test_that("requested coverage is checked per method and setting even when identi
   data$repetition_id[data$method == "B" & data$condition_id == 2 & data$repetition_id == 2] <- 4L
   expect_error(.check_requested_coverage(data, 2, 2), "Requested repetitions are unavailable")
   expect_silent(.check_requested_coverage(data, 1, 2))
+  # Rows filtered away entirely leave no method/setting group to check.
+  expect_silent(.check_requested_coverage(data[0, ], conditions = 1L))
+  expect_silent(.check_requested_coverage(data[0, ], conditions = 1L, repetitions = 1L))
 })
 
 test_that("unknown conditions are rejected before any shard is read", {
