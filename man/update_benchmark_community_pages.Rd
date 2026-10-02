@@ -11,7 +11,7 @@ update_benchmark_community_pages(
   sandbox = FALSE,
   token = NULL,
   confirm = NULL,
-  backup_directory = tools::R_user_dir("PublicationBiasBenchmark", "data")
+  backup_directory = NULL
 )
 }
 \arguments{
@@ -28,7 +28,9 @@ update_benchmark_community_pages(
 \item{confirm}{Required: the \code{community} value, repeated explicitly.}
 
 \item{backup_directory}{Directory that receives a verified JSON copy of the
-current pages before they are replaced.}
+current pages before they are replaced. NULL (default) uses the user's data
+directory for the package (\code{tools::R_user_dir("PublicationBiasBenchmark", "data")}
+on R 4.0 or later, \verb{~/.PublicationBiasBenchmark} on older R versions).}
 }
 \value{
 The verified updated community metadata, invisibly.

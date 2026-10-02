@@ -14,17 +14,20 @@
 #' @param token Zenodo token; defaults to the matching environment variable.
 #' @param confirm Required: the `community` value, repeated explicitly.
 #' @param backup_directory Directory that receives a verified JSON copy of the
-#' current pages before they are replaced.
+#' current pages before they are replaced. NULL (default) uses the user's data
+#' directory for the package (`tools::R_user_dir("PublicationBiasBenchmark", "data")`
+#' on R 4.0 or later, `~/.PublicationBiasBenchmark` on older R versions).
 #' @return The verified updated community metadata, invisibly.
 #' @keywords internal
 update_benchmark_community_pages <- function(community, about, curation_policy, sandbox = FALSE, token = NULL,
-                                             confirm = NULL,
-                                             backup_directory = tools::R_user_dir("PublicationBiasBenchmark", "data")) {
+                                             confirm = NULL, backup_directory = NULL) {
   if (!.scalar_string(community) || !.scalar_string(about) || !.scalar_string(curation_policy) ||
       nchar(about) > 50000L || nchar(curation_policy) > 50000L)
     stop("Provide a community and nonempty page HTML of at most 50,000 characters each.", call. = FALSE)
   if (!(.scalar_string(confirm) && identical(confirm, community)))
     stop("Replacing community pages is irreversible: re-run with confirm = \"", community, "\"", call. = FALSE)
+  if (is.null(backup_directory)) backup_directory <- .default_backup_directory()
+  if (!.scalar_string(backup_directory)) stop("backup_directory must be a single directory path.", call. = FALSE)
   token <- .publication_token(list(sandbox = sandbox), token)
   community_id <- .require_community_maintainer(community, token, sandbox, "owner")
   record <- .zenodo_request("GET", paste0("communities/", community_id), token, sandbox)
@@ -44,4 +47,12 @@ update_benchmark_community_pages <- function(community, about, curation_policy, 
       !.scalar_string(result$metadata$page) || !.scalar_string(result$metadata$curation_policy))
     stop("Community page update did not preserve its identity/policies or retain its pages.", call. = FALSE)
   invisible(result)
+}
+
+.r_version <- function() getRversion()
+
+# tools::R_user_dir() exists from R 4.0.0 on; the package supports older versions.
+.default_backup_directory <- function() {
+  if (.r_version() >= "4.0.0") tools::R_user_dir("PublicationBiasBenchmark", "data")
+  else file.path(path.expand("~"), ".PublicationBiasBenchmark")
 }

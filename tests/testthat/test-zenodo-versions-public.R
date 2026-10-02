@@ -434,7 +434,36 @@ test_that("the community page backup exists before the PUT and the default backu
   expect_identical(put_saw_backup, 1L)
   expect_match(list.files(backups), "^community-pages-uuid-[0-9]{8}T[0-9]{6}[.][0-9]{6}[.]json$")
   expect_identical(formals(update_benchmark_community_pages)$confirm, NULL)
-  expect_identical(eval(formals(update_benchmark_community_pages)$backup_directory), tools::R_user_dir("PublicationBiasBenchmark", "data"))
+  expect_identical(formals(update_benchmark_community_pages)$backup_directory, NULL)
+})
+
+test_that("the default backup directory follows the R version", {
+  expect_identical(.r_version(), getRversion())
+  local_mocked_bindings(.r_version = function() package_version("4.0.0"))
+  expect_identical(.default_backup_directory(), tools::R_user_dir("PublicationBiasBenchmark", "data"))
+  local_mocked_bindings(.r_version = function() package_version("4.6.0"))
+  expect_identical(.default_backup_directory(), tools::R_user_dir("PublicationBiasBenchmark", "data"))
+  # R before 4.0 has no tools::R_user_dir(): a directory below the home folder is used instead.
+  local_mocked_bindings(.r_version = function() package_version("3.6.3"))
+  expect_identical(.default_backup_directory(), file.path(path.expand("~"), ".PublicationBiasBenchmark"))
+  local_mocked_bindings(.r_version = function() package_version("3.5.0"))
+  expect_identical(.default_backup_directory(), file.path(path.expand("~"), ".PublicationBiasBenchmark"))
+})
+
+test_that("omitting backup_directory writes the backup to the version-dependent default", {
+  record <- list(id = "uuid", slug = "benchmark", metadata = list(title = "T", page = "<p>old</p>", curation_policy = "<p>old policy</p>"),
+                 access = list(review_policy = "closed"))
+  fallback <- withr::local_tempdir()
+  local_mock_gate(community_id = "uuid")
+  local_mocked_bindings(.r_version = function() package_version("3.6.3"), .default_backup_directory = function() fallback)
+  local_mocked_bindings(.zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+    if (method == "PUT") record$metadata <<- body$metadata
+    record
+  })
+  update_benchmark_community_pages("benchmark", "<p>New</p>", "<p>New policy</p>", TRUE, "token", confirm = "benchmark")
+  expect_length(list.files(fallback), 1L)
+  expect_error(update_benchmark_community_pages("benchmark", "<p>New</p>", "<p>New policy</p>", TRUE, "token",
+                 confirm = "benchmark", backup_directory = c("a", "b")), "single directory path")
 })
 
 ## The catalog family sentence ----------------------------------------------------------------
