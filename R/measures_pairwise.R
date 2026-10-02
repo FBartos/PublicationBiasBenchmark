@@ -231,10 +231,6 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_a_key <- comparisons_to_compute$method_a[idx]
     method_b_key <- comparisons_to_compute$method_b[idx]
 
-    # Skip if we already computed B vs A (since A vs B = B vs A)
-    reverse_key <- paste0(method_b_key, "_vs_", method_a_key)
-    if (reverse_key %in% names(comparison_out)) next
-
     method_a_results <- method_results_list[[method_a_key]]
     method_b_results <- method_results_list[[method_b_key]]
 
