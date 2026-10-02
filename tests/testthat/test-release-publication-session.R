@@ -839,3 +839,39 @@ test_that("a plan or state with an older or missing identity version must be re-
   }
   expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
 })
+
+## Complete archive and member descriptors in the staged catalog -------------------------------------
+
+test_that("a valid staged catalog with a renamed or re-described member is not this plan's catalog", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plans(root)$archive
+  requests <- local_no_requests()
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- staged_catalog(plan)
+  expect_true(.check_staged_catalog(plan, catalog))
+  # Each alteration keeps member and asset consistent, so the catalog still validates; the member's
+  # descriptor (name, size, MD5) differs from the planned one although its id and SHA-256 agree.
+  alter <- list(
+    filename = function(x) { x$archives[[1]]$members[[1]]$filename <- "renamed.csv"; x$assets[[1]]$filename <- "renamed.csv"; x },
+    size = function(x) { x$archives[[1]]$members[[1]]$size <- x$archives[[1]]$members[[1]]$size + 1; x$assets[[1]]$size <- x$assets[[1]]$size + 1; x },
+    md5 = function(x) { x$archives[[1]]$members[[1]]$md5 <- strrep("a", 32); x$assets[[1]]$md5 <- strrep("a", 32); x })
+  for (name in names(alter)) {
+    altered <- alter[[name]](catalog)
+    .write_catalog_file(path, altered)   # validates: the alteration is a well-formed catalog
+    expect_error(verify_benchmark_release(plan, "t"), "different archive inventory", info = name)
+    expect_error(.check_staged_catalog(plan, altered), "different archive inventory", info = name)
+  }
+  # An archive-level descriptor is compared as well.
+  for (field in c("md5", "size", "filename")) {
+    altered <- catalog
+    altered$archives[[1]][[field]] <- switch(field, md5 = strrep("b", 32), size = altered$archives[[1]]$size + 1, filename = "renamed.zip")
+    expect_error(.check_staged_catalog(plan, altered), "different archive inventory", info = field)
+  }
+  expect_identical(requests$count, 0L)
+  # Schema 1 catalogs list assets only: a renamed asset is detected as well.
+  legacy <- session_plans(root)$legacy
+  staged <- staged_catalog(legacy); staged$assets[[1]]$filename <- "renamed.csv"
+  .write_catalog_file(file.path(legacy$state_directory, "release.json"), staged)
+  expect_error(verify_benchmark_release(legacy, "t"), "lists different files")
+  expect_identical(requests$count, 0L)
+})

@@ -267,23 +267,26 @@
     stop("Zenodo record ", record$id, " did not retain ", relation, " relationship to ", doi, ".", call. = FALSE)
   invisible(TRUE)
 }
-# Identifying fields of catalog entries, one string each, sorted. Sizes are
-# formatted as plain numbers so that a parsed catalog and a plan agree.
+# Identifying fields of catalog entries, one string each, sorted; archive
+# entries also carry every member's descriptor. Sizes are formatted as plain
+# numbers so that a parsed catalog and a plan agree.
+.member_fields <- c("id", "filename", "size", "sha256", "md5")
 .entry_signatures <- function(items, fields, members = FALSE) {
+  signature <- function(x, fields) paste(vapply(fields, function(field) {
+    value <- unlist(x[[field]])
+    if (is.numeric(value)) format(value, scientific = FALSE, trim = TRUE) else paste(as.character(value), collapse = ",")
+  }, character(1)), collapse = "|")
   one <- function(x) {
-    values <- vapply(fields, function(field) {
-      value <- unlist(x[[field]])
-      if (is.numeric(value)) format(value, scientific = FALSE, trim = TRUE) else paste(as.character(value), collapse = ",")
-    }, character(1))
-    parts <- paste(values, collapse = "|")
-    if (members) parts <- paste(parts, paste(vapply(x$members, function(m) paste(m$id, m$sha256, sep = ":"), character(1)), collapse = ","), sep = "|")
+    parts <- signature(x, fields)
+    if (members) parts <- paste(parts, paste(vapply(x$members, signature, character(1), fields = .member_fields), collapse = ";"), sep = "||")
     parts
   }
   sort(vapply(items, one, character(1)))
 }
 
-# The staged release.json must describe the release and the files of this plan
-# (record IDs differ between a plan and its staged catalog, nothing else may).
+# The staged release.json must describe the release and the files of this plan:
+# complete archive and member descriptors (record IDs differ between a plan and
+# its staged catalog, nothing else may).
 .check_staged_catalog <- function(plan, catalog) {
   if (!identical(catalog$release, plan$catalog$release))
     stop("The staged release.json belongs to release '", catalog$release, "', not to this plan's release '",
