@@ -20,11 +20,18 @@ test_that("native metadata updates replace JSON arrays and preserve provenance",
 test_that("native imports and file deletions recover lost responses without restoring superseded files", {
   root <- withr::local_tempdir()
   plan <- list(state_directory = root, sandbox = TRUE)
+  local_held_lock(plan)
   base <- list(entries = list(list(key = "keep.zip", checksum = "md5:keep", size = 1),
                              list(key = "old.zip", checksum = "md5:old", size = 2)))
   remote <- list(entries = list()); imports <- 0L; deletions <- 0L; lost_import <- TRUE; lost_delete <- TRUE
   local_mocked_bindings(.zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
-    if (method == "GET") return(if (identical(path, "records/1/files")) base else remote)
+    if (method == "GET") {
+      # Record 1 is the published base; record 2 is its unpublished draft.
+      if (identical(path, "records/1")) return(list(is_published = TRUE))
+      if (identical(path, "records/2")) return(list(is_published = FALSE))
+      return(if (identical(path, "records/1/files")) base else if (identical(path, "records/2/draft/files")) remote else
+        stop("Unexpected GET ", path))
+    }
     if (method == "POST") {
       imports <<- imports + 1L; remote <<- base
       if (lost_import) { lost_import <<- FALSE; stop("lost import response") }
@@ -91,17 +98,26 @@ test_that("community acceptance resumes an existing request and checks inherited
 })
 
 test_that("community page updates preserve policies and unrelated metadata", {
-  record <- list(id = "uuid", slug = "benchmark", metadata = list(title = "Benchmark", website = "https://example.test"),
+  record <- list(id = "uuid", slug = "benchmark", metadata = list(title = "Benchmark", website = "https://example.test",
+      page = "<p>Old about</p>", curation_policy = "<p>Old policy</p>"),
     access = list(review_policy = "closed", member_policy = "closed", record_submission_policy = "open"))
   posted <- NULL
+  backups <- withr::local_tempdir()
+  local_mock_gate(community_id = "uuid")
   local_mocked_bindings(.zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
     if (method == "PUT") { posted <<- body; record$metadata <<- body$metadata }
     record
   })
-  result <- update_benchmark_community_pages("benchmark", "<p>About</p>", "<p>Policy</p>", TRUE, "test-token")
+  result <- update_benchmark_community_pages("benchmark", "<p>About</p>", "<p>Policy</p>", TRUE, "test-token",
+                                             confirm = "benchmark", backup_directory = backups)
   expect_identical(posted$access, record$access)
   expect_identical(result$metadata$website, "https://example.test")
   expect_identical(result$metadata$page, "<p>About</p>")
+  # The previous pages were saved before they were replaced.
+  saved <- jsonlite::read_json(list.files(backups, full.names = TRUE))
+  expect_identical(saved$page, "<p>Old about</p>")
+  expect_identical(saved$curation_policy, "<p>Old policy</p>")
+  expect_identical(saved$community_id, "uuid")
 })
 
 test_that("catalog preflight rejects concurrent releases before storage mutations", {
@@ -109,7 +125,7 @@ test_that("catalog preflight rejects concurrent releases before storage mutation
   latest <- list(id = "2", parent = list(id = "family")); drafts <- list()
   local_mocked_bindings(.zenodo_request = function(...) latest, .family_drafts = function(...) drafts)
   expect_error(.reconcile_catalog_base(plan, "test-token"), "before any storage writes")
-  .save_publication_state(plan, list(versions = list(catalog = list(record_id = "2"))))
+  .update_publication_state(plan, function(state) { state$versions$catalog <- list(record_id = "2"); state })
   expect_true(.reconcile_catalog_base(plan, "test-token"))
   drafts <- list(list(id = "3", metadata = list(title = "Other release")))
   expect_error(.reconcile_catalog_base(plan, "test-token"), "unrelated catalog draft")

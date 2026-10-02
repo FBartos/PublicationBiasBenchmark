@@ -32,7 +32,7 @@ stage_benchmark_release(plan, token = NULL)
 
 verify_benchmark_release(plan, token = NULL)
 
-publish_benchmark_release(plan, token = NULL)
+publish_benchmark_release(plan, token = NULL, confirm = NULL)
 }
 \arguments{
 \item{release}{New benchmark release identifier.}
@@ -74,6 +74,9 @@ publish_benchmark_release(plan, token = NULL)
 \item{plan}{Release plan.}
 
 \item{token}{Zenodo token; defaults to ZENODO_TOKEN (ZENODO_SANDBOX_TOKEN for sandbox).}
+
+\item{confirm}{Required to publish: the release identifier of the plan, repeated
+explicitly. Publishing is irreversible.}
 }
 \value{
 plan_benchmark_release returns a plan; staging returns the staged catalog;
@@ -87,3 +90,12 @@ ZIPs into native storage versions and continues the native catalog family.
 Publication makes the complete catalog available after public payload/member,
 native rights, DOI relationship and accepted community checks have passed.
 }
+\details{
+These functions are maintainer-only and not exported; call them as
+\code{PublicationBiasBenchmark:::plan_benchmark_release()} (see \code{RELEASING.md} in the
+GitHub repository). Staging and publishing first check that the token's account
+is an owner or manager of the benchmark community (the gate), take an exclusive
+lock on the state directory and bind the state to the plan. The gate protects
+this package's entry points; it is not a security boundary for Zenodo itself.
+}
+\keyword{internal}

@@ -49,3 +49,4 @@ Files remain separate for distributed jobs. Each results or
 measures file must contain only its declared DGM, method and setting. Checksums
 describe the exact bytes; package_version describes generation, not migration.
 }
+\keyword{internal}

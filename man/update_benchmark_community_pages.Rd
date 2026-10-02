@@ -9,7 +9,9 @@ update_benchmark_community_pages(
   about,
   curation_policy,
   sandbox = FALSE,
-  token = NULL
+  token = NULL,
+  confirm = NULL,
+  backup_directory = tools::R_user_dir("PublicationBiasBenchmark", "data")
 )
 }
 \arguments{
@@ -22,6 +24,11 @@ update_benchmark_community_pages(
 \item{sandbox}{Use sandbox.zenodo.org.}
 
 \item{token}{Zenodo token; defaults to the matching environment variable.}
+
+\item{confirm}{Required: the \code{community} value, repeated explicitly.}
+
+\item{backup_directory}{Directory that receives a verified JSON copy of the
+current pages before they are replaced.}
 }
 \value{
 The verified updated community metadata, invisibly.
@@ -31,4 +38,9 @@ Explicitly update the community's HTML pages while preserving
 its identity, other metadata, submission policies and membership settings.
 This is separate from release publication; review and approve production
 page content before calling it. Sandbox uses a separate account and token.
+The function is maintainer-only and not exported
+(\code{PublicationBiasBenchmark:::update_benchmark_community_pages()}). It requires
+\code{confirm}, checks that the token's account owns the community, and saves the
+current pages to \code{backup_directory} before replacing them.
 }
+\keyword{internal}

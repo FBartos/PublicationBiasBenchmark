@@ -209,10 +209,18 @@
     stop("Consolidation requires the existing catalog_record_id and catalog_concept_doi.", call. = FALSE)
   if (!is.null(plan$catalog_record_id) && (!grepl("^[0-9]+$", plan$catalog_record_id) || !.scalar_string(plan$catalog_concept_doi)))
     stop("An existing catalog family requires its record ID and concept DOI.", call. = FALSE)
-  fingerprint <- digest::digest(plan, algo = "sha256")
+  # Resume fingerprint: canonical JSON of the plan's inputs (no local paths, no R
+  # serialization), so a plan is recognised across sessions and R versions.
+  fingerprint <- .canonical_fingerprint(list(catalog = .strip_local_paths(plan$catalog),
+    base_release = base$release, base_sha256 = if (is.null(base)) NULL else .canonical_fingerprint(.strip_local_paths(base)),
+    metadata = metadata, community = community, sandbox = plan$sandbox, max_files = max_files, max_bytes = max_bytes,
+    max_archive_bytes = max_archive_bytes, catalog_record_id = plan$catalog_record_id,
+    catalog_concept_doi = plan$catalog_concept_doi))
   plan_path <- file.path(state_directory, "plan.rds")
   if (file.exists(plan_path)) {
     saved <- readRDS(plan_path)
+    if (is.null(saved$identity))
+      stop("The saved plan was written by an earlier package version; re-plan in a new state directory.", call. = FALSE)
     if (!identical(saved$fingerprint, fingerprint)) stop("Existing publication state belongs to a different plan.", call. = FALSE)
     for (archive in Filter(function(x) !is.null(x$local_path), saved$catalog$archives))
       if (!.file_verified(archive$local_path, archive$sha256, archive$size, archive$md5)) stop("Persisted archive changed.", call. = FALSE)
@@ -286,6 +294,7 @@
   plan$groups <- lapply(changed, function(dgm) Filter(function(x) x$dgm == dgm && !is.null(x$local_path), archives))
   names(plan$groups) <- changed
   plan$fingerprint <- fingerprint
+  plan$identity <- .plan_identity(plan)
   report <- benchmark_packing_report(plan)
   report_path <- file.path(state_directory, "packing-report.csv")
   utils::write.csv(report, report_path, row.names = FALSE)
@@ -293,7 +302,7 @@
   if (any(over)) stop("DGM packing exceeds the configured quota: ", paste(sprintf("%s (%d/%d files, %.0f/%.0f bytes)",
     report$dgm[over], report$files[over], max_files, report$compressed_bytes[over], max_bytes), collapse = "; "),
     ". Packing report: ", report_path, call. = FALSE)
-  saveRDS(plan, plan_path)
+  .write_rds_verified(plan_path, plan)
   audit <- do.call(rbind, lapply(catalog$assets, function(x) {
     old <- if (is.null(base)) list() else Filter(function(a) identical(a$id, x$id), base$assets)
     data.frame(id = x$id, source_record_id = if (length(old)) old[[1]]$record_id else NA_character_,
@@ -308,7 +317,7 @@
 #' @param plan A plan returned by plan_benchmark_release.
 #' @return A data frame with per-DGM physical file counts, compressed and
 #' uncompressed sizes, upload volume and remaining record quota.
-#' @export
+#' @keywords internal
 benchmark_packing_report <- function(plan) {
   archives <- plan$catalog$archives
   if (!length(archives)) stop("A packing report requires an archive publication plan.", call. = FALSE)

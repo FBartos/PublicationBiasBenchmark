@@ -82,8 +82,7 @@
   Filter(function(x) !isTRUE(x$is_published) && !identical(x$status, "published") && !identical(x$state, "done"), response$hits$hits)
 }
 .ensure_family_version <- function(plan, key, base_id, title, description, metadata, token) {
-  state <- .publication_state(plan)
-  slot <- state$versions[[key]]
+  slot <- .publication_state(plan)$versions[[key]]
   if (!is.null(slot$record_id)) return(as.character(slot$record_id))
   if (is.null(base_id)) {
     id <- .create_component_record(plan, title, description, token)
@@ -101,27 +100,28 @@
           stop("An unrelated new-version draft already exists; reconcile it before publishing.", call. = FALSE)
         id <- as.character(drafts[[1]]$id)
       } else {
-        state$versions[[key]] <- list(creating = TRUE, base_id = base_id)
-        .save_publication_state(plan, state)
+        .update_publication_state(plan, function(state) {
+          state$versions[[key]] <- list(creating = TRUE, base_id = base_id); state
+        })
         draft <- .zenodo_request("POST", paste0("records/", base_id, "/versions"), token, plan$sandbox)
         id <- as.character(draft$id)
       }
     }
   }
-  state <- .publication_state(plan)
-  state$versions[[key]] <- list(record_id = id, base_id = base_id, published = .record_is_published(plan, id, token))
-  .save_publication_state(plan, state)
-  if (!isTRUE(state$versions[[key]]$published)) .update_draft_metadata(plan, id, metadata, token)
+  published <- .record_is_published(plan, id, token)
+  .update_publication_state(plan, function(state) {
+    state$versions[[key]] <- list(record_id = id, base_id = base_id, published = published); state
+  })
+  if (!isTRUE(published)) .update_draft_metadata(plan, id, metadata, token)
   id
 }
 .ensure_imported_files <- function(plan, key, id, base_id, archives, token) {
   if (is.null(base_id)) return(invisible(TRUE))
-  state <- .publication_state(plan)
   files <- .zenodo_request("GET", paste0("records/", id, "/draft/files"), token, plan$sandbox)
   base_files <- .zenodo_request("GET", paste0("records/", base_id, "/files"), token, plan$sandbox)
-  if (!isTRUE(state$versions[[key]]$imported)) {
-    expected <- base_files$entries
-    present <- vapply(expected, function(x) {
+  if (!isTRUE(.publication_state(plan)$versions[[key]]$imported)) {
+    # Imported entries must match the base snapshot by key, checksum and size.
+    present <- vapply(base_files$entries, function(x) {
       entry <- .zenodo_file_entry(files, x$key)
       !is.null(entry) && identical(entry$checksum, x$checksum) && identical(as.numeric(entry$size), as.numeric(x$size))
     }, logical(1))
@@ -129,26 +129,25 @@
       if (length(files$entries)) stop("Incomplete or unrelated draft imports; refusing to reset uploaded files.", call. = FALSE)
       .zenodo_request("POST", paste0("records/", id, "/draft/actions/files-import"), token, plan$sandbox)
     }
-    state$versions[[key]]$imported <- TRUE; .save_publication_state(plan, state)
+    .update_publication_state(plan, function(state) { state$versions[[key]]$imported <- TRUE; state })
   }
   keep <- vapply(archives, `[[`, character(1), "filename")
   files <- .zenodo_request("GET", paste0("records/", id, "/draft/files"), token, plan$sandbox)
   for (entry in files$entries) if (!entry$key %in% keep) {
-    # Delete only files imported from the base snapshot, never unknown draft data.
-    if (is.null(.zenodo_file_entry(base_files, entry$key))) stop("Unexpected file in new-version draft.", call. = FALSE)
-    .zenodo_request("DELETE", paste0("records/", id, "/draft/files/", utils::URLencode(entry$key, reserved = TRUE)), token, plan$sandbox)
-    state$versions[[key]]$deleted <- as.list(unique(c(unlist(state$versions[[key]]$deleted), entry$key)))
-    .save_publication_state(plan, state)
+    # Delete only imported copies of files that the published base record holds.
+    .delete_draft_file(plan, id, entry$key, "superseded-import", token, base_id)
+    .update_publication_state(plan, function(state) {
+      state$versions[[key]]$deleted <- as.list(unique(c(unlist(state$versions[[key]]$deleted), entry$key))); state
+    })
   }
   invisible(TRUE)
 }
-.resolve_publication_community <- function(plan, token) {
+# community_id is the UUID the gate resolved; it must not change between runs.
+.resolve_publication_community <- function(plan, community_id) {
   state <- .publication_state(plan)
-  community <- .zenodo_request("GET", paste0("communities/", utils::URLencode(plan$community, reserved = TRUE)), token, plan$sandbox)
-  if (!.scalar_string(community$id)) stop("Community resolution did not return a UUID.", call. = FALSE)
-  if (!is.null(state$community_id) && !identical(state$community_id, community$id)) stop("Resolved community identity changed.", call. = FALSE)
-  state$community_id <- community$id; .save_publication_state(plan, state)
-  community$id
+  if (!is.null(state$community_id) && !identical(state$community_id, community_id)) stop("Resolved community identity changed.", call. = FALSE)
+  .update_publication_state(plan, function(state) { state$community_id <- community_id; state })
+  community_id
 }
 .community_record_verified <- function(record, community_id) {
   community_id %in% unlist(record$parent$communities$ids) && identical(record$parent$communities$default, community_id)
@@ -156,9 +155,10 @@
 .include_record_community <- function(plan, id, community_id, token) {
   record <- .zenodo_request("GET", paste0("records/", id), token, plan$sandbox)
   if (.community_record_verified(record, community_id)) {
-    state <- .publication_state(plan)
-    state$inclusions[[as.character(record$parent$id)]] <- list(community_id = community_id, accepted = TRUE)
-    .save_publication_state(plan, state)
+    family <- as.character(record$parent$id)
+    .update_publication_state(plan, function(state) {
+      state$inclusions[[family]] <- list(community_id = community_id, accepted = TRUE); state
+    })
     return(invisible(TRUE))
   }
   if (!community_id %in% unlist(record$parent$communities$ids)) {
@@ -174,10 +174,11 @@
       request <- response$processed[[1]]$request
       if (is.null(request)) request <- .zenodo_request("GET", paste0("requests/", response$processed[[1]]$request_id), token, plan$sandbox)
     } else request <- matches[[1]]
-    state <- .publication_state(plan)
     family <- as.character(record$parent$id)
-    state$inclusions[[family]] <- list(request_id = request$id, community_id = community_id, accepted = identical(request$status, "accepted"))
-    .save_publication_state(plan, state)
+    .update_publication_state(plan, function(state) {
+      state$inclusions[[family]] <- list(request_id = request$id, community_id = community_id,
+                                         accepted = identical(request$status, "accepted")); state
+    })
     if (!identical(request$status, "accepted")) {
       action <- request$links$actions$accept
       path <- if (.scalar_string(action)) .zenodo_link_path(action, plan$sandbox) else paste0("requests/", request$id, "/actions/accept")
@@ -190,9 +191,10 @@
     .zenodo_request("PUT", paste0("records/", id, "/communities"), token, plan$sandbox, list(default = list(id = community_id)))
   record <- .zenodo_request("GET", paste0("records/", id), token, plan$sandbox)
   if (!.community_record_verified(record, community_id)) stop("Community branding verification failed.", call. = FALSE)
-  state <- .publication_state(plan)
-  state$inclusions[[as.character(record$parent$id)]] <- list(community_id = community_id, accepted = TRUE)
-  .save_publication_state(plan, state)
+  family <- as.character(record$parent$id)
+  .update_publication_state(plan, function(state) {
+    state$inclusions[[family]] <- list(community_id = community_id, accepted = TRUE); state
+  })
   invisible(TRUE)
 }
 .storage_base_id <- function(plan, dgm) {
@@ -205,9 +207,19 @@
   catalog$archives <- lapply(catalog$archives, function(x) { x$local_path <- NULL; x$build_fingerprint <- NULL; x })
   .validate_catalog(catalog)
 }
+# Catalogs are LF-terminated JSON. The installed file must parse, validate and
+# carry the publication block exactly; otherwise the previous file is restored.
+.write_catalog_file <- function(path, catalog) {
+  expected <- catalog$publication
+  .write_json_verified(path, catalog, history_dir = file.path(dirname(path), "catalog-history"),
+    verify = function(installed) {
+      parsed <- .parse_json_bytes(.read_bytes(installed))
+      .validate_catalog(parsed)
+      is.null(expected) || identical(.canonical_json(parsed$publication), .canonical_json(expected))
+    })
+}
 .write_release_catalog <- function(plan, catalog) {
-  jsonlite::write_json(.public_catalog(catalog), file.path(plan$state_directory, "release.json"),
-    auto_unbox = TRUE, pretty = FALSE, null = "null", digits = NA, dataframe = "rows")
+  .write_catalog_file(file.path(plan$state_directory, "release.json"), .public_catalog(catalog))
 }
 .reconcile_catalog_base <- function(plan, token) {
   if (is.null(plan$catalog_record_id)) return(invisible(TRUE))
@@ -225,10 +237,9 @@
     stop("An unrelated catalog draft exists; reconcile it before any storage writes.", call. = FALSE)
   invisible(TRUE)
 }
-.stage_archive_release <- function(plan, token = NULL) {
-  token <- .publication_token(plan, token)
+.stage_archive_release <- function(plan, token, community_id) {
   .reconcile_catalog_base(plan, token)
-  .resolve_publication_community(plan, token)
+  .resolve_publication_community(plan, community_id)
   catalog <- plan$catalog
   for (dgm in plan$changed_dgms) {
     key <- paste0("storage--", dgm); base_id <- .storage_base_id(plan, dgm)
@@ -274,12 +285,103 @@
   }
   invisible(TRUE)
 }
+# Anonymous check that a storage record is public: records, files and no embargo.
+# A just-published record may need a moment to become visible (403/404).
+.verify_public_record <- function(record_id, sandbox, attempts = 6L) {
+  for (attempt in seq_len(attempts)) {
+    record <- tryCatch(.zenodo_request("GET", paste0("records/", record_id), NULL, sandbox),
+                       zenodo_http_error = function(error) error)
+    if (!inherits(record, "zenodo_http_error")) break
+    if (!isTRUE(record$status %in% c(403L, 404L)) || attempt == attempts)
+      stop("Record ", record_id, " is not publicly readable without a token (HTTP ", record$status, ").", call. = FALSE)
+    .resource_retry_wait(min(30, 2^(attempt - 1L)))
+  }
+  if (!identical(record$access$record, "public") || !identical(record$access$files, "public") ||
+      isTRUE(record$access$embargo$active))
+    stop("Record ", record_id, " is not fully public: records and files must be public without an embargo.", call. = FALSE)
+  invisible(TRUE)
+}
+
+# One anonymous request for the first byte of a public file. The body is read
+# only up to `limit` bytes and the transfer is then aborted, so a server that
+# ignores the Range header cannot make the verification download the file.
+# Returns list(status, headers, bytes read); failures below HTTP level raise the curl error.
+.resource_range_probe <- function(url, limit = 65536) {
+  handle <- curl::new_handle(connecttimeout = 30, low_speed_limit = 1, low_speed_time = 180, followlocation = TRUE)
+  curl::handle_setheaders(handle, Range = "bytes=0-0")
+  connection <- curl::curl(url, handle = handle)
+  on.exit(try(close(connection), silent = TRUE), add = TRUE)
+  opened <- tryCatch(suppressWarnings({ open(connection, "rb"); TRUE }), error = function(error) FALSE)
+  response <- curl::handle_data(handle)
+  if (!opened && !response$status_code) {
+    # No HTTP answer: repeat the connection without a body to get libcurl's classed error.
+    probe <- curl::new_handle(connecttimeout = 30, nobody = TRUE, followlocation = TRUE)
+    stop(tryCatch({ curl::curl_fetch_memory(url, probe); simpleError("The public file could not be opened.") },
+                  error = function(error) error))
+  }
+  body <- if (opened) readBin(connection, "raw", limit + 1L) else raw()
+  list(status = response$status_code, headers = curl::parse_headers_list(response$headers), bytes = length(body))
+}
+
+# Verify that an advertised archive is publicly served with the catalog size
+# without downloading it: HTTP 206 with the total in Content-Range, or HTTP 200
+# with Content-Length. When the server sends neither, the archive is fetched in
+# full. 403/404 are retried briefly (visibility grace); 410 and other client
+# errors are permanent; 429 waits for the server delay.
+.verify_public_archive_size <- function(plan, archive, directory, max_try = 6L, retry_not_found = 5L) {
+  url <- .zenodo_file_url(archive$record_id, archive$filename, plan$sandbox)
+  for (attempt in seq_len(max_try)) {
+    condition <- NULL
+    probe <- tryCatch(.resource_range_probe(url), error = function(error) { condition <<- error; NULL })
+    if (!is.null(probe) && probe$status %in% c(200L, 206L)) {
+      total <- if (probe$status == 206L) {
+        range <- probe$headers[["content-range"]]
+        if (is.character(range) && length(range) == 1L && grepl("^bytes 0-0/[0-9]+$", range))
+          as.numeric(sub("^bytes 0-0/", "", range)) else if (is.null(range)) NULL else NA_real_
+      } else if (!is.null(probe$headers[["content-length"]])) suppressWarnings(as.numeric(probe$headers[["content-length"]])) else NULL
+      if (is.null(total)) {
+        message("The public server reported no size for ", archive$filename, "; downloading it in full to verify it.")
+        .fetch_verified(url, file.path(directory, archive$filename), archive$sha256, archive$size, archive$md5,
+                        progress = FALSE, max_try = max_try, overwrite = TRUE, retry_not_found = retry_not_found)
+        return(invisible(TRUE))
+      }
+      if (is.na(total) || total != archive$size)
+        stop("The public archive ", archive$filename, " does not have the catalog size (", archive$size, " bytes).", call. = FALSE)
+      return(invisible(TRUE))
+    }
+    if (!is.null(probe)) {
+      delay <- if (probe$status == 429L) .zenodo_retry_delay(probe$headers, 429L, attempt) else NULL
+      condition <- structure(list(message = paste0("Public resource download failed (HTTP ", probe$status, ")."),
+        call = NULL, status = probe$status, retry_delay = delay), class = c("resource_http_error", "error", "condition"))
+    }
+    class <- .classify_download_failure(condition, attempt, retry_not_found)
+    if (class == "permanent" || (class == "dns" && (attempt >= 3L || attempt >= max_try)))
+      stop(.download_failure_message(class, condition, archive$filename, url), call. = FALSE)
+    if (attempt < max_try)
+      .resource_retry_wait(if (class == "rate_limited" && is.numeric(condition$retry_delay)) condition$retry_delay else min(30, 2^(attempt - 1L)))
+  }
+  if (inherits(condition, "resource_http_error") && condition$status %in% c(404L, 410L))
+    stop(.download_failure_message("permanent", condition, archive$filename, url), call. = FALSE)
+  stop("Could not verify the public archive ", archive$filename, " after ", max_try, " attempts",
+       if (is.null(condition)) "." else paste0(" (last error: ", sub("[.]$", "", conditionMessage(condition)), ")."), call. = FALSE)
+}
+
+# Every advertised archive is checked anonymously (record access, then size);
+# only archives uploaded by this plan are downloaded and verified in full,
+# including every member.
 .verify_public_archives <- function(plan, catalog) {
   directory <- file.path(plan$state_directory, "public-verification"); dir.create(directory, recursive = TRUE, showWarnings = FALSE)
+  for (id in unique(vapply(catalog$archives, `[[`, character(1), "record_id")))
+    .verify_public_record(id, plan$sandbox)
+  uploaded <- unlist(lapply(plan$groups, function(group)
+    vapply(group, function(x) paste(x$dgm, x$filename, sep = "/"), character(1))), use.names = FALSE)
+  skipped <- 0L
   for (archive in catalog$archives) {
+    .verify_public_archive_size(plan, archive, directory)
+    if (!paste(archive$dgm, archive$filename, sep = "/") %in% uploaded) { skipped <- skipped + 1L; next }
     path <- file.path(directory, archive$filename)
     .fetch_verified(.zenodo_file_url(archive$record_id, archive$filename, plan$sandbox), path,
-      archive$sha256, archive$size, archive$md5, progress = FALSE, max_try = 3, retry_not_found = 5L)
+      archive$sha256, archive$size, archive$md5, progress = FALSE, max_try = 6L, overwrite = TRUE, retry_not_found = 5L)
     .zip_inventory(path, archive$members)
     # Verify every member, not only those needed by a sample reader selection.
     temporary <- tempfile("verify-members-", tmpdir = directory); dir.create(temporary)
@@ -290,13 +392,22 @@
       unlink(extracted)
     }, finally = unlink(temporary, recursive = TRUE))
   }
+  if (skipped) message(skipped, " of ", length(catalog$archives),
+    " archives were not uploaded by this plan; their public access and size were checked without downloading them.")
   invisible(TRUE)
 }
-.publish_archive_release <- function(plan, token = NULL) {
-  token <- .publication_token(plan, token)
-  catalog <- .stage_archive_release(plan, token)
+# The "Release catalog family" sentence is added once, however often a
+# resumed publication reaches this step (keyed on the concept DOI link).
+.with_family_sentence <- function(description, concept) {
+  link <- paste0("https://doi.org/", concept)
+  if (isTRUE(grepl(link, description, fixed = TRUE))) return(description)
+  paste0(description, ' Release catalog family: <a href="', link,
+         '">PublicationBiasBenchmark releases</a>. Open the release used in your analysis and cite its exact catalog version DOI.')
+}
+.publish_archive_release <- function(plan, token, community_id) {
+  catalog <- .stage_archive_release(plan, token, community_id)
   .verify_archive_release(plan, token)
-  community_id <- .resolve_publication_community(plan, token)
+  .resolve_publication_community(plan, community_id)
   # For a brand-new benchmark, create the catalog draft first to learn its concept
   # DOI. Consolidation instead uses the already-published baseline concept DOI.
   title <- paste0("PublicationBiasBenchmark release ", catalog$release)
@@ -313,7 +424,7 @@
     if (is.null(draft)) draft <- .zenodo_request("GET", paste0("records/", catalog_id), token, plan$sandbox)
     if (!length(draft$pids$doi)) {
       .zenodo_request("POST", .zenodo_link_path(draft$links$reserve_doi, plan$sandbox), token, plan$sandbox)
-      draft <- .zenodo_request("GET", paste0("records/", state$versions$catalog$record_id, "/draft"), token, plan$sandbox)
+      draft <- .zenodo_request("GET", paste0("records/", catalog_id, "/draft"), token, plan$sandbox)
     }
     concept <- draft$parent$pids$doi$identifier
     if (is.null(concept)) {
@@ -333,23 +444,22 @@
     if (!.record_is_published(plan, id, token)) {
       draft <- .zenodo_request("GET", paste0("records/", id, "/draft"), token, plan$sandbox)
       metadata <- draft$metadata
-      metadata$description <- paste0(metadata$description,
-        ' Release catalog family: <a href="https://doi.org/', concept,
-        '">PublicationBiasBenchmark releases</a>. Open the release used in your analysis and cite its exact catalog version DOI.')
+      metadata$description <- .with_family_sentence(metadata$description, concept)
       metadata$related_identifiers <- c(metadata$related_identifiers, list(.doi_relationship(concept, "ispartof")))
       .update_draft_metadata(plan, id, metadata, token)
       .publish_record(plan, id, token)
     }
     .include_record_community(plan, id, community_id, token)
-    state <- .publication_state(plan)
     key <- paste0("storage--", dgm)
-    state$versions[[key]]$record_id <- id; state$versions[[key]]$published <- TRUE
-    .save_publication_state(plan, state)
+    .update_publication_state(plan, function(state) {
+      state$versions[[key]]$record_id <- id; state$versions[[key]]$published <- TRUE; state
+    })
     record <- .zenodo_request("GET", paste0("records/", id), token, plan$sandbox)
     .verify_record_rights(record, plan$metadata); .verify_relationship(record, concept, "ispartof")
-    state <- .publication_state(plan)
-    state$versions[[key]]$family_id <- as.character(record$parent$id)
-    state$versions[[key]]$metadata_complete <- TRUE; .save_publication_state(plan, state)
+    .update_publication_state(plan, function(state) {
+      state$versions[[key]]$family_id <- as.character(record$parent$id)
+      state$versions[[key]]$metadata_complete <- TRUE; state
+    })
     storage_dois[[dgm]] <- .zenodo_doi(record)
   }
   .verify_public_archives(plan, catalog)
@@ -361,6 +471,7 @@
     .record_metadata(plan, title, description, relationships), token)
   catalog$publication <- list(catalog_record_id = id, catalog_concept_doi = concept, community_id = community_id, storage_dois = storage_dois)
   .write_release_catalog(plan, catalog)
+  # The verified file on disk is what gets hashed and uploaded.
   path <- file.path(plan$state_directory, "release.json")
   asset <- list(filename = "release.json", local_path = path, size = as.numeric(file.info(path)$size),
     sha256 = digest::digest(file = path, algo = "sha256", serialize = FALSE), md5 = unname(tools::md5sum(path)))
@@ -369,18 +480,19 @@
     .stage_file(plan, id, asset, token); .publish_record(plan, id, token)
   }
   .include_record_community(plan, id, community_id, token)
-  state <- .publication_state(plan)
-  state$versions$catalog$published <- TRUE; .save_publication_state(plan, state)
+  .update_publication_state(plan, function(state) { state$versions$catalog$published <- TRUE; state })
   record <- .zenodo_request("GET", paste0("records/", id), token, plan$sandbox)
   if (!identical(.zenodo_concept_doi(record), concept)) stop("Published concept DOI differs from the catalog family.", call. = FALSE)
-  state <- .publication_state(plan)
-  state$versions$catalog$family_id <- as.character(record$parent$id)
-  state$versions$catalog$metadata_complete <- TRUE; .save_publication_state(plan, state)
+  .update_publication_state(plan, function(state) {
+    state$versions$catalog$family_id <- as.character(record$parent$id)
+    state$versions$catalog$metadata_complete <- TRUE; state
+  })
   .verify_record_rights(record, plan$metadata)
   for (doi in storage_dois) .verify_relationship(record, doi, "haspart")
   result <- list(release = catalog$release, record_id = id, catalog_sha256 = asset$sha256, doi = .zenodo_doi(record), concept_doi = concept)
   .fetch_verified(.zenodo_file_url(id, "release.json", plan$sandbox), file.path(plan$state_directory, "public-verification", "release.json"),
-    asset$sha256, asset$size, asset$md5, progress = FALSE, max_try = 3, retry_not_found = 5L)
-  jsonlite::write_json(result, file.path(plan$state_directory, "registry-entry.json"), auto_unbox = TRUE, pretty = TRUE)
+    asset$sha256, asset$size, asset$md5, progress = FALSE, max_try = 6L, retry_not_found = 5L)
+  .write_json_verified(file.path(plan$state_directory, "registry-entry.json"), result, pretty = TRUE,
+                       history_dir = file.path(plan$state_directory, "catalog-history"))
   result
 }

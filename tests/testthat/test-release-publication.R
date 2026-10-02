@@ -33,7 +33,7 @@ test_that("release verification checks licenses in saved staged records", {
     metadata = list(rights = rights), state_directory = file.path(root, "state"))
   record <- list(metadata = list())
   local_mocked_bindings(
-    .publication_state = function(plan) list(groups = list(`1` = list(record_id = "12345", published = TRUE))),
+    .publication_state = function(plan, mode) list(groups = list(`1` = list(record_id = "12345", published = TRUE))),
     .zenodo_request = function(method, path, ...) {
       if (!endsWith(path, "/files")) return(record)
       list(entries = list(list(key = asset$filename, status = "completed",
@@ -84,6 +84,7 @@ test_that("interrupted commits resume without uploading completed files or publi
   plan <- legacy_plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
     metadata = list(), state_directory = file.path(root, "state"))
   entries <- list(); remote <- list(); published <- character(); uploads <- 0L; creations <- 0L; interrupt <- TRUE
+  gate <- local_mock_gate()
   local_mocked_bindings(
     .create_component_record = function(...) { creations <<- creations + 1L; as.character(creations) },
     .record_is_published = function(plan, record_id, token) record_id %in% published,
@@ -116,13 +117,18 @@ test_that("interrupted commits resume without uploading completed files or publi
   expect_equal(uploads, 1L)
   suppressMessages(stage_benchmark_release(plan, "test-token"))
   expect_equal(uploads, 1L); expect_equal(creations, 1L)
-  result <- suppressMessages(publish_benchmark_release(plan, "test-token"))
+  # Publishing runs staging and verification inside its own session: the lock
+  # taken once by the session is not requested again (no deadlock).
+  result <- suppressMessages(publish_benchmark_release(plan, "test-token", confirm = "test.1"))
   expect_equal(result$doi, "10.test/2"); expect_equal(uploads, 2L)
   expect_equal(published, c("1", "2"))
-  expect_equal(suppressMessages(publish_benchmark_release(plan, "test-token")), result)
+  expect_equal(suppressMessages(publish_benchmark_release(plan, "test-token", confirm = "test.1")), result)
   expect_equal(uploads, 2L); expect_equal(creations, 2L)
   catalog <- jsonlite::read_json(file.path(plan$state_directory, "release.json"))
   expect_null(catalog$assets[[1]]$local_path)
+  expect_length(gate$calls, 4L)
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  expect_true(file.exists(file.path(plan$state_directory, "registry-entry.json")))
 })
 
 test_that("local distributed results remain separate and measures are partitioned by method", {
@@ -146,7 +152,8 @@ test_that("local distributed results remain separate and measures are partitione
 test_that("batch staging resumes partial records and leaves completed files untouched", {
   root <- withr::local_tempdir()
   assets <- lapply(1:3, function(i) test_resource(root, paste0(i, ".csv"), ids = (2*i-1):(2*i)))
-  plan <- list(sandbox = FALSE)
+  plan <- list(sandbox = FALSE, state_directory = file.path(root, "state"))
+  local_held_lock(plan)
   entries <- list(); batches <- list(); uploads <- character(); deleted <- character(); reads <- 0L; interrupt <- TRUE
   local_mocked_bindings(
     .zenodo_upload = function(path, record_id, filename, ...) { uploads <<- c(uploads, filename) },
@@ -156,8 +163,8 @@ test_that("batch staging resumes partial records and leaves completed files unto
       if (method == "DELETE") { deleted <<- c(deleted, filename); entries[[filename]] <<- NULL; return(NULL) }
       if (endsWith(path, "/files")) {
         batches[[length(batches) + 1L]] <<- vapply(body, `[[`, character(1), "key")
-        for (file in body) entries[[file$key]] <<- list(key = file$key, status = "pending")
-        return(NULL)
+        for (file in body) entries[[file$key]] <<- list(key = file$key, status = "pending", created = paste0("created-", file$key))
+        return(list(entries = unname(entries[vapply(body, `[[`, character(1), "key")])))
       }
       filename <- utils::URLdecode(strsplit(path, "/", fixed = TRUE)[[1]][5])
       asset <- Filter(function(x) x$filename == filename, assets)[[1]]
@@ -196,6 +203,8 @@ test_that("explicit rate-limit responses retry rejected mutations", {
 test_that("stored pending bytes can be committed without another upload", {
   root <- withr::local_tempdir()
   asset <- test_resource(root, "pending.csv")
+  plan <- list(sandbox = FALSE, state_directory = file.path(root, "state"))
+  local_held_lock(plan)
   entry <- list(key = asset$filename, status = "pending", size = asset$size, checksum = paste0("md5:", asset$md5))
   commits <- 0L
   local_mocked_bindings(
@@ -207,7 +216,7 @@ test_that("stored pending bytes can be committed without another upload", {
       }
       stop("Unexpected initialization or deletion")
     })
-  suppressMessages(.stage_files(list(sandbox = FALSE), "12345", list(asset), "test-token"))
+  suppressMessages(.stage_files(plan, "12345", list(asset), "test-token"))
   expect_equal(commits, 1L)
 })
 

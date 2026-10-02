@@ -10,7 +10,7 @@
 #' @param method Optional method names to include.
 #' @param method_setting Optional method settings to include.
 #' @return List of file descriptors for plan_benchmark_release.
-#' @export
+#' @keywords internal
 prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures"),
                                         output_directory, package_version = NULL,
                                         method = NULL, method_setting = NULL) {
