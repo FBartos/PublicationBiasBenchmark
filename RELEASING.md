@@ -162,16 +162,35 @@ same plan again recovers lost responses and never duplicates records or uploads.
 | `deletions.log` | audit log of online deletions (never read by the package) |
 | `.lock/` | the lock of a running session |
 
-Files are written next to their destination, checked byte for byte, kept in the
-history and only then renamed into place; a failed check restores the previous
-file. Catalogs and state are LF-terminated UTF-8 JSON on every platform. Release
+Files are written next to their destination, checked byte for byte and only then
+renamed into place; `state.json`, `release.json` and `registry-entry.json` also keep
+a copy of every version in the history directories above (`plan.rds`, the lock's
+`owner.json` and community-page backups are verified but have no history). A failed
+check restores the previous bytes and checks them again; if restoring fails, the
+error says which file holds the unverified new bytes and where the previous bytes
+are. Catalogs and state are LF-terminated UTF-8 JSON on every platform. Release
 2026.1 is pinned by its checksum and is never rewritten.
 
-**CRLF note.** A run that straddles the upgrade to this version can find a
-`release.json` already staged in a draft by the older code, with CRLF line ends.
-It stops with "Existing draft file differs; refusing to overwrite it". Re-plan in a
-new state directory (or remove the stale draft file on Zenodo by hand); do not edit
-files in the state directory.
+A plan must not be edited after planning: every session recomputes the plan's
+identity (release, community, environment, upload groups, record selectors,
+metadata, packing limits) and refuses a modified plan before any request.
+`verify_benchmark_release()` reads the state first and also stops when a staged
+`release.json` belongs to another release or lists a different archive inventory.
+
+**CRLF note.** A run that straddles the upgrade to this version can find a completed
+`release.json` with CRLF line ends in the existing catalog draft, staged there by
+the older code. The new code writes LF bytes, so staging stops with "Existing draft
+file differs; refusing to overwrite it". The package never deletes completed draft
+files, so re-planning alone does not help. Recover by hand:
+
+1. re-plan in a new state directory (plans and states of the older version are
+   rejected anyway);
+2. in the Zenodo web interface open the draft of the catalog record
+   ("PublicationBiasBenchmark release `<release>`") and remove its `release.json`;
+3. run `stage_benchmark_release()` for the new plan again; it uploads the LF
+   `release.json`.
+
+Do not edit files in the state directory.
 
 ### Lock
 
@@ -214,8 +233,9 @@ again.
 `update_benchmark_community_pages(community, about, curation_policy, sandbox,
 confirm = community)` replaces the About and curation pages. It needs the owner's
 token and `confirm` equal to the community, and it writes the previous pages to
-`backup_directory` (default `tools::R_user_dir("PublicationBiasBenchmark", "data")`)
-as a verified JSON file before the request; if that fails nothing is changed. Review
+`backup_directory` (default `tools::R_user_dir("PublicationBiasBenchmark", "data")` on
+R 4.0 or later and `~/.PublicationBiasBenchmark` on older R versions) as a verified
+JSON file before the request; if that fails nothing is changed. Review
 and approve the HTML first. The community's access and review policies are preserved.
 
 ## Older scripts
