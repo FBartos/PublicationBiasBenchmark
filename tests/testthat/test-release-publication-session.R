@@ -487,6 +487,31 @@ test_that("a failed verification restores the previous version, or removes a fir
   expect_identical(rawToChar(.read_bytes(path)), '{"a":3}\n')
 })
 
+test_that("a failed restore after a failed verification names the file that holds the previous bytes", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  .write_file_verified(path, charToRaw("old bytes"))
+  renames <- 0L
+  # The new file is installed; every later rename (the restore) fails.
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL,
+    .file_rename = function(from, to) { renames <<- renames + 1L; renames == 1L && file.rename(from, to) })
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE),
+                      error = conditionMessage)
+  expect_match(message, "failed verification; restoring the previous version failed", fixed = TRUE)
+  expect_match(message, paste0(path, " holds the unverified new bytes"), fixed = TRUE)
+  previous <- list.files(root, pattern = "^plan[.]rds-previous-.*[.]tmp$", full.names = TRUE)
+  expect_length(previous, 1L)
+  expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
+  expect_match(message, "the previous bytes are in ", fixed = TRUE)
+  expect_match(message, basename(previous), fixed = TRUE)
+  expect_false(grepl("history", message))
+  # With a history, the message also points to it.
+  history <- file.path(root, "history"); renames <- 0L
+  expect_true(.write_file_verified(file.path(root, "state.json"), charToRaw("{}"), history_dir = history))
+  renames <- 0L
+  expect_error(.write_file_verified(file.path(root, "state.json"), charToRaw("{\"a\":1}"), verify = function(p) FALSE,
+                                    history_dir = history), paste0("the history in ", history, " keeps every version"), fixed = TRUE)
+})
+
 test_that("RDS files are written verified and unchanged files are skipped", {
   root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
   object <- list(data = data.frame(x = 1:3), label = "plan")

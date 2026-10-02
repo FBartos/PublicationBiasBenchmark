@@ -245,14 +245,22 @@
     is.null(verify) || isTRUE(verify(path))
   }, error = function(error) { reason <<- conditionMessage(error); FALSE })
   if (!installed) {
-    restored <- if (is.null(old)) { unlink(path); TRUE } else {
-      back <- tempfile(paste0(name, "-"), tmpdir = dirname(path), fileext = ".tmp")
-      writeBin(old, back)
-      .retry_file_operation(function() .file_rename(back, path))
+    # The previous bytes are first written completely next to the file, so a
+    # failing restore leaves them under a name that the message reports.
+    previous <- NULL
+    restored <- if (is.null(old)) { unlink(path); !file.exists(path) } else {
+      previous <- tempfile(paste0(name, "-previous-"), tmpdir = dirname(path), fileext = ".tmp")
+      saved <- tryCatch({ writeBin(old, previous); identical(.read_bytes(previous), old) },
+                        error = function(error) FALSE, warning = function(warning) FALSE)
+      if (!saved) { unlink(previous); previous <- NULL }
+      saved && .retry_file_operation(function() .file_rename(previous, path))
     }
     stop("The new ", name, " failed verification", if (!is.null(reason)) paste0(" (", reason, ")"),
-         if (restored) "; the previous version was restored." else
-           paste0("; restoring the previous version failed, take it from ", history_dir, "."), call. = FALSE)
+         if (restored) "; the previous version was restored." else paste0(
+           "; restoring the previous version failed, so ", path, " holds the unverified new bytes",
+           if (!is.null(previous)) paste0("; the previous bytes are in ", previous),
+           if (!is.null(history_dir)) paste0("; the history in ", history_dir, " keeps every version"),
+           "."), call. = FALSE)
   }
   invisible(TRUE)
 }
