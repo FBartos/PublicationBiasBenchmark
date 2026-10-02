@@ -19,7 +19,13 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
                                    convergence_col = "convergence",
                                    method_replacements = NULL,
                                    n_repetitions = 1000, overwrite = FALSE,
-                                   results_source = "release", release = NULL, ...) {
+                                   results_source = c("local", "release"), release = NULL,
+                                   replacement_source = NULL, ...) {
+
+  # Resolve where the method and replacement results are read from
+  results_source     <- match.arg(results_source)
+  replacement_source <- .replacement_source(replacement_source, results_source)
+  .warn_ignored_release(release, results_source, replacement_source)
 
   # Validate that method and method_setting have the same length
   if (length(method) != length(method_setting))
@@ -136,7 +142,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
           dgm_name       = dgm_name,
           method         = replacement_method,
           method_setting = replacement_setting,
-          source = results_source, release = release
+          source = replacement_source, release = release
         )
 
         # Check that all repetitions are available
@@ -322,7 +328,13 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              convergence_col = "convergence",
                              method_replacements = NULL,
                              n_repetitions = 1000, overwrite = FALSE, conditions = NULL,
-                             results_source = "release", release = NULL) {
+                             results_source = c("local", "release"), release = NULL,
+                             replacement_source = NULL) {
+
+  # Resolve the sources once; the single-measure calls then receive scalar values
+  results_source     <- match.arg(results_source)
+  replacement_source <- .replacement_source(replacement_source, results_source)
+  if (.warn_ignored_release(release, results_source, replacement_source)) release <- NULL
 
   # Input validation downstream
   # Define all available comparison measures if not specified
@@ -377,7 +389,8 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       n_repetitions       = n_repetitions,
       overwrite           = overwrite,
       results_source      = results_source,
-      release             = release
+      release             = release,
+      replacement_source  = replacement_source
     )
 
     # Save results (measure_result already contains combined existing + new results if applicable)
