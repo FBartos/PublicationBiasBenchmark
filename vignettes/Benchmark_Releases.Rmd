@@ -100,87 +100,9 @@ each batch. Use `source = "local"` with result readers, and
 `results_source = "local"` when computing measures from these unpublished files.
 Publishing is done by a maintainer after the workers finish.
 
-```{r}
-# Describe individual worker outputs without combining them.
-files <- list(
-  benchmark_resource("worker-01.csv", "no_bias", "results",
-    method = "myMethod", method_setting = "default", package_version = "0.4.0",
-    id = "no_bias/results/myMethod-default/batch-01"),
-  benchmark_resource("worker-02.csv", "no_bias", "results",
-    method = "myMethod", method_setting = "default", package_version = "0.4.0",
-    id = "no_bias/results/myMethod-default/batch-02")
-)
-
-# Alternatively, discover local shards and split locally computed measures.
-files <- prepare_benchmark_resources("no_bias", kinds = c("results", "measures"),
-  output_directory = "resources/prepared", package_version = "0.4.0")
-
-metadata <- list(
-  creators = list(list(person_or_org = list(type = "personal",
-    given_name = "Your", family_name = "Name"))),
-  rights = list(list(id = "cc-by-4.0"))
-)
-plan <- plan_benchmark_release("my-next-release", files, previous = "2026.1",
-  metadata = metadata, state_directory = "resources/publication/my-next-release",
-  catalog_record_id = "23070787", catalog_concept_doi = "10.5281/zenodo.23070786")
-benchmark_packing_report(plan)
-
-# ZENODO_TOKEN is read from the environment, never saved into state.
-stage_benchmark_release(plan)
-verify_benchmark_release(plan)
-entry <- publish_benchmark_release(plan)
-```
-
-Keep publication state for retries. Running the same plan again resumes pending
-uploads, verifies completed files, and recovers published records after lost
-responses. Files in completed drafts are never replaced when their hashes differ.
-Staging initializes new files in batches, reuses empty pending entries, and honors
-Zenodo's rate-limit wait headers. Other uncertain failures are recovered by running
-the same plan again.
-Archive bytes are built once with the suggested `zip` package and persisted with
-their hashes for retries. Only flat ASCII regular-file members using store or
-deflate compression are supported; the reader checks the ZIP central directory,
-including link attributes, before extracting. A new DGM storage version imports
-the previous version's files, removes superseded unit ZIPs from the new draft, and
-uploads complete replacement ZIPs. Imported ZIPs count toward the 100-file and
-50,000,000,000-byte default limits. Packing fails instead of creating arbitrary
-extra record families. `archive = FALSE` retains the legacy direct-file publisher.
-
-The catalog is published only after complete public archive and member verification
-and accepted community inclusion. The publisher submits published records and
-accepts its own inclusion requests with the community owner's token; it preserves
-the community review policy. Subsequent storage and catalog versions inherit the
-family's community membership and branding, which are checked on every release.
-Catalog publication continues the existing native version family with a new DOI.
-`update_benchmark_community_pages()` is a separate, explicit operation for reviewed
-About and curation HTML. It preserves the community's access and review policies.
-
-A correction to an existing logical shard requires its ID in `replace`. The new
-catalog selects corrected bytes; earlier catalogs retain the old references. Frozen
-conditions and dataset coverage cannot grow for an existing DGM. Add a new DGM
-identifier for new conditions or datasets. Corrections of existing dataset assets
-are allowed explicitly, but affected results and derived measures must be
-recomputed, supplied and listed in `replace` in the same release. Result corrections
-or additions invalidate affected ordinary, replacement and pairwise measures.
-The publisher records input asset IDs/hashes and rejects stale derived assets.
-Provide actual input IDs through `benchmark_resource(dependencies = ...)` when
-known; otherwise coverage and method metadata conservatively infer dependencies.
-Metadata and source archive assets can be explicitly corrected, but new assets
-of these kinds require a new DGM. Generation versions remain attached to members;
-the package version building a ZIP is recorded separately.
-
-Use `ZENODO_SANDBOX_TOKEN` with `sandbox = TRUE` and a dedicated sandbox community
-for integration tests; the production community UUID does not exist there.
-Before production publication, review the persisted packing report, complete
-asset audit, proposed metadata and sandbox evidence. The initial consolidation
-was authorized as a replacement of the preliminary `2026.1` uploads: the catalog
-retains its DOI with a new checksum, and the 40 old storage records are withdrawn
-only after replacement verification. Their DOI pages remain tombstones.
-
-After verified publication and approval, add `entry` to `inst/extdata/benchmark-releases.json` and set
-`default_release` for the next package release. A catalog file can also be used
-directly with `release = "/path/to/release.json"`. Concurrent publishers must use
-distinct release identifiers; only one maintainer publishes a given plan.
+Maintainers publish the finished shards with internal, token-gated functions that
+are not exported. The maintainer workflow is described in `RELEASING.md` in the
+[GitHub repository](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md).
 
 ## OSF baseline
 
@@ -203,7 +125,4 @@ measures and reproduced fits establish the example setting. No archived numerica
 results are recalculated as part of migration.
 
 The one-off migration scripts and source copies are retained locally outside Git.
-Subsequent releases use the package's preparation and publication functions shown
-above. Keep the publication state directory until public verification and registry
-pinning finish; it allows an interrupted upload to resume without replacing
-completed files.
+Subsequent releases are published by the maintainers as described in `RELEASING.md`.

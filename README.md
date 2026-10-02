@@ -296,13 +296,10 @@ SHA-256 and checked before use. New releases reuse unchanged files and
 upload only additions or corrections; older releases remain
 reproducible.
 
-Maintainers can describe distributed shards with `benchmark_resource()`,
-prepare local outputs with `prepare_benchmark_resources()`, inspect
-`benchmark_packing_report()`, and plan, stage, verify, and publish
-native release versions through the package API. Publication verifies
-the full archive inventory and community inclusion; computation
-corrections must refresh dependent results and measures. Publishing
-requires `ZENODO_TOKEN`, or a separate `ZENODO_SANDBOX_TOKEN` for tests.
+Releases are published by the project maintainers through internal,
+token-gated functions that are not exported; the maintainer workflow is
+described in
+[`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md).
 `prune_benchmark_archives()` can reclaim cached ZIP space after members
 are verified. See the [release
 guide](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html).

@@ -10,6 +10,26 @@
  - Build pull request websites with read-only permissions and publish only from a separate trusted deployment job.
  - Generate the README package citation from CITATION so its authors, year and version stay synchronized.
 
+## Changes
+ - `compute_single_measure()`, `compute_measures()`, `compare_single_measure()` and `compare_measures()` read local results by default again (`results_source = "local"`, as before release catalogs); pass `results_source = "release"` to use published results. The new `replacement_source` argument selects where the results of replacement methods come from (default: `results_source`), for example `replacement_source = "release"` to replace a new method's failures with published results of established methods. A `release` is ignored, with a warning, when both sources are local.
+ - Publication is maintainer-only. `plan_benchmark_release()`, `stage_benchmark_release()`, `verify_benchmark_release()`, `publish_benchmark_release()`, `benchmark_packing_report()`, `update_benchmark_community_pages()`, `prepare_benchmark_resources()` and `benchmark_resource()` are no longer exported (call them as `PublicationBiasBenchmark:::name()`); no exported function can change anything on Zenodo. The maintainer workflow moved from the vignette to `RELEASING.md` in the GitHub repository.
+ - Staging, publishing and community-page updates first check, before any remote write, that the token's account is an owner or manager (owner for community pages) of the community; production is restricted to the PublicationBiasBenchmark community. Publishing needs `confirm = "<release>"`, and `update_benchmark_community_pages()` needs `confirm = "<community>"` and saves a verified backup of the current pages first. The check protects this package's entry points; it is not a security boundary for Zenodo.
+ - Publication state is protected: planning, staging and publishing take an exclusive lock on the state directory (a stale `.lock` is reported, never removed automatically); state is bound to its plan by an identity (plans and states written by earlier versions must be re-planned in a new state directory); `state.json`, `release.json`, `registry-entry.json` and `plan.rds` are written verified with a never-deleted history (`state-history/`, `catalog-history/`); every update re-reads the state, so no update is lost.
+ - Online deletions go through one guarded helper: only pending draft files that the publication state created and imports provably identical to the published base version are deleted, and every attempt is logged in `deletions.log`. A pending file holding data that cannot be attributed stops the run instead of being deleted.
+ - Public verification after publishing checks every storage record anonymously (public records and files, no embargo) and every advertised archive with a one-byte ranged request; only archives uploaded by the plan are downloaded and verified member by member. Not yet visible files are retried five times.
+ - Downloads no longer retry permanent errors: HTTP 4xx (except 408, 425 and 429), HTTP 501 and 505, TLS/certificate, protocol and local-write errors stop at once; DNS failures stop after three attempts; a missing or withdrawn file reports that the release may have been withdrawn or the catalog is outdated. Rate limits wait for the server delay and other failures back off.
+ - Catalogs and publication state written by this version are LF-terminated JSON on every platform (release 2026.1 is untouched). A publication run that straddles the upgrade and already staged a CRLF `release.json` in a draft stops at "Existing draft file differs"; re-plan in a new state directory.
+ - Legacy plans (`archive = FALSE`) now reject added condition rows for a published DGM, like archive plans; frozen conditions are checked once for both plan schemas, and legacy plans store the `community` they publish to.
+ - Prepared measures use the logical IDs `<dgm>/measures/<label>` of release 2026.1 (no `.csv`) with member files named `<dgm>__measures__<label>.csv`; method/setting pairs that spell the same label are rejected.
+ - Cached archives and members are verified by size and SHA-256 once per download call; archive members are staged in the resource cache and installed by renaming, so a failed installation leaves the previous copy in place.
+
+## Fixes
+ - Replacement measures computed with earlier versions could be `NA` (`n_valid` 0) in conditions where the replaced method had no valid runs; the internal `safe_rbind()` discarded the replacement rows in that case and is fixed.
+ - `compute_single_measure()` creates the DGM's `measures` folder when it does not exist.
+ - Methods whose names or settings contain separators such as `.` or `/` are no longer merged in coverage checks, release planning and measure preparation; unknown condition IDs are rejected before any shard is read.
+ - The release catalog family sentence of a storage record's description is added once, however often a publication is resumed.
+ - Catalog validation and `list_benchmark_resources()` use indexed lookups instead of repeated scans.
+
 # PublicationBiasBenchmark 0.4.0
 ## Features
  - Migrated benchmark storage to append-only Zenodo records and complete release catalogs.
