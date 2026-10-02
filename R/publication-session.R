@@ -71,16 +71,18 @@
   token <- .publication_token(plan, token)
   .acquire_publication_lock(plan$state_directory)
   on.exit(.release_publication_lock(plan$state_directory), add = TRUE)
-  if (is.null(plan$identity))
-    stop("This plan was created by an earlier package version; re-plan in a new state directory.", call. = FALSE)
+  if (!.identity_current(plan$identity))
+    stop(.earlier_plan_message, call. = FALSE)
   if (!.scalar_string(plan$community))
     stop("This plan has no community; re-plan with this package version.", call. = FALSE)
   # The identity stored in the plan must still describe the plan that is about to
   # run: a plan edited after planning (release, environment, community, upload
-  # groups, record selectors, metadata, limits) is refused before any request.
+  # group entries, storage base records, record selectors, metadata, limits) is
+  # refused before any request.
   if (!.identity_equal(.plan_identity(plan), plan$identity))
     stop("The plan was modified after it was planned: its release, community, environment, upload groups, ",
-         "record selectors, metadata or limits no longer match its identity. Re-plan instead of editing a plan.", call. = FALSE)
+         "storage base records, record selectors, metadata or limits no longer match its identity. ",
+         "Re-plan instead of editing a plan.", call. = FALSE)
   .publication_state(plan, "write")
   community_id <- .require_community_maintainer(plan$community, token, plan$sandbox, roles)
   fn(token, community_id)
@@ -322,20 +324,33 @@
   catalog
 }
 
+# Plan identities carry a format version; a plan or state with another version
+# (or none) was written by an earlier package version and must be re-planned.
+.identity_version <- 2L
+.earlier_plan_message <- "This plan was created by an earlier package version; re-plan in a new state directory."
+.identity_current <- function(identity) {
+  is.list(identity) && length(identity$version) == 1L && is.numeric(identity$version) &&
+    identical(as.integer(identity$version), .identity_version)
+}
+
 # What a state directory is bound to: the catalog without local paths, the
-# group/archive membership, the upload groups and record selectors (the catalog
-# family, the changed DGMs and the base storage records), the metadata, the
-# packing limits, community, environment and release. Planning computes it, and
-# every publication session recomputes it from the plan it is about to execute.
+# group/archive membership, every upload entry (id, filename, hashes, size), the
+# storage base record of each changed DGM (as execution resolves it) and the
+# earlier catalog's schema, the catalog family, the metadata, the packing limits,
+# community, environment and release. Planning computes it, and every publication
+# session recomputes it from the plan it is about to execute.
 .plan_identity <- function(plan) {
   archive <- identical(plan$catalog$schema_version, 2L)
   ids <- function(items) vapply(items, `[[`, character(1), "id")
+  entry <- function(x) list(id = x$id, dgm = x$dgm, filename = x$filename, sha256 = x$sha256, md5 = x$md5, size = x$size)
+  uploads <- lapply(plan$groups, function(group) lapply(group, entry))
   membership <- if (archive) list(
     archives = lapply(plan$catalog$archives, function(a) list(id = a$id, members = ids(a$members))),
-    uploads = lapply(plan$groups, ids), changed_dgms = plan$changed_dgms,
-    storage_base = lapply(plan$previous$archives, function(a) list(dgm = a$dgm, record_id = a$record_id))) else
-    lapply(plan$groups, ids)
-  list(version = 1L, release = plan$catalog$release, sandbox = isTRUE(plan$sandbox), community = plan$community,
+    uploads = uploads, changed_dgms = plan$changed_dgms,
+    storage_base = stats::setNames(lapply(plan$changed_dgms, function(dgm)
+      tryCatch(.storage_base_id(plan, dgm), error = function(error) "unresolved")), plan$changed_dgms),
+    previous_schema_version = plan$previous$schema_version) else uploads
+  list(version = .identity_version, release = plan$catalog$release, sandbox = isTRUE(plan$sandbox), community = plan$community,
        fingerprint = .canonical_fingerprint(list(catalog = .strip_local_paths(plan$catalog), membership = membership,
          catalog_record_id = plan$catalog_record_id, catalog_concept_doi = plan$catalog_concept_doi, metadata = plan$metadata,
          max_files = plan$max_files, max_bytes = plan$max_bytes, max_archive_bytes = plan$max_archive_bytes,
@@ -384,11 +399,14 @@
   }
   state <- tryCatch(suppressWarnings(jsonlite::read_json(path, simplifyVector = FALSE)), error = function(error) NULL)
   if (!.valid_state(state)) fail(paste0("file ", path, " is unreadable or has an invalid structure."))
-  if (is.null(state$identity)) {
-    if (mode == "write" && !is.null(plan$identity))
+  if (is.null(state$identity) || !.identity_current(state$identity)) {
+    # No identity, or one of an older format: written by an earlier package version.
+    older <- !is.null(state$identity)
+    if (mode == "write" && (older || !is.null(plan$identity)))
       stop("The publication state was written by an earlier package version; re-plan in a new state directory.", call. = FALSE)
-    if (mode == "read" && !is.null(plan$identity))
-      message("The publication state has no plan identity (written by an earlier package version).")
+    if (mode == "read" && (older || !is.null(plan$identity)))
+      message("The publication state has ", if (older) "an older plan identity" else "no plan identity",
+              " (written by an earlier package version).")
   } else if (!.identity_equal(state$identity, plan$identity)) {
     stop("The publication state in ", directory, " belongs to a different plan (release, community, environment or contents differ); use a new state directory.", call. = FALSE)
   }

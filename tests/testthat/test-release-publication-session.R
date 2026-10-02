@@ -290,7 +290,7 @@ test_that("plan identity binds the state to the release, community, environment,
   plan <- make()
   identity <- plan$identity
   expect_setequal(names(identity), c("version", "release", "sandbox", "community", "fingerprint"))
-  expect_identical(identity$version, 1L); expect_identical(identity$release, "test.1")
+  expect_identical(identity$version, 2L); expect_identical(identity$release, "test.1")
   expect_false(identity$sandbox); expect_identical(identity$community, "c")
   expect_match(identity$fingerprint, "^[a-f0-9]{64}$")
   # The state directory is not part of the identity; everything else is.
@@ -567,7 +567,14 @@ test_that("a plan edited after planning is refused under the lock before the gat
     catalog_content = function(p) { p$catalog$assets[[1]]$sha256 <- strrep("0", 64); p },
     catalog_family = function(p) { p$catalog_record_id <- "123"; p },
     changed_dgms = function(p) { p$changed_dgms <- character(); p },
-    upload_selection = function(p) { p$groups <- list(); p })
+    upload_selection = function(p) { p$groups <- list(); p },
+    # Every field of an upload entry decides what is uploaded.
+    entry_id = function(p) { p$groups[[1]][[1]]$id <- "no_bias/results/other"; p },
+    entry_filename = function(p) { p$groups[[1]][[1]]$filename <- "other.csv"; p },
+    entry_sha256 = function(p) { p$groups[[1]][[1]]$sha256 <- strrep("1", 64); p },
+    entry_md5 = function(p) { p$groups[[1]][[1]]$md5 <- strrep("2", 32); p },
+    entry_size = function(p) { p$groups[[1]][[1]]$size <- p$groups[[1]][[1]]$size + 1; p },
+    entry_dgm = function(p) { p$groups[[1]][[1]]$dgm <- "other_dgm"; p })
   for (plan in plans) {
     archive <- identical(plan$catalog$schema_version, 2L)
     for (name in names(edits)) {
@@ -582,8 +589,11 @@ test_that("a plan edited after planning is refused under the lock before the gat
     }
   }
   expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
-  # The untouched plan, and a copy reloaded from plan.rds, recompute to their stored identity.
+  # The untouched plan, and a copy reloaded from plan.rds, recompute to their stored identity;
+  # the local file path of an upload is verified against its hashes when it is uploaded instead.
   for (plan in plans) {
+    moved <- plan; moved$groups[[1]][[1]]$local_path <- file.path(tempdir(), "elsewhere.csv")
+    expect_true(.identity_equal(.plan_identity(moved), plan$identity))
     expect_true(.identity_equal(.plan_identity(plan), plan$identity))
     expect_true(.identity_equal(.plan_identity(readRDS(file.path(plan$state_directory, "plan.rds"))), plan$identity))
   }
@@ -739,4 +749,93 @@ test_that("a failed verification with the installed file held open reports the f
   expect_match(tryCatch(.write_file_verified(path, charToRaw("newest"), verify = function(p) FALSE), error = conditionMessage),
                "the previous version was restored", fixed = TRUE)
   expect_identical(rawToChar(.read_bytes(path)), "old bytes")
+})
+
+## Storage base records and earlier versions -----------------------------------------------------------
+
+# A second archive release on top of a published first one: the changed DGM is imported into
+# a new version of the storage record "55".
+base_release_plan <- function(root) {
+  a <- test_resource(root, "A.csv"); b <- test_resource(root, "B.csv", method = "B")
+  metadata <- list(rights = list(list(id = "cc-by-4.0")))
+  first <- plan_benchmark_release("test.1", list(a, b), conditions = test_catalog(list(a))$conditions, metadata = metadata,
+    state_directory = file.path(root, "first"), community = "c")
+  base <- .public_catalog(first$catalog)
+  base$publication <- list(catalog_record_id = "123", catalog_concept_doi = "10.test/concept")
+  base$archives <- lapply(base$archives, function(x) { x$record_id <- "55"; x })
+  base$assets <- lapply(base$assets, function(x) { x$record_id <- "55"; x })
+  corrected <- test_resource(root, "A.csv", ids = 3:4)
+  plan_benchmark_release("test.2", list(corrected), previous = base, replace = a$id, metadata = metadata,
+    state_directory = file.path(root, "second"), community = "c")
+}
+
+test_that("the identity binds the storage base records and the earlier catalog's schema", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- base_release_plan(root)
+  expect_identical(plan$changed_dgms, "no_bias")
+  expect_identical(.storage_base_id(plan, "no_bias"), "55")
+  gate <- local_mock_gate()
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  edits <- list(
+    # Version 1 catalogs have no native storage version to import: execution would start a new family.
+    previous_schema = function(p) { p$previous$schema_version <- 1L; p },
+    base_record = function(p) { p$previous$archives <- lapply(p$previous$archives, function(a) { a$record_id <- "999"; a }); p },
+    no_previous = function(p) { p$previous <- NULL; p })
+  for (name in names(edits)) {
+    edited <- edits[[name]](plan)
+    expect_identical(edited$identity, plan$identity)
+    expect_error(stage_benchmark_release(edited, "t"), "modified after it was planned", info = name)
+    expect_error(publish_benchmark_release(edited, "t", confirm = "test.2"), "modified after it was planned", info = name)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = name)
+  }
+  expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+  expect_true(.identity_equal(.plan_identity(plan), plan$identity))
+  # The binding is what execution resolves, not a copy of the previous catalog.
+  edited <- edits$base_record(plan)
+  expect_identical(.storage_base_id(edited, "no_bias"), "999")
+  expect_false(.identity_equal(.plan_identity(edited), plan$identity))
+})
+
+## Identity format version ---------------------------------------------------------------------------
+
+test_that("a plan or state with an older or missing identity version must be re-planned", {
+  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  gate <- local_mock_gate()
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  message <- "This plan was created by an earlier package version; re-plan in a new state directory."
+  for (plan in plans) {
+    expect_identical(plan$identity$version, 2L)
+    schema <- plan$catalog$schema_version
+    older <- plan; older$identity$version <- 1L
+    missing <- plan; missing$identity$version <- NULL
+    empty <- plan; empty$identity <- list()
+    absent <- plan; absent["identity"] <- list(NULL)
+    for (candidate in list(older, missing, empty, absent))
+      for (call in list(function(p) stage_benchmark_release(p, "t"), function(p) publish_benchmark_release(p, "t", confirm = "test.1")))
+        expect_error(call(candidate), message, fixed = TRUE, info = schema)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+    # Planning again in the directory of a plan saved with the older identity stops with the same message.
+    saved <- readRDS(file.path(plan$state_directory, "plan.rds"))
+    saved$identity$version <- 1L
+    saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
+    a <- test_resource(root, "A.csv")
+    expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
+      state_directory = plan$state_directory, archive = identical(schema, 2L), community = "publicationbiasbenchmark"),
+      message, fixed = TRUE, info = schema)
+    saved$identity$version <- NULL
+    saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
+    expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
+      state_directory = plan$state_directory, archive = identical(schema, 2L), community = "publicationbiasbenchmark"),
+      message, fixed = TRUE, info = schema)
+    # State written with an older identity format is refused for writes and noted when read.
+    path <- file.path(plan$state_directory, "state.json")
+    jsonlite::write_json(list(groups = list(), identity = list(version = 1L, release = "test.1", sandbox = FALSE, community = "x", fingerprint = "f")),
+                         path, auto_unbox = TRUE)
+    expect_error(.publication_state(plan, "write"), "written by an earlier package version; re-plan in a new state directory")
+    expect_message(.publication_state(plan, "read"), "older plan identity")
+    unlink(path)
+  }
+  expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
 })

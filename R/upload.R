@@ -265,8 +265,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   plan_path <- file.path(state_directory, "plan.rds")
   if (file.exists(plan_path)) {
     existing <- readRDS(plan_path)
-    if (is.null(existing$identity))
-      stop("The saved plan was written by an earlier package version; re-plan in a new state directory.", call. = FALSE)
+    if (!.identity_current(existing$identity)) stop(.earlier_plan_message, call. = FALSE)
     if (!.identity_equal(existing$identity, plan$identity)) stop("Existing publication state belongs to a different plan.", call. = FALSE)
   } else .write_rds_verified(plan_path, plan)
   plan

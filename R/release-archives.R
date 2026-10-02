@@ -219,8 +219,7 @@
   plan_path <- file.path(state_directory, "plan.rds")
   if (file.exists(plan_path)) {
     saved <- readRDS(plan_path)
-    if (is.null(saved$identity))
-      stop("The saved plan was written by an earlier package version; re-plan in a new state directory.", call. = FALSE)
+    if (!.identity_current(saved$identity)) stop(.earlier_plan_message, call. = FALSE)
     if (!identical(saved$fingerprint, fingerprint)) stop("Existing publication state belongs to a different plan.", call. = FALSE)
     for (archive in Filter(function(x) !is.null(x$local_path), saved$catalog$archives))
       if (!.file_verified(archive$local_path, archive$sha256, archive$size, archive$md5)) stop("Persisted archive changed.", call. = FALSE)
