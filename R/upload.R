@@ -139,8 +139,10 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
 #' new files. Changing an existing shard requires listing its ID in replace.
 #' Archive publication builds complete changed download units, imports unchanged
 #' ZIPs into native storage versions and continues the native catalog family.
-#' Publication makes the complete catalog available after public payload/member,
-#' native rights, DOI relationship and accepted community checks have passed.
+#' Publication makes the complete catalog available after anonymous access and
+#' size checks of every advertised archive, payload/member checks of the archives
+#' it uploaded, and native rights, DOI relationship and accepted community checks
+#' have passed.
 #' @param release New benchmark release identifier.
 #' @param files List of descriptors returned by benchmark_resource.
 #' @param conditions Named list of frozen DGM condition data frames.
