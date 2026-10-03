@@ -1,389 +1,241 @@
-#' @title Download Datasets/Results/Measures of a DGM
-#'
-#' @description
-#' This function downloads datasets/results/measures of a specified Data-Generating Mechanism (DGM)
-#' from the OSF repository (\url{https://osf.io/exf3m/}). The datasets/results/measures are saved
-#' to the location specified via \code{PublicationBiasBenchmark.options(resources_directory = "/path/")}.
-#' To set the location permanently, specify the PublicationBiasBenchmark_RESOURCES environment
-#' variable. The data are stored in dgm_name/datasets, dgm_name/results, dgm_name/measures subfolders.
-#'
-#' @param dgm_name Character string specifying the name of the DGM dataset to download.
-#' @param overwrite Logical indicating whether to overwrite existing files.
-#' Defaults to \code{FALSE}, which means only missing files will be downloaded.
-#' @param progress Logical indicating whether to show progress downloading files.
-#' Defaults to \code{TRUE}.
-#' @param max_try Integet specifying how many times should the function attempt reconnecting to OSF upon failure.
-#'
-#' @return \code{TRUE} if the download was successful, otherwise an error is raised.
-#'
-#' @examples
-#' \dontrun{
-#'   download_dgm_datasets("no_bias")
-#' }
-#'
-#' @aliases download_dgm_datasets download_dgm_results download_dgm_measures
+#' @title Download Benchmark Datasets, Results, and Measures
+#' @description Download immutable catalog-selected direct files or ZIP units.
+#' Archives and extracted members are checked against size, SHA-256 and MD5.
+#' A condition/metric filter may fetch other members of its selected unit.
+#' Public downloads require no token; verified member caches avoid new downloads.
+#' @param dgm_name DGM name.
+#' @param overwrite Re-download selected files even if their cached copies verify.
+#' @param progress Display download progress.
+#' @param max_try Maximum attempts per file.
+#' @param method Optional method name(s); NULL selects all available methods.
+#' @param method_setting Optional method setting(s).
+#' @param release Release identifier or catalog; NULL uses the package default.
+#' @param condition_id Optional condition ID(s) for datasets.
+#' @param measure Optional measure name(s); pairwise comparisons require "pairwise".
+#' @param replacement Whether replacement measures are selected; NULL downloads both variants.
+#' @return Invisible TRUE on success or FALSE when an interactive download is declined.
 #' @name download_dgm
 NULL
 
 #' @rdname download_dgm
 #' @export
-download_dgm_datasets <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .download_dgm_fun(dgm_name, what = "data", overwrite = overwrite, progress = progress, max_try = max_try)
+download_dgm_datasets <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10,
+                                  release = NULL, condition_id = NULL) {
+  .download_dgm_fun(dgm_name, "data", overwrite, progress, max_try,
+                    release = release, condition_id = condition_id)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_results <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .download_dgm_fun(dgm_name, what = "results", overwrite = overwrite, progress = progress, max_try = max_try)
+download_dgm_results <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10,
+                                 method = NULL, method_setting = NULL, release = NULL) {
+  .download_dgm_fun(dgm_name, "results", overwrite, progress, max_try, method, method_setting, release)
 }
 
 #' @rdname download_dgm
 #' @export
-download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10) {
-  .download_dgm_fun(dgm_name, what = "measures", overwrite = overwrite, progress = progress, max_try = max_try)
+download_dgm_measures <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10,
+                                  method = NULL, method_setting = NULL, release = NULL,
+                                  measure = NULL, replacement = NULL) {
+  .download_dgm_fun(dgm_name, "measures", overwrite, progress, max_try, method, method_setting,
+                    release, measure = measure, replacement = replacement)
 }
 
+#' @rdname download_dgm
+#' @export
+download_dgm_metadata <- function(dgm_name, overwrite = FALSE, progress = TRUE, max_try = 10,
+                                  release = NULL) {
+  .download_dgm_fun(dgm_name, "metadata", overwrite, progress, max_try, release = release)
+}
 
-.download_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try) {
-
-  # add a warning for missing token
-  if (Sys.getenv("OSF_PAT") == "")
-    stop("Please set up 'OSF_PAT' environment variable. The file download is unreliable otherwise. See '?osfr::osf_auth' for instructions.", call. = FALSE)
-
-  path <- .get_path()
-
-  # get link to the repository
-  osf_link <- .get_osf_link(dgm_name)
-
-  # connect to the repository
-  osf_repo <- osfr::osf_retrieve_node(osf_link)
-
-  # select the data folder
-  osf_files <- osfr::osf_ls_files(osf_repo, path = what, n_max = Inf)
-
-  ### download all datasets to the specified folder
-  # check the directory name
-  dgm_path <- file.path(path, dgm_name)
-  if (!dir.exists(dgm_path)) {
-    dir.create(dgm_path, recursive = TRUE)
+.download_dgm_fun <- function(dgm_name, what, overwrite, progress, max_try,
+                             method = NULL, method_setting = NULL, release = NULL,
+                             condition_id = NULL, measure = NULL, replacement = NULL) {
+  catalog <- benchmark_catalog(release)
+  kind <- if (what == "measures" && identical(measure, "pairwise")) c("measures", "pairwise") else what
+  assets <- .select_assets(catalog, dgm_name, kind, method, method_setting, replacement, measure)
+  if (what == "measures" && !identical(measure, "pairwise"))
+    assets <- Filter(function(x) !identical(x$measure, "pairwise"), assets)
+  if (!is.null(condition_id)) {
+    .check_release_conditions(catalog, dgm_name, condition_id)
+    assets <- Filter(function(x) any(unlist(x$condition_ids) %in% condition_id), assets)
   }
-
-  # check the data folder
-  data_path <- file.path(path, dgm_name, what)
-  if (!dir.exists(data_path)) {
-    dir.create(data_path)
+  if (!length(assets)) stop("No files match the requested selection.", call. = FALSE)
+  pending <- .pending_downloads(catalog, assets, overwrite)
+  # Abandoned extractions are removed even when everything is already cached.
+  .remove_stale_extractions()
+  if (!length(pending$assets)) {
+    if (progress) message("All selected files are cached and verified.")
+    return(invisible(TRUE))
   }
+  if (pending$files > 0L && interactive() && PublicationBiasBenchmark.get_option("prompt_for_download")) {
+    answer <- readline(sprintf("Download %d files (%.2f MB) for %s from release %s? [Y/n] ",
+                                pending$files, pending$bytes/1024^2,
+                                dgm_name, catalog$release))
+    if (nzchar(answer) && !tolower(substr(answer, 1, 1)) %in% "y") return(invisible(FALSE))
+  }
+  .download_catalog_assets(catalog, assets, progress, max_try, overwrite, pending = pending)
+  invisible(TRUE)
+}
 
-  # download the individual files
-  if (!overwrite) {
-    current_files <- list.files(data_path)
-    osf_files     <- osf_files[!osf_files$name %in% current_files,]
+.check_release_conditions <- function(catalog, dgm_name, condition_id) {
+  missing <- setdiff(condition_id, .catalog_conditions(catalog, dgm_name)$condition_id)
+  if (length(missing)) stop("Unknown archived condition IDs: ", paste(missing, collapse = ", "), call. = FALSE)
+}
 
-    if (nrow(osf_files) == 0) {
-      if (progress) message("All files are already downloaded.")
-      return(invisible(TRUE))
+.read_resource_csv <- function(path) utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
+
+.reject_duplicate_keys <- function(data, keys, what) {
+  if (!all(keys %in% names(data))) stop("Missing ", what, " identifier columns.", call. = FALSE)
+  if (anyNA(data[keys]) || anyDuplicated(data[keys]))
+    stop("Missing or overlapping ", what, " keys across the selected shards.", call. = FALSE)
+  data
+}
+
+.read_catalog_asset <- function(asset, path) {
+  data <- .read_resource_csv(path)
+  if (!is.null(asset$rows) && nrow(data) != asset$rows) stop("Archived row count differs from the catalog.", call. = FALSE)
+  if (asset$kind %in% c("results", "measures") &&
+      (!all(c("method", "method_setting", "condition_id") %in% names(data)) ||
+       anyNA(data[c("method", "method_setting", "condition_id")]) ||
+       !all(data$method == asset$method) || !all(data$method_setting == asset$method_setting)))
+    stop("Archived contents do not match the declared method and setting.", call. = FALSE)
+  if ("condition_id" %in% names(data) && length(setdiff(data$condition_id, unlist(asset$condition_ids))))
+    stop("Archived contents include undeclared conditions.", call. = FALSE)
+  data
+}
+
+.read_catalog_assets <- function(assets) {
+  paths <- .cached_asset_files(assets)
+  safe_rbind(lapply(seq_along(assets), function(i) .read_catalog_asset(assets[[i]], paths[i])))
+}
+
+.check_requested_coverage <- function(data, conditions = NULL, repetitions = NULL) {
+  # Single pass: rows are split once per method/setting and, when repetitions
+  # are requested, once per condition within it.
+  for (rows in split(seq_len(nrow(data)), .method_key(data$method, data$method_setting))) {
+    available <- data$condition_id[rows]
+    selected <- if (is.null(conditions)) unique(available) else conditions
+    if (length(setdiff(selected, available))) stop("Requested conditions are unavailable for a selected method/setting.", call. = FALSE)
+    if (!is.null(repetitions)) {
+      present <- split(data$repetition_id[rows], available)
+      for (condition in selected)
+        if (length(setdiff(repetitions, present[[as.character(condition)]])))
+          stop("Requested repetitions are unavailable for a selected method/setting/condition.", call. = FALSE)
     }
   }
-
-  # Calculate the total size
-  if (PublicationBiasBenchmark.get_option("prompt_for_download")) {
-    size_MB <- sum(sapply(seq_len(nrow(osf_files)), function(i) osf_files$meta[[i]]$attributes$size / 1024^2))
-    rl      <- readline(sprintf("You are about to download %1$i files (%2$.2f %3$s) to '%4$s'. Do you want to proceed? [Y, n]",
-                                nrow(osf_files),
-                                ifelse(size_MB > 1024, size_MB / 1024, size_MB),
-                                ifelse(size_MB > 1024, "GB" , "MB"),
-                                data_path
-                                ))
-    message("(Set `PublicationBiasBenchmark.options('prompt_for_download' = FALSE)` to skip this message in the future)")
-    rl <- tolower(as.character(rl))
-    if (!((rl == "" || substr(rl, 1, 1) == "y")))
-      return(invisible(FALSE))
-  }
-
-  # Retry only files that did not arrive intact. Files already present before
-  # this call were excluded above, so pending downloads can be overwritten.
-  pending   <- osf_files
-  iteration <- 0
-  while (nrow(pending) > 0 && iteration < max_try) {
-    try(osfr::osf_download(pending, path = data_path, conflicts = "overwrite", progress = progress), silent = TRUE)
-
-    complete <- vapply(seq_len(nrow(pending)), function(i) {
-      file <- file.path(data_path, pending$name[i])
-      if (!file.exists(file)) return(FALSE)
-
-      expected_size <- pending$meta[[i]]$attributes$size
-      if (!identical(as.numeric(file.info(file)$size), as.numeric(expected_size))) return(FALSE)
-
-      if (what == "measures") {
-        expected_md5 <- pending$meta[[i]]$attributes$extra$hashes$md5
-        if (length(expected_md5) == 1 && nzchar(expected_md5))
-          return(identical(unname(tools::md5sum(file)), expected_md5))
-      }
-      TRUE
-    }, logical(1))
-
-    pending   <- pending[!complete,]
-    iteration <- iteration + 1
-  }
-
-  if (nrow(pending) > 0) {
-    # Remove rejected files so a later call does not skip them as already downloaded.
-    unlink(file.path(data_path, pending$name))
-    stop(sprintf("Could not download complete %s files after %d attempts: %s",
-                 what, iteration, paste(pending$name, collapse = ", ")))
-  }
-
-  return(invisible(TRUE))
 }
 
-.get_osf_link <- function(dgm_name) {
-  switch(
-    dgm_name,
-    "no_bias"      = "https://osf.io/q8phr",
-    "Alinaghi2018" = "https://osf.io/5hbm8",
-    "Bom2019"      = "https://osf.io/4bcr2",
-    "Carter2019"   = "https://osf.io/vcs85",
-    "Stanley2017"  = "https://osf.io/fg62w"
-    )
-}
-
-#' @title Retrieve a Pre-Simulated Condition and Repetition From a DGM
-#'
-#' @description
-#' This function returns a pre-simulated dataset of a given repetition and
-#' condition from a dgm. The pre-simulated datasets must be already stored
-#' locally. See [download_dgm] function for more guidance.
-#'
-#' @inheritParams dgm
+#' @title Retrieve Archived DGM Datasets
+#' @description Read locally cached dataset shards using frozen condition definitions.
 #' @inheritParams download_dgm
-#' @inheritParams dgm_conditions
-#' @param repetition_id Which repetition should be returned. The complete
-#' condition can be returned by setting to either \code{NULL}.
-#'
-#' @return A data.frame
-#'
-#' @examples
-#' \dontrun{
-#'   # get condition 1, repetition 1
-#'   retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
-#'
-#'   # get condition 1, all repetitions
-#'   retrieve_dgm_dataset("no_bias", condition_id = 1)
-#' }
-#'
-#'
+#' @param repetition_id Repetition ID(s); NULL selects all repetitions.
+#' @param source "release" reads verified catalog-selected files; "local" reads
+#' unpublished computation files in resources_directory/DGM.
+#' @return A data frame.
 #' @export
-retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL){
-
-  if (missing(dgm_name))
-    stop("'dgm_name' must be specified")
-  if (missing(condition_id))
-    stop("'condition_id' must be specified")
-
-  path <- .get_path()
-
-  # check that the directory / condition folders exist
-  data_path <- file.path(path, dgm_name, "data")
-  if (!dir.exists(data_path))
-    stop(sprintf("Simulated datasets of the specified dgm '%1$s' cannot be locatated at the specified location '%2$s'. You might need to dowload the simulated datasets using the 'download_dgm_datasets()' function first.", dgm_name, path))
-
-  # check the conditions exists
-  this_condition <- get_dgm_condition(dgm_name, condition_id) # throws error if does not exist
-
-  # check that the corresponding file was downloaded
-  if (!file.exists(file.path(data_path, paste0(condition_id, ".csv"))))
-    stop(sprintf("Simulated condition of the '%1$s' dgm cannot be locatated at the specified location '%2$s'.", condition_id, data_path))
-
-  # load the file
-  condition_file <- utils::read.csv(file = file.path(data_path, paste0(condition_id, ".csv")), header = TRUE)
-
-  # return the complete file if repetition_id is not specified
-  if (is.null(repetition_id))
-    return(condition_file)
-
-  # check that the specified repetition_id exists otherwise
-  if (!any(repetition_id == unique(condition_file[["repetition_id"]])))
-    stop(sprintf("The specified 'repetition_id' (%1$s) does not exist in the simulated dataset", as.character(repetition_id)))
-
-  return(condition_file[condition_file[["repetition_id"]] == repetition_id,,drop=FALSE])
+retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL,
+                                 release = NULL, source = c("release", "local")) {
+  source <- match.arg(source)
+  if (source == "local") return(.retrieve_local_dgm_dataset(dgm_name, condition_id, repetition_id))
+  catalog <- benchmark_catalog(release)
+  .check_release_conditions(catalog, dgm_name, condition_id)
+  assets <- Filter(function(x) any(unlist(x$condition_ids) %in% condition_id),
+                   .select_assets(catalog, dgm_name, "data"))
+  if (!length(assets)) stop("No archived data for the selected conditions.", call. = FALSE)
+  if (length(condition_id) != 1L) stop("Select one condition at a time when retrieving datasets.", call. = FALSE)
+  .validate_plan_coverage(assets)
+  data <- .read_catalog_assets(assets)
+  if ("condition_id" %in% names(data)) data <- data[data$condition_id %in% condition_id, , drop = FALSE]
+  keys <- intersect(c("condition_id", "repetition_id", "study_id"), names(data))
+  if ("study_id" %in% keys) .reject_duplicate_keys(data, keys, "dataset")
+  if (!is.null(repetition_id)) {
+    if (length(setdiff(repetition_id, data$repetition_id))) stop("Requested repetitions are unavailable.", call. = FALSE)
+    data <- data[data$repetition_id %in% repetition_id, , drop = FALSE]
+  }
+  data
 }
 
-
-#' @title Retrieve a Pre-Computed Results of a Method Applied to DGM
-#'
-#' @description
-#' This function returns a pre-computed results of a given method at a specific
-#' repetition and condition from a dgm. The pre-computed results must be already stored
-#' locally. See [download_dgm_results()] function for more guidance.
-#'
-#' @inheritParams dgm
-#' @inheritParams download_dgm
-#' @inheritParams dgm_conditions
+#' @title Retrieve Archived Method Results
 #' @inheritParams retrieve_dgm_dataset
-#' @param method Which method(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).
-#' @param method_setting Which method setting(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).
-#'
-#' @return A data.frame
-#'
-#' @examples
-#' \dontrun{
-#'   # get condition 1, repetition 1 for default method setting
-#'   retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
-#'
-#'   # get condition 1, all repetitions for default method setting
-#'   retrieve_dgm_results("no_bias", condition_id = 1)
-#' }
-#'
-#'
+#' @inheritParams download_dgm
+#' @description Read and combine verified shards. Missing shards and overlapping
+#' method/setting/condition/repetition keys are errors. Use source = "local" for
+#' unpublished distributed computation outputs.
+#' @return A data frame with the existing method-specific result columns.
 #' @export
-retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL, condition_id = NULL, repetition_id = NULL){
-
-  if (missing(dgm_name))
-    stop("'dgm_name' must be specified")
-
-  path <- .get_path()
-
-  # check that the directory / condition folders exist
-  results_path <- file.path(path, dgm_name, "results")
-  if (!dir.exists(results_path))
-    stop(sprintf("Computed results of the specified dgm '%1$s' cannot be locatated at the specified location '%2$s'. You might need to dowload the computed results using the 'download_dgm_results()' function first.", dgm_name, path))
-
-  # return the specific methods results or all results
-  if (length(method) == 1 && length(method_setting) == 1) {
-
-    # construct the method-method_setting filename
-    method_filename <- paste0(method, "-", method_setting, ".csv")
-
-    # check that the corresponding file was downloaded
-    if (!file.exists(file.path(results_path, method_filename)))
-      stop(sprintf("Computed results of the '%1$s-%2$s' method for '%3$s' dgm cannot be locatated at the specified location '%4$s'.", method, method_setting, dgm_name, results_path))
-
-    # load the file
-    results_file <- utils::read.csv(file = file.path(results_path, method_filename), header = TRUE)
-
-  } else {
-
-    method_results <- list.files(results_path)
-
-    if (length(method_results) == 0)
-      stop(sprintf("There are no computed results for '%1$s' dgm locatated at the specified location '%2$s'.", condition_id, results_path))
-
-    results_file <- lapply(method_results, function(method_result) utils::read.csv(file = file.path(results_path, method_result), header = TRUE))
-    results_file <- safe_rbind(results_file)
-
-  }
-
-  # subset by method, settings, condition, repetition if specified
-  if (!is.null(method)) {
-    results_file <- results_file[results_file$method %in% method, ]
-  }
-  if (!is.null(method_setting)) {
-    results_file <- results_file[results_file$method_setting %in% method_setting, ]
-  }
+retrieve_dgm_results <- function(dgm_name, method = NULL, method_setting = NULL,
+                                 condition_id = NULL, repetition_id = NULL, release = NULL,
+                                 source = c("release", "local")) {
+  source <- match.arg(source)
+  if (source == "local") return(.retrieve_local_dgm_results(dgm_name, method, method_setting, condition_id, repetition_id))
+  catalog <- benchmark_catalog(release)
+  assets <- .select_assets(catalog, dgm_name, "results", method, method_setting)
+  # Unknown condition IDs are rejected before any shard is read.
+  if (!is.null(condition_id)) .check_release_conditions(catalog, dgm_name, condition_id)
+  data <- .read_catalog_assets(assets)
+  .reject_duplicate_keys(data, c("method", "method_setting", "condition_id", "repetition_id"), "result")
+  .check_requested_coverage(data, condition_id, repetition_id)
   if (!is.null(condition_id)) {
-    results_file <- results_file[results_file$condition %in% condition_id, ]
+    if (length(setdiff(condition_id, data$condition_id))) stop("Requested result conditions are unavailable.", call. = FALSE)
+    data <- data[data$condition_id %in% condition_id, , drop = FALSE]
   }
   if (!is.null(repetition_id)) {
-    results_file <- results_file[results_file$repetition_id %in% repetition_id, ]
+    if (length(setdiff(repetition_id, data$repetition_id))) stop("Requested result repetitions are unavailable.", call. = FALSE)
+    data <- data[data$repetition_id %in% repetition_id, , drop = FALSE]
   }
-
-  return(results_file)
+  data
 }
 
-
-#' @title Retrieve Pre-Computed Performance measures for a DGM
-#'
-#' @description
-#' This function returns pre-computed performance measures for a specified
-#' Data-Generating Mechanism (DGM). The pre-computed measures must be already stored
-#' locally. See [download_dgm_measures()] function for more guidance.
-#'
-#' @inheritParams dgm
-#' @inheritParams download_dgm
-#' @inheritParams dgm_conditions
+#' @title Retrieve Archived Performance Measures
 #' @inheritParams retrieve_dgm_results
-#' @param measure Which performance measure should be returned (e.g., "bias", "mse", "coverage").
-#' All measures can be returned by setting to \code{NULL}.
-#' @param replacement Whether performance measures computed using replacement should be returned. Defaults to \code{FALSE}.
-#'
-#' @return A data.frame
-#'
-#' @examples
-#' \dontrun{
-#'   # get bias measures for all methods and conditions
-#'   retrieve_dgm_measures("no_bias", measure = "bias")
-#'
-#'   # get all measures for RMA method
-#'   retrieve_dgm_measures("no_bias", method = "RMA")
-#'
-#'   # get MSE measures for PET method in condition 1
-#'   retrieve_dgm_measures("no_bias", measure = "mse", method = "PET", condition_id = 1)
-#' }
-#'
+#' @inheritParams download_dgm
+#' @description Read measures stored separately for each DGM, method and setting.
+#' Pairwise comparisons are only read when measure = "pairwise" is requested.
+#' @return A data frame of selected measures and Monte Carlo standard errors.
 #' @export
-retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, method_setting = NULL, condition_id = NULL, replacement = FALSE){
-
-  if (missing(dgm_name))
-    stop("'dgm_name' must be specified")
-
-  path <- .get_path()
-
-  # check that the directory / measures folders exist
-  measures_path <- file.path(path, dgm_name, "measures")
-  if (!dir.exists(measures_path))
-    stop(sprintf("Computed measures of the specified dgm '%1$s' cannot be located at the specified location '%2$s'. You might need to download the computed measures using the 'download_dgm_measures()' function first.", dgm_name, path))
-
-  # return the specific measure results or all measures
-  if (length(measure) == 1) {
-
-    # check that the corresponding file was downloaded
-    file_name <- paste0(measure, if(replacement) "-replacement", ".csv")
-
-    if (!file.exists(file.path(measures_path, file_name)))
-      stop(sprintf("Computed measures '%1$s' for '%2$s' dgm cannot be located at the specified location '%3$s'.", measure, dgm_name, measures_path))
-
-    # load the file
-    measures_file <- utils::read.csv(file = file.path(measures_path, file_name), header = TRUE)
-
+retrieve_dgm_measures <- function(dgm_name, measure = NULL, method = NULL, method_setting = NULL,
+                                  condition_id = NULL, replacement = FALSE, release = NULL,
+                                  source = c("release", "local")) {
+  source <- match.arg(source)
+  if (source == "local") return(.retrieve_local_dgm_measures(dgm_name, measure, method, method_setting, condition_id, replacement))
+  catalog <- benchmark_catalog(release)
+  kind <- if (identical(measure, "pairwise")) c("measures", "pairwise") else "measures"
+  assets <- .select_assets(catalog, dgm_name, kind, method, method_setting, replacement, measure)
+  if (!identical(measure, "pairwise")) assets <- Filter(function(x) !identical(x$measure, "pairwise"), assets)
+  if (!length(assets)) stop("No ordinary measures match the selection.", call. = FALSE)
+  # Unknown condition IDs are rejected before any table is read.
+  if (!is.null(condition_id)) .check_release_conditions(catalog, dgm_name, condition_id)
+  if (is.null(measure)) {
+    data <- .read_catalog_assets(assets)
   } else {
-
-    measure_files <- list.files(measures_path, pattern = "\\.csv$")
-
-    # pairwise comparison must be handled manually
-    if (length(measure) == 1 && measure == "pairwise") {
-      measure_files <- measure_files[grepl("pairwise", measure_files)]
-    } else {
-      measure_files <- measure_files[!grepl("pairwise", measure_files)]
+    paths <- .cached_asset_files(assets)
+    data <- safe_rbind(lapply(seq_along(assets), function(i) {
+      asset <- assets[[i]]; table <- .read_catalog_asset(asset, paths[i])
+      if (!is.null(asset$measure_conditions)) {
+        selected <- intersect(measure, c(asset$measure, unlist(asset$measures)))
+        available <- unlist(lapply(selected, function(metric) {
+          covered <- asset$measure_conditions[[metric]]
+          if (is.null(covered)) asset$condition_ids else covered
+        }))
+        table <- table[table$condition_id %in% available, , drop = FALSE]
+      }
+      table
+    }))
+  }
+  if (!identical(measure, "pairwise")) {
+    .reject_duplicate_keys(data, c("method", "method_setting", "condition_id"), "measure")
+    .check_requested_coverage(data, condition_id)
+    if (!is.null(measure)) {
+      required <- c("method", "method_setting", "condition_id", measure, paste0(measure, "_mcse"),
+                     paste0("n_valid_", measure), paste0("replaced_", measure))
+      data <- data[intersect(required, names(data))]
+      if (length(measure) == 1L) {
+        names(data)[names(data) == paste0("n_valid_", measure)] <- "n_valid"
+        names(data)[names(data) == paste0("replaced_", measure)] <- "replaced"
+      }
     }
-
-    if (replacement) {
-      measure_files <- measure_files[grepl("replacement", measure_files)]
-    } else {
-      measure_files <- measure_files[!grepl("replacement", measure_files)]
-    }
-
-    if (length(measure_files) == 0)
-      stop(sprintf("There are no computed measures for '%1$s' dgm located at the specified location '%2$s'.", dgm_name, measures_path))
-
-    measures_files <- lapply(measure_files, function(measure_file) {
-      utils::read.csv(file = file.path(measures_path, measure_file), header = TRUE)
-    })
-    measures_file <- safe_merge(measures_files)
-
   }
-
-  # subset by method, settings, condition if specified
-  if (!is.null(method)) {
-    measures_file <- measures_file[measures_file$method %in% method, ]
-  }
-  if (!is.null(method_setting)) {
-    measures_file <- measures_file[measures_file$method_setting %in% method_setting, ]
-  }
-  if (!is.null(condition_id)) {
-    measures_file <- measures_file[measures_file$condition %in% condition_id, ]
-  }
-
-  return(measures_file)
+  if (!is.null(condition_id)) data <- data[data$condition_id %in% condition_id, , drop = FALSE]
+  data
 }
-
-

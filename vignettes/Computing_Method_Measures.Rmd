@@ -94,7 +94,7 @@ Process each DGM to compute both standard and replacement performance measures:
 for (dgm_name in dgm_names) {
   
   # Download precomputed results for existing methods (for replacements)
-  download_dgm_results(dgm_name)
+  download_dgm_results(dgm_name, method = c("RMA", "FMA"))
   
   ### Simple performance metrics ----
   # Compute primary measures (not dependent on CI or power)
@@ -168,7 +168,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    replacement_source = "release"
   )
   
   # If your method does not return CI or hypothesis test, skip these measures
@@ -189,7 +190,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    replacement_source = "release"
   )
   
 }
@@ -219,6 +221,11 @@ for (dgm_name in dgm_names) {
 - **convergence_col**: Column name for convergence indicator (default: `"convergence"`)
 
 ### Control Parameters
+
+- **results_source**: Where the results of the computed methods are read from: `"local"` (the default) for your outputs under `resources_directory/DGM/results`, or `"release"` for published catalog-selected results.
+- **replacement_source**: Where the results of the replacement methods in `method_replacements` are read from, `"local"` or `"release"`. By default it follows `results_source`. Use `replacement_source = "release"` to replace the failures of your new method with downloaded results of established methods.
+- **release**: Pin the published release that is read when either source is `"release"`; it is ignored (with a warning) when both sources are `"local"`. Its frozen conditions are used when `conditions` is omitted and `results_source = "release"`; with local results the conditions of the installed package are used.
+
 
 - **n_repetitions**: Expected number of repetitions per condition (default: 1000)
 - **verbose**: Whether to print progress messages (default: TRUE)

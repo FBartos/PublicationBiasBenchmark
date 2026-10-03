@@ -48,11 +48,11 @@ The precomputed results are organized by data-generating mechanism (DGM), with e
 ## Available Data-Generating Mechanisms
 
 The package includes precomputed measures for several DGMs.
-You can view the specific conditions for each DGM using the [`dgm_conditions()`](../reference/dgm_conditions.html) function:
+You can view the specific conditions for each DGM using the [`benchmark_conditions()`](../reference/benchmark_catalog.html) function:
 
 ```{r, eval=FALSE}
 # View conditions for the Stanley2017 DGM
-conditions <- dgm_conditions("Stanley2017")
+conditions <- benchmark_conditions("Stanley2017")
 head(conditions)
 ```
 
@@ -65,8 +65,14 @@ Before accessing the precomputed measures, you need to download them from the pa
 download_dgm_measures("Stanley2017")
 ```
 
+Use `method = "RMA"` to download a single method and `release = "2026.2"` to pin the benchmark release.
 The measures are downloaded to a local cache directory and are automatically available for subsequent analysis. 
-You only need to download them once, unless the benchmark measures were updated with a new method (in that case, you need to specify `overwrite = TRUE` argument).
+You only need to download them once, for each release. Selecting a new release fetches only files whose checksums are not already cached; `overwrite = TRUE` is unnecessary.
+Archive-backed releases use one measures ZIP per DGM/method/setting, containing
+ordinary and replacement variants. A metric or replacement filter can fetch other
+columns or variants in that ZIP, while retrieval returns only the requested values.
+Other methods' ordinary tables are in separate ZIPs. Pairwise tables are downloaded
+only with an explicit `measure = "pairwise"` selection.
 
 ## Retrieving Precomputed Measures
 
@@ -126,7 +132,7 @@ Once you have retrieved the measures, you can create visualizations to compare m
 df <- retrieve_dgm_measures("Stanley2017")
 
 # Retrieve conditions to identify null vs. alternative hypotheses
-conditions <- dgm_conditions("Stanley2017")
+conditions <- benchmark_conditions("Stanley2017")
 
 # Create readable method labels
 df$label <- with(df, paste0(method, " (", method_setting, ")"))

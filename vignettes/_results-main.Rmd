@@ -54,7 +54,7 @@ for (dgm_name in dgm_names) {
   temp_replacement <- retrieve_dgm_measures(dgm_name, replacement = TRUE)  
   
   # retrieve conditions
-  conditions <- dgm_conditions(dgm_name)
+  conditions <- benchmark_conditions(dgm_name)
   
   # add labels
   temp_conditional$label <- with(temp_conditional, paste0(method, " (", method_setting, ")"))

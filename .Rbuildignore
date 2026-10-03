@@ -19,3 +19,7 @@ README.html
 ^Meta$
 ^\.positai$
 ^\.claude$
+^\.Renviron$
+^Renviron$
+^ZENODO-CONSOLIDATION-PLAN\.md$
+^RELEASING\.md$

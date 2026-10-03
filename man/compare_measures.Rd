@@ -16,11 +16,14 @@ compare_measures(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  conditions = NULL
+  conditions = NULL,
+  results_source = c("local", "release"),
+  release = NULL,
+  replacement_source = NULL
 )
 }
 \arguments{
-\item{dgm_name}{Character string specifying the name of the DGM dataset to download.}
+\item{dgm_name}{Character string specifying the DGM name}
 
 \item{method}{Character vector of method names}
 
@@ -50,10 +53,26 @@ Defaults to \code{NULL}, i.e., omitting repetitions without converged results on
 \item{n_repetitions}{Number of repetitions in each condition. Used to verify that the results contain all
 repetitions (an error is thrown if any repetition is missing) and for method replacement. Defaults to \code{1000}.}
 
-\item{overwrite}{Logical indicating whether to overwrite existing files.
-Defaults to \code{FALSE}, which means only missing files will be downloaded.}
+\item{overwrite}{Logical indicating whether to overwrite existing results. If FALSE (default), will skip computation for method-measure combinations that already exist}
 
-\item{conditions}{Data frame of conditions from dgm_conditions()}
+\item{conditions}{Data frame of conditions from dgm_conditions(). If NULL, the
+selected release's frozen conditions are used when \code{results_source = "release"} and
+\code{dgm_conditions(dgm_name)} otherwise. With local results and release replacements
+the package's conditions are used, and the release replacement results must cover
+each of them (missing repetitions are an error).}
+
+\item{results_source}{Where the results of the computed methods come from: "local"
+(default) reads unpublished outputs under resources_directory/DGM/results; "release"
+reads verified results of a published benchmark release (see download_dgm_results()).}
+
+\item{release}{Benchmark release identifier or catalog, passed to the result reader
+whenever either source is "release". It is ignored, with a warning, when both
+\code{results_source} and \code{replacement_source} are "local".}
+
+\item{replacement_source}{Where the results of the replacement methods in
+\code{method_replacements} come from: "local" or "release". NULL (default) uses
+\code{results_source}. Use \code{replacement_source = "release"} to replace a
+new method's failures with published results of established methods.}
 }
 \value{
 Invisible list of computed comparison data frames

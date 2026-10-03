@@ -26,8 +26,17 @@ provides:\
 benchmarks\
 - Tools for visualizing and comparing method performance
 
-All datasets and results are hosted on OSF:
-<https://doi.org/10.17605/OSF.IO/EXF3M>
+Datasets, results, and measures are released through Zenodo. Each
+package version pins a verified benchmark release; the original OSF
+source is retained as provenance:
+<https://doi.org/10.17605/OSF.IO/EXF3M>.
+
+The package’s default benchmark release is
+[2026.2](https://doi.org/10.5281/zenodo.23121978). It corrects 11
+replacement-measure tables of the consolidated baseline
+[2026.1](https://doi.org/10.5281/zenodo.23070787), which remains
+available. Cite the release DOI to identify the exact data and results
+used.
 
 For the methodology of living synthetic benchmarks please cite:
 
@@ -37,10 +46,10 @@ For the methodology of living synthetic benchmarks please cite:
 
 For the publication bias benchmark R package please cite:
 
-> Bartoš, F., Pawel, S., & Siepe, B. S. (2025).
-> PublicationBiasBenchmark: Benchmark for publication bias correction
-> methods (version 0.1.0).
-> <https://github.com/FBartos/PublicationBiasBenchmark>
+> Bartoš F, Pawel S, Siepe BS, Čala P (2026). *PublicationBiasBenchmark:
+> Benchmark for publication bias correction methods*. version
+> 0.5.0.9000,
+> <https://cran.r-project.org/package=PublicationBiasBenchmark>.
 
 Overviews of the benchmark results are available as articles on the
 package website:
@@ -135,12 +144,13 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 
 ``` r
 # download the pre-computed results
-download_dgm_results("no_bias")
+download_dgm_results("no_bias", method = "RMA")
 
 # retrieve results the first repetition of first condition of RMA from the downloaded results
 retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id = 1)
 
 # retrieve all results across all conditions and repetitions
+download_dgm_results("no_bias")
 retrieve_dgm_results("no_bias")
 ```
 
@@ -148,12 +158,13 @@ retrieve_dgm_results("no_bias")
 
 ``` r
 # download the pre-computed measures
-download_dgm_measures("no_bias")
+download_dgm_measures("no_bias", method = "RMA")
 
 # retrieve measures of bias the first condition of RMA from the downloaded results
 retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id = 1)
 
 # retrieve all measures across all conditions and measures
+download_dgm_measures("no_bias")
 retrieve_dgm_measures("no_bias")
 ```
 
@@ -189,31 +200,31 @@ run_method("RMA", df)
 - `validate_dgm_setting()`: Validates (custom) setting of the
   data-generating mechanism.
 - `download_dgm_datasets()`: Downloads pre-simulated datasets from the
-  OSF repository.
+  Zenodo release.
 - `retrieve_dgm_dataset()`: Retrieves the pre-simulated dataset of a
   given condition and repetition from downloaded from the pre-downloaded
-  OSF repository.
+  Zenodo release.
 
 #### Method Estimation And Results
 
 - `run_method()`: Estimates method on a supplied data according to the
   specified settings.
 - `method_settings()`: Lists prespecified settings of the method.
-- `download_dgm_results()`: Downloads pre-computed results from the OSF
-  repository.
+- `download_dgm_results()`: Downloads pre-computed results from the
+  Zenodo release.
 - `retrieve_dgm_results()`: Retrieves the pre-computed results of a
-  given method, condition, and repetition from the pre-downloaded OSF
-  repository.
+  given method, condition, and repetition from the pre-downloaded Zenodo
+  release.
 
 #### Performance measures And Results
 
 - `bias()`, `bias_mcse()`, etc.: Functions to compute performance
   measures and their Monte Carlo standard errors.
 - `download_dgm_measures()`: Downloads pre-computed performance measures
-  from the OSF repository.
+  from the Zenodo release.
 - `retrieve_dgm_measures()`: Retrieves the pre-computed performance
   measures of a given method, condition, and repetition from the
-  pre-downloaded OSF repository.
+  pre-downloaded Zenodo release.
 
 ### Available Data-Generating Mechanisms
 
@@ -260,38 +271,40 @@ See `methods("method")` for the full list:
 - `"MAN"`: Meta-Analysis of Nonaffirmative Studies (Mathur &
   VanderWeele, 2020)
 - `"RTMA"`: Right-Truncated Meta-Analysis (Mathur, 2024)
+- `"MMPH"`: Mixture Model of P-Hacking (Moss & De Bin, 2023)
 
 ### Available Performance Measures
 
 See `?measures` for the full list of performance measures and their
 Monte Carlo standard errors/
 
-### DGM OSF Repositories
+### Benchmark releases
 
-All DGMs are linked to the OSF repository (<https://osf.io/exf3m/>) and
-contain the following elements:
+Downloads are selected by a small release catalog.
+`download_dgm_datasets("no_bias")` downloads only that DGM’s datasets;
+`download_dgm_results("no_bias", method = "RMA")` and
+`download_dgm_measures("no_bias", method = "RMA")` download only that
+DGM and method. Releases use ZIP archives with one storage family per
+DGM and independent archives by kind and method/setting. Dataset filters
+may fetch other conditions in the same archive; measure filters may
+fetch other columns and replacement variants for that method. Sharing a
+record never forces downloading its other archives.
 
-- `data` : folder containing by-condition simulated datasets for all
-  repetitions
-- `results` : folder containing by-method results for all conditions \*
-  repetitions
-- `measures` : folder containing by-measure performance for all methods
-  \* conditions
-- `metadata` : folder containing the following information:
-  - `dgm-conditions.csv` : file mapping of all conditions and the
-    corresponding settings
-  - `dgm-generation.R` : file with code for exact reproduction of the
-    pre-simulated datasets
-  - `dgm-sessionInfo.txt`: file with reproducibility details for the
-    pre-simulated datasets
-  - `dgm-session.log`: file with reproducibility details for the
-    pre-simulated datasets (based on sessioninfo package)
-  - `results.R` : file with code for exact reproduction of the by method
-    results (might be method / method groups specific)
-  - `results-sessionInfo.txt`: file with reproducibility details for the
-    precomputed results (might be method / method groups specific)
-  - `pm-computation.R` : file with code for computation of performance
-    measures
+`list_benchmark_releases()` lists releases supported by the installed
+package, and `list_benchmark_resources()` shows file sizes, generation
+versions, and checksums. Pass `release = "2026.2"` to download and
+retrieve functions to pin a release explicitly. Files are cached by
+SHA-256 and checked before use. New releases reuse unchanged files and
+upload only additions or corrections; older releases remain
+reproducible.
+
+Releases are published by the project maintainers through internal,
+token-gated functions that are not exported; the maintainer workflow is
+described in
+[`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md).
+`prune_benchmark_archives()` can reclaim cached ZIP space after members
+are verified. See the [release
+guide](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html).
 
 ### References
 
@@ -372,6 +385,13 @@ Mathur, M. B., & VanderWeele, T. J. (2020). Sensitivity analysis for
 publication bias in meta-analyses. *Journal of the Royal Statistical
 Society Series C: Applied Statistics*, *69*(5), 1091–1119.
 <https://doi.org/10.1111/rssc.12440>
+
+</div>
+
+<div id="ref-moss2023modelling" class="csl-entry">
+
+Moss, J., & De Bin, R. (2023). Modelling publication bias and p-hacking.
+*Biometrics*, *79*(1), 319–331. <https://doi.org/10.1111/biom.13560>
 
 </div>
 

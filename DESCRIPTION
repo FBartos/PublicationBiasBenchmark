@@ -1,7 +1,7 @@
 Package: PublicationBiasBenchmark
 Type: Package
 Title: Benchmark for Publication Bias Correction Methods
-Version: 0.3.0
+Version: 0.5.0.9000
 Maintainer: František Bartoš <f.bartos96@gmail.com>
 Authors@R: c(
     person(given = "František",
@@ -39,7 +39,10 @@ Imports:
     stats,
     callr,
     metafor,
-    osfr,
+    curl,
+    digest,
+    httr,
+    jsonlite,
     MASS,
     numDeriv,
     pwr,
@@ -54,6 +57,7 @@ Imports:
     rstan,
     Rdpack
 Suggests:
+    zip,
     RoBMA (<= 3.6.1),
     pkgload,
     BayesTools (<= 0.2.23),

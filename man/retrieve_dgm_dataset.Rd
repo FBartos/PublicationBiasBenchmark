@@ -2,34 +2,31 @@
 % Please edit documentation in R/download.R
 \name{retrieve_dgm_dataset}
 \alias{retrieve_dgm_dataset}
-\title{Retrieve a Pre-Simulated Condition and Repetition From a DGM}
+\title{Retrieve Archived DGM Datasets}
 \usage{
-retrieve_dgm_dataset(dgm_name, condition_id, repetition_id = NULL)
+retrieve_dgm_dataset(
+  dgm_name,
+  condition_id,
+  repetition_id = NULL,
+  release = NULL,
+  source = c("release", "local")
+)
 }
 \arguments{
-\item{dgm_name}{Character string specifying the DGM type}
+\item{dgm_name}{DGM name.}
 
-\item{condition_id}{which conditions should settings be returned for.}
+\item{condition_id}{Optional condition ID(s) for datasets.}
 
-\item{repetition_id}{Which repetition should be returned. The complete
-condition can be returned by setting to either \code{NULL}.}
+\item{repetition_id}{Repetition ID(s); NULL selects all repetitions.}
+
+\item{release}{Release identifier or catalog; NULL uses the package default.}
+
+\item{source}{"release" reads verified catalog-selected files; "local" reads
+unpublished computation files in resources_directory/DGM.}
 }
 \value{
-A data.frame
+A data frame.
 }
 \description{
-This function returns a pre-simulated dataset of a given repetition and
-condition from a dgm. The pre-simulated datasets must be already stored
-locally. See \link{download_dgm} function for more guidance.
-}
-\examples{
-\dontrun{
-  # get condition 1, repetition 1
-  retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
-
-  # get condition 1, all repetitions
-  retrieve_dgm_dataset("no_bias", condition_id = 1)
-}
-
-
+Read locally cached dataset shards using frozen condition definitions.
 }

@@ -12,3 +12,5 @@ inst/doc
 PublicationBiasBenchmark.Rproj
 .positai
 /temp
+.Renviron
+Renviron
