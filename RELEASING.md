@@ -72,9 +72,9 @@ read-only and never needs the gate.
        given_name = "Your", family_name = "Name"))),
      rights = list(list(id = "cc-by-4.0")))
    plan <- PublicationBiasBenchmark:::plan_benchmark_release(
-     "my-next-release", files, previous = "2026.1", metadata = metadata,
+     "my-next-release", files, previous = "2026.2", metadata = metadata,
      state_directory = "resources/publication/my-next-release",
-     catalog_record_id = "23070787", catalog_concept_doi = "10.5281/zenodo.23070786")
+     catalog_record_id = "23121978", catalog_concept_doi = "10.5281/zenodo.23070786")
    PublicationBiasBenchmark:::benchmark_packing_report(plan)
    ```
 

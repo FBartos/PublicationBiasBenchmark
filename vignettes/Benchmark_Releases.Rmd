@@ -23,7 +23,7 @@ record the benchmark release you used.
 library(PublicationBiasBenchmark)
 PublicationBiasBenchmark.options(resources_directory = "resources")
 list_benchmark_releases()
-release <- "2026.1"
+release <- "2026.2"
 
 # One DGM's simulated datasets, including all repetitions.
 download_dgm_datasets("no_bias", release = release)
@@ -106,7 +106,10 @@ are not exported. The maintainer workflow is described in `RELEASING.md` in the
 
 ## OSF baseline
 
-The verified baseline is [release 2026.1](https://doi.org/10.5281/zenodo.23070787).
+Release [2026.2](https://doi.org/10.5281/zenodo.23121978), the current default, replaces 11
+replacement-measure tables of 2026.1 whose values were NA because of a `safe_rbind()`
+defect; all other files are identical. The verified baseline is
+[release 2026.1](https://doi.org/10.5281/zenodo.23070787).
 Its catalog references 2,216 logical files in 266 ZIPs across five DGM storage
 records: 10.100 GB compressed and 28.098 GB uncompressed, including all 1,965
 original OSF files. The catalog is a separate Zenodo record. Preliminary

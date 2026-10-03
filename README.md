@@ -31,10 +31,12 @@ package version pins a verified benchmark release; the original OSF
 source is retained as provenance:
 <https://doi.org/10.17605/OSF.IO/EXF3M>.
 
-The consolidated baseline is [benchmark release
-2026.1](https://doi.org/10.5281/zenodo.23070787), the package’s default
-benchmark release. Cite this release DOI to identify the exact data and
-results used.
+The package’s default benchmark release is
+[2026.2](https://doi.org/10.5281/zenodo.23121978). It corrects 11
+replacement-measure tables of the consolidated baseline
+[2026.1](https://doi.org/10.5281/zenodo.23070787), which remains
+available. Cite the release DOI to identify the exact data and results
+used.
 
 For the methodology of living synthetic benchmarks please cite:
 
@@ -282,15 +284,15 @@ Downloads are selected by a small release catalog.
 `download_dgm_datasets("no_bias")` downloads only that DGM’s datasets;
 `download_dgm_results("no_bias", method = "RMA")` and
 `download_dgm_measures("no_bias", method = "RMA")` download only that
-DGM and method. Release `2026.1` uses ZIP archives with one storage
-family per DGM and independent archives by kind and method/setting.
-Dataset filters may fetch other conditions in the same archive; measure
-filters may fetch other columns and replacement variants for that
-method. Sharing a record never forces downloading its other archives.
+DGM and method. Releases use ZIP archives with one storage family per
+DGM and independent archives by kind and method/setting. Dataset filters
+may fetch other conditions in the same archive; measure filters may
+fetch other columns and replacement variants for that method. Sharing a
+record never forces downloading its other archives.
 
 `list_benchmark_releases()` lists releases supported by the installed
 package, and `list_benchmark_resources()` shows file sizes, generation
-versions, and checksums. Pass `release = "2026.1"` to download and
+versions, and checksums. Pass `release = "2026.2"` to download and
 retrieve functions to pin a release explicitly. Files are cached by
 SHA-256 and checked before use. New releases reuse unchanged files and
 upload only additions or corrections; older releases remain

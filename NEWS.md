@@ -1,5 +1,6 @@
 # PublicationBiasBenchmark 0.5.0.9000
 ## Features
+ - Default benchmark release is now [2026.2](https://doi.org/10.5281/zenodo.23121978). It replaces the 11 replacement-measure tables of 2026.1 (AK-AK2, MAN-default and MMPH-default in three DGMs each, RTMA-relaxed in two) whose 8,674 values were NA because of the `safe_rbind()` defect; the other 2,205 assets are identical, and 2026.1 remains available with `release = "2026.1"`.
  - Added schema-2 ZIP catalogs with member-first cache reuse, portable extraction checks and archive cache pruning; schema-1 releases remain supported.
  - Added complete download-unit packing, persisted ZIP builds and per-DGM quota reports.
  - Added native storage/catalog versioning, file import and superseded ZIP removal, resumable community inclusion and DOI relationships.

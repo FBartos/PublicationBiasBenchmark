@@ -1,11 +1,17 @@
 {
-  "default_release": "2026.1",
+  "default_release": "2026.2",
   "releases": [
     {
       "release": "2026.1",
       "record_id": "23070787",
       "catalog_sha256": "cfc79db6b6c29062848603d0703004d68414928df7b0eee01db54803287fa99e",
       "doi": "10.5281/zenodo.23070787"
+    },
+    {
+      "release": "2026.2",
+      "record_id": "23121978",
+      "catalog_sha256": "31c6cd09808e22b979ab73cbecef2b7ab62a0016381c447f0f060e9b6a68043e",
+      "doi": "10.5281/zenodo.23121978"
     }
   ]
 }
