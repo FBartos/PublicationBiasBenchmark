@@ -1,11 +1,15 @@
 # A small stateful Zenodo for archive publication of a first release (no earlier
 # version): records with drafts and files, DOI reservation, community inclusion and
 # public downloads. It lets the whole staging/publishing path run without mocking
-# any publication step.
-fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, env = parent.frame()) {
+# any publication step. `lose_publish` throws before a publish takes effect (a failed request);
+# `lose_after` names events whose effect is applied before the response is lost:
+# storage_publish, catalog_publish, storage_inclusion, catalog_inclusion.
+fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, lose_after = character(), env = parent.frame()) {
   zenodo <- new.env()
   zenodo$records <- list(); zenodo$next_id <- 100L; zenodo$uploaded <- list(); zenodo$requests <- character()
   zenodo$upload_log <- character()
+  zenodo$lose_after <- lose_after; zenodo$lost <- character()
+  zenodo$inclusions <- list(); zenodo$submissions <- character()
   zenodo$lose_publish_once <- lose_publish; zenodo$publish_lost <- 0L; zenodo$lose_commit_once <- lose_commit
   record <- function(id) zenodo$records[[id]]
   view <- function(r, draft = FALSE) list(id = r$id, metadata = r$metadata, access = r$access,
@@ -14,9 +18,21 @@ fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, env = parent.
     pids = if (r$published || r$reserved) list(doi = list(identifier = paste0("10.5281/zenodo.", r$id))) else list(),
     parent = list(id = r$parent, communities = list(ids = as.list(r$communities), default = r$default),
                   pids = if (r$published) list(doi = list(identifier = paste0("10.5281/zenodo.", r$parent)))))
+  kind <- function(id) if (grepl("storage", zenodo$records[[id]]$metadata$title)) "storage" else "catalog"
+  lose <- function(event) if (event %in% zenodo$lose_after) {
+    zenodo$lose_after <- setdiff(zenodo$lose_after, event); zenodo$lost <- c(zenodo$lost, event)
+    stop("lost ", event, " response")
+  }
+  request_view <- function(q) list(id = q$id, type = "community-inclusion", receiver = list(community = q$community), status = q$status)
   zenodo$handler <- function(method, path, token, sandbox = FALSE, body = NULL) {
     zenodo$requests <- c(zenodo$requests, paste(method, path))
     parts <- strsplit(sub("[?].*$", "", path), "/", fixed = TRUE)[[1]]
+    if (identical(parts[1], "requests") && identical(parts[3:4], c("actions", "accept"))) {
+      q <- zenodo$inclusions[[parts[2]]]
+      zenodo$inclusions[[parts[2]]]$status <- "accepted"
+      zenodo$records[[q$record]]$communities <- unique(c(zenodo$records[[q$record]]$communities, q$community))
+      return(NULL)
+    }
     if (method == "GET" && startsWith(path, "user/records?")) {
       title <- sub('^.*metadata[.]title:"(.*)"&size.*$', "\\1", utils::URLdecode(path))
       hits <- Filter(function(r) identical(r$metadata$title, title), zenodo$records)
@@ -64,13 +80,19 @@ fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, env = parent.
     if (identical(rest, c("draft", "actions", "publish"))) {
       if (zenodo$lose_publish_once) { zenodo$lose_publish_once <- FALSE; zenodo$publish_lost <- zenodo$publish_lost + 1L; stop("lost publish response") }
       zenodo$records[[id]]$published <- TRUE
+      lose(paste0(kind(id), "_publish"))
       return(NULL)
     }
-    if (identical(rest, "requests")) return(list(hits = list(hits = list())))
+    if (identical(rest, "requests"))
+      return(list(hits = list(hits = unname(lapply(Filter(function(q) identical(q$record, id), zenodo$inclusions), request_view)))))
     if (identical(rest, "communities")) {
       if (method == "POST") {
-        zenodo$records[[id]]$communities <- unique(c(zenodo$records[[id]]$communities, body$communities[[1]]$id))
-        return(list(processed = list(list(request = list(id = "request-1", status = "accepted")))))
+        # A submission creates a request that awaits its acceptance; the record joins the community then.
+        rid <- paste0("request-", length(zenodo$inclusions) + 1L)
+        zenodo$inclusions[[rid]] <- list(id = rid, record = id, community = body$communities[[1]]$id, status = "submitted")
+        zenodo$submissions <- c(zenodo$submissions, id)
+        lose(paste0(kind(id), "_inclusion"))
+        return(list(processed = list(list(request = request_view(zenodo$inclusions[[rid]])))))
       }
       zenodo$records[[id]]$default <- body$default$id
       return(NULL)
@@ -201,4 +223,73 @@ test_that("an interrupted commit resumes without uploading completed files or pu
   expect_length(gate$calls, 4L)
   expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
   expect_true(file.exists(file.path(plan$state_directory, "registry-entry.json")))
+})
+
+# Everything that must hold once a release is published, however often it was interrupted.
+expect_finished_release <- function(plan, zenodo, result, info = NULL) {
+  published <- Filter(function(r) r$published, zenodo$records)
+  expect_length(published, 2L)
+  for (r in published) {
+    expect_identical(r$communities, "community-uuid", info = info); expect_identical(r$default, "community-uuid", info = info)
+  }
+  # One publish and one inclusion request per record; the lost responses were not answered by a repetition.
+  expect_length(grep("actions/publish$", zenodo$requests), 2L)
+  expect_setequal(zenodo$submissions, names(published)); expect_false(anyDuplicated(zenodo$submissions) > 0L)
+  expect_length(zenodo$inclusions, 2L)
+  expect_true(all(vapply(zenodo$inclusions, function(q) identical(q$status, "accepted"), logical(1))))
+  expect_length(grep("^DELETE", zenodo$requests), 0L)
+  expect_false(anyDuplicated(zenodo$upload_log) > 0L)
+  # The catalog, the registry entry and the state describe the same records.
+  storage <- Filter(function(r) grepl("storage", r$metadata$title), published)[[1]]
+  catalog_record <- Filter(function(r) !grepl("storage", r$metadata$title), published)[[1]]
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- benchmark_catalog(path)
+  expect_identical(catalog$publication$catalog_record_id, catalog_record$id, info = info)
+  expect_identical(catalog$publication$catalog_concept_doi, result$concept_doi, info = info)
+  expect_identical(catalog$publication$storage_dois$no_bias, paste0("10.5281/zenodo.", storage$id), info = info)
+  expect_identical(unique(vapply(c(catalog$archives, catalog$assets), `[[`, character(1), "record_id")), storage$id, info = info)
+  entry <- jsonlite::read_json(file.path(plan$state_directory, "registry-entry.json"))
+  expect_identical(entry$record_id, catalog_record$id, info = info)
+  expect_identical(entry$doi, paste0("10.5281/zenodo.", catalog_record$id), info = info)
+  expect_identical(entry$catalog_sha256, digest::digest(file = path, algo = "sha256", serialize = FALSE), info = info)
+  state <- .publication_state(plan)
+  expect_identical(state$versions[["storage--no_bias"]]$record_id, storage$id, info = info)
+  expect_identical(state$versions$catalog$record_id, catalog_record$id, info = info)
+  expect_true(isTRUE(state$versions[["storage--no_bias"]]$published) && isTRUE(state$versions$catalog$published), info = info)
+  expect_length(state$inclusions, 2L)
+  expect_true(all(vapply(state$inclusions, function(x) isTRUE(x$accepted), logical(1))), info = info)
+  # Nothing is left to do: publishing again changes nothing online.
+  seen <- length(zenodo$requests)
+  expect_identical(suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1")), result)
+  expect_identical(grep("^(POST|PUT|PATCH|DELETE)", zenodo$requests[-seq_len(seen)], value = TRUE), character(), info = info)
+}
+
+test_that("a publication resumes after Zenodo applied a request whose response was lost", {
+  skip_if_not_installed("zip")
+  for (event in c("storage_publish", "catalog_publish", "storage_inclusion", "catalog_inclusion")) {
+    root <- withr::local_tempdir(); plan <- archive_release_plan(root)
+    local_mock_gate(); zenodo <- fake_zenodo(lose_after = event)
+    expect_error(suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1")), paste0("lost ", event, " response"), info = event)
+    expect_identical(zenodo$lost, event, info = event)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = event)
+    # The effect is there although the answer was lost; the resumed run finds it instead of repeating the request.
+    if (grepl("publish$", event)) expect_true(any(vapply(zenodo$records, function(r) isTRUE(r$published) &&
+      identical(if (grepl("storage", r$metadata$title)) "storage" else "catalog", sub("_.*$", "", event)), logical(1))), info = event)
+    else expect_length(zenodo$inclusions, if (event == "storage_inclusion") 1L else 2L)
+    result <- suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1"))
+    expect_identical(result$release, "test.1", info = event)
+    expect_finished_release(plan, zenodo, result, info = event)
+  }
+})
+
+test_that("a publication whose first run was a failed request, not a lost response, resumes the same way", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- archive_release_plan(root)
+  local_mock_gate(); zenodo <- fake_zenodo(lose_publish = TRUE)
+  expect_error(suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1")), "lost publish response")
+  expect_false(any(vapply(zenodo$records, `[[`, logical(1), "published")))   # nothing took effect
+  result <- suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1"))
+  expect_length(grep("actions/publish$", zenodo$requests), 3L)   # the failed request, then one per record
+  expect_length(Filter(function(r) r$published, zenodo$records), 2L)
+  expect_false(anyDuplicated(zenodo$submissions) > 0L)
 })
