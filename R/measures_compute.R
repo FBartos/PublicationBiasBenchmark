@@ -442,8 +442,6 @@ compute_single_measure <- function(dgm_name, measure_name, method, method_settin
 
         }
 
-        interval_score
-
         result_df[["n_valid"]] <- sum(valid_idx)
 
       } else if (measure_name == "power") {
