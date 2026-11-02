@@ -106,7 +106,7 @@ including link attributes, before extracting. A new DGM storage version imports
 the previous version's files, removes superseded unit ZIPs from the new draft, and
 uploads complete replacement ZIPs. Imported ZIPs count toward the 100-file and
 50,000,000,000-byte default limits. Packing fails instead of creating arbitrary
-extra record families. `archive = FALSE` retains the legacy direct-file publisher.
+extra record families.
 
 The catalog is published only after verification:
 

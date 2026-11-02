@@ -340,16 +340,15 @@
 # community, environment and release. Planning computes it, and every publication
 # session recomputes it from the plan it is about to execute.
 .plan_identity <- function(plan) {
-  archive <- identical(plan$catalog$schema_version, 2L)
   ids <- function(items) vapply(items, `[[`, character(1), "id")
   entry <- function(x) list(id = x$id, dgm = x$dgm, filename = x$filename, sha256 = x$sha256, md5 = x$md5, size = x$size)
   uploads <- lapply(plan$groups, function(group) lapply(group, entry))
-  membership <- if (archive) list(
+  membership <- list(
     archives = lapply(plan$catalog$archives, function(a) list(id = a$id, members = ids(a$members))),
     uploads = uploads, changed_dgms = plan$changed_dgms,
     storage_base = stats::setNames(lapply(plan$changed_dgms, function(dgm)
       tryCatch(.storage_base_id(plan, dgm), error = function(error) "unresolved")), plan$changed_dgms),
-    previous_schema_version = plan$previous$schema_version) else uploads
+    previous_schema_version = plan$previous$schema_version)
   list(version = .identity_version, release = plan$catalog$release, sandbox = isTRUE(plan$sandbox), community = plan$community,
        fingerprint = .canonical_fingerprint(list(catalog = .strip_local_paths(plan$catalog), membership = membership,
          catalog_record_id = plan$catalog_record_id, catalog_concept_doi = plan$catalog_concept_doi, metadata = plan$metadata,

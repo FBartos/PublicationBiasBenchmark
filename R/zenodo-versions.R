@@ -291,15 +291,9 @@
   if (!identical(catalog$release, plan$catalog$release))
     stop("The staged release.json belongs to release '", catalog$release, "', not to this plan's release '",
          plan$catalog$release, "'; use the state directory of this plan.", call. = FALSE)
-  if (identical(plan$catalog$schema_version, 2L)) {
-    fields <- c("id", "dgm", "filename", "sha256", "md5", "size")
-    if (!identical(.entry_signatures(catalog$archives, fields, TRUE), .entry_signatures(plan$catalog$archives, fields, TRUE)))
-      stop("The staged release.json has a different archive inventory than this plan; re-stage it or use the state directory of this plan.", call. = FALSE)
-  } else {
-    fields <- c("id", "dgm", "kind", "filename", "sha256", "md5", "size")
-    if (!identical(.entry_signatures(catalog$assets, fields), .entry_signatures(plan$catalog$assets, fields)))
-      stop("The staged release.json lists different files than this plan; re-stage it or use the state directory of this plan.", call. = FALSE)
-  }
+  fields <- c("id", "dgm", "filename", "sha256", "md5", "size")
+  if (!identical(.entry_signatures(catalog$archives, fields, TRUE), .entry_signatures(plan$catalog$archives, fields, TRUE)))
+    stop("The staged release.json has a different archive inventory than this plan; re-stage it or use the state directory of this plan.", call. = FALSE)
   invisible(TRUE)
 }
 # State is read and the staged catalog checked before any request is made.

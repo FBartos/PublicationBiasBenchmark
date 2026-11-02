@@ -22,22 +22,26 @@ test_that("native licenses are retained before staging and unsupported fields ar
   expect_identical(.create_component_record(plan, "Title", "Description", "test-token"), "12345")
   plan$metadata <- list()
   expect_error(.create_component_record(plan, "Title", "Description", "test-token"), "Include a license")
-  expect_error(legacy_plan_benchmark_release("test.1", list(), metadata = list(licenses = rights),
+  expect_error(plan_benchmark_release("test.1", list(), metadata = list(licenses = rights),
     state_directory = withr::local_tempdir()), "metadata\\$rights")
 })
 
 test_that("release verification checks licenses in saved staged records", {
+  skip_if_not_installed("zip")
   root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
   rights <- list(list(id = "cc-by-4.0"))
-  plan <- legacy_plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
-    metadata = list(rights = rights), state_directory = file.path(root, "state"))
-  record <- list(metadata = list())
+  plan <- plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
+    metadata = list(rights = rights), state_directory = file.path(root, "state"), community = "test-community")
+  staged <- .public_catalog(plan$catalog)
+  staged$archives <- lapply(staged$archives, function(x) { x$record_id <- "12345"; x })
+  staged$assets <- lapply(staged$assets, function(x) { x$record_id <- "12345"; x })
+  .write_catalog_file(file.path(plan$state_directory, "release.json"), staged)
+  record <- list(metadata = list(), is_published = TRUE)
   local_mocked_bindings(
-    .publication_state = function(plan, mode) list(groups = list(`1` = list(record_id = "12345", published = TRUE))),
     .zenodo_request = function(method, path, ...) {
       if (!endsWith(path, "/files")) return(record)
-      list(entries = list(list(key = asset$filename, status = "completed",
-        checksum = paste0("md5:", asset$md5), size = asset$size)))
+      list(entries = lapply(plan$catalog$archives, function(archive) list(key = archive$filename, status = "completed",
+        checksum = paste0("md5:", archive$md5), size = archive$size)))
     })
   expect_error(verify_benchmark_release(plan, "test-token"), "did not retain")
   record$metadata$rights <- rights
@@ -45,90 +49,40 @@ test_that("release verification checks licenses in saved staged records", {
 })
 
 test_that("plans reuse existing bytes and require explicit corrections", {
+  skip_if_not_installed("zip")
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
-  metadata <- list(creators = list(list(person_or_org = list(name = "Tester", type = "organizational"))))
-  base <- test_catalog(list(a))
-  plan <- legacy_plan_benchmark_release("test.2", list(a), previous = base, metadata = metadata,
-                                 state_directory = file.path(root, "unchanged"))
+  metadata <- list(rights = list(list(id = "cc-by-4.0")))
+  first <- plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = metadata,
+    state_directory = file.path(root, "first"), community = "test-community")
+  base <- .public_catalog(first$catalog)
+  base$publication <- list(catalog_record_id = "123", catalog_concept_doi = "10.test/concept")
+  base$archives <- lapply(base$archives, function(x) { x$record_id <- "55"; x })
+  base$assets <- lapply(base$assets, function(x) { x$record_id <- "55"; x })
+  plan <- plan_benchmark_release("test.2", list(a), previous = base, metadata = metadata,
+    state_directory = file.path(root, "unchanged"), community = "test-community")
   expect_length(plan$groups, 0)
-  expect_identical(plan$catalog$assets[[1]]$record_id, "12345")
+  expect_identical(plan$catalog$assets[[1]]$record_id, "55")
   corrected <- test_resource(root, "A.csv", ids = 3:4)
-  expect_error(legacy_plan_benchmark_release("test.2", list(corrected), previous = base, metadata = metadata,
-    state_directory = file.path(root, "correction")), "Explicit replacement")
-  plan <- legacy_plan_benchmark_release("test.2", list(corrected), previous = base, replace = a$id,
-    metadata = metadata, state_directory = file.path(root, "correction"))
+  expect_error(plan_benchmark_release("test.2", list(corrected), previous = base, metadata = metadata,
+    state_directory = file.path(root, "correction"), community = "test-community"), "Explicit replacement")
+  plan <- plan_benchmark_release("test.2", list(corrected), previous = base, replace = a$id,
+    metadata = metadata, state_directory = file.path(root, "correction"), community = "test-community")
   expect_length(plan$groups, 1)
   expect_identical(base$assets[[1]]$sha256, a$sha256)
   overlap <- test_resource(root, "other.csv", ids = 4:5)
-  expect_error(legacy_plan_benchmark_release("test.3", list(corrected, overlap), conditions = base$conditions,
-    metadata = metadata, state_directory = file.path(root, "overlap")), "Overlapping")
+  expect_error(plan_benchmark_release("test.3", list(corrected, overlap), conditions = base$conditions,
+    metadata = metadata, state_directory = file.path(root, "overlap"), community = "test-community"), "Overlapping")
   conditions <- base$conditions; conditions$no_bias$mean_effect[1] <- 1
-  expect_error(legacy_plan_benchmark_release("test.3", list(), previous = base, conditions = conditions,
-    metadata = metadata, state_directory = file.path(root, "changed-conditions")), "frozen condition")
+  expect_error(plan_benchmark_release("test.3", list(), previous = base, conditions = conditions,
+    metadata = metadata, state_directory = file.path(root, "changed-conditions"), community = "test-community"), "frozen condition")
 })
 
-test_that("packing respects both file and byte quotas and rejects changed sources", {
-  root <- withr::local_tempdir(); assets <- lapply(1:5, function(i) test_resource(root, paste0(i, ".csv"), ids = (2*i-1):(2*i)))
-  plan <- legacy_plan_benchmark_release("test.1", assets, conditions = test_catalog(assets)$conditions,
-    metadata = list(), state_directory = file.path(root, "state"), max_files = 2)
-  expect_equal(lengths(plan$groups), c(2L, 2L, 1L))
-  expect_error(legacy_plan_benchmark_release("test.1", assets, conditions = plan$catalog$conditions,
-    metadata = list(), state_directory = file.path(root, "small"), max_bytes = 1), "file exceeds")
+test_that("planning rejects a source file that changed after it was described", {
+  root <- withr::local_tempdir(); assets <- lapply(1:2, function(i) test_resource(root, paste0(i, ".csv"), ids = (2*i-1):(2*i)))
   writeLines("changed", assets[[1]]$local_path)
-  expect_error(legacy_plan_benchmark_release("test.1", assets, conditions = plan$catalog$conditions,
-    metadata = list(), state_directory = file.path(root, "changed")), "Unverified local")
-})
-
-test_that("interrupted commits resume without uploading completed files or publishing twice", {
-  root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
-  plan <- legacy_plan_benchmark_release("test.1", list(asset), conditions = test_catalog(list(asset))$conditions,
-    metadata = list(), state_directory = file.path(root, "state"))
-  entries <- list(); remote <- list(); published <- character(); uploads <- 0L; creations <- 0L; interrupt <- TRUE
-  gate <- local_mock_gate()
-  local_mocked_bindings(
-    .create_component_record = function(...) { creations <<- creations + 1L; as.character(creations) },
-    .record_is_published = function(plan, record_id, token) record_id %in% published,
-    .zenodo_upload = function(path, record_id, filename, ...) {
-      uploads <<- uploads + 1L; remote[[paste(record_id, filename)]] <<- path
-    },
-    .zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
-      record <- strsplit(path, "/", fixed = TRUE)[[1]][2]
-      if (method == "GET" && endsWith(path, "/files")) return(list(entries = unname(entries[[record]])))
-      if (method == "POST" && endsWith(path, "/files")) {
-        filename <- body[[1]]$key; entries[[record]][[filename]] <<- list(key = filename, status = "pending"); return(NULL)
-      }
-      if (endsWith(path, "/commit")) {
-        filename <- utils::URLdecode(strsplit(path, "/", fixed = TRUE)[[1]][5])
-        source <- remote[[paste(record, filename)]]
-        entry <- list(key = filename, status = "completed", checksum = paste0("md5:", unname(tools::md5sum(source))), size = file.info(source)$size)
-        entries[[record]][[filename]] <<- entry
-        if (interrupt) { interrupt <<- FALSE; stop("lost commit response") }
-        return(entry)
-      }
-      if (endsWith(path, "/publish")) { published <<- c(published, record); return(NULL) }
-      if (method == "GET") return(list(is_published = record %in% published, pids = list(doi = list(identifier = paste0("10.test/", record)))))
-      stop("Unexpected mock request")
-    },
-    .resource_download = function(url, destination, progress) {
-      parts <- strsplit(url, "/", fixed = TRUE)[[1]]
-      file.copy(remote[[paste(parts[6], utils::URLdecode(parts[8]))]], destination, overwrite = TRUE)
-    })
-  expect_error(stage_benchmark_release(plan, "test-token"), "lost commit")
-  expect_equal(uploads, 1L)
-  suppressMessages(stage_benchmark_release(plan, "test-token"))
-  expect_equal(uploads, 1L); expect_equal(creations, 1L)
-  # Publishing runs staging and verification inside its own session: the lock
-  # taken once by the session is not requested again (no deadlock).
-  result <- suppressMessages(publish_benchmark_release(plan, "test-token", confirm = "test.1"))
-  expect_equal(result$doi, "10.test/2"); expect_equal(uploads, 2L)
-  expect_equal(published, c("1", "2"))
-  expect_equal(suppressMessages(publish_benchmark_release(plan, "test-token", confirm = "test.1")), result)
-  expect_equal(uploads, 2L); expect_equal(creations, 2L)
-  catalog <- jsonlite::read_json(file.path(plan$state_directory, "release.json"))
-  expect_null(catalog$assets[[1]]$local_path)
-  expect_length(gate$calls, 4L)
-  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
-  expect_true(file.exists(file.path(plan$state_directory, "registry-entry.json")))
+  expect_error(plan_benchmark_release("test.1", assets, conditions = test_catalog(assets)$conditions,
+    metadata = list(), state_directory = file.path(root, "changed"), community = "test-community"), "Unverified local")
+  expect_false(dir.exists(file.path(root, "changed")))
 })
 
 test_that("local distributed results remain separate and measures are partitioned by method", {
@@ -278,11 +232,13 @@ test_that("prepared measures keep methods whose identifiers share a joined spell
   expect_setequal(vapply(assets, `[[`, character(1), "method"), c("a.b", "a"))
 })
 
-test_that("frozen conditions are checked by one helper for both plan schemas", {
+test_that("frozen conditions are checked by one helper", {
+  skip_if_not_installed("zip")
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
   base <- test_catalog(list(a)); base$conditions$no_bias$label <- c("x", "y")
-  plan <- function(conditions, archive = FALSE) plan_benchmark_release("test.2", list(), previous = base, conditions = conditions,
-    metadata = list(), state_directory = withr::local_tempdir(), archive = archive, community = "test-community")
+  plan <- function(conditions) plan_benchmark_release("test.2", list(), previous = base, conditions = conditions,
+    metadata = list(), state_directory = withr::local_tempdir(), community = "test-community",
+    catalog_record_id = "123", catalog_concept_doi = "10.test/concept")
   edit <- function(change) { x <- base$conditions; x$no_bias <- change(x$no_bias); x }
   cases <- list(
     missing = list(list(), "Frozen conditions for published DGM 'no_bias' are missing."),
@@ -303,8 +259,8 @@ test_that("frozen conditions are checked by one helper for both plan schemas", {
                                      "Existing frozen condition definitions cannot change between releases."),
     renamed_column = list(edit(function(x) { names(x)[names(x) == "label"] <- "tag"; x }),
                           "Existing frozen condition definitions cannot change between releases."))
-  for (name in names(cases)) for (archive in c(FALSE, TRUE))
-    expect_error(plan(cases[[name]][[1]], archive), cases[[name]][[2]], fixed = TRUE, info = paste(name, archive))
+  for (name in names(cases))
+    expect_error(plan(cases[[name]][[1]]), cases[[name]][[2]], fixed = TRUE, info = name)
   expect_error(.check_frozen_conditions(base, edit(function(x) x[1, ])), "New conditions", fixed = TRUE)
   expect_true(.check_frozen_conditions(NULL, list()))
   # Reordered rows and additional DGMs are allowed.

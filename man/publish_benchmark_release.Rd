@@ -21,7 +21,6 @@ plan_benchmark_release(
   package_version = as.character(utils::packageVersion("PublicationBiasBenchmark")),
   source_commit = NULL,
   provenance = NULL,
-  archive = TRUE,
   community = "publicationbiasbenchmark",
   catalog_record_id = NULL,
   catalog_concept_doi = NULL,
@@ -60,8 +59,6 @@ publish_benchmark_release(plan, token = NULL, confirm = NULL)
 \item{source_commit}{Source commit for the frozen DGM definitions.}
 
 \item{provenance}{Optional source archive metadata stored in the catalog.}
-
-\item{archive}{Use schema-2 ZIP download units; FALSE retains the legacy publisher.}
 
 \item{community}{Community slug or UUID. Required for archive publication.}
 

@@ -2,10 +2,11 @@
 # version): records with drafts and files, DOI reservation, community inclusion and
 # public downloads. It lets the whole staging/publishing path run without mocking
 # any publication step.
-fake_zenodo <- function(lose_publish = FALSE, env = parent.frame()) {
+fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, env = parent.frame()) {
   zenodo <- new.env()
   zenodo$records <- list(); zenodo$next_id <- 100L; zenodo$uploaded <- list(); zenodo$requests <- character()
-  zenodo$lose_publish_once <- lose_publish; zenodo$publish_lost <- 0L
+  zenodo$upload_log <- character()
+  zenodo$lose_publish_once <- lose_publish; zenodo$publish_lost <- 0L; zenodo$lose_commit_once <- lose_commit
   record <- function(id) zenodo$records[[id]]
   view <- function(r, draft = FALSE) list(id = r$id, metadata = r$metadata, access = r$access,
     is_published = r$published,
@@ -55,6 +56,8 @@ fake_zenodo <- function(lose_publish = FALSE, env = parent.frame()) {
       source <- zenodo$uploaded[[paste(id, key)]]
       zenodo$records[[id]]$files[[key]] <- modifyList(file, list(status = "completed", size = file.info(source)$size,
         checksum = paste0("md5:", unname(tools::md5sum(source)))))
+      # The commit took effect, but its response is lost.
+      if (zenodo$lose_commit_once) { zenodo$lose_commit_once <- FALSE; stop("lost commit response") }
       return(zenodo$records[[id]]$files[[key]])
     }
     if (identical(rest, c("draft", "pids", "doi"))) { zenodo$records[[id]]$reserved <- TRUE; return(NULL) }
@@ -74,7 +77,10 @@ fake_zenodo <- function(lose_publish = FALSE, env = parent.frame()) {
     }
     stop("Unexpected request: ", method, " ", path)
   }
-  zenodo$upload <- function(path, record_id, filename, ...) zenodo$uploaded[[paste(record_id, filename)]] <- path
+  zenodo$upload <- function(path, record_id, filename, ...) {
+    zenodo$upload_log <- c(zenodo$upload_log, paste(record_id, filename))
+    zenodo$uploaded[[paste(record_id, filename)]] <- path
+  }
   zenodo$download <- function(url, destination, progress) {
     parts <- strsplit(sub("^https://zenodo.org/api/", "", url), "/", fixed = TRUE)[[1]]
     source <- zenodo$uploaded[[paste(parts[2], utils::URLdecode(parts[4]))]]
@@ -167,4 +173,32 @@ test_that("public verification during publication checks every archive without d
   # Publication-time public fetches allow five visibility retries (six attempts).
   expect_length(fetches, length(plan$catalog$archives) + 1L)
   expect_true(all(vapply(fetches, function(x) x$max_try == 6 && x$retry_not_found == 5L, logical(1))))
+})
+
+test_that("an interrupted commit resumes without uploading completed files or publishing twice", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- archive_release_plan(root)
+  gate <- local_mock_gate()
+  zenodo <- fake_zenodo(lose_commit = TRUE)
+  expect_error(suppressMessages(stage_benchmark_release(plan, "token")), "lost commit response")
+  expect_length(zenodo$upload_log, 1L)
+  # The committed file is recognised by its stored bytes: it is neither uploaded nor committed again.
+  suppressMessages(stage_benchmark_release(plan, "token"))
+  expect_length(zenodo$upload_log, length(plan$catalog$archives))
+  expect_false(anyDuplicated(zenodo$upload_log) > 0L)
+  # Publishing runs staging and verification inside its own session: the lock taken once by
+  # the session is not requested again (no deadlock).
+  result <- suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1"))
+  expect_length(zenodo$upload_log, length(plan$catalog$archives) + 1L)   # the archives, once, and release.json
+  expect_false(anyDuplicated(zenodo$upload_log) > 0L)
+  expect_identical(result$release, "test.1")
+  expect_length(Filter(function(r) r$published, zenodo$records), 2L)
+  records <- length(zenodo$records)
+  expect_equal(suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1")), result)
+  expect_length(zenodo$upload_log, length(plan$catalog$archives) + 1L)
+  expect_length(zenodo$records, records)
+  expect_length(grep("actions/publish", zenodo$requests), 2L)
+  expect_length(gate$calls, 4L)
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  expect_true(file.exists(file.path(plan$state_directory, "registry-entry.json")))
 })

@@ -90,15 +90,12 @@ test_that("the gate pages through the members up to a cap", {
 
 ## The publication session ------------------------------------------------------
 
-# Plans of both schemas for the same files; the state directory lives in `root`.
-session_plans <- function(root, community = "publicationbiasbenchmark", sandbox = FALSE) {
+# An archive plan of one file; the state directory lives in `root`.
+session_plan <- function(root, community = "publicationbiasbenchmark", sandbox = FALSE) {
   a <- test_resource(root, "A.csv")
-  conditions <- test_catalog(list(a))$conditions
-  metadata <- list(rights = list(list(id = "cc-by-4.0")))
-  list(legacy = plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = metadata, archive = FALSE,
-         state_directory = file.path(root, "legacy"), community = community, sandbox = sandbox),
-       archive = if (requireNamespace("zip", quietly = TRUE)) plan_benchmark_release("test.1", list(a), conditions = conditions,
-         metadata = metadata, state_directory = file.path(root, "archive"), community = community, sandbox = sandbox))
+  plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions,
+    metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = file.path(root, "archive"),
+    community = community, sandbox = sandbox)
 }
 
 # Record every request and upload; none of them may be a write when a session is refused.
@@ -115,22 +112,22 @@ local_write_recorder <- function(handler, env = parent.frame()) {
 }
 
 test_that("publishing needs the release identifier as confirm before anything else happens", {
-  root <- withr::local_tempdir(); plans <- session_plans(root)
-  for (plan in Filter(Negate(is.null), plans)) {
-    server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
-    writes <- local_write_recorder(server$handler)
-    for (confirm in list(NULL, "wrong", "test.2", NA_character_, "", c("test.1", "test.1"), 1, TRUE)) {
-      expect_error(publish_benchmark_release(plan, "t", confirm = confirm),
-                   "Publishing is irreversible: run PublicationBiasBenchmark:::verify_benchmark_release(plan) and re-run with confirm = \"test.1\"",
-                   fixed = TRUE)
-    }
-    expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
-    expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  for (confirm in list(NULL, "wrong", "test.2", NA_character_, "", c("test.1", "test.1"), 1, TRUE)) {
+    expect_error(publish_benchmark_release(plan, "t", confirm = confirm),
+                 "Publishing is irreversible: run PublicationBiasBenchmark:::verify_benchmark_release(plan) and re-run with confirm = \"test.1\"",
+                 fixed = TRUE)
   }
+  expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
 })
 
 test_that("a refused session issues no write: non-member, other environment, foreign production community", {
-  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   scenarios <- list(
     non_member = list(server = community_server(.benchmark_community_id, user_communities = function() list(hits = list(hits = list()))),
                       message = "not a member"),
@@ -139,7 +136,7 @@ test_that("a refused session issues no write: non-member, other environment, for
                              message = "restricted to the PublicationBiasBenchmark community"),
     reader = list(server = community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("reader")))),
                   message = "required"))
-  for (plan in plans) for (name in names(scenarios)) {
+  for (name in names(scenarios)) {
     scenario <- scenarios[[name]]
     writes <- local_write_recorder(scenario$server$handler)
     expect_error(stage_benchmark_release(plan, "t"), scenario$message, info = name)
@@ -150,32 +147,41 @@ test_that("a refused session issues no write: non-member, other environment, for
   }
 })
 
+# Any request fails the test and is counted.
+local_no_requests <- function(env = parent.frame()) {
+  seen <- new.env(); seen$count <- 0L
+  testthat::local_mocked_bindings(.zenodo_request = function(...) {
+    seen$count <- seen$count + 1L; stop("A request was issued")
+  }, .env = env)
+  seen
+}
+
 test_that("the session checks the lock and the plan's state before the gate", {
-  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   gate <- local_mock_gate()
-  for (plan in plans) {
-    # A lock held by another session stops it before any network action.
-    lock <- file.path(plan$state_directory, ".lock"); dir.create(lock)
-    expect_error(stage_benchmark_release(plan, "t"), "is locked")
-    expect_length(gate$calls, 0L); expect_true(dir.exists(lock))
-    unlink(lock, recursive = TRUE)
-    # A plan from an earlier package version has no identity; one without a community cannot be gated.
-    old <- plan; old$identity <- NULL
-    expect_error(stage_benchmark_release(old, "t"), "earlier package version; re-plan in a new state directory")
-    nameless <- plan; nameless$community <- NULL
-    expect_error(stage_benchmark_release(nameless, "t"), "has no community; re-plan with this package version")
-    expect_length(gate$calls, 0L)
-    expect_false(dir.exists(lock))
-    # A state written for another plan blocks the session.
-    other <- plan; other$identity$fingerprint <- strrep("0", 64)
-    .update_publication_state(other, function(state) { state$groups[["1"]] <- list(record_id = "1"); state })
-    expect_error(stage_benchmark_release(plan, "t"), "belongs to a different plan")
-    expect_length(gate$calls, 0L)
-  }
+  # A lock held by another session stops it before any network action.
+  lock <- file.path(plan$state_directory, ".lock"); dir.create(lock)
+  expect_error(stage_benchmark_release(plan, "t"), "is locked")
+  expect_length(gate$calls, 0L); expect_true(dir.exists(lock))
+  unlink(lock, recursive = TRUE)
+  # A plan from an earlier package version has no identity; one without a community cannot be gated.
+  old <- plan; old$identity <- NULL
+  expect_error(stage_benchmark_release(old, "t"), "earlier package version; re-plan in a new state directory")
+  nameless <- plan; nameless$community <- NULL
+  expect_error(stage_benchmark_release(nameless, "t"), "has no community; re-plan with this package version")
+  expect_length(gate$calls, 0L)
+  expect_false(dir.exists(lock))
+  # A state written for another plan blocks the session.
+  other <- plan; other$identity$fingerprint <- strrep("0", 64)
+  .update_publication_state(other, function(state) { state$groups[["1"]] <- list(record_id = "1"); state })
+  expect_error(stage_benchmark_release(plan, "t"), "belongs to a different plan")
+  expect_length(gate$calls, 0L)
 })
 
 test_that("a session passes the token and the gate's UUID on, with the roles of its operation", {
-  root <- withr::local_tempdir(); plan <- session_plans(root)$legacy
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   gate <- local_mock_gate(community_id = "resolved-uuid")
   seen <- NULL
   expect_identical(.publication_session(plan, "explicit-token", c("owner"), fn = function(token, community_id) {
@@ -196,13 +202,31 @@ test_that("a session passes the token and the gate's UUID on, with the roles of 
 })
 
 test_that("staging and publishing use the release roles", {
+  skip_if_not_installed("zip")
   expect_identical(.release_roles, c("owner", "manager"))
-  root <- withr::local_tempdir(); plan <- session_plans(root)$legacy
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   gate <- local_mock_gate()
-  local_mocked_bindings(.stage_legacy_release = function(plan, token) "staged", .publish_legacy_release = function(plan, token) "published")
+  local_mocked_bindings(.stage_archive_release = function(plan, token, community_id) "staged",
+                        .publish_archive_release = function(plan, token, community_id) "published")
   expect_identical(stage_benchmark_release(plan, "t"), "staged")
   expect_identical(publish_benchmark_release(plan, "t", confirm = "test.1"), "published")
   expect_identical(gate$calls[[1]]$roles, c("owner", "manager")); expect_identical(gate$calls[[2]]$roles, c("owner", "manager"))
+})
+
+test_that("a plan of the removed direct-file publisher is refused by every entry point before anything else", {
+  root <- withr::local_tempdir()
+  plan <- list(catalog = list(schema_version = 1L, release = "test.1"), state_directory = root, sandbox = FALSE,
+               community = "publicationbiasbenchmark", groups = list(), identity = list(version = 2L))
+  gate <- local_mock_gate(); requests <- local_no_requests()
+  withr::local_envvar(ZENODO_TOKEN = "")   # a token would be needed by any later step
+  message <- "This plan was made for the removed direct-file publisher; re-plan with this package version."
+  expect_error(stage_benchmark_release(plan), message, fixed = TRUE)
+  expect_error(verify_benchmark_release(plan), message, fixed = TRUE)
+  expect_error(publish_benchmark_release(plan), message, fixed = TRUE)   # not even the confirmation is asked for
+  expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), message, fixed = TRUE)
+  expect_length(gate$calls, 0L); expect_identical(requests$count, 0L)
+  expect_identical(list.files(root, all.files = TRUE, no.. = TRUE), character())   # no lock, no state
+  expect_error(stage_benchmark_release(list(catalog = list()), "t"), message, fixed = TRUE)
 })
 
 ## The publication lock -----------------------------------------------------------
@@ -257,34 +281,33 @@ test_that("a failed lock release warns and the lock never leaks into the next se
   unlink(file.path(directory, ".lock"), recursive = TRUE)
 })
 
-test_that("planning takes the lock for both plan schemas", {
+test_that("planning takes the lock", {
+  skip_if_not_installed("zip")
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
   conditions <- test_catalog(list(a))$conditions
-  for (archive in c(FALSE, TRUE)) {
-    skip_if(archive && !requireNamespace("zip", quietly = TRUE))
-    state <- file.path(root, paste0("state-", archive)); dir.create(file.path(state, ".lock"), recursive = TRUE)
-    expect_error(plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = state,
-      archive = archive, community = "test-community"), "is locked", info = archive)
-    expect_false(file.exists(file.path(state, "plan.rds")))
-    unlink(file.path(state, ".lock"), recursive = TRUE)
-    plan <- plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = state,
-      archive = archive, community = "test-community")
-    expect_true(file.exists(file.path(state, "plan.rds"))); expect_false(dir.exists(file.path(state, ".lock")))
-    expect_identical(plan$community, "test-community")
-  }
+  state <- file.path(root, "state"); dir.create(file.path(state, ".lock"), recursive = TRUE)
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = state,
+    community = "test-community"), "is locked")
+  expect_false(file.exists(file.path(state, "plan.rds")))
+  unlink(file.path(state, ".lock"), recursive = TRUE)
+  plan <- plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = state,
+    community = "test-community")
+  expect_true(file.exists(file.path(state, "plan.rds"))); expect_false(dir.exists(file.path(state, ".lock")))
+  expect_identical(plan$community, "test-community")
   expect_error(plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(),
-    state_directory = file.path(root, "none"), archive = FALSE, community = NULL), "community")
+    state_directory = file.path(root, "none"), community = NULL), "community")
 })
 
 ## Plan identity and publication state -------------------------------------------
 
 test_that("plan identity binds the state to the release, community, environment, contents and limits", {
+  skip_if_not_installed("zip")
   root <- withr::local_tempdir()
   a <- test_resource(root, "A.csv"); b <- test_resource(root, "B.csv", method = "B")
   conditions <- test_catalog(list(a))$conditions
   make <- function(files = list(a), dir = withr::local_tempdir(), ...) {
     args <- list(release = "test.1", files = files, conditions = conditions, metadata = list(), state_directory = dir,
-                 archive = FALSE, community = "c")
+                 community = "c")
     do.call(plan_benchmark_release, modifyList(args, list(...)))
   }
   plan <- make()
@@ -293,21 +316,29 @@ test_that("plan identity binds the state to the release, community, environment,
   expect_identical(identity$version, 2L); expect_identical(identity$release, "test.1")
   expect_false(identity$sandbox); expect_identical(identity$community, "c")
   expect_match(identity$fingerprint, "^[a-f0-9]{64}$")
-  # The state directory is not part of the identity; everything else is.
-  expect_identical(make()$identity, identity)
+  # The state directory is not part of the identity; everything else is. (ZIP bytes carry their build
+  # time, so the identities of two separate builds differ: edits are compared on one built plan.)
+  moved <- plan; moved$state_directory <- file.path(root, "elsewhere")
+  expect_true(.identity_equal(.plan_identity(moved), identity))
+  differs <- function(change) !.identity_equal(.plan_identity(change(plan)), identity)
+  expect_true(differs(function(p) { p$max_files <- 10L; p }))
+  expect_true(differs(function(p) { p$max_bytes <- 1e6; p }))
+  expect_true(differs(function(p) { p$max_archive_bytes <- 1e6; p }))
+  expect_true(differs(function(p) { p$metadata$rights <- list(list(id = "mit")); p }))
+  expect_true(differs(function(p) { p$community <- "d"; p }))
+  expect_true(differs(function(p) { p$sandbox <- TRUE; p }))
+  expect_true(differs(function(p) { p$catalog$release <- "test.2"; p }))
   expect_false(identical(make(list(a, b))$identity$fingerprint, identity$fingerprint))
-  expect_false(identical(make(community = "d")$identity, identity))
-  expect_false(identical(make(sandbox = TRUE)$identity, identity))
-  expect_false(identical(make(max_files = 10L)$identity$fingerprint, identity$fingerprint))
-  expect_false(identical(make(max_bytes = 1e6)$identity$fingerprint, identity$fingerprint))
-  expect_false(identical(make(release = "test.2")$identity$release, "test.1"))
+  expect_false(identical(make(community = "d")$identity$community, identity$community))
+  expect_true(make(sandbox = TRUE)$identity$sandbox)
+  expect_identical(make(release = "test.2")$identity$release, "test.2")
   expect_true(.identity_equal(identity, jsonlite::fromJSON(.canonical_json(identity), simplifyVector = FALSE)))
   # The fingerprint is canonical JSON, not R serialization.
   expect_identical(.canonical_fingerprint(list(a = 1, b = "x")), digest::digest('{"a":1,"b":"x"}', algo = "sha256", serialize = FALSE))
   # A saved plan from the same inputs is recognised; changed inputs are not.
   directory <- withr::local_tempdir()
-  make(dir = directory)
-  expect_identical(make(dir = directory)$identity, identity)
+  saved_plan <- make(dir = directory)
+  expect_identical(make(dir = directory)$identity, saved_plan$identity)
   expect_error(make(list(a, b), dir = directory), "belongs to a different plan")
   expect_error(make(dir = directory, community = "other"), "belongs to a different plan")
   saved <- readRDS(file.path(directory, "plan.rds")); saved$identity <- NULL
@@ -337,8 +368,37 @@ test_that("an archive plan's resume fingerprint is canonical and its state ident
   expect_error(make(list(a, b), file.path(root, "one")), "earlier package version; re-plan in a new state directory")
 })
 
+test_that("the identity of an archive plan is the one computed before the direct-file publisher was removed", {
+  # Hand-built plans with fixed descriptors (no ZIP bytes), so that the values do not depend on the zip
+  # implementation. The fingerprints were computed with the code at 04ae532; the identity of existing
+  # archive plans, such as the published 2026.2 plan, must not change.
+  fixture <- function(previous) {
+    member <- list(id = "no_bias/results/A", filename = "A.csv", size = 100, sha256 = strrep("1", 64), md5 = strrep("2", 32))
+    archive <- list(id = "no_bias/results", dgm = "no_bias", unit = "no_bias/results", filename = "no_bias__results__test.2.zip",
+                    size = 120, sha256 = strrep("3", 64), md5 = strrep("4", 32), record_id = "0", members = list(member))
+    upload <- c(archive, list(local_path = "C:/elsewhere/no_bias__results__test.2.zip"))
+    asset <- c(member, list(dgm = "no_bias", kind = "results", record_id = "0", archive_id = archive$id,
+                            local_path = "C:/elsewhere/A.csv"))
+    list(catalog = list(schema_version = 2L, release = "test.2", sandbox = FALSE, previous_release = if (previous) "test.1",
+           package_version = "0.4.0", conditions = list(no_bias = data.frame(condition_id = 1:2, mean_effect = 0)),
+           assets = list(asset), archives = list(upload)),
+         previous = if (previous) list(schema_version = 2L, release = "test.1",
+           archives = list(list(id = "no_bias/results", dgm = "no_bias", record_id = "55"))),
+         groups = list(no_bias = list(upload)), changed_dgms = "no_bias",
+         metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = "C:/elsewhere/state",
+         sandbox = FALSE, community = "publicationbiasbenchmark", max_files = 100L, max_bytes = 50e9,
+         catalog_record_id = if (previous) "123", catalog_concept_doi = if (previous) "10.5281/zenodo.900",
+         max_archive_bytes = 2e9)
+  }
+  expect_identical(.plan_identity(fixture(FALSE))$fingerprint, "8194a5a27707f3b7c657ce6a7b9d9aec21a9f977e8a24b038267816eac24e1e5")
+  expect_identical(.plan_identity(fixture(TRUE))$fingerprint, "b1307fbdd732bef1face8b24915cc5e0435bac50434f28bc86c38810806ff75b")
+  expect_identical(.plan_identity(fixture(TRUE))[c("version", "release", "sandbox", "community")],
+                   list(version = 2L, release = "test.2", sandbox = FALSE, community = "publicationbiasbenchmark"))
+})
+
 test_that("state belongs to its plan: writes need the identity, read-only checks tolerate its absence", {
-  root <- withr::local_tempdir(); plan <- session_plans(root)$legacy
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   expect_identical(.publication_state(plan, "write"), list(groups = list(), catalog_record = NULL))
   .update_publication_state(plan, function(state) { state$groups[["1"]] <- list(record_id = "7"); state })
   state <- .publication_state(plan)
@@ -350,8 +410,8 @@ test_that("state belongs to its plan: writes need the identity, read-only checks
   expect_error(.update_publication_state(other, function(state) state), "belongs to a different plan")
   # State written by an earlier package version has no identity.
   path <- file.path(plan$state_directory, "state.json")
-  legacy_state <- jsonlite::read_json(path); legacy_state$identity <- NULL
-  jsonlite::write_json(legacy_state, path, auto_unbox = TRUE)
+  earlier_state <- jsonlite::read_json(path); earlier_state$identity <- NULL
+  jsonlite::write_json(earlier_state, path, auto_unbox = TRUE)
   expect_error(.publication_state(plan, "write"), "written by an earlier package version; re-plan in a new state directory")
   expect_error(.update_publication_state(plan, function(state) state), "earlier package version")
   expect_message(restored <- .publication_state(plan, "read"), "no plan identity")
@@ -553,7 +613,8 @@ test_that("catalogs are verified by reading them back, with the publication bloc
 ## Plan identity is recomputed by the session ------------------------------------------------
 
 test_that("a plan edited after planning is refused under the lock before the gate and any request", {
-  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   gate <- local_mock_gate()
   server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
   writes <- local_write_recorder(server$handler)
@@ -575,103 +636,77 @@ test_that("a plan edited after planning is refused under the lock before the gat
     entry_md5 = function(p) { p$groups[[1]][[1]]$md5 <- strrep("2", 32); p },
     entry_size = function(p) { p$groups[[1]][[1]]$size <- p$groups[[1]][[1]]$size + 1; p },
     entry_dgm = function(p) { p$groups[[1]][[1]]$dgm <- "other_dgm"; p })
-  for (plan in plans) {
-    archive <- identical(plan$catalog$schema_version, 2L)
-    for (name in names(edits)) {
-      if (!archive && name %in% c("catalog_family", "changed_dgms")) next
-      edited <- edits[[name]](plan)
-      expect_identical(edited$identity, plan$identity)   # the stored identity is untouched
-      expect_error(stage_benchmark_release(edited, "t"), "modified after it was planned", info = paste(name, archive))
-      expect_error(publish_benchmark_release(edited, "t", confirm = edited$catalog$release), "modified after it was planned",
-                   info = paste(name, archive))
-      expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = paste(name, archive))
-      expect_false(file.exists(file.path(plan$state_directory, "state.json")), info = paste(name, archive))
-    }
+  for (name in names(edits)) {
+    edited <- edits[[name]](plan)
+    expect_identical(edited$identity, plan$identity)   # the stored identity is untouched
+    expect_error(stage_benchmark_release(edited, "t"), "modified after it was planned", info = name)
+    expect_error(publish_benchmark_release(edited, "t", confirm = edited$catalog$release), "modified after it was planned",
+                 info = name)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = name)
+    expect_false(file.exists(file.path(plan$state_directory, "state.json")), info = name)
   }
   expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
   # The untouched plan, and a copy reloaded from plan.rds, recompute to their stored identity;
   # the local file path of an upload is verified against its hashes when it is uploaded instead.
-  for (plan in plans) {
-    moved <- plan; moved$groups[[1]][[1]]$local_path <- file.path(tempdir(), "elsewhere.csv")
-    expect_true(.identity_equal(.plan_identity(moved), plan$identity))
-    expect_true(.identity_equal(.plan_identity(plan), plan$identity))
-    expect_true(.identity_equal(.plan_identity(readRDS(file.path(plan$state_directory, "plan.rds"))), plan$identity))
-  }
+  moved <- plan; moved$groups[[1]][[1]]$local_path <- file.path(tempdir(), "elsewhere.csv")
+  expect_true(.identity_equal(.plan_identity(moved), plan$identity))
+  expect_true(.identity_equal(.plan_identity(plan), plan$identity))
+  expect_true(.identity_equal(.plan_identity(readRDS(file.path(plan$state_directory, "plan.rds"))), plan$identity))
 })
 
 ## Verification checks the state and the staged catalog first -------------------------------
 
-local_no_requests <- function(env = parent.frame()) {
-  seen <- new.env(); seen$count <- 0L
-  testthat::local_mocked_bindings(.zenodo_request = function(...) {
-    seen$count <- seen$count + 1L; stop("A request was issued")
-  }, .env = env)
-  seen
-}
 # A catalog staged for `plan`, with record IDs filled in like a staged release.json.
-staged_catalog <- function(plan) {
-  catalog <- if (identical(plan$catalog$schema_version, 2L)) .public_catalog(plan$catalog) else {
-    plan$catalog$assets <- lapply(plan$catalog$assets, function(x) { x$local_path <- NULL; x }); plan$catalog
-  }
-  catalog
-}
+staged_catalog <- function(plan) .public_catalog(plan$catalog)
 
-test_that("both verify paths read the state first and stop on bad state before any request", {
-  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+test_that("verification reads the state first and stops on bad state before any request", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   requests <- local_no_requests()
-  for (plan in plans) {
-    path <- file.path(plan$state_directory, "state.json"); schema <- plan$catalog$schema_version
-    # Unreadable state, and missing state with a history, name the newest history file.
-    writeLines("{broken", path)
-    expect_error(verify_benchmark_release(plan, "t"), "unreadable or has an invalid structure", info = schema)
-    history <- file.path(plan$state_directory, "state-history"); dir.create(history, showWarnings = FALSE)
-    writeLines("{}", file.path(history, "20260101T000000.000001-0001-state.json"))
-    expect_error(verify_benchmark_release(plan, "t"), "20260101T000000.000001-0001-state.json", info = schema)
-    unlink(path)
-    expect_error(verify_benchmark_release(plan, "t"), "is missing although history exists", info = schema)
-    unlink(history, recursive = TRUE)
-    # State of another plan.
-    other <- plan; other$identity$fingerprint <- strrep("0", 64)
-    .update_publication_state(other, function(state) { state$versions[["x"]] <- list(record_id = "1"); state })
-    expect_error(verify_benchmark_release(plan, "t"), "belongs to a different plan", info = schema)
-    # State without an identity: allowed to read, with a notice.
-    state <- jsonlite::read_json(path); state$identity <- NULL
-    jsonlite::write_json(state, path, auto_unbox = TRUE)
-    expect_message(expect_error(verify_benchmark_release(plan, "t"), "not been fully staged|A request was issued"),
-                   "no plan identity", info = schema)
-    unlink(c(path, file.path(plan$state_directory, "state-history")), recursive = TRUE)
-  }
+  path <- file.path(plan$state_directory, "state.json")
+  # Unreadable state, and missing state with a history, name the newest history file.
+  writeLines("{broken", path)
+  expect_error(verify_benchmark_release(plan, "t"), "unreadable or has an invalid structure")
+  history <- file.path(plan$state_directory, "state-history"); dir.create(history, showWarnings = FALSE)
+  writeLines("{}", file.path(history, "20260101T000000.000001-0001-state.json"))
+  expect_error(verify_benchmark_release(plan, "t"), "20260101T000000.000001-0001-state.json")
+  unlink(path)
+  expect_error(verify_benchmark_release(plan, "t"), "is missing although history exists")
+  unlink(history, recursive = TRUE)
+  # State of another plan.
+  other <- plan; other$identity$fingerprint <- strrep("0", 64)
+  .update_publication_state(other, function(state) { state$versions[["x"]] <- list(record_id = "1"); state })
+  expect_error(verify_benchmark_release(plan, "t"), "belongs to a different plan")
+  # State without an identity: allowed to read, with a notice.
+  state <- jsonlite::read_json(path); state$identity <- NULL
+  jsonlite::write_json(state, path, auto_unbox = TRUE)
+  expect_message(expect_error(verify_benchmark_release(plan, "t"), "not been fully staged|A request was issued"),
+                 "no plan identity")
+  unlink(c(path, file.path(plan$state_directory, "state-history")), recursive = TRUE)
   expect_identical(requests$count, 0L)
 })
 
-test_that("both verify paths stop when the staged catalog belongs to another release or inventory", {
+test_that("verification stops when the staged catalog belongs to another release or inventory", {
   skip_if_not_installed("zip")
-  root <- withr::local_tempdir(); plans <- session_plans(root)
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   requests <- local_no_requests()
-  for (plan in plans) {
-    schema <- plan$catalog$schema_version
-    path <- file.path(plan$state_directory, "release.json")
-    catalog <- staged_catalog(plan)
-    # The plan's own staged catalog passes the check.
-    expect_true(.check_staged_catalog(plan, catalog))
-    other_release <- catalog; other_release$release <- "other.release"
-    .write_catalog_file(path, other_release)
-    expect_error(verify_benchmark_release(plan, "t"), "belongs to release 'other.release', not to this plan's release 'test.1'", info = schema)
-    different <- catalog
-    if (identical(schema, 2L)) different$archives[[1]]$filename <- "another-archive.zip" else different$assets[[1]]$sha256 <- strrep("e", 64)
-    .write_catalog_file(path, different)
-    expect_error(verify_benchmark_release(plan, "t"), if (identical(schema, 2L)) "different archive inventory" else "lists different files",
-                 info = schema)
-    if (identical(schema, 2L)) {
-      members <- catalog; members$archives[[1]]$members[[1]]$sha256 <- strrep("d", 64)
-      expect_error(.check_staged_catalog(plan, members), "different archive inventory")
-    }
-    # Record IDs are the one thing a staged catalog may change.
-    staged <- catalog
-    if (identical(schema, 2L)) staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a }) else
-      staged$assets <- lapply(staged$assets, function(a) { a$record_id <- "777"; a })
-    expect_true(.check_staged_catalog(plan, staged))
-  }
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- staged_catalog(plan)
+  # The plan's own staged catalog passes the check.
+  expect_true(.check_staged_catalog(plan, catalog))
+  other_release <- catalog; other_release$release <- "other.release"
+  .write_catalog_file(path, other_release)
+  expect_error(verify_benchmark_release(plan, "t"), "belongs to release 'other.release', not to this plan's release 'test.1'")
+  different <- catalog
+  different$archives[[1]]$filename <- "another-archive.zip"
+  .write_catalog_file(path, different)
+  expect_error(verify_benchmark_release(plan, "t"), "different archive inventory")
+  members <- catalog; members$archives[[1]]$members[[1]]$sha256 <- strrep("d", 64)
+  expect_error(.check_staged_catalog(plan, members), "different archive inventory")
+  # Record IDs are the one thing a staged catalog may change.
+  staged <- catalog
+  staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a })
+  expect_true(.check_staged_catalog(plan, staged))
   expect_identical(requests$count, 0L)
 })
 
@@ -800,43 +835,41 @@ test_that("the identity binds the storage base records and the earlier catalog's
 ## Identity format version ---------------------------------------------------------------------------
 
 test_that("a plan or state with an older or missing identity version must be re-planned", {
-  root <- withr::local_tempdir(); plans <- Filter(Negate(is.null), session_plans(root))
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   gate <- local_mock_gate()
   server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
   writes <- local_write_recorder(server$handler)
   message <- "This plan was created by an earlier package version; re-plan in a new state directory."
-  for (plan in plans) {
-    expect_identical(plan$identity$version, 2L)
-    schema <- plan$catalog$schema_version
-    older <- plan; older$identity$version <- 1L
-    missing <- plan; missing$identity$version <- NULL
-    empty <- plan; empty$identity <- list()
-    absent <- plan; absent["identity"] <- list(NULL)
-    for (candidate in list(older, missing, empty, absent))
-      for (call in list(function(p) stage_benchmark_release(p, "t"), function(p) publish_benchmark_release(p, "t", confirm = "test.1")))
-        expect_error(call(candidate), message, fixed = TRUE, info = schema)
-    expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
-    # Planning again in the directory of a plan saved with the older identity stops with the same message.
-    saved <- readRDS(file.path(plan$state_directory, "plan.rds"))
-    saved$identity$version <- 1L
-    saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
-    a <- test_resource(root, "A.csv")
-    expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
-      state_directory = plan$state_directory, archive = identical(schema, 2L), community = "publicationbiasbenchmark"),
-      message, fixed = TRUE, info = schema)
-    saved$identity$version <- NULL
-    saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
-    expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
-      state_directory = plan$state_directory, archive = identical(schema, 2L), community = "publicationbiasbenchmark"),
-      message, fixed = TRUE, info = schema)
-    # State written with an older identity format is refused for writes and noted when read.
-    path <- file.path(plan$state_directory, "state.json")
-    jsonlite::write_json(list(groups = list(), identity = list(version = 1L, release = "test.1", sandbox = FALSE, community = "x", fingerprint = "f")),
-                         path, auto_unbox = TRUE)
-    expect_error(.publication_state(plan, "write"), "written by an earlier package version; re-plan in a new state directory")
-    expect_message(.publication_state(plan, "read"), "older plan identity")
-    unlink(path)
-  }
+  expect_identical(plan$identity$version, 2L)
+  older <- plan; older$identity$version <- 1L
+  missing <- plan; missing$identity$version <- NULL
+  empty <- plan; empty$identity <- list()
+  absent <- plan; absent["identity"] <- list(NULL)
+  for (candidate in list(older, missing, empty, absent))
+    for (call in list(function(p) stage_benchmark_release(p, "t"), function(p) publish_benchmark_release(p, "t", confirm = "test.1")))
+      expect_error(call(candidate), message, fixed = TRUE)
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  # Planning again in the directory of a plan saved with the older identity stops with the same message.
+  saved <- readRDS(file.path(plan$state_directory, "plan.rds"))
+  saved$identity$version <- 1L
+  saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
+  a <- test_resource(root, "A.csv")
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
+    state_directory = plan$state_directory, community = "publicationbiasbenchmark"),
+    message, fixed = TRUE)
+  saved$identity$version <- NULL
+  saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
+    state_directory = plan$state_directory, community = "publicationbiasbenchmark"),
+    message, fixed = TRUE)
+  # State written with an older identity format is refused for writes and noted when read.
+  path <- file.path(plan$state_directory, "state.json")
+  jsonlite::write_json(list(groups = list(), identity = list(version = 1L, release = "test.1", sandbox = FALSE, community = "x", fingerprint = "f")),
+                       path, auto_unbox = TRUE)
+  expect_error(.publication_state(plan, "write"), "written by an earlier package version; re-plan in a new state directory")
+  expect_message(.publication_state(plan, "read"), "older plan identity")
+  unlink(path)
   expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
 })
 
@@ -844,7 +877,7 @@ test_that("a plan or state with an older or missing identity version must be re-
 
 test_that("a valid staged catalog with a renamed or re-described member is not this plan's catalog", {
   skip_if_not_installed("zip")
-  root <- withr::local_tempdir(); plan <- session_plans(root)$archive
+  root <- withr::local_tempdir(); plan <- session_plan(root)
   requests <- local_no_requests()
   path <- file.path(plan$state_directory, "release.json")
   catalog <- staged_catalog(plan)
@@ -867,11 +900,5 @@ test_that("a valid staged catalog with a renamed or re-described member is not t
     altered$archives[[1]][[field]] <- switch(field, md5 = strrep("b", 32), size = altered$archives[[1]]$size + 1, filename = "renamed.zip")
     expect_error(.check_staged_catalog(plan, altered), "different archive inventory", info = field)
   }
-  expect_identical(requests$count, 0L)
-  # Schema 1 catalogs list assets only: a renamed asset is detected as well.
-  legacy <- session_plans(root)$legacy
-  staged <- staged_catalog(legacy); staged$assets[[1]]$filename <- "renamed.csv"
-  .write_catalog_file(file.path(legacy$state_directory, "release.json"), staged)
-  expect_error(verify_benchmark_release(legacy, "t"), "lists different files")
   expect_identical(requests$count, 0L)
 })

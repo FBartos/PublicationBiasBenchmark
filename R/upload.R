@@ -156,7 +156,6 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
 #' @param package_version Package version assembling the release (generation stamps remain per file).
 #' @param source_commit Source commit for the frozen DGM definitions.
 #' @param provenance Optional source archive metadata stored in the catalog.
-#' @param archive Use schema-2 ZIP download units; FALSE retains the legacy publisher.
 #' @param community Community slug or UUID. Required for archive publication.
 #' @param catalog_record_id Existing catalog family version ID, required to consolidate a schema-1 release.
 #' @param catalog_concept_doi Existing catalog family concept DOI.
@@ -182,7 +181,7 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
                                    replace = character(), metadata, state_directory,
                                    max_files = 100L, max_bytes = 50e9, sandbox = FALSE,
                                    package_version = as.character(utils::packageVersion("PublicationBiasBenchmark")),
-                                   source_commit = NULL, provenance = NULL, archive = TRUE,
+                                   source_commit = NULL, provenance = NULL,
                                    community = "publicationbiasbenchmark", catalog_record_id = NULL,
                                    catalog_concept_doi = NULL, max_archive_bytes = .archive_byte_limit) {
   if (!.scalar_string(release) || !grepl("^[A-Za-z0-9._-]+$", release)) stop("Invalid release identifier.", call. = FALSE)
@@ -197,7 +196,6 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   if (!is.null(base) && identical(base$release, release)) stop("A new release needs a new identifier.", call. = FALSE)
   if (!is.null(base) && !identical(isTRUE(base$sandbox), sandbox)) stop("Cannot mix sandbox and production records.", call. = FALSE)
   assets <- if (is.null(base)) list() else base$assets
-  new_files <- list()
   for (file in files) {
     old <- which(vapply(assets, function(x) identical(x$id, file$id), logical(1)))
     if (length(old)) {
@@ -221,7 +219,6 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
     }
     if (!.file_verified(file$local_path, file$sha256, file$size, file$md5)) stop("Unverified local file: ", file$filename, call. = FALSE)
     assets[[length(assets) + 1L]] <- file
-    new_files[[length(new_files) + 1L]] <- file
   }
   if (is.null(conditions)) conditions <- base$conditions
   .check_frozen_conditions(base, conditions)
@@ -236,39 +233,9 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   if (!.scalar_string(community)) stop("Publication requires a community slug or UUID.", call. = FALSE)
   # Every read and write of the state directory (archive building, plan.rds)
   # happens under the publication lock.
-  .with_publication_lock(state_directory, function() {
-    if (archive) return(.plan_archive_release(catalog, base, files, replace, metadata, state_directory,
+  .with_publication_lock(state_directory, function()
+    .plan_archive_release(catalog, base, files, replace, metadata, state_directory,
       max_files, max_bytes, community, catalog_record_id, catalog_concept_doi, max_archive_bytes))
-    .plan_legacy_release(catalog, new_files, metadata, state_directory, max_files, max_bytes, community)
-  })
-}
-
-.plan_legacy_release <- function(catalog, new_files, metadata, state_directory, max_files, max_bytes, community) {
-  groups <- list()
-  for (group in split(new_files, vapply(new_files, function(x) paste(x$dgm, x$kind, sep = "/"), character(1)))) {
-    part <- list(); bytes <- 0
-    for (file in group) {
-      if (file$size > max_bytes) stop("A file exceeds the configured record quota: ", file$filename, call. = FALSE)
-      if (length(part) && (length(part) >= max_files || bytes + file$size > max_bytes)) {
-        groups[[length(groups) + 1L]] <- part; part <- list(); bytes <- 0
-      }
-      part[[length(part) + 1L]] <- file; bytes <- bytes + file$size
-    }
-    if (length(part)) groups[[length(groups) + 1L]] <- part
-  }
-  if (any(vapply(groups, function(group) anyDuplicated(vapply(group, `[[`, character(1), "filename")) > 0L, logical(1))))
-    stop("Component files need unique filenames. Prefix distributed shard names before staging.", call. = FALSE)
-  plan <- list(catalog = catalog, groups = groups, metadata = metadata,
-               state_directory = normalizePath(state_directory, winslash = "/", mustWork = FALSE),
-               sandbox = isTRUE(catalog$sandbox), community = community, max_files = max_files, max_bytes = max_bytes)
-  plan$identity <- .plan_identity(plan)
-  plan_path <- file.path(state_directory, "plan.rds")
-  if (file.exists(plan_path)) {
-    existing <- readRDS(plan_path)
-    if (!.identity_current(existing$identity)) stop(.earlier_plan_message, call. = FALSE)
-    if (!.identity_equal(existing$identity, plan$identity)) stop("Existing publication state belongs to a different plan.", call. = FALSE)
-  } else .write_rds_verified(plan_path, plan)
-  plan
 }
 
 .zenodo_base <- function(sandbox) paste0("https://", if (sandbox) "sandbox." else "", "zenodo.org/api")
@@ -474,132 +441,30 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
     is.numeric(entry$size) && length(entry$size) == 1L && !is.na(entry$size) && entry$size == asset$size
 }
 
-#' @rdname publish_benchmark_release
-stage_benchmark_release <- function(plan, token = NULL) {
-  .publication_session(plan, token, .release_roles, fn = function(token, community_id) {
-    if (identical(plan$catalog$schema_version, 2L)) .stage_archive_release(plan, token, community_id)
-    else .stage_legacy_release(plan, token)
-  })
-}
-
-.stage_legacy_release <- function(plan, token) {
-  catalog <- plan$catalog
-  asset_indices <- stats::setNames(seq_along(catalog$assets), vapply(catalog$assets, `[[`, character(1), "id"))
-  for (i in seq_along(plan$groups)) {
-    key <- as.character(i); group <- plan$groups[[i]]
-    record <- .publication_state(plan)$groups[[key]]
-    if (is.null(record)) {
-      title <- sprintf("PublicationBiasBenchmark %s: %s %s, part %03d", catalog$release, group[[1]]$dgm, group[[1]]$kind, i)
-      id <- .create_component_record(plan, title,
-             "Immutable benchmark files. Each file can be downloaded independently. File generation versions and checksums are recorded in the benchmark release catalog.", token)
-      record <- .update_publication_state(plan, function(state) {
-        state$groups[[key]] <- list(record_id = id, published = FALSE); state
-      })$groups[[key]]
-    }
-    if (!isTRUE(record$published) && .record_is_published(plan, record$record_id, token)) {
-      record <- .update_publication_state(plan, function(state) {
-        state$groups[[key]]$published <- TRUE; state
-      })$groups[[key]]
-    }
-    if (!isTRUE(record$published)) {
-      .stage_files(plan, record$record_id, group, token)
-    }
-    for (asset in group) {
-      index <- asset_indices[[asset$id]]
-      catalog$assets[[index]]$record_id <- record$record_id
-    }
-  }
-  catalog$assets <- lapply(catalog$assets, function(x) { x$local_path <- NULL; x })
-  .validate_catalog(catalog)
-  .write_catalog_file(file.path(plan$state_directory, "release.json"), catalog)
-  catalog
-}
-
-#' @rdname publish_benchmark_release
-verify_benchmark_release <- function(plan, token = NULL) {
-  if (identical(plan$catalog$schema_version, 2L)) return(.verify_archive_release(plan, token))
-  .verify_legacy_release(plan, token)
-}
-
-.verify_legacy_release <- function(plan, token = NULL) {
-  token <- .publication_token(plan, token)
-  state <- .publication_state(plan, "read")
-  # A catalog staged in this state directory must belong to this plan.
-  staged <- file.path(plan$state_directory, "release.json")
-  if (file.exists(staged)) .check_staged_catalog(plan, benchmark_catalog(staged))
-  for (i in seq_along(plan$groups)) {
-    record <- state$groups[[as.character(i)]]
-    if (is.null(record)) stop("The release has not been fully staged.", call. = FALSE)
-    metadata <- .zenodo_request("GET", paste0("records/", record$record_id,
-      if (!isTRUE(record$published)) "/draft" else ""), token, plan$sandbox)
-    .verify_record_rights(metadata, plan$metadata)
-    suffix <- if (isTRUE(record$published)) "/files" else "/draft/files"
-    files <- .zenodo_request("GET", paste0("records/", record$record_id, suffix), token, plan$sandbox)
-    for (asset in plan$groups[[i]]) {
-      entry <- .zenodo_file_entry(files, asset$filename)
-      if (!.zenodo_entry_verified(entry, asset))
-        stop("Incomplete or unverified staged release.", call. = FALSE)
-    }
-  }
+# Releases are always ZIP archives (schema 2). A plan of the removed direct-file
+# publisher is refused before anything else happens (no token, lock or request).
+.require_archive_plan <- function(plan) {
+  if (!identical(plan$catalog$schema_version, 2L))
+    stop("This plan was made for the removed direct-file publisher; re-plan with this package version.", call. = FALSE)
   invisible(TRUE)
 }
 
 #' @rdname publish_benchmark_release
-publish_benchmark_release <- function(plan, token = NULL, confirm = NULL) {
-  .publication_session(plan, token, .release_roles, confirm = confirm, require_confirm = TRUE,
-    fn = function(token, community_id) {
-      if (identical(plan$catalog$schema_version, 2L)) .publish_archive_release(plan, token, community_id)
-      else .publish_legacy_release(plan, token)
-    })
+stage_benchmark_release <- function(plan, token = NULL) {
+  .require_archive_plan(plan)
+  .publication_session(plan, token, .release_roles, fn = function(token, community_id)
+    .stage_archive_release(plan, token, community_id))
 }
 
-.publish_legacy_release <- function(plan, token) {
-  .stage_legacy_release(plan, token)
-  .verify_legacy_release(plan, token)
-  for (key in names(.publication_state(plan)$groups)) {
-    record <- .publication_state(plan)$groups[[key]]
-    if (!isTRUE(record$published)) {
-      .publish_record(plan, record$record_id, token)
-      .update_publication_state(plan, function(state) { state$groups[[key]]$published <- TRUE; state })
-    }
-  }
-  # Public bytes must verify before a catalog advertises them as a usable release.
-  catalog <- jsonlite::read_json(file.path(plan$state_directory, "release.json"), simplifyVector = FALSE)
-  verify_dir <- file.path(plan$state_directory, "public-verification")
-  for (group in plan$groups) for (asset in group) {
-    reference <- Filter(function(x) identical(x$id, asset$id), catalog$assets)[[1]]
-    .fetch_verified(.zenodo_file_url(reference$record_id, reference$filename, plan$sandbox),
-                    file.path(verify_dir, asset$sha256), asset$sha256, asset$size, asset$md5, progress = FALSE,
-                    retry_not_found = 5L)
-  }
-  if (is.null(.publication_state(plan)$catalog_record)) {
-    id <- .create_component_record(plan,
-      paste0("PublicationBiasBenchmark release ", catalog$release),
-      "Complete catalog of this benchmark release. Unchanged assets refer to earlier immutable records; only new or corrected files are uploaded. Use the version DOI to reproduce this release.", token)
-    .update_publication_state(plan, function(state) {
-      if (is.null(state$catalog_record)) state$catalog_record <- list(record_id = id, published = FALSE)
-      state
-    })
-  }
-  catalog_record <- .publication_state(plan)$catalog_record
-  path <- file.path(plan$state_directory, "release.json")
-  catalog_asset <- list(filename = "release.json", local_path = path, size = as.numeric(file.info(path)$size),
-                         sha256 = digest::digest(file = path, algo = "sha256", serialize = FALSE), md5 = unname(tools::md5sum(path)))
-  if (!isTRUE(catalog_record$published)) {
-    if (!.record_is_published(plan, catalog_record$record_id, token))
-      .stage_file(plan, catalog_record$record_id, catalog_asset, token)
-    .publish_record(plan, catalog_record$record_id, token)
-    .update_publication_state(plan, function(state) { state$catalog_record$published <- TRUE; state })
-  }
-  record <- .zenodo_request("GET", paste0("records/", catalog_record$record_id), token, plan$sandbox)
-  .verify_record_rights(record, plan$metadata)
-  result <- list(release = catalog$release, record_id = catalog_record$record_id,
-                  catalog_sha256 = catalog_asset$sha256,
-                  doi = if (!is.null(record$pids$doi$identifier)) record$pids$doi$identifier else record$doi)
-  .fetch_verified(.zenodo_file_url(result$record_id, "release.json", plan$sandbox),
-                  file.path(verify_dir, "release.json"), result$catalog_sha256, catalog_asset$size, catalog_asset$md5,
-                  progress = FALSE, retry_not_found = 5L)
-  .write_json_verified(file.path(plan$state_directory, "registry-entry.json"), result, pretty = TRUE,
-                       history_dir = file.path(plan$state_directory, "catalog-history"))
-  result
+#' @rdname publish_benchmark_release
+verify_benchmark_release <- function(plan, token = NULL) {
+  .require_archive_plan(plan)
+  .verify_archive_release(plan, token)
+}
+
+#' @rdname publish_benchmark_release
+publish_benchmark_release <- function(plan, token = NULL, confirm = NULL) {
+  .require_archive_plan(plan)
+  .publication_session(plan, token, .release_roles, confirm = confirm, require_confirm = TRUE,
+    fn = function(token, community_id) .publish_archive_release(plan, token, community_id))
 }
