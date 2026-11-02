@@ -231,12 +231,21 @@
   }
 }
 
-# Copy a source file into the history under a unique name and check its MD5.
+# Copy a source file into the history under a unique name and check its MD5. The copy is
+# made under a temporary name that `.history_entries()` does not match, verified, and only
+# then renamed into the history: a failed or wrong copy never becomes a history entry (and
+# so never a candidate for `.state_backup()`).
 .add_history_entry <- function(source, history_dir, name, bytes) {
-  target <- .history_target(history_dir, name)
   expected <- digest::digest(bytes, algo = "md5", serialize = FALSE)
-  copied <- .retry_file_operation(function() .file_copy(source, target))
-  if (!copied || !file.exists(target) || !identical(unname(tools::md5sum(target)), expected))
+  temporary <- tempfile(".tmp-", tmpdir = history_dir)
+  on.exit(unlink(temporary), add = TRUE)
+  copied <- .retry_file_operation(function() { unlink(temporary); .file_copy(source, temporary) })
+  target <- NULL
+  if (copied && file.exists(temporary) && identical(unname(tools::md5sum(temporary)), expected)) {
+    target <- .history_target(history_dir, name)
+    if (!.retry_file_operation(function() file.rename(temporary, target)) || !file.exists(target)) target <- NULL
+  }
+  if (is.null(target))
     stop("Cannot keep a verified history copy of ", name, " in ", history_dir,
          "; nothing was replaced.", call. = FALSE)
   target

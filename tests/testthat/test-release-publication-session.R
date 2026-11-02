@@ -667,6 +667,43 @@ test_that("a failing history copy after a verified install warns, keeps the new 
   expect_identical(rawToChar(.read_bytes(path)), '{"a":3}\n')
 })
 
+test_that("a history copy is visible only after it is verified: partial or wrong bytes never become an entry", {
+  root <- withr::local_tempdir(); path <- file.path(root, "state.json"); history <- file.path(root, "state-history")
+  stray <- function() list.files(history, all.files = TRUE, no.. = TRUE)
+  entries <- function() .history_entries(history, "state.json")
+  newest <- function() rawToChar(.read_bytes(entries()[length(entries())]))
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL)
+  partial_then_fail <- function(from, to) { writeBin(.read_bytes(from)[1:3], to); FALSE }
+  wrong_bytes <- function(from, to) { writeBin(charToRaw("wrong bytes"), to); TRUE }
+  # Before the replacement: a file from older code is copied first; if that fails nothing is replaced.
+  for (copy in list(partial_then_fail, wrong_bytes)) {
+    unlink(c(path, history), recursive = TRUE)
+    writeBin(charToRaw('{"older":true}\n'), path)
+    local_mocked_bindings(.file_copy = copy)
+    expect_error(.write_json_verified(path, list(a = 1), history_dir = history), "history copy of state.json.*nothing was replaced")
+    expect_identical(rawToChar(.read_bytes(path)), '{"older":true}\n')
+    expect_length(entries(), 0L); expect_null(.state_backup(root)); expect_identical(stray(), character())
+  }
+  # After a verified installation: the new file stays, a warning is given, and the history keeps no partial entry.
+  for (copy in list(partial_then_fail, wrong_bytes)) {
+    unlink(c(path, history), recursive = TRUE)
+    local_mocked_bindings(.file_copy = function(from, to) file.copy(from, to, overwrite = FALSE))
+    .write_json_verified(path, list(a = 1), history_dir = history)
+    local_mocked_bindings(.file_copy = copy)
+    expect_warning(.write_json_verified(path, list(a = 2), history_dir = history), "its history copy could not be written")
+    expect_identical(rawToChar(.read_bytes(path)), '{"a":2}\n')
+    expect_length(entries(), 1L); expect_identical(newest(), '{"a":1}\n')
+    expect_identical(.state_backup(root), entries())   # recovery would copy back a complete earlier version
+    expect_identical(stray(), basename(entries()))
+    # The next write adds the missing version before replacing it.
+    local_mocked_bindings(.file_copy = function(from, to) file.copy(from, to, overwrite = FALSE))
+    expect_silent(.write_json_verified(path, list(a = 3), history_dir = history))
+    expect_identical(vapply(entries(), function(f) rawToChar(.read_bytes(f)), character(1), USE.NAMES = FALSE),
+                     c('{"a":1}\n', '{"a":2}\n', '{"a":3}\n'))
+    expect_identical(stray(), basename(entries()))
+  }
+})
+
 test_that("RDS files are written verified and unchanged files are skipped", {
   root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
   object <- list(data = data.frame(x = 1:3), label = "plan")
