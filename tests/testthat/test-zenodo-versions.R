@@ -73,6 +73,33 @@ test_that("lost version creation responses recover the same draft and reject unr
   expect_error(.ensure_family_version(other, "storage", "1", "New title", "Description", list(), "test-token"), "unrelated")
 })
 
+test_that("a version creation that Zenodo rejected is forgotten, one without an answer is kept", {
+  plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE, catalog = list(release = "test.2"))
+  drafts <- list(); answer <- zenodo_error(409L, "conflict")
+  local_mocked_bindings(.family_drafts = function(...) drafts, .record_is_published = function(...) FALSE,
+    .update_draft_metadata = function(...) TRUE,
+    .zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+      if (method == "GET") return(list(id = "1", parent = list(id = "100")))
+      stop(answer)
+    })
+  ensure <- function(plan) .ensure_family_version(plan, "storage", "1", "New title", "Description", list(), "test-token")
+  # A conflict leaves no marker, however often the run is repeated.
+  expect_error(ensure(plan), "HTTP 409")
+  expect_null(.publication_state(plan)$versions$storage)
+  expect_error(ensure(plan), "HTTP 409")
+  expect_null(.publication_state(plan)$versions$storage)
+  # Another publisher's draft appears (its title is not ours): this run does not adopt it.
+  drafts <- list(list(id = "2", metadata = list(title = "Old title")))
+  expect_error(ensure(plan), "An unrelated new-version draft already exists")
+  expect_null(.publication_state(plan)$versions$storage)
+  # No HTTP answer at all: the draft may exist, so the marker stays and the draft is recognised later.
+  drafts <- list(); answer <- simpleError("connection reset")
+  expect_error(ensure(plan), "connection reset")
+  expect_true(.publication_state(plan)$versions$storage$creating)
+  drafts <- list(list(id = "2", metadata = list(title = "Old title")))
+  expect_identical(ensure(plan), "2")
+})
+
 test_that("community acceptance resumes an existing request and checks inherited branding", {
   plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE)
   community <- "community-uuid"; accepted <- FALSE; branded <- FALSE; submits <- 0L; accepts <- 0L

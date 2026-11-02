@@ -103,7 +103,14 @@
         .update_publication_state(plan, function(state) {
           state$versions[[key]] <- list(creating = TRUE, base_id = base_id); state
         })
-        draft <- .zenodo_request("POST", paste0("records/", base_id, "/versions"), token, plan$sandbox)
+        # An HTTP error is Zenodo's answer to this request: no draft of ours exists, so the attempt is
+        # forgotten and cannot later authorize adopting somebody else's draft. Without an answer the
+        # draft may exist, and `creating` stays.
+        draft <- tryCatch(.zenodo_request("POST", paste0("records/", base_id, "/versions"), token, plan$sandbox),
+          zenodo_http_error = function(error) {
+            .update_publication_state(plan, function(state) { state$versions[[key]] <- NULL; state })
+            stop(error)
+          })
         id <- as.character(draft$id)
       }
     }
