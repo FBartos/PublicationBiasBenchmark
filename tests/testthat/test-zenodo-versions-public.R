@@ -160,6 +160,29 @@ test_that("pending bytes that do not match the planned file stop staging before 
   expect_error(.stage_files(sandbox_plan, "12345", list(a), "token"), "https://sandbox.zenodo.org/uploads/12345", fixed = TRUE)
 })
 
+test_that("an old journal entry with the creation time of the remote pending file does not make other bytes deletable", {
+  # The unsafe case of the former reset: the publication lock is held and the state of an earlier run
+  # recorded this very key with the creation time that the remote pending entry still carries.
+  root <- withr::local_tempdir(); asset <- test_resource(root, "a.csv")
+  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE); local_held_lock(plan)
+  .update_publication_state(plan, function(state) {
+    state$initialized[["12345"]][["a.csv"]] <- list(created = "created-0", sha256 = asset$sha256, md5 = asset$md5, size = asset$size)
+    state
+  })
+  server <- fake_draft_files(list(asset))
+  local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
+  stale <- entry("a.csv", size = 999, checksum = "md5:stale", created = "created-0")   # somebody else's bytes
+  server$entries[["a.csv"]] <- stale
+  expect_error(.stage_files(plan, "12345", list(asset), "token"),
+               "Draft file 'a.csv' of record 12345 is pending with uploaded bytes that do not match the planned file.", fixed = TRUE)
+  # Only the listing of the draft files was requested: no deletion, initialization, upload or commit.
+  expect_identical(server$requests, "GET records/12345/draft/files")
+  expect_identical(server$uploads, character())
+  expect_identical(server$entries[["a.csv"]], stale)
+  expect_identical(.publication_state(plan)$initialized[["12345"]][["a.csv"]]$created, "created-0")   # the old state is untouched
+  expect_false(file.exists(file.path(plan$state_directory, "deletions.log")))
+})
+
 test_that("empty pending entries are reused and matching pending bytes are committed without another upload", {
   root <- withr::local_tempdir(); a <- test_resource(root, "a.csv"); b <- test_resource(root, "b.csv", ids = 3:4)
   third <- test_resource(root, "c.csv", ids = 5:6)
