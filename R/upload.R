@@ -374,14 +374,15 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
       stop("Local staged file changed.", call. = FALSE)
     TRUE
   }, assets)
-  # Pending bytes that differ from the planned file may belong to somebody else and
-  # are never deleted automatically: stop before any write for this record.
+  # Pending bytes that differ from the planned file may belong to somebody else and are never
+  # deleted automatically: stop before initializing or uploading any file of this record. (The
+  # caller may already have updated the draft's metadata and removed superseded imports.)
   for (asset in pending) {
     entry <- .zenodo_file_entry(files, asset$filename)
     if (!is.null(entry) && !.zenodo_entry_bytes_verified(entry, asset) && (!is.null(entry$size) || !is.null(entry$checksum)))
       stop("Draft file '", asset$filename, "' of record ", record_id, " is pending with uploaded bytes that do not match ",
-           "the planned file. Delete that draft file in the Zenodo web interface (",
-           .zenodo_base(plan$sandbox), "/records/", record_id, "/draft/files) and re-run; nothing was deleted.", call. = FALSE)
+           "the planned file. Inspect the draft (", .zenodo_site(plan$sandbox), "/uploads/", record_id,
+           ") and delete that file there if it is safe, then re-run; pending files are never deleted by the package.", call. = FALSE)
   }
   # Initialize a record's new files together; completed files remain untouched.
   initialize <- Filter(function(asset) is.null(.zenodo_file_entry(files, asset$filename)), pending)

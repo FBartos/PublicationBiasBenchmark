@@ -136,7 +136,7 @@ test_that("new keys of a record are initialized together and uploaded, and nothi
 test_that("pending bytes that do not match the planned file stop staging before any write and are never deleted", {
   root <- withr::local_tempdir(); a <- test_resource(root, "a.csv"); b <- test_resource(root, "b.csv", ids = 3:4)
   plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE)
-  url <- "https://zenodo.org/api/records/12345/draft/files"
+  url <- "https://zenodo.org/uploads/12345"
   for (stale in list(entry("a.csv", size = 999, checksum = "md5:stale"),
                      entry("a.csv", size = 999, checksum = NULL),
                      entry("a.csv", size = NULL, checksum = "md5:stale"),
@@ -148,7 +148,7 @@ test_that("pending bytes that do not match the planned file stop staging before 
     # b.csv is a new key of the same record: nothing is initialized or uploaded for it either.
     message <- tryCatch(.stage_files(plan, "12345", list(b, a), "token"), error = conditionMessage)
     expect_identical(message, paste0("Draft file 'a.csv' of record 12345 is pending with uploaded bytes that do not match the planned file. ",
-      "Delete that draft file in the Zenodo web interface (", url, ") and re-run; nothing was deleted."))
+      "Inspect the draft (", url, ") and delete that file there if it is safe, then re-run; pending files are never deleted by the package."))
     expect_identical(server$requests, "GET records/12345/draft/files")
     expect_identical(server$uploads, character())
     expect_identical(server$entries[["a.csv"]], stale)
@@ -157,7 +157,7 @@ test_that("pending bytes that do not match the planned file stop staging before 
   server <- fake_draft_files(list(a)); sandbox_plan <- list(state_directory = plan$state_directory, sandbox = TRUE)
   local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
   server$entries[["a.csv"]] <- entry("a.csv", size = 999, checksum = "md5:stale")
-  expect_error(.stage_files(sandbox_plan, "12345", list(a), "token"), "https://sandbox.zenodo.org/api/records/12345/draft/files", fixed = TRUE)
+  expect_error(.stage_files(sandbox_plan, "12345", list(a), "token"), "https://sandbox.zenodo.org/uploads/12345", fixed = TRUE)
 })
 
 test_that("empty pending entries are reused and matching pending bytes are committed without another upload", {

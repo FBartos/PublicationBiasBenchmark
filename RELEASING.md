@@ -259,9 +259,12 @@ to `deletions.log` (`intent` before, `done` after).
 Pending draft files are never deleted by the package. Staging reuses an empty
 pending file and commits a pending file whose uploaded bytes already match the plan
 without uploading again. If a pending file holds uploaded bytes that do not match
-the planned file, staging stops before any write to that record, names the record,
-the key and the draft files URL, and deletes nothing: inspect the draft on Zenodo,
-delete that draft file in the web interface if it is safe, and run again.
+the planned file, staging stops before initializing or uploading any file of that
+record and names the record, the key and the address of the draft
+(`https://zenodo.org/uploads/<record>`, `https://sandbox.zenodo.org/uploads/<record>`
+for the sandbox). Staging may already have updated the draft's metadata and removed
+superseded imports by then; the package deletes nothing else. Inspect the draft,
+delete that file in the web interface if it is safe, and run again.
 
 ## Community pages
 
