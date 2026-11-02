@@ -18,58 +18,38 @@ draft_server <- function(entries, published = FALSE, base_files = list(), base_p
 }
 entry <- function(key, status = "pending", size = 5, checksum = "md5:aa", created = "T1")
   list(key = key, status = status, size = size, checksum = checksum, created = created)
-journal <- function(plan, record, key, created = "T1") .update_publication_state(plan, function(state) {
-  state$initialized[[record]][[key]] <- list(created = created, sha256 = "s", md5 = "m", size = 3); state
-})
 deletes <- function(server) grep("^DELETE", unlist(server$requests), value = TRUE)
 
-test_that("a pending file that this publication state created can be reset, and the deletion is logged", {
+test_that("a superseded import is deleted with a logged intent, and nothing else can be deleted", {
   plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE); local_held_lock(plan)
-  journal(plan, "2", "a.zip")
-  server <- draft_server(list(a.zip = entry("a.zip")))
+  held <- entry("a.zip", "completed", size = 7, checksum = "md5:aa")
+  server <- draft_server(list(a.zip = held), base_files = list(held))
   log <- file.path(plan$state_directory, "deletions.log")
   writeLines("torn line {", log)   # the log is audit-only and never read
   local_mocked_bindings(.zenodo_request = function(method, path, ...) {
     if (method == "DELETE") expect_match(readLines(log)[2], '"event":"intent"', fixed = TRUE)   # logged before the delete
     server$handler(method, path, ...)
   })
-  expect_true(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token"))
+  expect_true(.delete_draft_file(plan, "2", "a.zip", "superseded-import", "token", "1"))
   expect_identical(deletes(server), "DELETE records/2/draft/files/a.zip")
   lines <- readLines(log)
   expect_length(lines, 3L)
   intent <- jsonlite::fromJSON(lines[2]); done <- jsonlite::fromJSON(lines[3])
   expect_identical(c(intent$event, done$event), c("intent", "done"))
   expect_identical(intent[c("record_id", "key", "reason", "status", "created", "checksum")],
-                   list(record_id = "2", key = "a.zip", reason = "pending-reset", status = "pending", created = "T1", checksum = "md5:aa"))
+                   list(record_id = "2", key = "a.zip", reason = "superseded-import", status = "completed", created = "T1", checksum = "md5:aa"))
   expect_true(all(c("time", "pid") %in% names(intent)))
-})
-
-test_that("pending resets stop for entries that are completed, empty, unjournaled or not ours", {
-  plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE); local_held_lock(plan)
-  attempt <- function(entry, journaled = "T1") {
-    if (!is.null(journaled)) journal(plan, "2", "a.zip", journaled)
-    server <- draft_server(list(a.zip = entry)); local_mocked_bindings(.zenodo_request = server$handler)
-    result <- tryCatch(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token"), error = function(error) error)
-    expect_length(deletes(server), 0L)
-    result
-  }
-  expect_match(conditionMessage(attempt(entry("a.zip", status = "completed"))), "not a pending file holding uploaded bytes")
-  expect_match(conditionMessage(attempt(entry("a.zip", size = NULL, checksum = NULL))), "not a pending file holding uploaded bytes")
-  # Journal shapes that cannot prove ownership.
-  for (case in list(list(entry("a.zip", created = "T2"), "T1"), list(entry("a.zip", created = NULL), "T1"), list(entry("a.zip"), NULL))) {
-    unlink(file.path(plan$state_directory, c("state.json", "state-history")), recursive = TRUE)
-    message <- conditionMessage(attempt(case[[1]], case[[2]]))
-    expect_match(message, "did not create it. Nothing was deleted.", fixed = TRUE)
-    expect_match(message, "record 2", fixed = TRUE); expect_match(message, "'a.zip'", fixed = TRUE)
-    expect_match(message, "https://sandbox.zenodo.org/api/records/2/draft/files", fixed = TRUE)
-  }
+  # Pending bytes are never deleted: the reason no longer exists, and the pending file stays.
+  pending <- draft_server(list(a.zip = entry("a.zip")), base_files = list(entry("a.zip", "completed")))
+  local_mocked_bindings(.zenodo_request = pending$handler)
+  expect_error(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token", "1"), "superseded-import")
+  expect_length(deletes(pending), 0L)
   # A published record, and a key that vanished from the draft, are never touched.
-  server <- draft_server(list(a.zip = entry("a.zip")), published = TRUE); local_mocked_bindings(.zenodo_request = server$handler)
-  expect_error(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token"), "already published")
-  server <- draft_server(list()); local_mocked_bindings(.zenodo_request = server$handler)
-  expect_error(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token"), "no longer exists")
-  expect_length(deletes(server), 0L)
-  expect_false(file.exists(file.path(plan$state_directory, "deletions.log")))
+  published <- draft_server(list(a.zip = held), published = TRUE); local_mocked_bindings(.zenodo_request = published$handler)
+  expect_error(.delete_draft_file(plan, "2", "a.zip", "superseded-import", "token", "1"), "already published")
+  vanished <- draft_server(list()); local_mocked_bindings(.zenodo_request = vanished$handler)
+  expect_error(.delete_draft_file(plan, "2", "a.zip", "superseded-import", "token", "1"), "no longer exists")
+  expect_length(deletes(published), 0L); expect_length(deletes(vanished), 0L)
 })
 
 test_that("an import superseded by a newer snapshot is deleted only when the published base holds identical bytes", {
@@ -99,18 +79,17 @@ test_that("a delete needs the publication lock of the plan's state directory bef
   plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE)
   server <- draft_server(list(a.zip = entry("a.zip")))
   local_mocked_bindings(.zenodo_request = server$handler)
-  journal(plan, "2", "a.zip")
-  expect_error(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token"), "hold the publication lock")
-  expect_error(.delete_draft_file(list(sandbox = TRUE), "2", "a.zip", "pending-reset", "token"), "state directory")
+  expect_error(.delete_draft_file(plan, "2", "a.zip", "superseded-import", "token", "1"), "hold the publication lock")
+  expect_error(.delete_draft_file(list(sandbox = TRUE), "2", "a.zip", "superseded-import", "token", "1"), "state directory")
   # A lock held by another process (a different nonce) does not count.
   .acquire_publication_lock(plan$state_directory)
   jsonlite::write_json(list(pid = 1L, host = "x", started = .utc_now(), nonce = "foreign"),
                        file.path(plan$state_directory, ".lock", "owner.json"), auto_unbox = TRUE)
-  expect_error(.delete_draft_file(plan, "2", "a.zip", "pending-reset", "token"), "hold the publication lock")
+  expect_error(.delete_draft_file(plan, "2", "a.zip", "superseded-import", "token", "1"), "hold the publication lock")
   unlink(file.path(plan$state_directory, ".lock"), recursive = TRUE); rm(list = .lock_key(plan$state_directory), envir = .publication_locks)
   expect_length(server$requests, 0L)
   expect_length(deletes(server), 0L)
-  expect_error(.delete_draft_file(plan, "2", "a.zip", "unlisted-reason", "token"), "should be one of")
+  expect_error(.delete_draft_file(plan, "2", "a.zip", "unlisted-reason", "token"), "should be")
 })
 
 # A draft record that behaves like Zenodo for file initialization, upload and commit.
@@ -142,58 +121,60 @@ fake_draft_files <- function(assets, created_in_response = TRUE) {
   env
 }
 
-test_that("initialization is journaled from the response before any bytes are uploaded", {
+test_that("new keys of a record are initialized together and uploaded, and nothing is journaled", {
   root <- withr::local_tempdir(); assets <- lapply(1:2, function(i) test_resource(root, paste0(i, ".csv"), ids = (2 * i - 1):(2 * i)))
-  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE); local_held_lock(plan)
+  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE)
   server <- fake_draft_files(assets)
   local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
   suppressMessages(.stage_files(plan, "12345", assets, "token"))
-  initialized <- .publication_state(plan)$initialized[["12345"]]
-  expect_setequal(names(initialized), c("1.csv", "2.csv"))
-  expect_equal(initialized[["1.csv"]], list(created = "created-1", sha256 = assets[[1]]$sha256, md5 = assets[[1]]$md5, size = assets[[1]]$size))
-  expect_identical(initialized[["2.csv"]]$created, "created-2")
-  # The journal is written between the initialization and the first upload.
+  expect_identical(grep("^POST records/12345/draft/files$", server$requests, value = TRUE), "POST records/12345/draft/files")
   expect_identical(server$uploads, c("1.csv", "2.csv"))
+  expect_identical(vapply(server$entries, `[[`, character(1), "status"), c(`1.csv` = "completed", `2.csv` = "completed"))
+  expect_false(dir.exists(plan$state_directory))   # no state is read or written
 })
 
-test_that("a pending file holding other bytes is reset only when its creation was journaled", {
-  root <- withr::local_tempdir(); asset <- test_resource(root, "a.csv")
-  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE); local_held_lock(plan)
-  server <- fake_draft_files(list(asset))
+test_that("pending bytes that do not match the planned file stop staging before any write and are never deleted", {
+  root <- withr::local_tempdir(); a <- test_resource(root, "a.csv"); b <- test_resource(root, "b.csv", ids = 3:4)
+  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE)
+  url <- "https://zenodo.org/api/records/12345/draft/files"
+  for (stale in list(entry("a.csv", size = 999, checksum = "md5:stale"),
+                     entry("a.csv", size = 999, checksum = NULL),
+                     entry("a.csv", size = NULL, checksum = "md5:stale"),
+                     entry("a.csv", size = a$size, checksum = "md5:stale"),
+                     entry("a.csv", size = 999, checksum = paste0("md5:", a$md5)))) {
+    server <- fake_draft_files(list(a, b))
+    local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
+    server$entries[["a.csv"]] <- stale
+    # b.csv is a new key of the same record: nothing is initialized or uploaded for it either.
+    message <- tryCatch(.stage_files(plan, "12345", list(b, a), "token"), error = conditionMessage)
+    expect_identical(message, paste0("Draft file 'a.csv' of record 12345 is pending with uploaded bytes that do not match the planned file. ",
+      "Delete that draft file in the Zenodo web interface (", url, ") and re-run; nothing was deleted."))
+    expect_identical(server$requests, "GET records/12345/draft/files")
+    expect_identical(server$uploads, character())
+    expect_identical(server$entries[["a.csv"]], stale)
+  }
+  # The sandbox names its own draft files URL.
+  server <- fake_draft_files(list(a)); sandbox_plan <- list(state_directory = plan$state_directory, sandbox = TRUE)
   local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
-  # Stale bytes in a pending key that this state initialized: delete, initialize again, upload the planned bytes.
-  server$entries[["a.csv"]] <- entry("a.csv", size = 999, checksum = "md5:stale", created = "created-0")
-  journal(plan, "12345", "a.csv", "created-0")
-  suppressMessages(.stage_files(plan, "12345", list(asset), "token"))
-  expect_identical(grep("^DELETE", server$requests, value = TRUE), "DELETE records/12345/draft/files/a.csv")
-  expect_identical(server$entries[["a.csv"]]$checksum, paste0("md5:", asset$md5))
-  expect_identical(.publication_state(plan)$initialized[["12345"]][["a.csv"]]$created, "created-1")
-  # The same situation without a journal entry stops: the bytes may belong to somebody else.
-  server <- fake_draft_files(list(asset))
-  local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
-  server$entries[["a.csv"]] <- entry("a.csv", size = 999, checksum = "md5:stale", created = "created-0")
-  unlink(file.path(plan$state_directory, c("state.json", "state-history")), recursive = TRUE)
-  expect_error(.stage_files(plan, "12345", list(asset), "token"), "did not create it. Nothing was deleted.")
-  expect_error(.stage_files(plan, "12345", list(asset), "token"), "https://zenodo.org/api/records/12345/draft/files", fixed = TRUE)
-  expect_length(grep("^(DELETE|POST)", server$requests, value = TRUE), 0L)
-  expect_identical(server$uploads, character())
-  expect_identical(server$entries[["a.csv"]]$checksum, "md5:stale")
+  server$entries[["a.csv"]] <- entry("a.csv", size = 999, checksum = "md5:stale")
+  expect_error(.stage_files(sandbox_plan, "12345", list(a), "token"), "https://sandbox.zenodo.org/api/records/12345/draft/files", fixed = TRUE)
 })
 
-test_that("a response without creation times is not journaled, so its keys are never reset later", {
-  root <- withr::local_tempdir(); asset <- test_resource(root, "a.csv")
-  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE); local_held_lock(plan)
-  server <- fake_draft_files(list(asset), created_in_response = FALSE)
+test_that("empty pending entries are reused and matching pending bytes are committed without another upload", {
+  root <- withr::local_tempdir(); a <- test_resource(root, "a.csv"); b <- test_resource(root, "b.csv", ids = 3:4)
+  third <- test_resource(root, "c.csv", ids = 5:6)
+  plan <- list(state_directory = file.path(root, "state"), sandbox = FALSE)
+  server <- fake_draft_files(list(a, b, third))
   local_mocked_bindings(.zenodo_request = server$handler, .zenodo_upload = server$upload)
-  suppressMessages(.stage_files(plan, "12345", list(asset), "token"))
-  expect_null(.publication_state(plan)$initialized)
-  server$entries[["a.csv"]] <- list(key = "a.csv", status = "pending", size = 999, checksum = "md5:stale")
-  expect_error(.stage_files(plan, "12345", list(asset), "token"), "Nothing was deleted")
-  expect_length(grep("^DELETE", server$requests, value = TRUE), 0L)
-  for (shape in list(NULL, list(), "odd", list(entries = "odd"))) expect_false(.journal_initialized(plan, "12345", list(asset), shape))
-  # A response that is the bare list of entries works too.
-  expect_true(.journal_initialized(plan, "12345", list(asset), list(list(key = "a.csv", created = "bare"))))
-  expect_identical(.publication_state(plan)$initialized[["12345"]][["a.csv"]]$created, "bare")
+  server$entries[["a.csv"]] <- list(key = "a.csv", status = "pending")   # initialized earlier, nothing uploaded
+  server$entries[["b.csv"]] <- entry("b.csv", size = b$size, checksum = paste0("md5:", b$md5))   # uploaded, commit lost
+  suppressMessages(.stage_files(plan, "12345", list(a, b, third), "token"))
+  # Only the new key c.csv is initialized; a.csv is uploaded into its empty entry, b.csv is committed as it is.
+  expect_identical(server$uploads, c("a.csv", "c.csv"))
+  expect_length(grep("^POST records/12345/draft/files$", server$requests), 1L)
+  expect_length(grep("^DELETE", server$requests), 0L)
+  expect_true(all(vapply(server$entries, function(x) identical(x$status, "completed"), logical(1))))
+  expect_setequal(names(server$entries), c("a.csv", "b.csv", "c.csv"))
 })
 
 ## Public verification ---------------------------------------------------------------------

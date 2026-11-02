@@ -152,7 +152,7 @@ same plan again recovers lost responses and never duplicates records or uploads.
 | Path | Content |
 | --- | --- |
 | `plan.rds` | the plan, with its identity |
-| `state.json` | what has been created online (records, versions, community, journal) |
+| `state.json` | what has been created online (records, versions, community) |
 | `state-history/` | every earlier `state.json`, never deleted |
 | `release.json` | the staged or final catalog |
 | `catalog-history/` | every earlier `release.json` and `registry-entry.json`, never deleted |
@@ -238,15 +238,17 @@ an older version must be re-planned the same way.
 
 ### Online deletions
 
-All deletions go through one guarded helper. A draft file is deleted only when it is
-provably redundant: a pending file that this state created (its creation time was
-journaled from the initialization response) and whose bytes differ from the plan, or
-an imported copy of a file the published base version holds with identical key,
-checksum and size. Every attempt is appended to `deletions.log` (`intent` before,
-`done` after). If a pending file holding bytes cannot be attributed to this state,
-the run stops, names the record, the key and the draft files URL, and deletes
-nothing: inspect the draft on Zenodo, remove the file there if it is safe, and run
-again.
+All deletions go through one guarded helper, and the only file it deletes is an
+imported copy, in a new storage version, of a file the published base version holds
+with identical key, checksum and size (a superseded ZIP). Every attempt is appended
+to `deletions.log` (`intent` before, `done` after).
+
+Pending draft files are never deleted by the package. Staging reuses an empty
+pending file and commits a pending file whose uploaded bytes already match the plan
+without uploading again. If a pending file holds uploaded bytes that do not match
+the planned file, staging stops before any write to that record, names the record,
+the key and the draft files URL, and deletes nothing: inspect the draft on Zenodo,
+delete that draft file in the web interface if it is safe, and run again.
 
 ## Community pages
 

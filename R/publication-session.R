@@ -388,7 +388,8 @@
 
 .named_or_empty <- function(x) is.null(x) || (is.list(x) && (!length(x) || !is.null(names(x))))
 
-# Known fields only; unknown keys are allowed.
+# Known fields only; unknown keys are allowed. `initialized` is no longer written
+# but states of earlier runs may carry it.
 .valid_state <- function(state) {
   is.list(state) && (!length(state) || !is.null(names(state))) &&
     (is.null(state$groups) || is.list(state$groups)) &&
@@ -460,41 +461,27 @@
 }
 
 # The only code that issues a DELETE. A draft file is deleted only when it is
-# provably redundant: a pending entry created by this publication state
-# (pending-reset) or an import of bytes that the published base record holds
-# (superseded-import). The log is for audit only and is never read.
-.delete_draft_file <- function(plan, record_id, key, reason = c("pending-reset", "superseded-import"),
-                               token, base_id = NULL) {
+# provably redundant: an import of bytes that the published base record holds
+# (superseded-import). Pending bytes of unknown origin are never deleted. The
+# log is for audit only and is never read.
+.delete_draft_file <- function(plan, record_id, key, reason = "superseded-import", token, base_id = NULL) {
   reason <- match.arg(reason)
   .assert_publication_lock(plan)
   record_id <- as.character(record_id)
-  draft_files <- paste0(.zenodo_base(plan$sandbox), "/records/", record_id, "/draft/files")
   if (.record_is_published(plan, record_id, token))
     stop("Record ", record_id, " is already published; refusing to delete '", key, "'.", call. = FALSE)
   files <- .zenodo_request("GET", paste0("records/", record_id, "/draft/files"), token, plan$sandbox)
   entry <- .zenodo_file_entry(files, key)
   if (is.null(entry))
     stop("Draft file '", key, "' of record ", record_id, " no longer exists; nothing was deleted.", call. = FALSE)
-  if (reason == "pending-reset") {
-    holds_bytes <- !is.null(entry$size) || !is.null(entry$checksum)
-    if (!identical(entry$status, "pending") || !holds_bytes)
-      stop("Refusing to delete draft file '", key, "' of record ", record_id,
-           ": it is not a pending file holding uploaded bytes. Nothing was deleted.", call. = FALSE)
-    journal <- .publication_state(plan, "write")$initialized[[record_id]][[key]]
-    if (!.scalar_string(journal$created) || !.scalar_string(entry$created) || !identical(entry$created, journal$created))
-      stop("Refusing to delete draft file '", key, "' of record ", record_id,
-           ": it holds data, but this publication state did not create it. Nothing was deleted. ",
-           "Inspect ", draft_files, " and resolve it manually.", call. = FALSE)
-  } else {
-    if (!.scalar_string(base_id) || !.record_is_published(plan, base_id, token))
-      stop("Refusing to delete '", key, "': the base record is not published. Nothing was deleted.", call. = FALSE)
-    base_entry <- .zenodo_file_entry(.zenodo_request("GET", paste0("records/", base_id, "/files"), token, plan$sandbox), key)
-    same <- !is.null(base_entry) && .scalar_string(entry$checksum) && identical(entry$checksum, base_entry$checksum) &&
-      is.numeric(entry$size) && length(entry$size) == 1L && is.numeric(base_entry$size) &&
-      length(base_entry$size) == 1L && !is.na(entry$size) && entry$size == base_entry$size
-    if (!isTRUE(same))
-      stop("Refusing to delete '", key, "': the published base record does not hold identical bytes. Nothing was deleted.", call. = FALSE)
-  }
+  if (!.scalar_string(base_id) || !.record_is_published(plan, base_id, token))
+    stop("Refusing to delete '", key, "': the base record is not published. Nothing was deleted.", call. = FALSE)
+  base_entry <- .zenodo_file_entry(.zenodo_request("GET", paste0("records/", base_id, "/files"), token, plan$sandbox), key)
+  same <- !is.null(base_entry) && .scalar_string(entry$checksum) && identical(entry$checksum, base_entry$checksum) &&
+    is.numeric(entry$size) && length(entry$size) == 1L && is.numeric(base_entry$size) &&
+    length(base_entry$size) == 1L && !is.na(entry$size) && entry$size == base_entry$size
+  if (!isTRUE(same))
+    stop("Refusing to delete '", key, "': the published base record does not hold identical bytes. Nothing was deleted.", call. = FALSE)
   details <- list(status = entry$status, created = entry$created, checksum = entry$checksum, size = entry$size)
   .deletion_log(plan, "intent", record_id, key, reason, details)
   .zenodo_request("DELETE", paste0("records/", record_id, "/draft/files/", utils::URLencode(key, reserved = TRUE)),

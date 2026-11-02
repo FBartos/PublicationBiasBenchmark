@@ -362,28 +362,6 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   .stage_files(plan, record_id, list(asset), token)
 }
 
-# Record, per draft key, the creation time Zenodo reported when this publication
-# state initialized it. A key without a reported time is never reset later.
-.journal_initialized <- function(plan, record_id, assets, response) {
-  entries <- if (is.list(response)) response$entries
-  if (!is.list(entries) && is.list(response) && length(response) && is.list(response[[1]]) &&
-      !is.null(response[[1]]$key)) entries <- response
-  if (!is.list(entries)) return(invisible(FALSE))
-  record <- as.character(record_id)
-  created <- lapply(assets, function(asset) {
-    entry <- .zenodo_file_entry(list(entries = entries), asset$filename)
-    if (!is.null(entry) && .scalar_string(entry$created)) entry$created else NULL
-  })
-  if (!any(vapply(created, Negate(is.null), logical(1)))) return(invisible(FALSE))
-  .update_publication_state(plan, function(state) {
-    for (i in seq_along(assets)) if (!is.null(created[[i]]))
-      state$initialized[[record]][[assets[[i]]$filename]] <- list(created = created[[i]], sha256 = assets[[i]]$sha256,
-                                                                 md5 = assets[[i]]$md5, size = assets[[i]]$size)
-    state
-  })
-  invisible(TRUE)
-}
-
 .stage_files <- function(plan, record_id, assets, token) {
   files <- .zenodo_request("GET", paste0("records/", record_id, "/draft/files"), token, plan$sandbox)
   pending <- Filter(function(asset) {
@@ -395,23 +373,20 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
       stop("Local staged file changed.", call. = FALSE)
     TRUE
   }, assets)
-  initialize <- Filter(function(asset) {
+  # Pending bytes that differ from the planned file may belong to somebody else and
+  # are never deleted automatically: stop before any write for this record.
+  for (asset in pending) {
     entry <- .zenodo_file_entry(files, asset$filename)
-    is.null(entry) || (!.zenodo_entry_bytes_verified(entry, asset) &&
-      (!is.null(entry$size) || !is.null(entry$checksum)))
-  }, pending)
-  for (asset in initialize) {
-    # Only a pending file that this publication state created can be reset.
-    if (!is.null(.zenodo_file_entry(files, asset$filename)))
-      .delete_draft_file(plan, record_id, asset$filename, "pending-reset", token)
+    if (!is.null(entry) && !.zenodo_entry_bytes_verified(entry, asset) && (!is.null(entry$size) || !is.null(entry$checksum)))
+      stop("Draft file '", asset$filename, "' of record ", record_id, " is pending with uploaded bytes that do not match ",
+           "the planned file. Delete that draft file in the Zenodo web interface (",
+           .zenodo_base(plan$sandbox), "/records/", record_id, "/draft/files) and re-run; nothing was deleted.", call. = FALSE)
   }
   # Initialize a record's new files together; completed files remain untouched.
-  # Each key is journaled from the response, before any bytes are uploaded.
-  if (length(initialize)) {
-    response <- .zenodo_request("POST", paste0("records/", record_id, "/draft/files"), token, plan$sandbox,
-                                lapply(initialize, function(asset) list(key = asset$filename)))
-    .journal_initialized(plan, record_id, initialize, response)
-  }
+  initialize <- Filter(function(asset) is.null(.zenodo_file_entry(files, asset$filename)), pending)
+  if (length(initialize))
+    .zenodo_request("POST", paste0("records/", record_id, "/draft/files"), token, plan$sandbox,
+                    lapply(initialize, function(asset) list(key = asset$filename)))
   for (asset in pending) {
     # Empty pending keys are reusable; an upload whose response was lost can be
     # committed directly when its stored bytes already match the planned file.
