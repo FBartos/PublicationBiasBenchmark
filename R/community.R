@@ -6,7 +6,9 @@
 #' The function is maintainer-only and not exported
 #' (`PublicationBiasBenchmark:::update_benchmark_community_pages()`). It requires
 #' `confirm`, checks that the token's account owns the community, and saves the
-#' current pages to `backup_directory` before replacing them.
+#' current pages to `backup_directory` before replacing them. After the update the
+#' stored text of both pages is compared with the submitted HTML (whitespace
+#' collapsed); a difference gives a warning, because Zenodo may sanitize HTML.
 #' @param community Community slug or UUID.
 #' @param about HTML for the About page.
 #' @param curation_policy HTML for the curation policy page.
@@ -46,6 +48,13 @@ update_benchmark_community_pages <- function(community, about, curation_policy, 
   if (!identical(result$id, record$id) || !identical(result$access, record$access) ||
       !.scalar_string(result$metadata$page) || !.scalar_string(result$metadata$curation_policy))
     stop("Community page update did not preserve its identity/policies or retain its pages.", call. = FALSE)
+  # Zenodo may sanitize the HTML it stores, so a difference is reported, not an error.
+  same_text <- function(stored, submitted) identical(gsub("[[:space:]]+", " ", trimws(stored)), gsub("[[:space:]]+", " ", trimws(submitted)))
+  for (page in list(list(name = "About", stored = result$metadata$page, submitted = about),
+                    list(name = "curation policy", stored = result$metadata$curation_policy, submitted = curation_policy)))
+    if (!same_text(page$stored, page$submitted))
+      warning("Zenodo stored different HTML for the ", page$name, " page than was submitted (it may sanitize HTML); ",
+              "check the pages of the community '", community, "'.", call. = FALSE)
   invisible(result)
 }
 

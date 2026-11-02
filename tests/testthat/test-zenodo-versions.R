@@ -147,6 +147,42 @@ test_that("community page updates preserve policies and unrelated metadata", {
   expect_identical(saved$community_id, "uuid")
 })
 
+test_that("a community page update reports stored HTML that differs from the submitted text", {
+  update <- function(about = "<p>About</p>", policy = "<p>Policy</p>", sanitize_about = identity, sanitize_policy = identity) {
+    record <- list(id = "uuid", slug = "benchmark", metadata = list(title = "Benchmark", page = "<p>Old</p>", curation_policy = "<p>Old policy</p>"),
+                   access = list(review_policy = "closed", member_policy = "closed"))
+    local_mock_gate(community_id = "uuid")
+    local_mocked_bindings(.zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+      if (method == "PUT") {
+        record$metadata <<- body$metadata
+        record$metadata$page <<- sanitize_about(body$metadata$page); record$metadata$curation_policy <<- sanitize_policy(body$metadata$curation_policy)
+      }
+      record
+    })
+    warnings <- character()
+    result <- withCallingHandlers(
+      update_benchmark_community_pages("benchmark", about, policy, TRUE, "test-token", confirm = "benchmark",
+                                       backup_directory = withr::local_tempdir()),
+      warning = function(w) { warnings <<- c(warnings, conditionMessage(w)); invokeRestart("muffleWarning") })
+    list(result = result, warnings = warnings)
+  }
+  # The same text, also with other whitespace between the tags, is silent.
+  expect_identical(update()$warnings, character())
+  same <- update(about = "<p>About</p>\n<p>More  text</p>\n", policy = "<p>Policy</p>",
+                 sanitize_about = function(x) "<p>About</p> <p>More text</p>")
+  expect_identical(same$warnings, character()); expect_identical(same$result$metadata$page, "<p>About</p> <p>More text</p>")
+  # Sanitized or unchanged old content: the update is not an error, but each differing page is reported.
+  script <- update(about = "<p>About</p><script>alert(1)</script>", sanitize_about = function(x) gsub("<script>.*</script>", "", x))
+  expect_length(script$warnings, 1L)
+  expect_match(script$warnings, "Zenodo stored different HTML for the About page than was submitted (it may sanitize HTML); check the pages of the community 'benchmark'.", fixed = TRUE)
+  expect_identical(script$result$metadata$page, "<p>About</p>")
+  policy <- update(sanitize_policy = function(x) "<p>Old policy</p>")
+  expect_length(policy$warnings, 1L); expect_match(policy$warnings, "for the curation policy page", fixed = TRUE)
+  both <- update(sanitize_about = function(x) "<p>Different</p>", sanitize_policy = function(x) "<p>Other</p>")
+  expect_length(both$warnings, 2L)
+  expect_match(both$warnings[1], "About page", fixed = TRUE); expect_match(both$warnings[2], "curation policy page", fixed = TRUE)
+})
+
 test_that("catalog preflight rejects concurrent releases before storage mutations", {
   plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE, catalog_record_id = "1", catalog = list(release = "test.2"))
   latest <- list(id = "2", parent = list(id = "family")); drafts <- list()

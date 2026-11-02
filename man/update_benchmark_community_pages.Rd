@@ -43,6 +43,8 @@ page content before calling it. Sandbox uses a separate account and token.
 The function is maintainer-only and not exported
 (\code{PublicationBiasBenchmark:::update_benchmark_community_pages()}). It requires
 \code{confirm}, checks that the token's account owns the community, and saves the
-current pages to \code{backup_directory} before replacing them.
+current pages to \code{backup_directory} before replacing them. After the update the
+stored text of both pages is compared with the submitted HTML (whitespace
+collapsed); a difference gives a warning, because Zenodo may sanitize HTML.
 }
 \keyword{internal}
