@@ -795,9 +795,9 @@ test_that("verification stops when the staged catalog belongs to another release
   different <- catalog
   different$archives[[1]]$filename <- "another-archive.zip"
   .write_catalog_file(path, different)
-  expect_error(verify_benchmark_release(plan, "t"), "different archive inventory")
+  expect_error(verify_benchmark_release(plan, "t"), "does not describe this plan")
   members <- catalog; members$archives[[1]]$members[[1]]$sha256 <- strrep("d", 64)
-  expect_error(.check_staged_catalog(plan, members), "different archive inventory")
+  expect_error(.check_staged_catalog(plan, members), "does not describe this plan")
   # Record IDs are the one thing a staged catalog may change.
   staged <- catalog
   staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a })
@@ -987,14 +987,92 @@ test_that("a valid staged catalog with a renamed or re-described member is not t
   for (name in names(alter)) {
     altered <- alter[[name]](catalog)
     .write_catalog_file(path, altered)   # validates: the alteration is a well-formed catalog
-    expect_error(verify_benchmark_release(plan, "t"), "different archive inventory", info = name)
-    expect_error(.check_staged_catalog(plan, altered), "different archive inventory", info = name)
+    expect_error(verify_benchmark_release(plan, "t"), "does not describe this plan", info = name)
+    expect_error(.check_staged_catalog(plan, altered), "does not describe this plan", info = name)
   }
   # An archive-level descriptor is compared as well.
   for (field in c("md5", "size", "filename")) {
     altered <- catalog
     altered$archives[[1]][[field]] <- switch(field, md5 = strrep("b", 32), size = altered$archives[[1]]$size + 1, filename = "renamed.zip")
-    expect_error(.check_staged_catalog(plan, altered), "different archive inventory", info = field)
+    expect_error(.check_staged_catalog(plan, altered), "does not describe this plan", info = field)
   }
+  expect_identical(requests$count, 0L)
+})
+
+## The staged catalog is compared completely ------------------------------------------------------------
+
+# A plan with two results of one DGM, so that an asset can be removed and a catalog stays valid.
+two_asset_plan <- function(root) {
+  a <- test_resource(root, "A.csv"); b <- test_resource(root, "B.csv", method = "B")
+  plan_benchmark_release("test.1", list(a, b), conditions = test_catalog(list(a))$conditions,
+    metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = file.path(root, "two"), community = "c")
+}
+
+test_that("a staged catalog with other conditions, a removed or an extra asset is not this plan's catalog", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- two_asset_plan(root)
+  requests <- local_no_requests()
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- staged_catalog(plan)
+  expect_true(.check_staged_catalog(plan, catalog))
+  message <- "The staged release.json does not describe this plan (conditions, assets or archives differ); re-stage it or use the state directory of this plan."
+  extra <- catalog$assets[[1]]; extra$id <- "no_bias/results/extra.csv"
+  alter <- list(
+    condition_value = function(x) { x$conditions$no_bias$mean_effect[1] <- 0.5; x },
+    condition_added_column = function(x) { x$conditions$no_bias$extra <- 1; x },
+    removed_asset = function(x) { x$assets <- x$assets[-1]; x },
+    extra_asset = function(x) { x$assets <- c(x$assets, list(extra)); x },
+    asset_field = function(x) { x$assets[[1]]$package_version <- "9.9.9"; x },
+    asset_coverage = function(x) { x$assets[[1]]$rows <- x$assets[[1]]$rows + 1; x },
+    top_level = function(x) { x$source_commit <- "someone-elses-commit"; x })
+  for (name in names(alter)) {
+    altered <- alter[[name]](catalog)
+    expect_error(.check_staged_catalog(plan, altered), message, fixed = TRUE, info = name)
+  }
+  # Written to disk (when it is a well-formed catalog), the verification stops before any request.
+  for (name in c("condition_value", "asset_field", "asset_coverage", "top_level")) {
+    .write_catalog_file(path, alter[[name]](catalog))
+    expect_error(verify_benchmark_release(plan, "t"), message, fixed = TRUE, info = name)
+  }
+  # What a staged catalog may differ in: local paths, build fingerprints, record IDs and the publication block.
+  staged <- catalog
+  staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a$build_fingerprint <- "x"; a$local_path <- "elsewhere.zip"; a })
+  staged$assets <- lapply(staged$assets, function(a) { a$record_id <- "777"; a$local_path <- "elsewhere.csv"; a })
+  staged$publication <- list(catalog_record_id = "5", catalog_concept_doi = "10.test/c", community_id = "uuid")
+  expect_true(.check_staged_catalog(plan, staged))
+  # A catalog parsed from its JSON file is the plan's catalog as well.
+  .write_catalog_file(path, catalog)
+  expect_true(.check_staged_catalog(plan, benchmark_catalog(path)))
+  expect_identical(requests$count, 0L)
+})
+
+test_that("a staged catalog carries the record IDs of the state for changed DGMs and those of the plan for the others", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  requests <- local_no_requests()
+  catalog <- staged_catalog(plan)
+  with_record <- function(x, archive = "55", asset = archive) {
+    x$archives <- lapply(x$archives, function(a) { a$record_id <- archive; a })
+    x$assets <- lapply(x$assets, function(a) { a$record_id <- asset; a })
+    x
+  }
+  state <- function(record) list(versions = list(`storage--no_bias` = list(record_id = record, published = FALSE)))
+  # Changed DGM without a slot in the state: nothing to compare; with the slot, every record ID must match.
+  expect_identical(plan$changed_dgms, "no_bias")
+  expect_true(.check_staged_catalog(plan, with_record(catalog, "55")))
+  expect_true(.check_staged_catalog(plan, with_record(catalog, "55"), state("55")))
+  expect_error(.check_staged_catalog(plan, with_record(catalog, "56"), state("55")),
+               "carries record 56 for the archive 'no_bias--results.*' of DGM no_bias, but this plan expects record 55")
+  expect_error(.check_staged_catalog(plan, with_record(catalog, "55", asset = "56"), state("55")),
+               "carries record 56 for the asset 'no_bias/results/A.csv' of DGM no_bias, but this plan expects record 55", fixed = TRUE)
+  expect_true(.check_staged_catalog(plan, with_record(catalog, "55"), state(NULL)))
+  # A DGM the plan does not change keeps the plan's record IDs.
+  unchanged <- plan; unchanged$changed_dgms <- character()
+  expect_true(.check_staged_catalog(unchanged, with_record(catalog, "0")))
+  expect_error(.check_staged_catalog(unchanged, with_record(catalog, "55"), state("55")), "but this plan expects record 0")
+  # The same checks run in the verification, before any request.
+  .update_publication_state(plan, function(s) { s$versions[["storage--no_bias"]] <- list(record_id = "55", published = FALSE); s })
+  .write_catalog_file(file.path(plan$state_directory, "release.json"), with_record(catalog, "56"))
+  expect_error(verify_benchmark_release(plan, "t"), "but this plan expects record 55")
   expect_identical(requests$count, 0L)
 })

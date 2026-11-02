@@ -274,43 +274,51 @@
     stop("Zenodo record ", record$id, " did not retain ", relation, " relationship to ", doi, ".", call. = FALSE)
   invisible(TRUE)
 }
-# Identifying fields of catalog entries, one string each, sorted; archive
-# entries also carry every member's descriptor. Sizes are formatted as plain
-# numbers so that a parsed catalog and a plan agree.
-.member_fields <- c("id", "filename", "size", "sha256", "md5")
-.entry_signatures <- function(items, fields, members = FALSE) {
-  signature <- function(x, fields) paste(vapply(fields, function(field) {
-    value <- unlist(x[[field]])
-    if (is.numeric(value)) format(value, scientific = FALSE, trim = TRUE) else paste(as.character(value), collapse = ",")
-  }, character(1)), collapse = "|")
-  one <- function(x) {
-    parts <- signature(x, fields)
-    if (members) parts <- paste(parts, paste(vapply(x$members, signature, character(1), fields = .member_fields), collapse = ";"), sep = "||")
-    parts
-  }
-  sort(vapply(items, one, character(1)))
+# What a staged release.json shares with the plan's catalog: everything except
+# local paths, build fingerprints, record IDs and the publication block, as canonical JSON.
+.comparable_catalog <- function(catalog) {
+  catalog$publication <- NULL
+  catalog$assets <- lapply(catalog$assets, function(x) { x$local_path <- NULL; x$record_id <- NULL; x })
+  catalog$archives <- lapply(catalog$archives, function(x) { x$local_path <- NULL; x$build_fingerprint <- NULL; x$record_id <- NULL; x })
+  .canonical_json(catalog)
 }
 
-# The staged release.json must describe the release and the files of this plan:
-# complete archive and member descriptors (record IDs differ between a plan and
-# its staged catalog, nothing else may).
-.check_staged_catalog <- function(plan, catalog) {
+# The record IDs of a staged catalog: archives and assets of a DGM that this plan
+# changes carry the record of that DGM's storage version once the state has it;
+# those of every other DGM keep the record IDs of the plan.
+.check_staged_record_ids <- function(plan, catalog, state) {
+  planned <- c(stats::setNames(lapply(plan$catalog$archives, `[[`, "record_id"), paste0("archive:", vapply(plan$catalog$archives, `[[`, character(1), "id"))),
+               stats::setNames(lapply(plan$catalog$assets, `[[`, "record_id"), paste0("asset:", vapply(plan$catalog$assets, `[[`, character(1), "id"))))
+  check <- function(items, what) for (x in items) {
+    expected <- if (x$dgm %in% plan$changed_dgms) state$versions[[paste0("storage--", x$dgm)]]$record_id else planned[[paste0(what, ":", x$id)]]
+    if (!is.null(expected) && !identical(as.character(x$record_id), as.character(expected)))
+      stop("The staged release.json carries record ", x$record_id, " for the ", what, " '", x$id, "' of DGM ", x$dgm,
+           ", but this plan expects record ", expected, "; re-stage it or use the state directory of this plan.", call. = FALSE)
+  }
+  check(catalog$archives, "archive"); check(catalog$assets, "asset")
+}
+
+# The staged release.json must describe the release of this plan completely
+# (conditions, assets, archives and their members), and its record IDs must be
+# those of the state.
+.check_staged_catalog <- function(plan, catalog, state = NULL) {
   if (!identical(catalog$release, plan$catalog$release))
     stop("The staged release.json belongs to release '", catalog$release, "', not to this plan's release '",
          plan$catalog$release, "'; use the state directory of this plan.", call. = FALSE)
-  fields <- c("id", "dgm", "filename", "sha256", "md5", "size")
-  if (!identical(.entry_signatures(catalog$archives, fields, TRUE), .entry_signatures(plan$catalog$archives, fields, TRUE)))
-    stop("The staged release.json has a different archive inventory than this plan; re-stage it or use the state directory of this plan.", call. = FALSE)
+  if (!identical(.comparable_catalog(catalog), .comparable_catalog(plan$catalog)))
+    stop("The staged release.json does not describe this plan (conditions, assets or archives differ); ",
+         "re-stage it or use the state directory of this plan.", call. = FALSE)
+  .check_staged_record_ids(plan, catalog, state)
   invisible(TRUE)
 }
 # State is read and the staged catalog checked before any request is made.
 .verify_archive_release <- function(plan, token = NULL) {
   token <- .publication_token(plan, token)
-  .publication_state(plan, "read")
+  state <- .publication_state(plan, "read")
   path <- file.path(plan$state_directory, "release.json")
   if (!file.exists(path)) stop("The release has not been fully staged.", call. = FALSE)
   catalog <- benchmark_catalog(path)
-  .check_staged_catalog(plan, catalog)
+  .check_staged_catalog(plan, catalog, state)
   for (dgm in unique(vapply(catalog$archives, `[[`, character(1), "dgm"))) {
     archives <- Filter(function(x) x$dgm == dgm, catalog$archives); id <- archives[[1]]$record_id
     published <- .record_is_published(plan, id, token)

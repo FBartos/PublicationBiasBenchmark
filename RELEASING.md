@@ -176,8 +176,12 @@ identity (release, community, environment, the id, name, hashes and size of ever
 upload entry, the storage base record of each changed DGM and the earlier catalog's
 schema, record selectors, metadata, packing limits) and refuses a modified plan
 before any request. `verify_benchmark_release()` reads the state first and also
-stops when a staged `release.json` belongs to another release or has a different
-archive or member descriptor (id, name, size, SHA-256, MD5).
+stops when a staged `release.json` belongs to another release, differs from the plan's
+catalog in any condition, asset, archive or member (the comparison ignores only local
+paths, build fingerprints, record IDs and the `publication` block), or carries record
+IDs that differ from the state (the storage version of each changed DGM) or from the
+plan (every other DGM). The comparison serialises the complete catalog twice and takes
+a few minutes for a release of about 2,200 assets.
 
 ### Releases interrupted by an earlier package version
 
