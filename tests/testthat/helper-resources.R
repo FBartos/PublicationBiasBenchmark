@@ -32,9 +32,10 @@ local_mock_gate <- function(env = parent.frame(), community_id = "community-uuid
 }
 
 # Hold the publication lock of a plan's state directory for this test, as a
-# running session does, for tests of workers that delete draft files.
+# running session does, for tests of workers that delete draft files. The state
+# directory is created here, as planning does.
 local_held_lock <- function(plan, env = parent.frame()) {
-  .acquire_publication_lock(plan$state_directory)
+  .acquire_publication_lock(plan$state_directory, create = TRUE)
   withr::defer(.release_publication_lock(plan$state_directory), envir = env)
   invisible(plan)
 }

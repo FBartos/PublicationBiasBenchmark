@@ -232,10 +232,12 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
   .validate_plan_coverage(assets)
   if (!.scalar_string(community)) stop("Publication requires a community slug or UUID.", call. = FALSE)
   # Every read and write of the state directory (archive building, plan.rds)
-  # happens under the publication lock.
+  # happens under the publication lock. Planning is the one step that creates
+  # the state directory.
   .with_publication_lock(state_directory, function()
     .plan_archive_release(catalog, base, files, replace, metadata, state_directory,
-      max_files, max_bytes, community, catalog_record_id, catalog_concept_doi, max_archive_bytes))
+      max_files, max_bytes, community, catalog_record_id, catalog_concept_doi, max_archive_bytes),
+    create = TRUE)
 }
 
 .zenodo_base <- function(sandbox) paste0("https://", if (sandbox) "sandbox." else "", "zenodo.org/api")

@@ -83,9 +83,21 @@
     stop("The plan was modified after it was planned: its release, community, environment, upload groups, ",
          "storage base records, record selectors, metadata or limits no longer match its identity. ",
          "Re-plan instead of editing a plan.", call. = FALSE)
+  absent <- .missing_uploads(plan)
+  if (length(absent))
+    stop("Files that this plan uploads do not exist: ", paste(utils::head(absent, 5L), collapse = ", "),
+         if (length(absent) > 5L) paste0(" and ", length(absent) - 5L, " more"), ". A plan stores absolute paths ",
+         "(its state directory and the archives it uploads); if the folder was moved, move it back or re-plan ",
+         "in the new location. Nothing was changed online.", call. = FALSE)
   .publication_state(plan, "write")
   community_id <- .require_community_maintainer(plan$community, token, plan$sandbox, roles)
   fn(token, community_id)
+}
+
+# Local paths of the files that the plan uploads, which are missing on disk.
+.missing_uploads <- function(plan) {
+  paths <- as.character(unlist(lapply(plan$groups, function(group) lapply(group, `[[`, "local_path")), use.names = FALSE))
+  paths[!file.exists(paths)]
 }
 
 ## Publication lock ----------------------------------------------------------
@@ -116,10 +128,17 @@
          ", started ", owner$started, " UTC, ", age)
 }
 
-# Atomic lock: creating the directory either succeeds or fails.
-.acquire_publication_lock <- function(state_directory) {
+# Atomic lock: creating the directory either succeeds or fails. The state
+# directory itself is created only when `create` is TRUE (planning).
+.acquire_publication_lock <- function(state_directory, create = FALSE) {
   if (!.scalar_string(state_directory)) stop("A publication state directory is required.", call. = FALSE)
-  dir.create(state_directory, recursive = TRUE, showWarnings = FALSE)
+  # Only planning creates a state directory. A session on a plan whose folder is
+  # gone (moved, deleted) must not recreate it empty.
+  if (create) dir.create(state_directory, recursive = TRUE, showWarnings = FALSE)
+  else if (!dir.exists(state_directory))
+    stop("The publication state directory ", state_directory, " does not exist. A plan stores absolute paths ",
+         "(its state directory and the archives it uploads); if the folder was moved, move it back or re-plan ",
+         "in the new location. Nothing was changed online.", call. = FALSE)
   key <- .lock_key(state_directory)
   lock <- file.path(key, ".lock")
   if (!dir.exists(key) || !suppressWarnings(dir.create(lock, showWarnings = FALSE))) {
@@ -156,8 +175,8 @@
   invisible(TRUE)
 }
 
-.with_publication_lock <- function(state_directory, fn) {
-  .acquire_publication_lock(state_directory)
+.with_publication_lock <- function(state_directory, fn, create = FALSE) {
+  .acquire_publication_lock(state_directory, create)
   on.exit(.release_publication_lock(state_directory), add = TRUE)
   fn()
 }

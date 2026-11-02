@@ -179,6 +179,41 @@ test_that("the session checks the lock and the plan's state before the gate", {
   expect_length(gate$calls, 0L)
 })
 
+test_that("a session on a plan whose state directory is gone stops before any request and creates nothing", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate(); requests <- local_no_requests()
+  unlink(plan$state_directory, recursive = TRUE)
+  expect_false(dir.exists(plan$state_directory))
+  message <- "The publication state directory .* does not exist. A plan stores absolute paths.*Nothing was changed online."
+  expect_error(stage_benchmark_release(plan, "t"), message)
+  expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), message)
+  expect_error(.publication_session(plan, "t", "owner", fn = function(token, community_id) "worked"), message)
+  expect_error(stage_benchmark_release(plan, "t"), plan$state_directory, fixed = TRUE)
+  expect_false(dir.exists(plan$state_directory))
+  expect_length(gate$calls, 0L); expect_identical(requests$count, 0L)
+})
+
+test_that("a session on a plan whose upload files are gone stops before the state and any request", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate(); requests <- local_no_requests()
+  upload <- plan$groups[[1]][[1]]$local_path
+  backup <- withr::local_tempfile(); expect_true(file.copy(upload, backup)); unlink(upload)
+  message <- "Files that this plan uploads do not exist: .*A plan stores absolute paths.*Nothing was changed online."
+  expect_error(stage_benchmark_release(plan, "t"), message)
+  expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), message)
+  expect_error(stage_benchmark_release(plan, "t"), basename(upload), fixed = TRUE)
+  # Nothing is read or written: no state file, no lock left behind, no gate, no request.
+  expect_false(file.exists(file.path(plan$state_directory, "state.json")))
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  expect_length(gate$calls, 0L); expect_identical(requests$count, 0L)
+  # With the file back, the session runs.
+  expect_true(file.copy(backup, upload))
+  expect_identical(.publication_session(plan, "t", "owner", fn = function(token, community_id) "worked"), "worked")
+  expect_length(gate$calls, 1L)
+})
+
 test_that("a session passes the token and the gate's UUID on, with the roles of its operation", {
   skip_if_not_installed("zip")
   root <- withr::local_tempdir(); plan <- session_plan(root)
@@ -233,7 +268,7 @@ test_that("a plan of the removed direct-file publisher is refused by every entry
 
 test_that("the lock is atomic, names its owner, and is released only with the matching nonce", {
   directory <- file.path(withr::local_tempdir(), "nested", "state")
-  .acquire_publication_lock(directory)
+  .acquire_publication_lock(directory, create = TRUE)
   lock <- file.path(directory, ".lock")
   owner <- jsonlite::read_json(file.path(lock, "owner.json"))
   expect_setequal(names(owner), c("pid", "host", "started", "nonce"))
@@ -268,7 +303,24 @@ test_that("a stale lock is reported with its owner and age but never removed aut
   expect_error(.acquire_publication_lock(directory), "owner unknown")
   # A lock that cannot be created is a different failure.
   blocker <- withr::local_tempfile(); writeLines("a file", blocker)
-  expect_error(.acquire_publication_lock(file.path(blocker, "state")), "Cannot create the lock")
+  expect_error(.acquire_publication_lock(file.path(blocker, "state"), create = TRUE), "Cannot create the lock")
+})
+
+test_that("a missing state directory is refused, not created, unless the caller plans", {
+  root <- withr::local_tempdir(); directory <- file.path(root, "nested", "state")
+  message <- paste0("The publication state directory ", directory, " does not exist. A plan stores absolute paths (its state ",
+                    "directory and the archives it uploads); if the folder was moved, move it back or re-plan in the new ",
+                    "location. Nothing was changed online.")
+  expect_error(.acquire_publication_lock(directory), message, fixed = TRUE)
+  ran <- FALSE
+  expect_error(.with_publication_lock(directory, function() ran <<- TRUE), message, fixed = TRUE)
+  expect_false(ran); expect_false(dir.exists(file.path(root, "nested")))
+  expect_error(.acquire_publication_lock(NULL), "state directory is required")
+  # Creating is explicit: the lock is taken, held while the work runs and released after it.
+  held <- .with_publication_lock(directory, function() dir.exists(file.path(directory, ".lock")), create = TRUE)
+  expect_true(held); expect_true(dir.exists(directory)); expect_false(dir.exists(file.path(directory, ".lock")))
+  # An existing directory needs no flag.
+  expect_true(.with_publication_lock(directory, function() TRUE))
 })
 
 test_that("a failed lock release warns and the lock never leaks into the next session", {
@@ -281,7 +333,7 @@ test_that("a failed lock release warns and the lock never leaks into the next se
   unlink(file.path(directory, ".lock"), recursive = TRUE)
 })
 
-test_that("planning takes the lock", {
+test_that("planning takes the lock and creates a new state directory", {
   skip_if_not_installed("zip")
   root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
   conditions <- test_catalog(list(a))$conditions
@@ -294,8 +346,16 @@ test_that("planning takes the lock", {
     community = "test-community")
   expect_true(file.exists(file.path(state, "plan.rds"))); expect_false(dir.exists(file.path(state, ".lock")))
   expect_identical(plan$community, "test-community")
+  # Planning, unlike a session, creates a state directory that does not exist yet.
+  fresh <- file.path(root, "new", "nested", "state")
+  expect_false(dir.exists(fresh))
+  plan <- plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = fresh,
+    community = "test-community")
+  expect_true(file.exists(file.path(fresh, "plan.rds"))); expect_false(dir.exists(file.path(fresh, ".lock")))
+  expect_identical(plan$state_directory, normalizePath(fresh, winslash = "/"))
   expect_error(plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(),
     state_directory = file.path(root, "none"), community = NULL), "community")
+  expect_false(dir.exists(file.path(root, "none")))
 })
 
 ## Plan identity and publication state -------------------------------------------
