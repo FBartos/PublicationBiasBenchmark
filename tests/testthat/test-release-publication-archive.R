@@ -3,7 +3,8 @@
 # public downloads. It lets the whole staging/publishing path run without mocking
 # any publication step. `lose_publish` throws before a publish takes effect (a failed request);
 # `lose_after` names events whose effect is applied before the response is lost:
-# storage_publish, catalog_publish, storage_inclusion, catalog_inclusion.
+# storage_publish, catalog_publish, storage_inclusion, catalog_inclusion. Uploads are snapshots: the
+# bytes at upload time are checksummed and served afterwards, whatever happens to the local file.
 fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, lose_after = character(), env = parent.frame()) {
   zenodo <- new.env()
   zenodo$records <- list(); zenodo$next_id <- 100L; zenodo$uploaded <- list(); zenodo$requests <- character()
@@ -69,9 +70,9 @@ fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, lose_after = 
     if (length(rest) == 4L && identical(rest[c(1, 2, 4)], c("draft", "files", "commit"))) {
       key <- utils::URLdecode(rest[3])
       file <- zenodo$records[[id]]$files[[key]]
-      source <- zenodo$uploaded[[paste(id, key)]]
-      zenodo$records[[id]]$files[[key]] <- modifyList(file, list(status = "completed", size = file.info(source)$size,
-        checksum = paste0("md5:", unname(tools::md5sum(source)))))
+      bytes <- zenodo$uploaded[[paste(id, key)]]
+      zenodo$records[[id]]$files[[key]] <- modifyList(file, list(status = "completed", size = length(bytes),
+        checksum = paste0("md5:", digest::digest(bytes, algo = "md5", serialize = FALSE))))
       # The commit took effect, but its response is lost.
       if (zenodo$lose_commit_once) { zenodo$lose_commit_once <- FALSE; stop("lost commit response") }
       return(zenodo$records[[id]]$files[[key]])
@@ -101,19 +102,20 @@ fake_zenodo <- function(lose_publish = FALSE, lose_commit = FALSE, lose_after = 
   }
   zenodo$upload <- function(path, record_id, filename, ...) {
     zenodo$upload_log <- c(zenodo$upload_log, paste(record_id, filename))
-    zenodo$uploaded[[paste(record_id, filename)]] <- path
+    zenodo$uploaded[[paste(record_id, filename)]] <- readBin(path, "raw", n = file.info(path)$size)
   }
   zenodo$download <- function(url, destination, progress) {
     parts <- strsplit(sub("^https://zenodo.org/api/", "", url), "/", fixed = TRUE)[[1]]
-    source <- zenodo$uploaded[[paste(parts[2], utils::URLdecode(parts[4]))]]
-    if (is.null(source)) stop(http_failure(404L))
-    file.copy(source, destination, overwrite = TRUE)
+    bytes <- zenodo$uploaded[[paste(parts[2], utils::URLdecode(parts[4]))]]
+    if (is.null(bytes)) stop(http_failure(404L))
+    writeBin(bytes, destination)
+    TRUE
   }
   zenodo$probe <- function(url, limit = 65536) {
     parts <- strsplit(sub("^https://zenodo.org/api/", "", url), "/", fixed = TRUE)[[1]]
-    source <- zenodo$uploaded[[paste(parts[2], utils::URLdecode(parts[4]))]]
-    if (is.null(source)) return(list(status = 404L, headers = list(), bytes = 0L))
-    list(status = 206L, headers = list(`content-range` = paste0("bytes 0-0/", file.info(source)$size)), bytes = 1L)
+    bytes <- zenodo$uploaded[[paste(parts[2], utils::URLdecode(parts[4]))]]
+    if (is.null(bytes)) return(list(status = 404L, headers = list(), bytes = 0L))
+    list(status = 206L, headers = list(`content-range` = paste0("bytes 0-0/", length(bytes))), bytes = 1L)
   }
   testthat::local_mocked_bindings(.zenodo_request = zenodo$handler, .zenodo_upload = zenodo$upload,
     .resource_download = zenodo$download, .resource_range_probe = zenodo$probe, .resource_retry_wait = function(delay) NULL, .env = env)
@@ -251,7 +253,9 @@ expect_finished_release <- function(plan, zenodo, result, info = NULL) {
   entry <- jsonlite::read_json(file.path(plan$state_directory, "registry-entry.json"))
   expect_identical(entry$record_id, catalog_record$id, info = info)
   expect_identical(entry$doi, paste0("10.5281/zenodo.", catalog_record$id), info = info)
-  expect_identical(entry$catalog_sha256, digest::digest(file = path, algo = "sha256", serialize = FALSE), info = info)
+  uploaded <- zenodo$uploaded[[paste(catalog_record$id, "release.json")]]
+  expect_identical(entry$catalog_sha256, digest::digest(uploaded, algo = "sha256", serialize = FALSE), info = info)
+  expect_identical(result$catalog_sha256, entry$catalog_sha256, info = info)
   state <- .publication_state(plan)
   expect_identical(state$versions[["storage--no_bias"]]$record_id, storage$id, info = info)
   expect_identical(state$versions$catalog$record_id, catalog_record$id, info = info)
@@ -292,4 +296,28 @@ test_that("a publication whose first run was a failed request, not a lost respon
   expect_length(grep("actions/publish$", zenodo$requests), 3L)   # the failed request, then one per record
   expect_length(Filter(function(r) r$published, zenodo$records), 2L)
   expect_false(anyDuplicated(zenodo$submissions) > 0L)
+})
+
+test_that("the fake Zenodo serves the bytes that were uploaded, whatever happens to the local files afterwards", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- archive_release_plan(root)
+  local_mock_gate(); zenodo <- fake_zenodo()
+  result <- suppressMessages(publish_benchmark_release(plan, "token", confirm = "test.1"))
+  storage <- Filter(function(r) grepl("storage", r$metadata$title), zenodo$records)[[1]]
+  catalog_record <- Filter(function(r) !grepl("storage", r$metadata$title), zenodo$records)[[1]]
+  sha256 <- function(x) if (is.raw(x)) digest::digest(x, algo = "sha256", serialize = FALSE) else digest::digest(file = x, algo = "sha256", serialize = FALSE)
+  url <- function(id, filename) paste0("https://zenodo.org/api/records/", id, "/files/", filename, "/content")
+  served <- function(id, filename) { destination <- withr::local_tempfile(); zenodo$download(url(id, filename), destination, FALSE); sha256(destination) }
+  archive <- plan$catalog$archives[[1]]
+  catalog_path <- file.path(plan$state_directory, "release.json")
+  expect_identical(served(storage$id, archive$filename), archive$sha256)
+  expect_identical(served(catalog_record$id, "release.json"), result$catalog_sha256)
+  # The local archive and catalog are rewritten after the upload: what the fake serves does not change.
+  writeBin(charToRaw("rewritten archive"), archive$local_path); writeBin(charToRaw("rewritten catalog"), catalog_path)
+  expect_false(identical(sha256(archive$local_path), archive$sha256)); expect_false(identical(sha256(catalog_path), result$catalog_sha256))
+  expect_identical(served(storage$id, archive$filename), archive$sha256)
+  expect_identical(served(catalog_record$id, "release.json"), result$catalog_sha256)
+  expect_identical(sha256(zenodo$uploaded[[paste(catalog_record$id, "release.json")]]), result$catalog_sha256)
+  expect_identical(zenodo$records[[catalog_record$id]]$files[["release.json"]]$checksum,
+                   paste0("md5:", digest::digest(zenodo$uploaded[[paste(catalog_record$id, "release.json")]], algo = "md5", serialize = FALSE)))
 })
