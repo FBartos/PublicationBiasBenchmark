@@ -96,6 +96,12 @@
       drafts <- .family_drafts(plan, as.character(base$parent$id), token)
       if (length(drafts) > 1L) stop("Multiple drafts exist in this record family.", call. = FALSE)
       if (length(drafts)) {
+        # After Zenodo refused this state's own request, a draft in the family is somebody else's,
+        # whatever its title says: titles do not identify the plan.
+        if (isTRUE(slot$rejected))
+          stop("Zenodo rejected this publication state's new-version request for '", key, "' earlier, and a draft now exists ",
+               "in that record family that this state did not create; reconcile it (inspect ",
+               .zenodo_site(plan$sandbox), "/uploads/", drafts[[1]]$id, ") before publishing.", call. = FALSE)
         if (!isTRUE(slot$creating) && !identical(drafts[[1]]$metadata$title, title))
           stop("An unrelated new-version draft already exists; reconcile it before publishing.", call. = FALSE)
         id <- as.character(drafts[[1]]$id)
@@ -103,12 +109,14 @@
         .update_publication_state(plan, function(state) {
           state$versions[[key]] <- list(creating = TRUE, base_id = base_id); state
         })
-        # An HTTP error is Zenodo's answer to this request: no draft of ours exists, so the attempt is
-        # forgotten and cannot later authorize adopting somebody else's draft. Without an answer the
-        # draft may exist, and `creating` stays.
+        # Only a client error (4xx) is a definite refusal: no draft of ours exists, and the refusal is
+        # remembered (`rejected`), so that a draft which appears later is never adopted. Any other
+        # failure, a gateway error (5xx) as much as no answer at all, does not tell whether Zenodo
+        # created the draft (a POST is not retried), and `creating` stays.
         draft <- tryCatch(.zenodo_request("POST", paste0("records/", base_id, "/versions"), token, plan$sandbox),
           zenodo_http_error = function(error) {
-            .update_publication_state(plan, function(state) { state$versions[[key]] <- NULL; state })
+            if (is.numeric(error$status) && length(error$status) == 1L && error$status >= 400 && error$status < 500)
+              .update_publication_state(plan, function(state) { state$versions[[key]] <- list(rejected = TRUE, base_id = base_id); state })
             stop(error)
           })
         id <- as.character(draft$id)
@@ -238,6 +246,11 @@
     stop("The catalog family advanced beyond this plan; reconcile it before any storage writes.", call. = FALSE)
   drafts <- .family_drafts(plan, as.character(latest$parent$id), token)
   if (length(drafts) > 1L) stop("Multiple catalog drafts require reconciliation.", call. = FALSE)
+  # A draft that appeared after Zenodo refused this state's own request is not ours, whatever its title.
+  if (length(drafts) && isTRUE(state$versions$catalog$rejected) && !identical(as.character(drafts[[1]]$id), as.character(expected)))
+    stop("Zenodo rejected this publication state's new-version request for the catalog earlier, and a draft now exists in the ",
+         "catalog family that this state did not create; reconcile it (inspect ", .zenodo_site(plan$sandbox), "/uploads/",
+         drafts[[1]]$id, ") before any storage writes.", call. = FALSE)
   if (length(drafts) && !identical(as.character(drafts[[1]]$id), as.character(expected)) &&
       !isTRUE(state$versions$catalog$creating) &&
       !identical(drafts[[1]]$metadata$title, paste0("PublicationBiasBenchmark release ", plan$catalog$release)))

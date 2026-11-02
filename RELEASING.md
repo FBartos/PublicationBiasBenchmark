@@ -240,6 +240,15 @@ again. A state written for another plan, or by a package version before plan
 identities existed, is rejected: re-plan in a new state directory. A plan saved by
 an older version must be re-planned the same way.
 
+A request for a new version of a record family is remembered in `state.json` before
+it is sent: `creating` stays when the outcome is unknown (a gateway error or no
+answer), and the draft that the family holds afterwards is adopted when the run
+resumes; `rejected` is set when Zenodo refused the request with a client error (4xx),
+and a draft that the family holds afterwards is never adopted, whatever its title,
+because it is not this state's. The run then stops and prints the draft's web address:
+inspect it, discard it in the web interface if it is not yours, and run again (with no
+draft in the family, a new request is sent).
+
 ### Online deletions
 
 All deletions go through one guarded helper, and the only file it deletes is an

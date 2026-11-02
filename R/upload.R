@@ -240,7 +240,8 @@ plan_benchmark_release <- function(release, files, conditions = NULL, previous =
     create = TRUE)
 }
 
-.zenodo_base <- function(sandbox) paste0("https://", if (sandbox) "sandbox." else "", "zenodo.org/api")
+.zenodo_site <- function(sandbox) paste0("https://", if (sandbox) "sandbox." else "", "zenodo.org")
+.zenodo_base <- function(sandbox) paste0(.zenodo_site(sandbox), "/api")
 .publication_token <- function(plan, token) {
   if (is.null(token)) token <- Sys.getenv(if (plan$sandbox) "ZENODO_SANDBOX_TOKEN" else "ZENODO_TOKEN")
   if (!.scalar_string(token)) stop("The required Zenodo token is not configured.", call. = FALSE)

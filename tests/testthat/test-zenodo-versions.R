@@ -73,31 +73,93 @@ test_that("lost version creation responses recover the same draft and reject unr
   expect_error(.ensure_family_version(other, "storage", "1", "New title", "Description", list(), "test-token"), "unrelated")
 })
 
-test_that("a version creation that Zenodo rejected is forgotten, one without an answer is kept", {
-  plan <- list(state_directory = withr::local_tempdir(), sandbox = TRUE, catalog = list(release = "test.2"))
-  drafts <- list(); answer <- zenodo_error(409L, "conflict")
-  local_mocked_bindings(.family_drafts = function(...) drafts, .record_is_published = function(...) FALSE,
-    .update_draft_metadata = function(...) TRUE,
+# A record family for new-version requests: base record "1" of family "100". A new draft carries the base
+# record's title until its metadata is updated. `behaviour` is a queue for the POSTs: list(create, error), where
+# `create` says whether Zenodo applied the request and `error` is what the client gets instead of the draft.
+version_server <- function(env = parent.frame()) {
+  server <- new.env(); server$drafts <- list(); server$posts <- 0L; server$metadata_updates <- 0L; server$behaviour <- list()
+  local_mocked_bindings(.record_is_published = function(...) FALSE,
+    .family_drafts = function(...) server$drafts,
+    .update_draft_metadata = function(...) { server$metadata_updates <- server$metadata_updates + 1L; TRUE },
     .zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
       if (method == "GET") return(list(id = "1", parent = list(id = "100")))
-      stop(answer)
-    })
-  ensure <- function(plan) .ensure_family_version(plan, "storage", "1", "New title", "Description", list(), "test-token")
-  # A conflict leaves no marker, however often the run is repeated.
-  expect_error(ensure(plan), "HTTP 409")
-  expect_null(.publication_state(plan)$versions$storage)
-  expect_error(ensure(plan), "HTTP 409")
-  expect_null(.publication_state(plan)$versions$storage)
-  # Another publisher's draft appears (its title is not ours): this run does not adopt it.
-  drafts <- list(list(id = "2", metadata = list(title = "Old title")))
-  expect_error(ensure(plan), "An unrelated new-version draft already exists")
-  expect_null(.publication_state(plan)$versions$storage)
-  # No HTTP answer at all: the draft may exist, so the marker stays and the draft is recognised later.
-  drafts <- list(); answer <- simpleError("connection reset")
-  expect_error(ensure(plan), "connection reset")
-  expect_true(.publication_state(plan)$versions$storage$creating)
-  drafts <- list(list(id = "2", metadata = list(title = "Old title")))
-  expect_identical(ensure(plan), "2")
+      server$posts <- server$posts + 1L
+      step <- if (length(server$behaviour)) { x <- server$behaviour[[1]]; server$behaviour <- server$behaviour[-1]; x } else list(create = TRUE)
+      draft <- list(id = "2", metadata = list(title = "Old title"))
+      if (isTRUE(step$create)) server$drafts <- list(draft)
+      if (!is.null(step$error)) stop(step$error)
+      draft
+    }, .env = env)
+  server
+}
+new_version_plan <- function() list(state_directory = withr::local_tempdir(.local_envir = parent.frame()), sandbox = TRUE,
+                                    catalog = list(release = "test.2"))
+ensure_version <- function(plan) .ensure_family_version(plan, "storage", "1", "New title", "Description", list(), "test-token")
+version_slot <- function(plan) .publication_state(plan)$versions$storage
+
+test_that("a gateway error or no answer keeps the creation attempt, so a draft that was created is adopted without another request", {
+  # 502 after Zenodo created the draft: the draft still has the base title, so only `creating` allows adopting it.
+  for (status in c(500L, 502L, 503L, 504L)) {
+    plan <- new_version_plan(); server <- version_server()
+    server$behaviour <- list(list(create = TRUE, error = zenodo_error(status)))
+    expect_error(ensure_version(plan), paste0("HTTP ", status), info = status)
+    expect_true(version_slot(plan)$creating, info = status)
+    expect_identical(ensure_version(plan), "2")
+    expect_identical(server$posts, 1L, info = status); expect_identical(server$metadata_updates, 1L, info = status)
+    expect_identical(version_slot(plan)$record_id, "2", info = status)
+  }
+  # 504 before Zenodo created anything: the next run finds no draft and creates one.
+  plan <- new_version_plan(); server <- version_server()
+  server$behaviour <- list(list(create = FALSE, error = zenodo_error(504L)))
+  expect_error(ensure_version(plan), "HTTP 504")
+  expect_true(version_slot(plan)$creating)
+  expect_identical(ensure_version(plan), "2")
+  expect_identical(server$posts, 2L)
+  # No answer at all behaves the same.
+  plan <- new_version_plan(); server <- version_server()
+  server$behaviour <- list(list(create = TRUE, error = simpleError("connection reset")))
+  expect_error(ensure_version(plan), "connection reset")
+  expect_true(version_slot(plan)$creating)
+  expect_identical(ensure_version(plan), "2"); expect_identical(server$posts, 1L)
+  # A foreign draft is still not adopted by a state that never tried to create one.
+  plan <- new_version_plan(); server <- version_server()
+  server$drafts <- list(list(id = "2", metadata = list(title = "Old title")))
+  expect_error(ensure_version(plan), "An unrelated new-version draft already exists")
+  expect_identical(server$posts, 0L); expect_identical(server$metadata_updates, 0L)
+})
+
+test_that("a client error refuses the creation and is remembered, so no draft is adopted afterwards, whatever its title", {
+  for (status in c(400L, 403L, 404L, 409L, 422L, 429L)) {
+    plan <- new_version_plan(); server <- version_server()
+    server$behaviour <- list(list(create = FALSE, error = zenodo_error(status)))
+    expect_error(ensure_version(plan), paste0("HTTP ", status), info = status)
+    expect_identical(version_slot(plan), list(rejected = TRUE, base_id = "1"), info = status)
+  }
+  # 409, then another publisher's draft with the title that this plan expects: stop, touch nothing.
+  plan <- new_version_plan(); server <- version_server()
+  server$behaviour <- list(list(create = FALSE, error = zenodo_error(409L, "conflict")))
+  expect_error(ensure_version(plan), "HTTP 409")
+  server$drafts <- list(list(id = "2", metadata = list(title = "New title")))
+  expect_error(ensure_version(plan), paste0("Zenodo rejected this publication state's new-version request for 'storage' earlier, ",
+    "and a draft now exists in that record family that this state did not create; reconcile it (inspect ",
+    "https://sandbox.zenodo.org/uploads/2) before publishing."), fixed = TRUE)
+  expect_identical(server$posts, 1L); expect_identical(server$metadata_updates, 0L)
+  expect_identical(version_slot(plan), list(rejected = TRUE, base_id = "1"))
+  # The same with the title of the base record, and in production.
+  server$drafts <- list(list(id = "7", metadata = list(title = "Old title")))
+  production <- plan; production$sandbox <- FALSE
+  expect_error(ensure_version(production), "https://zenodo.org/uploads/7", fixed = TRUE)
+  # 409, then no draft: the next run creates the version.
+  plan <- new_version_plan(); server <- version_server()
+  server$behaviour <- list(list(create = FALSE, error = zenodo_error(409L)))
+  expect_error(ensure_version(plan), "HTTP 409")
+  expect_identical(ensure_version(plan), "2")
+  expect_identical(server$posts, 2L); expect_identical(version_slot(plan)$record_id, "2")
+  # A second refusal is remembered again.
+  plan <- new_version_plan(); server <- version_server()
+  server$behaviour <- list(list(create = FALSE, error = zenodo_error(409L)), list(create = FALSE, error = zenodo_error(409L)))
+  expect_error(ensure_version(plan), "HTTP 409"); expect_error(ensure_version(plan), "HTTP 409")
+  expect_identical(version_slot(plan), list(rejected = TRUE, base_id = "1"))
 })
 
 test_that("community acceptance resumes an existing request and checks inherited branding", {
@@ -192,6 +254,18 @@ test_that("catalog preflight rejects concurrent releases before storage mutation
   expect_true(.reconcile_catalog_base(plan, "test-token"))
   drafts <- list(list(id = "3", metadata = list(title = "Other release")))
   expect_error(.reconcile_catalog_base(plan, "test-token"), "unrelated catalog draft")
+  # A draft with the expected title of this release passes, until Zenodo refused this state's own request:
+  # then it is not ours, whatever its title.
+  drafts <- list(list(id = "3", metadata = list(title = "PublicationBiasBenchmark release test.2")))
+  expect_true(.reconcile_catalog_base(plan, "test-token"))
+  latest <- list(id = "1", parent = list(id = "family"))   # the family is where the plan found it
+  .update_publication_state(plan, function(state) { state$versions$catalog <- list(rejected = TRUE, base_id = "1"); state })
+  expect_error(.reconcile_catalog_base(plan, "test-token"),
+    paste0("Zenodo rejected this publication state's new-version request for the catalog earlier, and a draft now exists in the ",
+           "catalog family that this state did not create; reconcile it (inspect https://sandbox.zenodo.org/uploads/3) ",
+           "before any storage writes."), fixed = TRUE)
+  drafts <- list()
+  expect_true(.reconcile_catalog_base(plan, "test-token"))   # nothing to adopt: a new request may follow
 })
 
 test_that("native tags use subjects and read-only vocabulary fields are not resubmitted", {
