@@ -243,9 +243,11 @@
 }
 
 # Replace `path` with `bytes` only after the new bytes have been written
-# completely next to it and a history copy exists. Returns FALSE when the file
-# already has these bytes. `verify(path)` runs on the installed file; when it
-# fails the previous bytes are restored.
+# completely next to it and the previous bytes are in the history. The history
+# keeps the installed versions: the new bytes are added once they are installed
+# and verified. Returns FALSE when the file already has these bytes.
+# `verify(path)` runs on the installed file; when it fails the previous bytes
+# are restored.
 .write_file_verified <- function(path, bytes, verify = NULL, history_dir = NULL) {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
   name <- basename(path)
@@ -264,7 +266,6 @@
     # A file from older code may not be in the history yet.
     if (!is.null(old) && (!length(entries) || !identical(.read_bytes(entries[length(entries)]), old)))
       .add_history_entry(path, history_dir, name, old)
-    .add_history_entry(temporary, history_dir, name, bytes)
   }
   if (!.retry_file_operation(function() .file_rename(temporary, path)))
     stop("Cannot replace ", path, "; the complete new copy remains at ", temporary,
@@ -300,9 +301,13 @@
            "; restoring the previous version failed, so ", path,
            if (holds_new) " holds the unverified new bytes" else " does not hold the previous bytes",
            if (previous_left) paste0("; the previous bytes are in ", previous),
-           if (!is.null(history_dir)) paste0("; the history in ", history_dir, " keeps every version"),
+           if (!is.null(history_dir)) paste0("; the history in ", history_dir, " keeps every earlier version"),
            "."), call. = FALSE)
   }
+  if (!is.null(history_dir))
+    tryCatch(.add_history_entry(path, history_dir, name, bytes), error = function(error)
+      warning("The new ", name, " is installed and verified, but its history copy could not be written; ",
+              "the next write adds it.", call. = FALSE))
   invisible(TRUE)
 }
 

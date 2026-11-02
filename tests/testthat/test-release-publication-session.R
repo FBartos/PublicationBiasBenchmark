@@ -566,11 +566,15 @@ test_that("history entries are verified copies and a failing copy stops before a
     .file_copy = function(from, to) { attempts <<- attempts + 1L; if (attempts < 3L) FALSE else file.copy(from, to) })
   expect_true(.write_json_verified(path, list(a = 2), history_dir = history))
   expect_identical(attempts, 3L); expect_identical(waits, c(0.2, 0.2))
+  # The previous bytes of a file from older code are copied before anything is replaced; when that fails
+  # nothing is replaced.
+  writeBin(charToRaw('{"older":true}\n'), path)
   local_mocked_bindings(.file_copy = function(from, to) FALSE)
   waits <- numeric()
   expect_error(.write_json_verified(path, list(a = 3), history_dir = history), "history copy of file.json.*nothing was replaced")
   expect_length(waits, 4L)
-  expect_identical(rawToChar(.read_bytes(path)), '{"a":2}\n')
+  expect_identical(rawToChar(.read_bytes(path)), '{"older":true}\n')
+  expect_length(list.files(history), 2L)
 })
 
 test_that("a failing rename keeps the old file, the complete new copy and the history", {
@@ -584,7 +588,9 @@ test_that("a failing rename keeps the old file, the complete new copy and the hi
   expect_identical(rawToChar(.read_bytes(path)), '{"a":1}\n')
   leftovers <- list.files(root, pattern = "[.]tmp$", full.names = TRUE)
   expect_length(leftovers, 1L); expect_identical(rawToChar(.read_bytes(leftovers)), '{"a":2}\n')
-  expect_length(list.files(history), 2L)
+  # The history keeps installed versions: it holds the old bytes as its newest entry, not the new copy.
+  expect_length(list.files(history), 1L)
+  expect_identical(rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L))), '{"a":1}\n')
 })
 
 test_that("a failed verification restores the previous version, or removes a first version", {
@@ -597,10 +603,14 @@ test_that("a failed verification restores the previous version, or removes a fir
                "failed verification \\(does not validate\\); the previous version was restored")
   expect_identical(rawToChar(.read_bytes(path)), '{"a":1}\n')
   expect_false(any(grepl("[.]tmp$", list.files(root))))
+  # The rejected versions never reach the history: its newest entry is the previous (restored) version.
+  newest <- function() rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L)))
+  expect_length(list.files(history), 1L); expect_identical(newest(), '{"a":1}\n')
   # Nothing is verified for a skipped write, and the verifier sees the installed path.
   seen <- NULL
   expect_true(.write_json_verified(path, list(a = 3), history_dir = history, verify = function(p) { seen <<- p; TRUE }))
   expect_identical(seen, path)
+  expect_length(list.files(history), 2L); expect_identical(newest(), '{"a":3}\n')   # installed and verified
   expect_false(.write_json_verified(path, list(a = 3), history_dir = history, verify = function(p) stop("not called")))
   # Data that is not JSON never reaches the disk.
   expect_error(.write_json_verified(path, list(a = new.env())))
@@ -629,7 +639,32 @@ test_that("a failed restore after a failed verification names the file that hold
   expect_true(.write_file_verified(file.path(root, "state.json"), charToRaw("{}"), history_dir = history))
   renames <- 0L
   expect_error(.write_file_verified(file.path(root, "state.json"), charToRaw("{\"a\":1}"), verify = function(p) FALSE,
-                                    history_dir = history), paste0("the history in ", history, " keeps every version"), fixed = TRUE)
+                                    history_dir = history), paste0("the history in ", history, " keeps every earlier version"), fixed = TRUE)
+  # The history holds the previous bytes; the unverified new bytes are not in it.
+  entries <- list.files(history, full.names = TRUE)
+  expect_length(entries, 1L); expect_identical(rawToChar(.read_bytes(entries)), "{}")
+})
+
+test_that("a failing history copy after a verified install warns, keeps the new file and is made up by the next write", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  newest <- function() rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L)))
+  .write_json_verified(path, list(a = 1), history_dir = history)
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL, .file_copy = function(from, to) FALSE)
+  expect_warning(installed <- .write_json_verified(path, list(a = 2), history_dir = history),
+                 "The new file.json is installed and verified, but its history copy could not be written; the next write adds it.",
+                 fixed = TRUE)
+  expect_true(installed)
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":2}\n')
+  expect_length(list.files(history), 1L); expect_identical(newest(), '{"a":1}\n')
+  expect_length(list.files(root, pattern = "[.]tmp$"), 0L)
+  # The next write finds the installed bytes missing from the history and adds them before replacing them.
+  local_mocked_bindings(.file_copy = function(from, to) file.copy(from, to, overwrite = FALSE))
+  expect_silent(.write_json_verified(path, list(a = 3), history_dir = history))
+  entries <- list.files(history, full.names = TRUE)
+  expect_length(entries, 3L)
+  expect_identical(vapply(entries, function(f) rawToChar(.read_bytes(f)), character(1), USE.NAMES = FALSE),
+                   c('{"a":1}\n', '{"a":2}\n', '{"a":3}\n'))
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":3}\n')
 })
 
 test_that("RDS files are written verified and unchanged files are skipped", {
@@ -836,7 +871,8 @@ test_that("a failed verification with the installed file held open reports the f
   expect_length(previous, 1L)
   expect_match(message, "the previous bytes are in ", fixed = TRUE)
   expect_match(message, basename(previous), fixed = TRUE)
-  expect_match(message, "keeps every version", fixed = TRUE)
+  expect_match(message, "keeps every earlier version", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L))), "old bytes")
   expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
   expect_identical(rawToChar(.read_bytes(path)), "new bytes")
   # Without an open handle the same failure is restored completely.
