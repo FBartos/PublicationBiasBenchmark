@@ -22,9 +22,10 @@ library(ggdist)
 library(scales)
 
 PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
-if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
-  PublicationBiasBenchmark.options(resources_directory = "C:/R-Packages/PublicationBiasBenchmark/resources")
-} else { 
+local_resources <- "D:/R-Packages2/PublicationBiasBenchmark/resources"
+if (dir.exists(local_resources)) {
+  PublicationBiasBenchmark.options(resources_directory = local_resources)
+} else {
   PublicationBiasBenchmark.options(resources_directory = tempdir())
 }
 
