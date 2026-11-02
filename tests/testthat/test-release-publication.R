@@ -269,6 +269,35 @@ test_that("frozen conditions are checked by one helper", {
   expect_identical(plan(base$conditions)$catalog$conditions, base$conditions)
 })
 
+test_that("a prepared measures file is verified before it is reused, and a corrupted one is replaced", {
+  root <- withr::local_tempdir(); measures <- file.path(root, "no_bias", "measures")
+  dir.create(measures, recursive = TRUE)
+  utils::write.csv(data.frame(method = c("A", "B"), method_setting = "default", condition_id = 1,
+    bias = c(.1, .2), bias_mcse = .01, n_valid = 4), file.path(measures, "bias.csv"), row.names = FALSE)
+  local_mocked_bindings(.get_path = function() root)
+  prepared <- file.path(root, "prepared")
+  prepare <- function() prepare_benchmark_resources("no_bias", kinds = "measures", output_directory = prepared)
+  sha256 <- function(path) digest::digest(file = path, algo = "sha256", serialize = FALSE)
+  named_hash <- function(asset) sub("^.*-([a-f0-9]{64})[.]csv$", "\\1", basename(asset$local_path))
+  first <- prepare()
+  expect_identical(vapply(first, named_hash, character(1)), vapply(first, `[[`, character(1), "sha256"))
+  # Preparing the same data again reuses the verified files without a word.
+  expect_silent(again <- prepare())
+  expect_identical(lapply(again, `[`, c("id", "sha256", "md5")), lapply(first, `[`, c("id", "sha256", "md5")))
+  # A structurally valid table with other values under the name of the correct one is replaced.
+  path <- first[[1]]$local_path; original <- .read_bytes(path)
+  corrupted <- .read_resource_csv(path); corrupted$bias <- corrupted$bias + 1
+  utils::write.csv(corrupted, path, row.names = FALSE)
+  expect_false(identical(sha256(path), first[[1]]$sha256))
+  expect_message(second <- prepare(), "A corrupted prepared file was replaced")
+  expect_identical(.read_bytes(path), original)
+  expect_identical(vapply(second, named_hash, character(1)), vapply(second, `[[`, character(1), "sha256"))
+  expect_identical(vapply(second, `[[`, character(1), "sha256"), vapply(first, `[[`, character(1), "sha256"))
+  expect_length(list.files(prepared, pattern = "^measures-"), 0L)
+  # The corrupted file is not mistaken for the others: only the one that differed is reported.
+  expect_silent(prepare())
+})
+
 test_that("method/setting pairs that spell the same measure label are rejected", {
   root <- withr::local_tempdir(); measures <- file.path(root, "no_bias", "measures")
   dir.create(measures, recursive = TRUE)

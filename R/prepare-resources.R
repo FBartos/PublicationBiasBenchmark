@@ -81,7 +81,19 @@ prepare_benchmark_resources <- function(dgm_name, kinds = c("results", "measures
         filename <- paste0(label, "-", hash, ".csv")
         if (!.safe_filename(filename)) { unlink(temporary); stop("Method identifiers cannot form safe filenames.", call. = FALSE) }
         path <- file.path(output_directory, filename)
-        if (file.exists(path)) unlink(temporary) else if (!file.rename(temporary, path)) stop("Cannot save prepared measures.", call. = FALSE)
+        if (!file.exists(path)) {
+          if (!file.rename(temporary, path)) stop("Cannot save prepared measures.", call. = FALSE)
+        } else if (identical(digest::digest(file = path, algo = "sha256", serialize = FALSE), hash)) {
+          unlink(temporary)
+        } else {
+          # The file is named by the hash of its bytes: an existing file with other bytes is corrupted
+          # and must not be described (and later published) as these measures.
+          replaced <- suppressWarnings(file.rename(temporary, path)) || file.copy(temporary, path, overwrite = TRUE)
+          unlink(temporary)
+          if (!replaced || !identical(digest::digest(file = path, algo = "sha256", serialize = FALSE), hash))
+            stop("Cannot replace the corrupted prepared file ", path, ".", call. = FALSE)
+          message("A corrupted prepared file was replaced: ", path)
+        }
         asset <- benchmark_resource(path, dgm_name, "measures", group$method[1], group$method_setting[1],
           package_version = package_version, replacement = replacement, measures = metrics)
         key <- .method_key(group$method[1], group$method_setting[1])
