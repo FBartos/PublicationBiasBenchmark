@@ -1,9 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/404.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/RELEASING.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Results.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/articles/Results.html</loc></url>
@@ -26,9 +24,6 @@
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/S_theta_minus_theta_squared.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/S_theta_squared.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/S_w_squared.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_catalog.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_packing_report.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_resource.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/compare_measures.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/compare_single_measure.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/compute_measures.html</loc></url>
@@ -71,16 +66,12 @@
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/method.trimfill.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/method_extra_columns.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/prepare_benchmark_resources.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/prune_benchmark_archives.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/publish_benchmark_release.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_dataset.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_measures.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_results.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/run_method.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/simulate_dgm.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/update_benchmark_community_pages.html</loc></url>
+<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/upload_dgm.html</loc></url>
 <url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/validate_dgm_setting.html</loc></url>
-<url><loc>https://fbartos.github.io/PublicationBiasBenchmark/reference/verify_benchmark_resources.html</loc></url>
 </urlset>
 

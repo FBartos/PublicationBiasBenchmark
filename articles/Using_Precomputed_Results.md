@@ -74,7 +74,7 @@ bias severity).
 
 Before accessing the precomputed results, you need to download them from
 the package repository. The
-[`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
+[`download_dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
 function downloads the raw results for a specified DGM:
 
 ``` r
@@ -85,14 +85,11 @@ download_dgm_results("Stanley2017")
 
 **Note**: Raw results files are significantly larger than the summarized
 measures files. Each DGM may require several hundred megabytes of
-storage space. To download only some methods, use the `method` argument
-(e.g., `method = "RMA"`). The results are downloaded to a local cache
-directory and are automatically available for subsequent analysis. You
-only need to download them once. See [Benchmark
-Releases](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.md)
-for how to use a specific version of the benchmark data. The download
-function will display progress information and the total size of files
-being downloaded.
+storage space. The results are downloaded to a local cache directory and
+are automatically available for subsequent analysis. You only need to
+download them once, unless the benchmark was updated with new method.
+The download function will display progress information and the total
+size of files being downloaded.
 
 ## Retrieving Precomputed Results
 

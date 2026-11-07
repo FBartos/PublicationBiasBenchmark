@@ -4,7 +4,6 @@ pkgdown_sha: ~
 articles:
   Adding_New_DGMs: Adding_New_DGMs.html
   Adding_New_Methods: Adding_New_Methods.html
-  Benchmark_Releases: Benchmark_Releases.html
   Computing_Method_Measures: Computing_Method_Measures.html
   Computing_Method_Results: Computing_Method_Results.html
   Results_Alinaghi2018: Results_Alinaghi2018.html
@@ -17,7 +16,7 @@ articles:
   Using_Precomputed_Measures: Using_Precomputed_Measures.html
   Using_Precomputed_Results: Using_Precomputed_Results.html
   Using_Presimulated_Datasets: Using_Presimulated_Datasets.html
-last_built: 2026-11-07T16:49Z
+last_built: 2026-11-07T19:32Z
 urls:
   reference: https://fbartos.github.io/PublicationBiasBenchmark/reference
   article: https://fbartos.github.io/PublicationBiasBenchmark/articles

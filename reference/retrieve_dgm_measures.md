@@ -1,8 +1,10 @@
-# Retrieve Archived Performance Measures
+# Retrieve Pre-Computed Performance measures for a DGM
 
-Read measures stored separately for each DGM, method and setting.
-Pairwise comparisons are only read when measure = "pairwise" is
-requested.
+This function returns pre-computed performance measures for a specified
+Data-Generating Mechanism (DGM). The pre-computed measures must be
+already stored locally. See
+[`download_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
+function for more guidance.
 
 ## Usage
 
@@ -13,9 +15,7 @@ retrieve_dgm_measures(
   method = NULL,
   method_setting = NULL,
   condition_id = NULL,
-  replacement = FALSE,
-  release = NULL,
-  source = c("release", "local")
+  replacement = FALSE
 )
 ```
 
@@ -23,38 +23,47 @@ retrieve_dgm_measures(
 
 - dgm_name:
 
-  DGM name.
+  Character string specifying the DGM type
 
 - measure:
 
-  Optional measure name(s); pairwise comparisons require "pairwise".
+  Which performance measure should be returned (e.g., "bias", "mse",
+  "coverage"). All measures can be returned by setting to `NULL`.
 
 - method:
 
-  Optional method name(s); NULL selects all available methods.
+  Which method(s) should be returned. The complete results are returned
+  by setting to `NULL` (default setting).
 
 - method_setting:
 
-  Optional method setting(s).
+  Which method setting(s) should be returned. The complete results are
+  returned by setting to `NULL` (default setting).
 
 - condition_id:
 
-  Optional condition ID(s) for datasets.
+  which conditions should settings be returned for.
 
 - replacement:
 
-  Whether replacement measures are selected; NULL downloads both
-  variants.
-
-- release:
-
-  Release identifier or catalog; NULL uses the package default.
-
-- source:
-
-  "release" reads verified catalog-selected files; "local" reads
-  unpublished computation files in resources_directory/DGM.
+  Whether performance measures computed using replacement should be
+  returned. Defaults to `FALSE`.
 
 ## Value
 
-A data frame of selected measures and Monte Carlo standard errors.
+A data.frame
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+  # get bias measures for all methods and conditions
+  retrieve_dgm_measures("no_bias", measure = "bias")
+
+  # get all measures for RMA method
+  retrieve_dgm_measures("no_bias", method = "RMA")
+
+  # get MSE measures for PET method in condition 1
+  retrieve_dgm_measures("no_bias", measure = "mse", method = "PET", condition_id = 1)
+} # }
+```

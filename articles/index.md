@@ -6,8 +6,6 @@
   Mechanisms](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_DGMs.md):
 - [Adding New
   Methods](https://fbartos.github.io/PublicationBiasBenchmark/articles/Adding_New_Methods.md):
-- [Benchmark
-  Releases](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.md):
 - [Computing Method
   Measures](https://fbartos.github.io/PublicationBiasBenchmark/articles/Computing_Method_Measures.md):
 - [Computing Method

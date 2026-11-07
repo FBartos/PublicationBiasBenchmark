@@ -1,8 +1,10 @@
-# Retrieve Archived Method Results
+# Retrieve a Pre-Computed Results of a Method Applied to DGM
 
-Read and combine verified shards. Missing shards and overlapping
-method/setting/condition/repetition keys are errors. Use source =
-"local" for unpublished distributed computation outputs.
+This function returns a pre-computed results of a given method at a
+specific repetition and condition from a dgm. The pre-computed results
+must be already stored locally. See
+[`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
+function for more guidance.
 
 ## Usage
 
@@ -12,9 +14,7 @@ retrieve_dgm_results(
   method = NULL,
   method_setting = NULL,
   condition_id = NULL,
-  repetition_id = NULL,
-  release = NULL,
-  source = c("release", "local")
+  repetition_id = NULL
 )
 ```
 
@@ -22,33 +22,40 @@ retrieve_dgm_results(
 
 - dgm_name:
 
-  DGM name.
+  Character string specifying the DGM type
 
 - method:
 
-  Optional method name(s); NULL selects all available methods.
+  Which method(s) should be returned. The complete results are returned
+  by setting to `NULL` (default setting).
 
 - method_setting:
 
-  Optional method setting(s).
+  Which method setting(s) should be returned. The complete results are
+  returned by setting to `NULL` (default setting).
 
 - condition_id:
 
-  Optional condition ID(s) for datasets.
+  which conditions should settings be returned for.
 
 - repetition_id:
 
-  Repetition ID(s); NULL selects all repetitions.
-
-- release:
-
-  Release identifier or catalog; NULL uses the package default.
-
-- source:
-
-  "release" reads verified catalog-selected files; "local" reads
-  unpublished computation files in resources_directory/DGM.
+  Which repetition should be returned. The complete condition can be
+  returned by setting to either `NULL`.
 
 ## Value
 
-A data frame with the existing method-specific result columns.
+A data.frame
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+  # get condition 1, repetition 1 for default method setting
+  retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
+
+  # get condition 1, all repetitions for default method setting
+  retrieve_dgm_results("no_bias", condition_id = 1)
+} # }
+
+```

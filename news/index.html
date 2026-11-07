@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,6 @@
     <li><a class="dropdown-item" href="../articles/Using_Precomputed_Results.html">Use Precomputed Results</a></li>
     <li><a class="dropdown-item" href="../articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul></li>
-<li class="nav-item"><a class="nav-link" href="../articles/Benchmark_Releases.html">Releases</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -49,95 +48,10 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/FBartos/PublicationBiasBenchmark/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/FBartos/PublicationBiasBenchmark/blob/v0.3.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.0" id="publicationbiasbenchmark-040">PublicationBiasBenchmark 0.4.0<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-040"></a></h2>
-<div class="section level3">
-<h3 id="features-0-4-0">Features<a class="anchor" aria-label="anchor" href="#features-0-4-0"></a></h3>
-<ul><li>The benchmark data moved from OSF to <a href="https://zenodo.org/communities/publicationbiasbenchmark/" class="external-link">Zenodo</a> and are published in versioned releases. Each package version uses a default release; <code><a href="../reference/benchmark_catalog.html">list_benchmark_releases()</a></code> lists the available releases and the <code>release</code> argument of the download and retrieve functions selects one. See the new “Releases” article.</li>
-<li>The default release is <a href="https://doi.org/10.5281/zenodo.23121978" class="external-link">2026.2</a>. It corrects 11 replacement-measure tables of <a href="https://doi.org/10.5281/zenodo.23070787" class="external-link">2026.1</a> (AK, MAN, MMPH and RTMA) whose values were missing because of the <code>safe_rbind()</code> bug fixed below; all other files are identical, and 2026.1 remains available.</li>
-<li>Release 2026.1 contains every original OSF file and recomputes no results. Its condition tables repair a truncated Bom2019 file and misassigned Carter2019 metadata, and four WILS example files whose <code>method_setting</code> was mislabelled <code>default</code> have corrected copies (the originals are kept).</li>
-<li>Results and measures can be downloaded for a single method (<code>method = "RMA"</code>). Downloads are verified against checksums and cached; files shared by several releases are downloaded only once, and <code><a href="../reference/prune_benchmark_archives.html">prune_benchmark_archives()</a></code> frees disk space.</li>
-<li>New functions <code><a href="../reference/benchmark_catalog.html">benchmark_conditions()</a></code>, <code><a href="../reference/benchmark_catalog.html">benchmark_catalog()</a></code>, <code><a href="../reference/benchmark_catalog.html">list_benchmark_releases()</a></code>, <code><a href="../reference/benchmark_catalog.html">list_benchmark_resources()</a></code>, <code><a href="../reference/verify_benchmark_resources.html">verify_benchmark_resources()</a></code>, <code><a href="../reference/download_dgm.html">download_dgm_metadata()</a></code> and <code><a href="../reference/prune_benchmark_archives.html">prune_benchmark_archives()</a></code>.</li>
-<li>
-<code><a href="../reference/retrieve_dgm_dataset.html">retrieve_dgm_dataset()</a></code>, <code><a href="../reference/retrieve_dgm_results.html">retrieve_dgm_results()</a></code> and <code><a href="../reference/retrieve_dgm_measures.html">retrieve_dgm_measures()</a></code> read your own unpublished files with <code>source = "local"</code>.</li>
-<li>
-<code><a href="../reference/compute_measures.html">compute_measures()</a></code>, <code><a href="../reference/compare_measures.html">compare_measures()</a></code> and their single-measure versions gain <code>results_source</code>, <code>replacement_source</code> and <code>release</code>: your method’s results are read locally by default, and <code>replacement_source = "release"</code> takes the results of the replacement methods from the published benchmark.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="changes-0-4-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-4-0"></a></h3>
-<ul><li>Publishing releases is maintainer-only: the publication functions are no longer exported (see <code>.github/RELEASING.md</code> in the GitHub repository).</li>
-<li>Downloads no longer retry errors that cannot succeed, such as a missing file.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="fixes-0-4-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-4-0"></a></h3>
-<ul><li>Replacement measures could be <code>NA</code> in conditions where the replaced method had no valid runs, because the internal <code>safe_rbind()</code> dropped the replacement rows.</li>
-<li>Pairwise comparisons (<code><a href="../reference/compare_single_measure.html">compare_single_measure()</a></code>, <code><a href="../reference/compare_measures.html">compare_measures()</a></code>) kept only the last condition of every method pair; they now give one row per method pair and condition. Recompute existing pairwise files with <code>overwrite = TRUE</code>.</li>
-<li>
-<code><a href="../reference/compute_single_measure.html">compute_single_measure()</a></code> creates the DGM’s <code>measures</code> folder when it does not exist.</li>
-<li>Methods whose names or settings contain separators such as <code>.</code> or <code>/</code> are no longer merged.</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.0" id="publicationbiasbenchmark-030">PublicationBiasBenchmark 0.3.0<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-030"></a></h2><p class="text-muted">CRAN release: 2026-09-30</p>
-<div class="section level3">
-<h3 id="features-0-3-0">Features<a class="anchor" aria-label="anchor" href="#features-0-3-0"></a></h3>
-<ul><li>Added RTMA method</li>
-<li>Added MAN method</li>
-<li>Added MMPH method</li>
-<li>Added <code>fit_limit</code> argument to <code><a href="../reference/run_method.html">run_method()</a></code> that aborts a fit exceeding the given number of minutes and returns a standard failure result with <code>note = "time limit exceeded with &lt;fit_limit&gt; minutes"</code>. The fit runs in a reused background R process so that methods sitting in compiled sampling code (RoBMA, RTMA, MMPH) can be stopped as well.</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.1" id="publicationbiasbenchmark-021">PublicationBiasBenchmark 0.2.1<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-021"></a></h2><p class="text-muted">CRAN release: 2026-05-23</p>
-<div class="section level3">
-<h3 id="fixes-0-2-1">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-2-1"></a></h3>
-<ul><li>Fix RoBMA and BayesTools version</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0" id="publicationbiasbenchmark-020">PublicationBiasBenchmark 0.2.0<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-020"></a></h2><p class="text-muted">CRAN release: 2026-03-16</p>
-<div class="section level3">
-<h3 id="features-0-2-0">Features<a class="anchor" aria-label="anchor" href="#features-0-2-0"></a></h3>
-<ul><li>Added MAIVE method (by Petr Čala)</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.3" id="publicationbiasbenchmark-013">PublicationBiasBenchmark 0.1.3<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-013"></a></h2><p class="text-muted">CRAN release: 2025-12-05</p>
-<div class="section level3">
-<h3 id="features-0-1-3">Features<a class="anchor" aria-label="anchor" href="#features-0-1-3"></a></h3>
-<ul><li>Added <code><a href="../reference/measure.html">measure()</a></code> function to list available performance measures (renamed from <code><a href="../reference/measures.html">measures()</a></code>).</li>
-<li>Added <code><a href="../reference/measure_mcse.html">measure_mcse()</a></code> function to list available performance measure MCSE functions.</li>
-<li>Implemented S3 methods for <code><a href="../reference/measure.html">measure()</a></code> and <code><a href="../reference/measure_mcse.html">measure_mcse()</a></code> to retrieve specific functions (e.g., <code>measure("bias")</code>, <code>measure_mcse("bias")</code>).</li>
-<li>Updated <code><a href="../reference/method.html">method()</a></code> and <code><a href="../reference/dgm.html">dgm()</a></code> to list available methods and DGMs when called without arguments.</li>
-<li>Updated <code><a href="../reference/method.html">method()</a></code> and <code><a href="../reference/dgm.html">dgm()</a></code> to return the corresponding function when called with a single argument (e.g., <code>method("RMA")</code>).</li>
-<li>
-<code><a href="../reference/measure.html">measure()</a></code>, <code><a href="../reference/measure_mcse.html">measure_mcse()</a></code>, <code><a href="../reference/method.html">method()</a></code>, and <code><a href="../reference/dgm.html">dgm()</a></code> now dynamically retrieve available options using <code><a href="https://rdrr.io/r/utils/methods.html" class="external-link">methods()</a></code>.</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.2" id="publicationbiasbenchmark-012">PublicationBiasBenchmark 0.1.2<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-012"></a></h2><p class="text-muted">CRAN release: 2025-11-26</p>
-<div class="section level3">
-<h3 id="fixes-0-1-2">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-1-2"></a></h3>
-<ul><li>Vignette updates</li>
-<li>Stop download if OSF_PAT is missing (due to errors in the osfr package)</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1" id="publicationbiasbenchmark-011">PublicationBiasBenchmark 0.1.1<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-011"></a></h2><p class="text-muted">CRAN release: 2025-11-17</p>
-<div class="section level3">
-<h3 id="fixes-0-1-1">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-1-1"></a></h3>
-<ul><li>Documentation updates</li>
-</ul></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="publicationbiasbenchmark-010">PublicationBiasBenchmark 0.1.0<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark-010"></a></h2><p class="text-muted">CRAN release: 2025-11-05</p>
-<p>Initial CRAN submission.</p>
-</div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside></div>
+  </main></div>
 
 
     <footer><div class="pkgdown-footer-left">

@@ -38,8 +38,3 @@ list.
 - `"prompt_for_download"`:
 
   Whether each file download should ask for explicit approval
-
-- `"benchmark_release"`:
-
-  Release identifier or catalog. NULL selects the release pinned by this
-  package version.

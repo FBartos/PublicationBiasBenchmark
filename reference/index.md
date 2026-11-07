@@ -5,11 +5,6 @@
 - [`PublicationBiasBenchmark.options()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/PublicationBiasBenchmark_options.md)
   [`PublicationBiasBenchmark.get_option()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/PublicationBiasBenchmark_options.md)
   : Options for the PublicationBiasBenchmark package
-- [`list_benchmark_releases()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_catalog.md)
-  [`benchmark_catalog()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_catalog.md)
-  [`benchmark_conditions()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_catalog.md)
-  [`list_benchmark_resources()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_catalog.md)
-  : Inspect Benchmark Releases and Resources
 - [`compare_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/compare_measures.md)
   : Compare method with Multiple Measures for a DGM
 - [`compare_single_measure()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/compare_single_measure.md)
@@ -41,8 +36,7 @@
 - [`download_dgm_datasets()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
   [`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
   [`download_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
-  [`download_dgm_metadata()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
-  : Download Benchmark Datasets, Results, and Measures
+  : Download Datasets/Results/Measures of a DGM
 - [`measure()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measure.md)
   : Get performance measure function
 - [`measure_mcse()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/measure_mcse.md)
@@ -125,19 +119,15 @@
 - [`method_settings()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.md)
   [`get_method_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.md)
   : Return Pre-specified Method Settings
-- [`prune_benchmark_archives()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/prune_benchmark_archives.md)
-  : Remove Cached Benchmark Archives
 - [`retrieve_dgm_dataset()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_dataset.md)
-  : Retrieve Archived DGM Datasets
+  : Retrieve a Pre-Simulated Condition and Repetition From a DGM
 - [`retrieve_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_measures.md)
-  : Retrieve Archived Performance Measures
+  : Retrieve Pre-Computed Performance measures for a DGM
 - [`retrieve_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_results.md)
-  : Retrieve Archived Method Results
+  : Retrieve a Pre-Computed Results of a Method Applied to DGM
 - [`run_method()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/run_method.md)
   : Generic method function for publication bias correction
 - [`simulate_dgm()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/simulate_dgm.md)
   : Simulate From Data-Generating Mechanism
 - [`validate_dgm_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/validate_dgm_setting.md)
   : Validate DGM Settings
-- [`verify_benchmark_resources()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/verify_benchmark_resources.md)
-  : Verify Cached Benchmark Resources

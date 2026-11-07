@@ -20,10 +20,7 @@ compare_measures(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  conditions = NULL,
-  results_source = c("local", "release"),
-  release = NULL,
-  replacement_source = NULL
+  conditions = NULL
 )
 ```
 
@@ -31,7 +28,7 @@ compare_measures(
 
 - dgm_name:
 
-  Character string specifying the DGM name
+  Character string specifying the name of the DGM dataset to download.
 
 - method:
 
@@ -94,38 +91,12 @@ compare_measures(
 
 - overwrite:
 
-  Logical indicating whether to overwrite existing results. If FALSE
-  (default), will skip computation for method-measure combinations that
-  already exist
+  Logical indicating whether to overwrite existing files. Defaults to
+  `FALSE`, which means only missing files will be downloaded.
 
 - conditions:
 
-  Data frame of conditions from dgm_conditions(). If NULL, the selected
-  release's frozen conditions are used when `results_source = "release"`
-  and `dgm_conditions(dgm_name)` otherwise. With local results and
-  release replacements the package's conditions are used, and the
-  release replacement results must cover each of them (missing
-  repetitions are an error).
-
-- results_source:
-
-  Where the results of the computed methods come from: "local" (default)
-  reads unpublished outputs under resources_directory/DGM/results;
-  "release" reads verified results of a published benchmark release (see
-  download_dgm_results()).
-
-- release:
-
-  Benchmark release identifier or catalog, passed to the result reader
-  whenever either source is "release". It is ignored, with a warning,
-  when both `results_source` and `replacement_source` are "local".
-
-- replacement_source:
-
-  Where the results of the replacement methods in `method_replacements`
-  come from: "local" or "release". NULL (default) uses `results_source`.
-  Use `replacement_source = "release"` to replace a new method's
-  failures with published results of established methods.
+  Data frame of conditions from dgm_conditions()
 
 ## Value
 
