@@ -40,17 +40,14 @@ Before computing results, ensure that:
 
 ## Directory Structure
 
-The downloaded datasets are kept in a cache inside the resources directory. The results you compute are stored in the following directory structure:
+The results you compute are stored in the following directory structure (the downloaded datasets are kept separately, in the package's cache):
 
 ```
 resources/
 ├── {DGM_NAME}/
-│   ├── data/
-│   │   └── {condition_id}.csv          # Your own datasets (new DGMs only)
 │   ├── results/
 │   │   └── {METHOD}-{SETTING}.csv      # Method results
 │   └── metadata/
-│       ├── dgm-conditions.csv          # Condition parameters
 │       ├── {METHOD}-{SETTING}-sessionInfo.txt
 │       └── {METHOD}-{SETTING}-session.log
 ```
@@ -66,7 +63,8 @@ First, ensure you're working in the correct directory and have the package loade
 library(PublicationBiasBenchmark)
 
 # Specify path to the directory containing results
-PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
+data_folder <- "/path/to/files"
+PublicationBiasBenchmark.options(resources_directory = data_folder)
 ```
 
 ### Step 2: Define DGMs and Method Information
