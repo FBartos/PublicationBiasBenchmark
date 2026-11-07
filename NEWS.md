@@ -6,6 +6,7 @@
  - Added native storage/catalog versioning, file import and superseded ZIP removal, resumable community inclusion and DOI relationships.
  - Reject frozen-DGM growth and stale results/measures after input corrections; preserve per-worker producing versions.
  - Consolidated release 2026.1 into five DGM storage records with 266 independent ZIPs, verified the replacement catalog checksum and withdrew the 40 superseded storage records.
+ - Release 2026.1 keeps every original OSF file and source hash and recomputes no numerical results. Frozen conditions repair a truncated Bom2019 CSV and misassigned Carter2019 metadata; four WILS example files whose `method_setting` was mislabelled `default` have explicit corrected copies (every numerical token preserved, originals archived). The original mixed-method measure tables stay in the source archive; per-method tables are the reader interface.
  - Clarified ZIP names with dataset condition ranges and original source tables; number all ambiguous split parts consistently from 001.
  - Cache parsed, validated catalogs by their exact SHA-256 while continuing to verify cached bytes before use.
  - Build pull request websites with read-only permissions and publish only from a separate trusted deployment job.

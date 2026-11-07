@@ -7,125 +7,66 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
 
-Each benchmark release is a complete catalog of independently downloadable units.
-The installed package pins a default release. Archive-backed releases upload only
-new or corrected units and import unchanged ZIPs into native Zenodo versions. Cite the
-catalog record's version DOI, available from `list_benchmark_releases()`, and
-record the benchmark release you used.
-
-## Download exactly what you need
-
-```{r}
+```{r, eval=FALSE}
 library(PublicationBiasBenchmark)
-PublicationBiasBenchmark.options(resources_directory = "resources")
+```
+
+The simulated datasets, raw results, and performance measures of the benchmark are stored on [Zenodo](https://zenodo.org/communities/publicationbiasbenchmark/) and published in releases.
+A release is a fixed snapshot of the whole benchmark: once published, it never changes.
+When new methods are added or an error is corrected, a new release is published and the older ones remain available.
+Any analysis based on a given release can therefore be reproduced exactly.
+
+## Which Release Am I Using?
+
+Each version of the package uses a default release, usually the latest one at the time the package version was released.
+All download and retrieve functions use this default unless you select another release.
+You can list the available releases with [`list_benchmark_releases()`](../reference/benchmark_catalog.html):
+
+```{r, eval=FALSE}
 list_benchmark_releases()
-release <- "2026.2"
-
-# One DGM's simulated datasets, including all repetitions.
-download_dgm_datasets("no_bias", release = release)
-dataset <- retrieve_dgm_dataset("no_bias", condition_id = 1,
-                                repetition_id = 1, release = release)
-
-# One DGM and method's raw results. All distributed shards are combined.
-download_dgm_results("no_bias", method = "RMA", release = release)
-results <- retrieve_dgm_results("no_bias", method = "RMA", release = release)
-
-# One DGM and method's measures. No other methods' tables are downloaded.
-download_dgm_measures("no_bias", method = "RMA", release = release)
-measures <- retrieve_dgm_measures("no_bias", method = "RMA", release = release)
 ```
 
-Release `2026.1` uses catalog schema 2 and one storage family per DGM,
-with separate ZIPs for datasets, each method/setting's
-results, each method/setting's measures, metadata and the original source archive.
-Ordinary and replacement measures share a ZIP; pairwise tables require an explicit
-`measure = "pairwise"` selection. Individual distributed CSV shards keep their
-original bytes inside each ZIP and are combined by the retrieval functions.
+## Using a Specific Release
 
-A dataset condition filter can download other conditions in its containing ZIP,
-potentially all of a small DGM's datasets. A measure filter can download other
-measure columns and both replacement variants for the selected method/setting.
-The reader also supports schema-1 direct-file catalogs. These downloads never
-include another DGM's datasets or another method's ordinary
-results/measures. Sharing a Zenodo record never forces downloading its other ZIPs.
-ZIPs are capped at 2,000,000,000 uncompressed bytes and split at file boundaries.
-An individual larger file must be prepared as smaller worker shards.
+To keep working with the same data after a package update, select the release explicitly, either in each call:
 
-Dataset ZIP names state their condition range, such as
-`Alinaghi2018--datasets--conditions-0001-0041--2026.1.zip`. Original tables are
-packaged as `Alinaghi2018--source-tables--2026.1.zip`. Part numbers are needed
-only when the condition range cannot distinguish the files; every such part
-is numbered, starting with `part-001`.
-
-```{r}
-list_benchmark_resources(release, "no_bias", "results", method = "RMA")
-verify_benchmark_resources(release, "no_bias", "results", method = "RMA")
-catalog <- benchmark_catalog(release)
-benchmark_conditions("no_bias", release)
+```{r, eval=FALSE}
+download_dgm_measures("Stanley2017", release = "2026.2")
+retrieve_dgm_measures("Stanley2017", release = "2026.2")
 ```
 
-The catalog pins the condition definitions, file hashes, producing package version
-when known, and source provenance. Historical generation versions remain unknown
-where the archive does not establish them. The package version assembling a
-release is recorded separately. Existing method/version fields inside results
-remain authoritative.
+or once for the whole session:
 
-The cache contains `releases/<release>/release.json`,
-`cache/<sha256>/<filename>` and, for schema 2, `archives/<sha256>/<zipname>`.
-Readers use the selected catalog and verify cached
-bytes before reading. Reusing a resources directory across package versions is
-safe: unrelated files are never included by scanning the cache. An incomplete
-download, an overlapping shard, or a requested unavailable condition/repetition
-raises an error. Download functions repair corrupt members from a cached ZIP when
-possible. Existing verified `2026.1` member caches avoid new archive downloads.
-`prune_benchmark_archives(release)` reports ZIPs whose selected members are all
-verified; `dry_run = FALSE` removes those ZIP copies to reclaim disk space.
+```{r, eval=FALSE}
+PublicationBiasBenchmark.options(benchmark_release = "2026.2")
+```
 
-The [project community](https://zenodo.org/communities/publicationbiasbenchmark/)
-provides navigation and curation. Use the exact release catalog version DOI when
-citing an analysis. The catalog concept DOI leads to the latest release. Catalog
-`hasPart` links identify exact storage versions; storage `isPartOf` links identify
-the catalog concept. Public downloads require no token or community membership.
+Downloaded files are checked against the release and stored in your resources directory.
+Files that are the same in several releases are downloaded only once.
+To free disk space, [`prune_benchmark_archives()`](../reference/prune_benchmark_archives.html) removes downloaded ZIP files whose contents have already been extracted (run it with `dry_run = FALSE`).
 
-## Publish distributed computations
+## Citing a Release
 
-Workers write unpublished files beneath `resources_directory/DGM/results`. A CSV
-shard contains one method and setting, and has unique condition/repetition keys.
-Workers must use disjoint keys; report the package version that actually generated
-each batch. Use `source = "local"` with result readers, and
-`results_source = "local"` when computing measures from these unpublished files.
-Publishing is done by a maintainer after the workers finish.
+Every release has its own DOI (the `doi` column of `list_benchmark_releases()`).
+Cite the DOI of the release you used, together with the package (`citation("PublicationBiasBenchmark")`).
 
-Maintainers publish the finished shards with internal, token-gated functions that
-are not exported. The maintainer workflow is described in `RELEASING.md` in the
-[GitHub repository](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md).
+## Release History
 
-## OSF baseline
+| Release | Changes |
+|---------|---------|
+| [2026.2](https://doi.org/10.5281/zenodo.23121978) | Corrects 11 replacement-measure tables (AK, MAN, MMPH, and RTMA) that contained missing values because of a bug in combining results. All other files are identical to 2026.1. |
+| [2026.1](https://doi.org/10.5281/zenodo.23070787) | The original benchmark, moved from OSF to Zenodo. |
 
-Release [2026.2](https://doi.org/10.5281/zenodo.23121978), the current default, replaces 11
-replacement-measure tables of 2026.1 whose values were NA because of a `safe_rbind()`
-defect; all other files are identical. The verified baseline is
-[release 2026.1](https://doi.org/10.5281/zenodo.23070787).
-Its catalog references 2,216 logical files in 266 ZIPs across five DGM storage
-records: 10.100 GB compressed and 28.098 GB uncompressed, including all 1,965
-original OSF files. The catalog is a separate Zenodo record. Preliminary
-direct-file uploads were superseded before the package PR was merged; their
-40 storage records were withdrawn after verifying the consolidated replacement.
-Development checkouts pinned to the preliminary catalog checksum cannot fetch
-the replacement catalog; update to the consolidated registry entry.
+## How Are New Releases Made?
 
-The migration retains every original OSF file and source hash. Original mixed
-method measure tables remain in `archive`; per-method tables provide the public
-reader interface. Canonical frozen conditions repair a truncated Bom2019 CSV and
-misassigned Carter2019 metadata. Four WILS example files had `method_setting`
-incorrectly labelled `default`; explicit corrected files preserve every numerical
-token, and the original files remain archived. The worker mapping, archived
-measures and reproduced fits establish the example setting. No archived numerical
-results are recalculated as part of migration.
-
-The one-off migration scripts and source copies are retained locally outside Git.
-Subsequent releases are published by the maintainers as described in `RELEASING.md`.
+New methods are contributed together with their computed results (see [Computing Method Results](Computing_Method_Results.html)).
+The package maintainers then compute the measures, publish a new release containing the new files, and make it the default in the next package version.
+Files that did not change are carried over unchanged, so results that are already published stay exactly the same.
+The maintainer workflow is described in [`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md) in the GitHub repository.

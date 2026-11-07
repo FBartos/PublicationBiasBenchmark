@@ -143,6 +143,37 @@ archive assets can be explicitly corrected, but new assets of these kinds requir
 new DGM. Generation versions remain attached to members; the package version
 building a ZIP is recorded separately.
 
+## Release layout
+
+A release is a catalog record (`release.json`, schema 2) and one storage record family
+per DGM. Each storage version holds separate ZIPs for the datasets, each
+method/setting's results, each method/setting's measures, the metadata and the
+original source tables. Ordinary and replacement measures share a ZIP; pairwise
+tables are downloaded only with an explicit `measure = "pairwise"`. Distributed CSV
+shards keep their original bytes inside a ZIP and are combined by the readers.
+
+A download never includes another DGM's datasets or another method's results or
+measures, but a filter can fetch more than it returns: a condition filter downloads
+the whole dataset ZIP that contains the condition, and a measure filter the whole
+measures ZIP of that method/setting. ZIPs are capped at 2,000,000,000 uncompressed
+bytes and split at file boundaries; a larger single file must be prepared as smaller
+worker shards.
+
+Dataset ZIP names state their condition range
+(`Alinaghi2018--datasets--conditions-0001-0041--2026.1.zip`); original tables are
+packaged as `<dgm>--source-tables--<release>.zip`. Part numbers (`part-001`, ...) are
+used only when the condition range cannot distinguish the files.
+
+The catalog pins the frozen conditions, the hashes and producing package version of
+every file (where known) and its source provenance. Catalog versions link the exact
+storage versions with `hasPart`; storage records link the catalog concept with
+`isPartOf`. Readers still accept schema-1 (direct-file) catalogs.
+
+The user cache holds `releases/<release>/release.json`, `cache/<sha256>/<filename>`
+and `archives/<sha256>/<zipname>`. Readers use the selected catalog and verify
+cached bytes before reading; nothing is found by scanning the cache, so a resources
+directory can be shared across package versions and releases.
+
 ## The state directory
 
 Keep the state directory until public verification and registry pinning finish. It
