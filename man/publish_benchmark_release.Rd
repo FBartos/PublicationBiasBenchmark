@@ -91,8 +91,8 @@ have passed.
 }
 \details{
 These functions are maintainer-only and not exported; call them as
-\code{PublicationBiasBenchmark:::plan_benchmark_release()} (see \code{RELEASING.md} in the
-GitHub repository). Staging and publishing first check that the token's account
+\code{PublicationBiasBenchmark:::plan_benchmark_release()} (see \code{.github/RELEASING.md}
+in the GitHub repository). Staging and publishing first check that the token's account
 is an owner or manager of the benchmark community (the gate), take an exclusive
 lock on the state directory and bind the state to the plan. The gate protects
 this package's entry points; it is not a security boundary for Zenodo itself.

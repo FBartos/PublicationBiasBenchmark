@@ -69,4 +69,4 @@ Cite the DOI of the release you used, together with the package (`citation("Publ
 New methods are contributed together with their computed results (see [Computing Method Results](Computing_Method_Results.html)).
 The package maintainers then compute the measures, publish a new release containing the new files, and make it the default in the next package version.
 Files that did not change are carried over unchanged, so results that are already published stay exactly the same.
-The maintainer workflow is described in [`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md) in the GitHub repository.
+The maintainer workflow is described in [`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/.github/RELEASING.md) in the GitHub repository.

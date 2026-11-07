@@ -167,8 +167,8 @@ benchmark_resource <- function(path, dgm_name, kind, method = NULL, method_setti
 #' @return plan_benchmark_release returns a plan; staging returns the staged catalog;
 #' publication returns a registry entry including the catalog's version DOI and hash.
 #' @details These functions are maintainer-only and not exported; call them as
-#' `PublicationBiasBenchmark:::plan_benchmark_release()` (see `RELEASING.md` in the
-#' GitHub repository). Staging and publishing first check that the token's account
+#' `PublicationBiasBenchmark:::plan_benchmark_release()` (see `.github/RELEASING.md`
+#' in the GitHub repository). Staging and publishing first check that the token's account
 #' is an owner or manager of the benchmark community (the gate), take an exclusive
 #' lock on the state directory and bind the state to the plan. The gate protects
 #' this package's entry points; it is not a security boundary for Zenodo itself.
