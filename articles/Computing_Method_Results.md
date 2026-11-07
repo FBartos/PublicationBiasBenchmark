@@ -39,17 +39,14 @@ Before computing results, ensure that:
 
 ## Directory Structure
 
-The benchmark uses the following directory structure for storing
-results:
+The results you compute are stored in the following directory structure
+(the downloaded datasets are kept separately, in the package’s cache):
 
     resources/
     ├── {DGM_NAME}/
-    │   ├── data/
-    │   │   └── {condition_id}.csv          # Presimulated datasets
     │   ├── results/
     │   │   └── {METHOD}-{SETTING}.csv      # Method results
     │   └── metadata/
-    │       ├── dgm-conditions.csv          # Condition parameters
     │       ├── {METHOD}-{SETTING}-sessionInfo.txt
     │       └── {METHOD}-{SETTING}-session.log
 
@@ -65,7 +62,8 @@ package loaded:
 library(PublicationBiasBenchmark)
 
 # Specify path to the directory containing results
-PublicationBiasBenchmark.options(resources_directory = "/path/to/files")
+data_folder <- "/path/to/files"
+PublicationBiasBenchmark.options(resources_directory = data_folder)
 ```
 
 ### Step 2: Define DGMs and Method Information
@@ -109,7 +107,10 @@ locally for subsequent use.
 Now, compute results for your method across all conditions and
 repetitions. The code bellow is a template that you can adapt as needed.
 You will most likely adapt this code to run parallel/using a job
-scheduler on a cluster.
+scheduler on a cluster. In that case, each job can save its results to a
+separate CSV file in the `results/` folder, as long as every file
+contains a single method and setting and no condition-repetition pair
+appears in more than one file.
 
 ``` r
 

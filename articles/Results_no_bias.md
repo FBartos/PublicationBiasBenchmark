@@ -316,7 +316,11 @@ hypothesis was true. A higher power indicates a better method.
 
 ## Session Info
 
-This report was compiled on Wed Sep 30 15:47:58 2026 (UTC) using the
+Data: benchmark release 2026.2 (DOI 10.5281/zenodo.23121978, catalog
+SHA-256
+31c6cd09808e22b979ab73cbecef2b7ab62a0016381c447f0f060e9b6a68043e).
+
+This report was compiled on Sat Nov 07 16:57:10 2026 (UTC) using the
 following computational environment
 
 ``` r
@@ -324,7 +328,7 @@ following computational environment
 sessionInfo()
 ```
 
-    ## R version 4.6.1 (2026-06-24)
+    ## R version 4.6.2 (2026-10-29)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.5 LTS
     ## 
@@ -346,29 +350,26 @@ sessionInfo()
     ## 
     ## other attached packages:
     ## [1] scales_1.4.0                   ggdist_3.3.3                  
-    ## [3] ggplot2_4.0.3                  PublicationBiasBenchmark_0.3.0
+    ## [3] ggplot2_4.0.3                  PublicationBiasBenchmark_0.4.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] gtable_0.3.6         xfun_0.61            bslib_0.12.0        
-    ##  [4] htmlwidgets_1.6.4    lattice_0.22-9       vctrs_0.7.3         
-    ##  [7] tools_4.6.1          Rdpack_2.6.6         generics_0.1.4      
-    ## [10] curl_8.0.0           sandwich_3.1-3       tibble_3.3.1        
-    ## [13] pkgconfig_2.0.3      RColorBrewer_1.1-3   S7_0.2.2            
-    ## [16] desc_1.4.3           distributional_0.9.0 lifecycle_1.0.5     
-    ## [19] compiler_4.6.1       farver_2.1.2         stringr_1.6.0       
-    ## [22] textshaping_1.0.5    htmltools_0.5.9      sass_0.4.10         
-    ## [25] clubSandwich_0.7.0   yaml_2.3.12          pillar_1.11.1       
-    ## [28] pkgdown_2.2.1        jquerylib_0.1.4      cachem_1.1.0        
-    ## [31] tidyselect_1.2.1     digest_0.6.39        stringi_1.8.9       
-    ## [34] dplyr_1.2.1          purrr_1.2.2          labeling_0.4.3      
-    ## [37] fastmap_1.2.0        grid_4.6.1           cli_3.6.6           
-    ## [40] magrittr_2.0.5       triebeard_0.4.1      crul_1.6.0          
-    ## [43] osfr_0.2.9           withr_3.0.3          rmarkdown_2.32      
-    ## [46] httr_1.4.9           otel_0.2.0           ragg_1.5.2          
-    ## [49] zoo_1.9-1            kableExtra_1.4.1     memoise_2.0.1       
-    ## [52] evaluate_1.0.5       knitr_1.52           rbibutils_2.4.1     
-    ## [55] viridisLite_0.4.3    rlang_1.3.0          urltools_1.7.3.1    
-    ## [58] Rcpp_1.1.2           glue_1.8.1           httpcode_0.3.0      
-    ## [61] xml2_1.6.0           svglite_2.2.2        rstudioapi_0.19.0   
-    ## [64] jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
-    ## [67] fs_2.1.0
+    ##  [1] sandwich_3.1-3       sass_0.4.10          generics_0.1.4      
+    ##  [4] xml2_1.6.0           stringi_1.8.9        lattice_0.23-1      
+    ##  [7] digest_0.6.39        magrittr_2.0.5       evaluate_1.0.5      
+    ## [10] grid_4.6.2           RColorBrewer_1.1-3   fastmap_1.2.0       
+    ## [13] jsonlite_2.0.0       viridisLite_0.4.3    textshaping_1.0.5   
+    ## [16] jquerylib_0.1.4      Rdpack_2.6.6         cli_3.6.6           
+    ## [19] rlang_1.3.0          rbibutils_2.4.1      withr_3.0.3         
+    ## [22] cachem_1.1.0         yaml_2.3.12          otel_0.2.0          
+    ## [25] tools_4.6.2          dplyr_1.2.1          kableExtra_1.4.1    
+    ## [28] curl_8.1.0           vctrs_0.7.3          R6_2.6.1            
+    ## [31] clubSandwich_0.7.0   zoo_1.9-1            lifecycle_1.0.5     
+    ## [34] stringr_1.6.0        fs_2.1.0             htmlwidgets_1.6.4   
+    ## [37] ragg_1.5.2           pkgconfig_2.0.3      desc_1.4.3          
+    ## [40] pkgdown_2.2.1        bslib_0.12.0         pillar_1.11.1       
+    ## [43] gtable_0.3.6         glue_1.8.1           Rcpp_1.1.2          
+    ## [46] systemfonts_1.3.2    xfun_0.62            tibble_3.3.1        
+    ## [49] tidyselect_1.2.1     rstudioapi_0.19.0    knitr_1.52          
+    ## [52] farver_2.1.2         htmltools_0.5.9      labeling_0.4.3      
+    ## [55] svglite_2.2.2        rmarkdown_2.32       compiler_4.6.2      
+    ## [58] S7_0.2.2             distributional_0.9.0

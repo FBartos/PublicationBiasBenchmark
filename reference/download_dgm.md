@@ -1,14 +1,10 @@
-# Download Datasets/Results/Measures of a DGM
+# Download Benchmark Datasets, Results, and Measures
 
-This function downloads datasets/results/measures of a specified
-Data-Generating Mechanism (DGM) from the OSF repository
-(<https://osf.io/exf3m/>). The datasets/results/measures are saved to
-the location specified via
-`PublicationBiasBenchmark.options(resources_directory = "/path/")`. To
-set the location permanently, specify the
-PublicationBiasBenchmark_RESOURCES environment variable. The data are
-stored in dgm_name/datasets, dgm_name/results, dgm_name/measures
-subfolders.
+Download immutable catalog-selected direct files or ZIP units. Archives
+and extracted members are checked against size, SHA-256 and MD5. A
+condition/metric filter may fetch other members of its selected unit.
+Public downloads require no token; verified member caches avoid new
+downloads.
 
 ## Usage
 
@@ -17,21 +13,39 @@ download_dgm_datasets(
   dgm_name,
   overwrite = FALSE,
   progress = TRUE,
-  max_try = 10
+  max_try = 10,
+  release = NULL,
+  condition_id = NULL
 )
 
 download_dgm_results(
   dgm_name,
   overwrite = FALSE,
   progress = TRUE,
-  max_try = 10
+  max_try = 10,
+  method = NULL,
+  method_setting = NULL,
+  release = NULL
 )
 
 download_dgm_measures(
   dgm_name,
   overwrite = FALSE,
   progress = TRUE,
-  max_try = 10
+  max_try = 10,
+  method = NULL,
+  method_setting = NULL,
+  release = NULL,
+  measure = NULL,
+  replacement = NULL
+)
+
+download_dgm_metadata(
+  dgm_name,
+  overwrite = FALSE,
+  progress = TRUE,
+  max_try = 10,
+  release = NULL
 )
 ```
 
@@ -39,31 +53,46 @@ download_dgm_measures(
 
 - dgm_name:
 
-  Character string specifying the name of the DGM dataset to download.
+  DGM name.
 
 - overwrite:
 
-  Logical indicating whether to overwrite existing files. Defaults to
-  `FALSE`, which means only missing files will be downloaded.
+  Re-download selected files even if their cached copies verify.
 
 - progress:
 
-  Logical indicating whether to show progress downloading files.
-  Defaults to `TRUE`.
+  Display download progress.
 
 - max_try:
 
-  Integet specifying how many times should the function attempt
-  reconnecting to OSF upon failure.
+  Maximum attempts per file.
+
+- release:
+
+  Release identifier or catalog; NULL uses the package default.
+
+- condition_id:
+
+  Optional condition ID(s) for datasets.
+
+- method:
+
+  Optional method name(s); NULL selects all available methods.
+
+- method_setting:
+
+  Optional method setting(s).
+
+- measure:
+
+  Optional measure name(s); pairwise comparisons require "pairwise".
+
+- replacement:
+
+  Whether replacement measures are selected; NULL downloads both
+  variants.
 
 ## Value
 
-`TRUE` if the download was successful, otherwise an error is raised.
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-  download_dgm_datasets("no_bias")
-} # }
-```
+Invisible TRUE on success or FALSE when an interactive download is
+declined.

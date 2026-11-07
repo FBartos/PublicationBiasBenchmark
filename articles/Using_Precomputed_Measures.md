@@ -77,9 +77,10 @@ download_dgm_measures("Stanley2017")
 
 The measures are downloaded to a local cache directory and are
 automatically available for subsequent analysis. You only need to
-download them once, unless the benchmark measures were updated with a
-new method (in that case, you need to specify `overwrite = TRUE`
-argument).
+download them once. To download only some methods, use the `method`
+argument (e.g., `method = "RMA"`). See [Benchmark
+Releases](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.md)
+for how to use a specific version of the benchmark data.
 
 ## Retrieving Precomputed Measures
 

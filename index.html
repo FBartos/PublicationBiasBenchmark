@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,7 @@
     <li><a class="dropdown-item" href="articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="articles/Benchmark_Releases.html">Releases</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
@@ -79,19 +80,21 @@
 <div class="section level1">
 <h1 id="publicationbiasbenchmark">PublicationBiasBenchmark<a class="anchor" aria-label="anchor" href="#publicationbiasbenchmark"></a>
 </h1>
-<p><strong>PublicationBiasBenchmark</strong> is an R package for benchmarking publication bias correction methods through simulation studies. It provides:<br>
-- Predefined data-generating mechanisms from the literature<br>
-- Functions for running meta-analytic methods on simulated data<br>
-- Pre-simulated datasets and pre-computed results for reproducible benchmarks<br>
-- Tools for visualizing and comparing method performance</p>
-<p>All datasets and results are hosted on OSF: <a href="https://doi.org/10.17605/OSF.IO/EXF3M" class="external-link uri">https://doi.org/10.17605/OSF.IO/EXF3M</a></p>
+<p><strong>PublicationBiasBenchmark</strong> is an R package for benchmarking publication bias correction methods through simulation studies. It provides:</p>
+<ul>
+<li>Predefined data-generating mechanisms from the literature</li>
+<li>Functions for running meta-analytic methods on simulated data</li>
+<li>Pre-simulated datasets and pre-computed results for reproducible benchmarks</li>
+<li>Tools for visualizing and comparing method performance</li>
+</ul>
+<p>All datasets, results, and measures are hosted on Zenodo: <a href="https://zenodo.org/communities/publicationbiasbenchmark/" class="external-link uri">https://zenodo.org/communities/publicationbiasbenchmark/</a> (originally on OSF: <a href="https://doi.org/10.17605/OSF.IO/EXF3M" class="external-link uri">https://doi.org/10.17605/OSF.IO/EXF3M</a>).</p>
 <p>For the methodology of living synthetic benchmarks please cite:</p>
 <blockquote>
 <p>Bartoš, F., Pawel, S., &amp; Siepe, B. S. (2025). Living synthetic benchmarks: A neutral and cumulative framework for simulation studies. <em>arXiv Preprint</em>. <a href="https://doi.org/10.48550/arXiv.2510.19489" class="external-link uri">https://doi.org/10.48550/arXiv.2510.19489</a></p>
 </blockquote>
 <p>For the publication bias benchmark R package please cite:</p>
 <blockquote>
-<p>Bartoš, F., Pawel, S., &amp; Siepe, B. S. (2025). PublicationBiasBenchmark: Benchmark for publication bias correction methods (version 0.1.0). <a href="https://github.com/FBartos/PublicationBiasBenchmark" class="external-link uri">https://github.com/FBartos/PublicationBiasBenchmark</a></p>
+<p>Bartoš F, Pawel S, Siepe BS, Čala P (2026). <em>PublicationBiasBenchmark: Benchmark for publication bias correction methods</em>. version 0.4.0, <a href="https://cran.r-project.org/package=PublicationBiasBenchmark" class="external-link uri">https://cran.r-project.org/package=PublicationBiasBenchmark</a>.</p>
 </blockquote>
 <p>Overviews of the benchmark results are available as articles on the package website:</p>
 <ul>
@@ -165,12 +168,13 @@
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># download the pre-computed results</span></span>
-<span><span class="fu"><a href="reference/download_dgm.html">download_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/download_dgm.html">download_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span>, method <span class="op">=</span> <span class="st">"RMA"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># retrieve results the first repetition of first condition of RMA from the downloaded results</span></span>
 <span><span class="fu"><a href="reference/retrieve_dgm_results.html">retrieve_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span>, method <span class="op">=</span> <span class="st">"RMA"</span>, condition_id <span class="op">=</span> <span class="fl">1</span>, repetition_id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># retrieve all results across all conditions and repetitions</span></span>
+<span><span class="fu"><a href="reference/download_dgm.html">download_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/retrieve_dgm_results.html">retrieve_dgm_results</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -178,12 +182,13 @@
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># download the pre-computed measures</span></span>
-<span><span class="fu"><a href="reference/download_dgm.html">download_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/download_dgm.html">download_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span>, method <span class="op">=</span> <span class="st">"RMA"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># retrieve measures of bias the first condition of RMA from the downloaded results</span></span>
 <span><span class="fu"><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span>, measure <span class="op">=</span> <span class="st">"bias"</span>, method <span class="op">=</span> <span class="st">"RMA"</span>, condition_id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># retrieve all measures across all conditions and measures</span></span>
+<span><span class="fu"><a href="reference/download_dgm.html">download_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures</a></span><span class="op">(</span><span class="st">"no_bias"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -221,9 +226,9 @@
 <li>
 <code><a href="reference/validate_dgm_setting.html">validate_dgm_setting()</a></code>: Validates (custom) setting of the data-generating mechanism.</li>
 <li>
-<code><a href="reference/download_dgm.html">download_dgm_datasets()</a></code>: Downloads pre-simulated datasets from the OSF repository.</li>
+<code><a href="reference/download_dgm.html">download_dgm_datasets()</a></code>: Downloads pre-simulated datasets from the Zenodo release.</li>
 <li>
-<code><a href="reference/retrieve_dgm_dataset.html">retrieve_dgm_dataset()</a></code>: Retrieves the pre-simulated dataset of a given condition and repetition from downloaded from the pre-downloaded OSF repository.</li>
+<code><a href="reference/retrieve_dgm_dataset.html">retrieve_dgm_dataset()</a></code>: Retrieves the pre-simulated dataset of a given condition and repetition from the downloaded benchmark data.</li>
 </ul>
 </div>
 <div class="section level4">
@@ -235,9 +240,9 @@
 <li>
 <code><a href="reference/method_settings.html">method_settings()</a></code>: Lists prespecified settings of the method.</li>
 <li>
-<code><a href="reference/download_dgm.html">download_dgm_results()</a></code>: Downloads pre-computed results from the OSF repository.</li>
+<code><a href="reference/download_dgm.html">download_dgm_results()</a></code>: Downloads pre-computed results from the Zenodo release.</li>
 <li>
-<code><a href="reference/retrieve_dgm_results.html">retrieve_dgm_results()</a></code>: Retrieves the pre-computed results of a given method, condition, and repetition from the pre-downloaded OSF repository.</li>
+<code><a href="reference/retrieve_dgm_results.html">retrieve_dgm_results()</a></code>: Retrieves the pre-computed results of a given method, condition, and repetition from the downloaded benchmark data.</li>
 </ul>
 </div>
 <div class="section level4">
@@ -247,9 +252,9 @@
 <li>
 <code><a href="reference/measures.html">bias()</a></code>, <code><a href="reference/measures.html">bias_mcse()</a></code>, etc.: Functions to compute performance measures and their Monte Carlo standard errors.</li>
 <li>
-<code><a href="reference/download_dgm.html">download_dgm_measures()</a></code>: Downloads pre-computed performance measures from the OSF repository.</li>
+<code><a href="reference/download_dgm.html">download_dgm_measures()</a></code>: Downloads pre-computed performance measures from the Zenodo release.</li>
 <li>
-<code><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures()</a></code>: Retrieves the pre-computed performance measures of a given method, condition, and repetition from the pre-downloaded OSF repository.</li>
+<code><a href="reference/retrieve_dgm_measures.html">retrieve_dgm_measures()</a></code>: Retrieves the pre-computed performance measures of a given method, condition, and repetition from the downloaded benchmark data.</li>
 </ul>
 </div>
 </div>
@@ -319,6 +324,8 @@
 <code>"MAN"</code>: Meta-Analysis of Nonaffirmative Studies (Mathur &amp; VanderWeele, 2020)</li>
 <li>
 <code>"RTMA"</code>: Right-Truncated Meta-Analysis (Mathur, 2024)</li>
+<li>
+<code>"MMPH"</code>: Mixture Model of P-Hacking (Moss &amp; De Bin, 2023)</li>
 </ul>
 </div>
 <div class="section level3">
@@ -327,36 +334,9 @@
 <p>See <code><a href="reference/measures.html">?measures</a></code> for the full list of performance measures and their Monte Carlo standard errors/</p>
 </div>
 <div class="section level3">
-<h3 id="dgm-osf-repositories">DGM OSF Repositories<a class="anchor" aria-label="anchor" href="#dgm-osf-repositories"></a>
+<h3 id="benchmark-releases">Benchmark releases<a class="anchor" aria-label="anchor" href="#benchmark-releases"></a>
 </h3>
-<p>All DGMs are linked to the OSF repository (<a href="https://osf.io/exf3m/" class="external-link uri">https://osf.io/exf3m/</a>) and contain the following elements:</p>
-<ul>
-<li>
-<code>data</code> : folder containing by-condition simulated datasets for all repetitions</li>
-<li>
-<code>results</code> : folder containing by-method results for all conditions * repetitions</li>
-<li>
-<code>measures</code> : folder containing by-measure performance for all methods * conditions</li>
-<li>
-<code>metadata</code> : folder containing the following information:
-<ul>
-<li>
-<code>dgm-conditions.csv</code> : file mapping of all conditions and the corresponding settings</li>
-<li>
-<code>dgm-generation.R</code> : file with code for exact reproduction of the pre-simulated datasets</li>
-<li>
-<code>dgm-sessionInfo.txt</code>: file with reproducibility details for the pre-simulated datasets</li>
-<li>
-<code>dgm-session.log</code>: file with reproducibility details for the pre-simulated datasets (based on sessioninfo package)</li>
-<li>
-<code>results.R</code> : file with code for exact reproduction of the by method results (might be method / method groups specific)</li>
-<li>
-<code>results-sessionInfo.txt</code>: file with reproducibility details for the precomputed results (might be method / method groups specific)</li>
-<li>
-<code>pm-computation.R</code> : file with code for computation of performance measures</li>
-</ul>
-</li>
-</ul>
+<p>The benchmark data are published in versioned releases, and each package version uses a default release. Use <code><a href="reference/benchmark_catalog.html">list_benchmark_releases()</a></code> to see the available releases and the <code>release</code> argument (e.g., <code>release = "2026.2"</code>) to use a specific one. See <a href="https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html">Benchmark Releases</a> for details and for how to cite a release.</p>
 </div>
 <div class="section level3">
 <h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -388,6 +368,9 @@ Mathur, M. B. (2024). P-hacking in meta-analyses: A formalization and new meta-a
 </div>
 <div id="ref-mathur2020sensitivity" class="csl-entry">
 Mathur, M. B., &amp; VanderWeele, T. J. (2020). Sensitivity analysis for publication bias in meta-analyses. <em>Journal of the Royal Statistical Society Series C: Applied Statistics</em>, <em>69</em>(5), 1091–1119. <a href="https://doi.org/10.1111/rssc.12440" class="external-link uri">https://doi.org/10.1111/rssc.12440</a>
+</div>
+<div id="ref-moss2023modelling" class="csl-entry">
+Moss, J., &amp; De Bin, R. (2023). Modelling publication bias and p-hacking. <em>Biometrics</em>, <em>79</em>(1), 319–331. <a href="https://doi.org/10.1111/biom.13560" class="external-link uri">https://doi.org/10.1111/biom.13560</a>
 </div>
 <div id="ref-simonsohn2014pcurve" class="csl-entry">
 Simonsohn, U., Nelson, L. D., &amp; Simmons, J. P. (2014). P-curve and effect size: Correcting for publication bias using only significant results. <em>Perspectives on Psychological Science</em>, <em>9</em>(6), 666–681. <a href="https://doi.org/10.1177/1745691614553988" class="external-link uri">https://doi.org/10.1177/1745691614553988</a>

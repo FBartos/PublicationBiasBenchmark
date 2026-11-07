@@ -1,45 +1,42 @@
-# Retrieve a Pre-Simulated Condition and Repetition From a DGM
+# Retrieve Archived DGM Datasets
 
-This function returns a pre-simulated dataset of a given repetition and
-condition from a dgm. The pre-simulated datasets must be already stored
-locally. See
-[download_dgm](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md)
-function for more guidance.
+Read locally cached dataset shards using frozen condition definitions.
 
 ## Usage
 
 ``` r
-retrieve_dgm_dataset(dgm_name, condition_id, repetition_id = NULL)
+retrieve_dgm_dataset(
+  dgm_name,
+  condition_id,
+  repetition_id = NULL,
+  release = NULL,
+  source = c("release", "local")
+)
 ```
 
 ## Arguments
 
 - dgm_name:
 
-  Character string specifying the DGM type
+  DGM name.
 
 - condition_id:
 
-  which conditions should settings be returned for.
+  Optional condition ID(s) for datasets.
 
 - repetition_id:
 
-  Which repetition should be returned. The complete condition can be
-  returned by setting to either `NULL`.
+  Repetition ID(s); NULL selects all repetitions.
+
+- release:
+
+  Release identifier or catalog; NULL uses the package default.
+
+- source:
+
+  "release" reads verified catalog-selected files; "local" reads
+  unpublished computation files in resources_directory/DGM.
 
 ## Value
 
-A data.frame
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-  # get condition 1, repetition 1
-  retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
-
-  # get condition 1, all repetitions
-  retrieve_dgm_dataset("no_bias", condition_id = 1)
-} # }
-
-```
+A data frame.

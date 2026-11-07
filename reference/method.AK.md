@@ -81,9 +81,9 @@ result <- run_method("AK", data, "default")
 #> Warning: NaNs produced
 print(result)
 #>   method  estimate standard_error   ci_lower  ci_upper    p_value BF
-#> 1     AK 0.1239951     0.07280359 -0.1892534 0.4372437 0.09217477 NA
+#> 1     AK 0.1239951      0.0728036 -0.1892535 0.4372437 0.09217478 NA
 #>   convergence note tau_estimate      tau2_se   bias_coefficient
-#> 1        TRUE   NA            0 1.084652e-10 0.0685673164368531
+#> 1        TRUE   NA            0 1.084652e-10 0.0685673436538734
 #>   bias_coefficient_se version method_setting
-#> 1   0.110251775397694     AK1        default
+#> 1   0.110251838575673     AK1        default
 ```

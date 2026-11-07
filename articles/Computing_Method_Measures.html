@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PublicationBiasBenchmark</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,7 @@
     <li><a class="dropdown-item" href="../articles/Using_Precomputed_Measures.html">Use Precomputed Measures</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../articles/Benchmark_Releases.html">Releases</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
@@ -188,7 +189,7 @@ measures:</p>
 <code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">dgm_name</span> <span class="kw">in</span> <span class="va">dgm_names</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="co"># Download precomputed results for existing methods (for replacements)</span></span>
-<span>  <span class="fu"><a href="../reference/download_dgm.html">download_dgm_results</a></span><span class="op">(</span><span class="va">dgm_name</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/download_dgm.html">download_dgm_results</a></span><span class="op">(</span><span class="va">dgm_name</span>, method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RMA"</span>, <span class="st">"FMA"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co">### Simple performance metrics ----</span></span>
 <span>  <span class="co"># Compute primary measures (not dependent on CI or power)</span></span>
@@ -262,7 +263,8 @@ measures:</p>
 <span>    bf_col          <span class="op">=</span> <span class="st">"BF"</span>,</span>
 <span>    convergence_col <span class="op">=</span> <span class="st">"convergence"</span>,</span>
 <span>    n_repetitions   <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>    overwrite       <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    overwrite       <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    replacement_source <span class="op">=</span> <span class="st">"release"</span></span>
 <span>  <span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># If your method does not return CI or hypothesis test, skip these measures</span></span>
@@ -283,7 +285,8 @@ measures:</p>
 <span>    bf_col          <span class="op">=</span> <span class="st">"BF"</span>,</span>
 <span>    convergence_col <span class="op">=</span> <span class="st">"convergence"</span>,</span>
 <span>    n_repetitions   <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>    overwrite       <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    overwrite       <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    replacement_source <span class="op">=</span> <span class="st">"release"</span></span>
 <span>  <span class="op">)</span></span>
 <span>  </span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -353,6 +356,19 @@ indicator (default: <code>"convergence"</code>)</li>
 <h3 id="control-parameters">Control Parameters<a class="anchor" aria-label="anchor" href="#control-parameters"></a>
 </h3>
 <ul>
+<li>
+<strong>results_source</strong>: Where the results of your method
+are read from: <code>"local"</code> (default) for the results you
+computed, or <code>"release"</code> for the published benchmark
+results</li>
+<li>
+<strong>replacement_source</strong>: Where the results of the
+replacement methods are read from (default: same as
+<code>results_source</code>); <code>"release"</code> uses the published
+results of the established methods</li>
+<li>
+<strong>release</strong>: Benchmark release used for published
+results (default: the package’s default release)</li>
 <li>
 <strong>n_repetitions</strong>: Expected number of repetitions per
 condition (default: 1000)</li>

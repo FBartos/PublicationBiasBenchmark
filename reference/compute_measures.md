@@ -27,7 +27,10 @@ compute_measures(
   method_replacements = NULL,
   n_repetitions = 1000,
   overwrite = FALSE,
-  conditions = NULL
+  conditions = NULL,
+  results_source = c("local", "release"),
+  release = NULL,
+  replacement_source = NULL
 )
 ```
 
@@ -142,7 +145,32 @@ compute_measures(
 
 - conditions:
 
-  Data frame of conditions from dgm_conditions()
+  Data frame of conditions from dgm_conditions(). If NULL, the selected
+  release's frozen conditions are used when `results_source = "release"`
+  and `dgm_conditions(dgm_name)` otherwise. With local results and
+  release replacements the package's conditions are used, and the
+  release replacement results must cover each of them (missing
+  repetitions are an error).
+
+- results_source:
+
+  Where the results of the computed methods come from: "local" (default)
+  reads unpublished outputs under resources_directory/DGM/results;
+  "release" reads verified results of a published benchmark release (see
+  download_dgm_results()).
+
+- release:
+
+  Benchmark release identifier or catalog, passed to the result reader
+  whenever either source is "release". It is ignored, with a warning,
+  when both `results_source` and `replacement_source` are "local".
+
+- replacement_source:
+
+  Where the results of the replacement methods in `method_replacements`
+  come from: "local" or "release". NULL (default) uses `results_source`.
+  Use `replacement_source = "release"` to replace a new method's
+  failures with published results of established methods.
 
 ## Value
 
@@ -153,16 +181,18 @@ TRUE upon successfully computation of the results file
 ``` r
 if (FALSE) { # \dontrun{
 # Download DGM results
-# Requires OSF 'OSF_PAT' environment variable.
+# Public downloads require no token.
 dgm_name <- "no_bias"
 download_dgm_results(dgm_name)
 
-# Basic usage
+# Basic usage; results_source = "release" reads the downloaded published
+# results, the default "local" reads unpublished outputs from the resources directory
 compute_measures(
   dgm_name        = dgm_name,
   method          = c("mean", "RMA", "PET"),
   method_setting  = c("default", "default", "default"),
-  measures        = c("bias", "mse", "coverage")
+  measures        = c("bias", "mse", "coverage"),
+  results_source  = "release"
 )
 
 # With method replacements for non-converged results
@@ -177,7 +207,8 @@ compute_measures(
   method              = c("RMA", "PET"),
   method_setting      = c("default", "default"),
   method_replacements = method_replacements,
-  measures            = c("bias", "mse")
+  measures            = c("bias", "mse"),
+  results_source      = "release"
 )
 } # }
 ```

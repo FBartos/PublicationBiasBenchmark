@@ -4,15 +4,17 @@
 
 **PublicationBiasBenchmark** is an R package for benchmarking
 publication bias correction methods through simulation studies. It
-provides:  
-- Predefined data-generating mechanisms from the literature  
-- Functions for running meta-analytic methods on simulated data  
+provides:
+
+- Predefined data-generating mechanisms from the literature
+- Functions for running meta-analytic methods on simulated data
 - Pre-simulated datasets and pre-computed results for reproducible
-benchmarks  
+  benchmarks
 - Tools for visualizing and comparing method performance
 
-All datasets and results are hosted on OSF:
-<https://doi.org/10.17605/OSF.IO/EXF3M>
+All datasets, results, and measures are hosted on Zenodo:
+<https://zenodo.org/communities/publicationbiasbenchmark/> (originally
+on OSF: <https://doi.org/10.17605/OSF.IO/EXF3M>).
 
 For the methodology of living synthetic benchmarks please cite:
 
@@ -22,10 +24,9 @@ For the methodology of living synthetic benchmarks please cite:
 
 For the publication bias benchmark R package please cite:
 
-> Bartoš, F., Pawel, S., & Siepe, B. S. (2025).
-> PublicationBiasBenchmark: Benchmark for publication bias correction
-> methods (version 0.1.0).
-> <https://github.com/FBartos/PublicationBiasBenchmark>
+> Bartoš F, Pawel S, Siepe BS, Čala P (2026). *PublicationBiasBenchmark:
+> Benchmark for publication bias correction methods*. version 0.4.0,
+> <https://cran.r-project.org/package=PublicationBiasBenchmark>.
 
 Overviews of the benchmark results are available as articles on the
 package website:
@@ -126,12 +127,13 @@ retrieve_dgm_dataset("no_bias", condition_id = 1, repetition_id = 1)
 ``` r
 
 # download the pre-computed results
-download_dgm_results("no_bias")
+download_dgm_results("no_bias", method = "RMA")
 
 # retrieve results the first repetition of first condition of RMA from the downloaded results
 retrieve_dgm_results("no_bias", method = "RMA", condition_id = 1, repetition_id = 1)
 
 # retrieve all results across all conditions and repetitions
+download_dgm_results("no_bias")
 retrieve_dgm_results("no_bias")
 ```
 
@@ -140,12 +142,13 @@ retrieve_dgm_results("no_bias")
 ``` r
 
 # download the pre-computed measures
-download_dgm_measures("no_bias")
+download_dgm_measures("no_bias", method = "RMA")
 
 # retrieve measures of bias the first condition of RMA from the downloaded results
 retrieve_dgm_measures("no_bias", measure = "bias", method = "RMA", condition_id = 1)
 
 # retrieve all measures across all conditions and measures
+download_dgm_measures("no_bias")
 retrieve_dgm_measures("no_bias")
 ```
 
@@ -183,10 +186,10 @@ run_method("RMA", df)
 - [`validate_dgm_setting()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/validate_dgm_setting.md):
   Validates (custom) setting of the data-generating mechanism.
 - [`download_dgm_datasets()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md):
-  Downloads pre-simulated datasets from the OSF repository.
+  Downloads pre-simulated datasets from the Zenodo release.
 - [`retrieve_dgm_dataset()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_dataset.md):
   Retrieves the pre-simulated dataset of a given condition and
-  repetition from downloaded from the pre-downloaded OSF repository.
+  repetition from the downloaded benchmark data.
 
 #### Method Estimation And Results
 
@@ -196,10 +199,10 @@ run_method("RMA", df)
 - [`method_settings()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/method_settings.md):
   Lists prespecified settings of the method.
 - [`download_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md):
-  Downloads pre-computed results from the OSF repository.
+  Downloads pre-computed results from the Zenodo release.
 - [`retrieve_dgm_results()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_results.md):
   Retrieves the pre-computed results of a given method, condition, and
-  repetition from the pre-downloaded OSF repository.
+  repetition from the downloaded benchmark data.
 
 #### Performance measures And Results
 
@@ -208,10 +211,10 @@ run_method("RMA", df)
   etc.: Functions to compute performance measures and their Monte Carlo
   standard errors.
 - [`download_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/download_dgm.md):
-  Downloads pre-computed performance measures from the OSF repository.
+  Downloads pre-computed performance measures from the Zenodo release.
 - [`retrieve_dgm_measures()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/retrieve_dgm_measures.md):
   Retrieves the pre-computed performance measures of a given method,
-  condition, and repetition from the pre-downloaded OSF repository.
+  condition, and repetition from the downloaded benchmark data.
 
 ### Available Data-Generating Mechanisms
 
@@ -257,6 +260,7 @@ See `methods("method")` for the full list:
 - `"MAN"`: Meta-Analysis of Nonaffirmative Studies (Mathur &
   VanderWeele, 2020)
 - `"RTMA"`: Right-Truncated Meta-Analysis (Mathur, 2024)
+- `"MMPH"`: Mixture Model of P-Hacking (Moss & De Bin, 2023)
 
 ### Available Performance Measures
 
@@ -265,32 +269,15 @@ See
 for the full list of performance measures and their Monte Carlo standard
 errors/
 
-### DGM OSF Repositories
+### Benchmark releases
 
-All DGMs are linked to the OSF repository (<https://osf.io/exf3m/>) and
-contain the following elements:
-
-- `data` : folder containing by-condition simulated datasets for all
-  repetitions
-- `results` : folder containing by-method results for all conditions \*
-  repetitions
-- `measures` : folder containing by-measure performance for all methods
-  \* conditions
-- `metadata` : folder containing the following information:
-  - `dgm-conditions.csv` : file mapping of all conditions and the
-    corresponding settings
-  - `dgm-generation.R` : file with code for exact reproduction of the
-    pre-simulated datasets
-  - `dgm-sessionInfo.txt`: file with reproducibility details for the
-    pre-simulated datasets
-  - `dgm-session.log`: file with reproducibility details for the
-    pre-simulated datasets (based on sessioninfo package)
-  - `results.R` : file with code for exact reproduction of the by method
-    results (might be method / method groups specific)
-  - `results-sessionInfo.txt`: file with reproducibility details for the
-    precomputed results (might be method / method groups specific)
-  - `pm-computation.R` : file with code for computation of performance
-    measures
+The benchmark data are published in versioned releases, and each package
+version uses a default release. Use
+[`list_benchmark_releases()`](https://fbartos.github.io/PublicationBiasBenchmark/reference/benchmark_catalog.md)
+to see the available releases and the `release` argument (e.g.,
+`release = "2026.2"`) to use a specific one. See [Benchmark
+Releases](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html)
+for details and for how to cite a release.
 
 ### References
 
@@ -334,6 +321,9 @@ Mathur, M. B., & VanderWeele, T. J. (2020). Sensitivity analysis for
 publication bias in meta-analyses. *Journal of the Royal Statistical
 Society Series C: Applied Statistics*, *69*(5), 1091–1119.
 <https://doi.org/10.1111/rssc.12440>
+
+Moss, J., & De Bin, R. (2023). Modelling publication bias and p-hacking.
+*Biometrics*, *79*(1), 319–331. <https://doi.org/10.1111/biom.13560>
 
 Simonsohn, U., Nelson, L. D., & Simmons, J. P. (2014). P-curve and
 effect size: Correcting for publication bias using only significant

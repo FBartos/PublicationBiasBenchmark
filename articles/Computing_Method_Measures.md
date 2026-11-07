@@ -104,7 +104,7 @@ measures:
 for (dgm_name in dgm_names) {
   
   # Download precomputed results for existing methods (for replacements)
-  download_dgm_results(dgm_name)
+  download_dgm_results(dgm_name, method = c("RMA", "FMA"))
   
   ### Simple performance metrics ----
   # Compute primary measures (not dependent on CI or power)
@@ -178,7 +178,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    replacement_source = "release"
   )
   
   # If your method does not return CI or hypothesis test, skip these measures
@@ -199,7 +200,8 @@ for (dgm_name in dgm_names) {
     bf_col          = "BF",
     convergence_col = "convergence",
     n_repetitions   = 1000,
-    overwrite       = FALSE
+    overwrite       = FALSE,
+    replacement_source = "release"
   )
   
 }
@@ -241,6 +243,14 @@ for (dgm_name in dgm_names) {
 
 ### Control Parameters
 
+- **results_source**: Where the results of your method are read from:
+  `"local"` (default) for the results you computed, or `"release"` for
+  the published benchmark results
+- **replacement_source**: Where the results of the replacement methods
+  are read from (default: same as `results_source`); `"release"` uses
+  the published results of the established methods
+- **release**: Benchmark release used for published results (default:
+  the package’s default release)
 - **n_repetitions**: Expected number of repetitions per condition
   (default: 1000)
 - **verbose**: Whether to print progress messages (default: TRUE)
