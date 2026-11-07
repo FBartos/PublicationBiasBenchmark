@@ -70,15 +70,10 @@ Before accessing the precomputed results, you need to download them from the pac
 download_dgm_results("Stanley2017")
 ```
 
-**Note**: Raw results files are significantly larger than the summarized measures files. Each DGM may require several hundred megabytes of storage space. 
-Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
-Use `method = "RMA"` to download a single method and `release = "2026.1"` to pin the benchmark release.
+**Note**: Raw results files are significantly larger than the summarized measures files. Each DGM may require several hundred megabytes of storage space.
+To download only some methods, use the `method` argument (e.g., `method = "RMA"`).
 The results are downloaded to a local cache directory and are automatically available for subsequent analysis.
-You only need to download them once, for each release. A newer release reuses unchanged cached files.
-Archive-backed releases fetch results ZIPs only for the selected DGM, method and
-setting. Each ZIP preserves separate worker CSV shards and their producing versions;
-retrieval combines those shards automatically. A condition filter during retrieval
-can select rows from a previously downloaded method/setting archive.
+You only need to download them once. See [Benchmark Releases](Benchmark_Releases.html) for how to use a specific version of the benchmark data.
 The download function will display progress information and the total size of files being downloaded. 
 
 ## Retrieving Precomputed Results

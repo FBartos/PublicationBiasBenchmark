@@ -4,7 +4,7 @@ template:
 
 navbar:
   structure:
-    left: [intro, results, tutorials, reference, news]
+    left: [intro, results, tutorials, releases, reference, news]
   components:
     results:
       text: Results
@@ -21,11 +21,12 @@ navbar:
         href: articles/Results_Carter2019.html
       - text: Method Replacement
         href: articles/Results_Method_Replacement.html
+    releases:
+      text: Releases
+      href: articles/Benchmark_Releases.html
     tutorials:
       text: How To
       menu:
-      - text: Benchmark Releases
-        href: articles/Benchmark_Releases.html
       - text: Add New DGMs
         href: articles/Adding_New_DGMs.html
       - text: Add New Methods

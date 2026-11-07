@@ -26,17 +26,9 @@ provides:\
 benchmarks\
 - Tools for visualizing and comparing method performance
 
-Datasets, results, and measures are released through Zenodo. Each
-package version pins a verified benchmark release; the original OSF
-source is retained as provenance:
-<https://doi.org/10.17605/OSF.IO/EXF3M>.
-
-The package’s default benchmark release is
-[2026.2](https://doi.org/10.5281/zenodo.23121978). It corrects 11
-replacement-measure tables of the consolidated baseline
-[2026.1](https://doi.org/10.5281/zenodo.23070787), which remains
-available. Cite the release DOI to identify the exact data and results
-used.
+All datasets, results, and measures are hosted on Zenodo:
+<https://zenodo.org/communities/publicationbiasbenchmark/> (originally
+on OSF: <https://doi.org/10.17605/OSF.IO/EXF3M>).
 
 For the methodology of living synthetic benchmarks please cite:
 
@@ -202,8 +194,7 @@ run_method("RMA", df)
 - `download_dgm_datasets()`: Downloads pre-simulated datasets from the
   Zenodo release.
 - `retrieve_dgm_dataset()`: Retrieves the pre-simulated dataset of a
-  given condition and repetition from downloaded from the pre-downloaded
-  Zenodo release.
+  given condition and repetition from the downloaded benchmark data.
 
 #### Method Estimation And Results
 
@@ -213,8 +204,8 @@ run_method("RMA", df)
 - `download_dgm_results()`: Downloads pre-computed results from the
   Zenodo release.
 - `retrieve_dgm_results()`: Retrieves the pre-computed results of a
-  given method, condition, and repetition from the pre-downloaded Zenodo
-  release.
+  given method, condition, and repetition from the downloaded benchmark
+  data.
 
 #### Performance measures And Results
 
@@ -224,7 +215,7 @@ run_method("RMA", df)
   from the Zenodo release.
 - `retrieve_dgm_measures()`: Retrieves the pre-computed performance
   measures of a given method, condition, and repetition from the
-  pre-downloaded Zenodo release.
+  downloaded benchmark data.
 
 ### Available Data-Generating Mechanisms
 
@@ -280,31 +271,12 @@ Monte Carlo standard errors/
 
 ### Benchmark releases
 
-Downloads are selected by a small release catalog.
-`download_dgm_datasets("no_bias")` downloads only that DGM’s datasets;
-`download_dgm_results("no_bias", method = "RMA")` and
-`download_dgm_measures("no_bias", method = "RMA")` download only that
-DGM and method. Releases use ZIP archives with one storage family per
-DGM and independent archives by kind and method/setting. Dataset filters
-may fetch other conditions in the same archive; measure filters may
-fetch other columns and replacement variants for that method. Sharing a
-record never forces downloading its other archives.
-
-`list_benchmark_releases()` lists releases supported by the installed
-package, and `list_benchmark_resources()` shows file sizes, generation
-versions, and checksums. Pass `release = "2026.2"` to download and
-retrieve functions to pin a release explicitly. Files are cached by
-SHA-256 and checked before use. New releases reuse unchanged files and
-upload only additions or corrections; older releases remain
-reproducible.
-
-Releases are published by the project maintainers through internal,
-token-gated functions that are not exported; the maintainer workflow is
-described in
-[`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/RELEASING.md).
-`prune_benchmark_archives()` can reclaim cached ZIP space after members
-are verified. See the [release
-guide](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html).
+The benchmark data are published in versioned releases, and each package
+version uses a default release. Use `list_benchmark_releases()` to see
+the available releases and the `release` argument (e.g.,
+`release = "2026.2"`) to use a specific one. See [Benchmark
+Releases](https://fbartos.github.io/PublicationBiasBenchmark/articles/Benchmark_Releases.html)
+for details and for how to cite a release.
 
 ### References
 

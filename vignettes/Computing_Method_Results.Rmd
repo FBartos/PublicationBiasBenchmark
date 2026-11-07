@@ -40,13 +40,13 @@ Before computing results, ensure that:
 
 ## Directory Structure
 
-Published input datasets are read from the verified release cache. Newly computed outputs use the following local directory structure. Distributed jobs may write separate CSV shards beneath `results/`; each shard must contain a single method and setting with unique condition/repetition keys.
+The downloaded datasets are kept in a cache inside the resources directory. The results you compute are stored in the following directory structure:
 
 ```
 resources/
 ├── {DGM_NAME}/
 │   ├── data/
-│   │   └── {condition_id}.csv          # Unpublished local datasets
+│   │   └── {condition_id}.csv          # Your own datasets (new DGMs only)
 │   ├── results/
 │   │   └── {METHOD}-{SETTING}.csv      # Method results
 │   └── metadata/
@@ -105,7 +105,8 @@ This step only needs to be done once. The datasets will be cached locally for su
 
 Now, compute results for your method across all conditions and repetitions.
 The code bellow is a template that you can adapt as needed. 
-You will most likely adapt this code to run parallel/using a job scheduler on a cluster. 
+You will most likely adapt this code to run parallel/using a job scheduler on a cluster.
+In that case, each job can save its results to a separate CSV file in the `results/` folder, as long as every file contains a single method and setting and no condition-repetition pair appears in more than one file.
 
 ```{r, eval=FALSE}
 # Set seed for reproducibility
