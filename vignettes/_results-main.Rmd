@@ -14,19 +14,33 @@ if (!exists("dgm_names")) {
 ```
 
 ```{r, include = FALSE}
-# Load and merge the 
-# use pre-local results if compiled locally
+# Setup. The precomputed measures shown here are read from one benchmark release
+# catalog (downloaded, checksum-verified and cached in the resources directory);
+# nothing is read from local computations.
 library(PublicationBiasBenchmark)
 library(ggplot2)
 library(ggdist)
 library(scales)
 
 PublicationBiasBenchmark.options('prompt_for_download' = FALSE)
-if (dir.exists("C:/R-Packages/PublicationBiasBenchmark/resources")) {
-  PublicationBiasBenchmark.options(resources_directory = "C:/R-Packages/PublicationBiasBenchmark/resources")
-} else { 
-  PublicationBiasBenchmark.options(resources_directory = tempdir())
+
+# Respect a configured resources directory (option or PublicationBiasBenchmark_RESOURCES);
+# without one, use the maintainer's local checkout if it exists and a temporary
+# directory (downloads are repeated on every build) otherwise.
+if (is.null(PublicationBiasBenchmark.get_option("resources_directory"))) {
+  local_resources <- "D:/R-Packages2/PublicationBiasBenchmark/resources"
+  PublicationBiasBenchmark.options(resources_directory = if (dir.exists(local_resources)) local_resources else tempdir())
 }
+
+# Resolve the release once and pass it to every call. A release of the registry is
+# selected by its identifier (so lookups stay cached); a custom catalog (file or
+# list in the benchmark_release option) is passed as it is.
+benchmark_release_option      <- PublicationBiasBenchmark.get_option("benchmark_release")
+benchmark_release_id          <- benchmark_catalog()$release
+benchmark_release_in_registry <- is.null(benchmark_release_option) ||
+  (is.character(benchmark_release_option) && length(benchmark_release_option) == 1L &&
+     benchmark_release_option %in% list_benchmark_releases()$release)
+benchmark_release_selector    <- if (benchmark_release_in_registry) benchmark_release_id else benchmark_release_option
 
 # Specify methods to show in the results
 methods_settings <- data.frame(
@@ -49,12 +63,12 @@ results_replacement_list <- list()
 for (dgm_name in dgm_names) {
   
   # retrieve all measures across all conditions and measures
-  download_dgm_measures(dgm_name)
-  temp_conditional <- retrieve_dgm_measures(dgm_name)
-  temp_replacement <- retrieve_dgm_measures(dgm_name, replacement = TRUE)  
+  download_dgm_measures(dgm_name, release = benchmark_release_selector)
+  temp_conditional <- retrieve_dgm_measures(dgm_name, release = benchmark_release_selector)
+  temp_replacement <- retrieve_dgm_measures(dgm_name, replacement = TRUE, release = benchmark_release_selector)
   
   # retrieve conditions
-  conditions <- dgm_conditions(dgm_name)
+  conditions <- benchmark_conditions(dgm_name, release = benchmark_release_selector)
   
   # add labels
   temp_conditional$label <- with(temp_conditional, paste0(method, " (", method_setting, ")"))

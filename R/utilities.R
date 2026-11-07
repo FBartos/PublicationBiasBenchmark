@@ -17,6 +17,7 @@
 #' \describe{
 #'   \item{\code{"resources_directory"}}{Location where the benchmark data/results/measures are stored}
 #'   \item{\code{"prompt_for_download"}}{Whether each file download should ask for explicit approval}
+#'   \item{\code{"benchmark_release"}}{Release identifier or catalog. NULL selects the release pinned by this package version.}
 #' }
 #'
 #'
@@ -42,7 +43,7 @@ PublicationBiasBenchmark.options    <- function(...){
     assign(names(opts)[i], opts[[i]] , envir = PublicationBiasBenchmark.private)
   }
 
-  return(invisible(PublicationBiasBenchmark.private$options))
+  return(invisible(as.list(PublicationBiasBenchmark.private)))
 }
 
 #' @rdname PublicationBiasBenchmark_options
@@ -61,6 +62,7 @@ PublicationBiasBenchmark.get_option <- function(name){
 PublicationBiasBenchmark.private <- new.env()
 assign("resources_directory",  NULL, envir = PublicationBiasBenchmark.private)
 assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
+assign("benchmark_release", NULL, envir = PublicationBiasBenchmark.private)
 
 
 .onLoad   <- function(libname, pkgname){
@@ -70,8 +72,8 @@ assign("prompt_for_download",  TRUE, envir = PublicationBiasBenchmark.private)
   if (resources != "")
     PublicationBiasBenchmark.options(resources_directory = resources)
 
-  # set-up OSF PAT
-  try(suppressWarnings(suppressMessages(osfr::osf_auth())))
+  # Public benchmark downloads do not require credentials.
+
 }
 .onAttach <- function(libname, pkgname){
 

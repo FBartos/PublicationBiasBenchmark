@@ -139,10 +139,12 @@ make_rank_summary  <- function(table_summary) {
 
 ### Plots ----
 create_raincloud_plot <- function(data, y_var, y_label, ylim_range = NULL, reference_line = NULL, title_text = NULL, rank = FALSE) {
-  # Generate colors for methods (using a color palette)
-  n_methods     <- length(unique(data$label))
-  method_colors <- hcl.colors(n = n_methods, "Batlow", alpha = 0.7)
-  names(method_colors) <- unique(data$label)
+  # Generate colors for methods (using a color palette); assign them in
+  # case-insensitive alphabetical order so colors do not depend on row order
+  method_labels <- unique(data$label)
+  method_labels <- method_labels[order(tolower(method_labels), method_labels)]
+  method_colors <- hcl.colors(n = length(method_labels), "Batlow", alpha = 0.7)
+  names(method_colors) <- method_labels
 
   # Cap values at axis limits if ylim_range is provided
   if (!rank && !is.null(ylim_range)) {

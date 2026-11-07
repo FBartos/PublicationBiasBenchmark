@@ -2,44 +2,39 @@
 % Please edit documentation in R/download.R
 \name{retrieve_dgm_results}
 \alias{retrieve_dgm_results}
-\title{Retrieve a Pre-Computed Results of a Method Applied to DGM}
+\title{Retrieve Archived Method Results}
 \usage{
 retrieve_dgm_results(
   dgm_name,
   method = NULL,
   method_setting = NULL,
   condition_id = NULL,
-  repetition_id = NULL
+  repetition_id = NULL,
+  release = NULL,
+  source = c("release", "local")
 )
 }
 \arguments{
-\item{dgm_name}{Character string specifying the DGM type}
+\item{dgm_name}{DGM name.}
 
-\item{method}{Which method(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
+\item{method}{Optional method name(s); NULL selects all available methods.}
 
-\item{method_setting}{Which method setting(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
+\item{method_setting}{Optional method setting(s).}
 
-\item{condition_id}{which conditions should settings be returned for.}
+\item{condition_id}{Optional condition ID(s) for datasets.}
 
-\item{repetition_id}{Which repetition should be returned. The complete
-condition can be returned by setting to either \code{NULL}.}
+\item{repetition_id}{Repetition ID(s); NULL selects all repetitions.}
+
+\item{release}{Release identifier or catalog; NULL uses the package default.}
+
+\item{source}{"release" reads verified catalog-selected files; "local" reads
+unpublished computation files in resources_directory/DGM.}
 }
 \value{
-A data.frame
+A data frame with the existing method-specific result columns.
 }
 \description{
-This function returns a pre-computed results of a given method at a specific
-repetition and condition from a dgm. The pre-computed results must be already stored
-locally. See \code{\link[=download_dgm_results]{download_dgm_results()}} function for more guidance.
-}
-\examples{
-\dontrun{
-  # get condition 1, repetition 1 for default method setting
-  retrieve_dgm_results("no_bias", condition_id = 1, repetition_id = 1)
-
-  # get condition 1, all repetitions for default method setting
-  retrieve_dgm_results("no_bias", condition_id = 1)
-}
-
-
+Read and combine verified shards. Missing shards and overlapping
+method/setting/condition/repetition keys are errors. Use source = "local" for
+unpublished distributed computation outputs.
 }

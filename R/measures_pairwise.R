@@ -7,7 +7,6 @@
 #' closer to the true value than method B, it gets a score of 1, if further it
 #' gets 0, and if equal it gets 0.5.
 #'
-#' @inheritParams download_dgm_datasets
 #' @inheritParams compute_single_measure
 #' @inheritParams compute_measures
 #'
@@ -19,7 +18,14 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
                                    estimate_col = "estimate", true_effect_col = "mean_effect",
                                    convergence_col = "convergence",
                                    method_replacements = NULL,
-                                   n_repetitions = 1000, overwrite = FALSE, ...) {
+                                   n_repetitions = 1000, overwrite = FALSE,
+                                   results_source = c("local", "release"), release = NULL,
+                                   replacement_source = NULL, ...) {
+
+  # Resolve where the method and replacement results are read from
+  results_source     <- match.arg(results_source)
+  replacement_source <- .replacement_source(replacement_source, results_source)
+  .warn_ignored_release(release, results_source, replacement_source)
 
   # Validate that method and method_setting have the same length
   if (length(method) != length(method_setting))
@@ -27,7 +33,7 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 
   # Get DGM conditions
   if (is.null(conditions))
-    conditions <- dgm_conditions(dgm_name)
+    conditions <- if (results_source == "release") .catalog_conditions(benchmark_catalog(release), dgm_name) else dgm_conditions(dgm_name)
 
   # Validate method_replacements
   if (!is.null(method_replacements)) {
@@ -75,8 +81,9 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     # Remove self-comparisons
     comparisons_to_compute <- method_pairs[method_pairs$method_a != method_pairs$method_b, ]
 
-    # Remove duplicate pairs (A vs B and B vs A are the same)
-    method_pairs <- method_pairs[!duplicated(t(apply(method_pairs, 1, sort))), ]
+    # Remove duplicate pairs (A vs B and B vs A are the same): one direction per
+    # unordered pair, as when comparisons are added to an existing file
+    comparisons_to_compute <- comparisons_to_compute[!duplicated(t(apply(comparisons_to_compute, 1, sort))), ]
 
   } else {
 
@@ -135,7 +142,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
         method_replacements_results[[method_name]][[replacement_key]] <- retrieve_dgm_results(
           dgm_name       = dgm_name,
           method         = replacement_method,
-          method_setting = replacement_setting
+          method_setting = replacement_setting,
+          source = replacement_source, release = release
         )
 
         # Check that all repetitions are available
@@ -153,7 +161,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_results <- retrieve_dgm_results(
       dgm_name       = dgm_name,
       method         = this_method,
-      method_setting = this_method_setting
+      method_setting = this_method_setting,
+      source = results_source, release = release
     )
 
     # Check that all pre-specified columns exist
@@ -222,16 +231,14 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
     method_a_key <- comparisons_to_compute$method_a[idx]
     method_b_key <- comparisons_to_compute$method_b[idx]
 
-    # Skip if we already computed B vs A (since A vs B = B vs A)
-    reverse_key <- paste0(method_b_key, "_vs_", method_a_key)
-    if (reverse_key %in% names(comparison_out)) next
-
     method_a_results <- method_results_list[[method_a_key]]
     method_b_results <- method_results_list[[method_b_key]]
 
     for (condition in conditions$condition_id) {
 
-      comparison_out[[idx]] <- data.frame(
+      # One output row per method pair and condition
+      out_idx <- length(comparison_out) + 1L
+      comparison_out[[out_idx]] <- data.frame(
         method_a      = method_a_key,
         method_b      = method_b_key,
         condition_id  = condition,
@@ -285,8 +292,8 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
       score <- ifelse(dist_a == dist_b, 0.5, ifelse(dist_a > dist_b, 0, 1))
 
       # Update output
-      comparison_out[[idx]]$score         <- mean(score)
-      comparison_out[[idx]]$n_comparisons <- length(score)
+      comparison_out[[out_idx]]$score         <- mean(score)
+      comparison_out[[out_idx]]$n_comparisons <- length(score)
     }
   }
 
@@ -308,7 +315,6 @@ compare_single_measure <- function(dgm_name, measure_name, method, method_settin
 #' measures for a Data-Generating Mechanism (DGM) and saves the results to CSV files.
 #' It provides a clean and extensible interface for comparing method performance.
 #'
-#' @inheritParams download_dgm_datasets
 #' @inheritParams compute_single_measure
 #' @inheritParams compute_measures
 #'
@@ -320,7 +326,14 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
                              estimate_col = "estimate", true_effect_col = "mean_effect",
                              convergence_col = "convergence",
                              method_replacements = NULL,
-                             n_repetitions = 1000, overwrite = FALSE, conditions = NULL) {
+                             n_repetitions = 1000, overwrite = FALSE, conditions = NULL,
+                             results_source = c("local", "release"), release = NULL,
+                             replacement_source = NULL) {
+
+  # Resolve the sources once; the single-measure calls then receive scalar values
+  results_source     <- match.arg(results_source)
+  replacement_source <- .replacement_source(replacement_source, results_source)
+  if (.warn_ignored_release(release, results_source, replacement_source)) release <- NULL
 
   # Input validation downstream
   # Define all available comparison measures if not specified
@@ -373,7 +386,10 @@ compare_measures <- function(dgm_name, method, method_setting, measures = NULL, 
       convergence_col     = convergence_col,
       method_replacements = method_replacements,
       n_repetitions       = n_repetitions,
-      overwrite           = overwrite
+      overwrite           = overwrite,
+      results_source      = results_source,
+      release             = release,
+      replacement_source  = replacement_source
     )
 
     # Save results (measure_result already contains combined existing + new results if applicable)

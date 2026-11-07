@@ -2,7 +2,7 @@
 % Please edit documentation in R/download.R
 \name{retrieve_dgm_measures}
 \alias{retrieve_dgm_measures}
-\title{Retrieve Pre-Computed Performance measures for a DGM}
+\title{Retrieve Archived Performance Measures}
 \usage{
 retrieve_dgm_measures(
   dgm_name,
@@ -10,41 +10,33 @@ retrieve_dgm_measures(
   method = NULL,
   method_setting = NULL,
   condition_id = NULL,
-  replacement = FALSE
+  replacement = FALSE,
+  release = NULL,
+  source = c("release", "local")
 )
 }
 \arguments{
-\item{dgm_name}{Character string specifying the DGM type}
+\item{dgm_name}{DGM name.}
 
-\item{measure}{Which performance measure should be returned (e.g., "bias", "mse", "coverage").
-All measures can be returned by setting to \code{NULL}.}
+\item{measure}{Optional measure name(s); pairwise comparisons require "pairwise".}
 
-\item{method}{Which method(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
+\item{method}{Optional method name(s); NULL selects all available methods.}
 
-\item{method_setting}{Which method setting(s) should be returned. The complete results are returned by setting to \code{NULL} (default setting).}
+\item{method_setting}{Optional method setting(s).}
 
-\item{condition_id}{which conditions should settings be returned for.}
+\item{condition_id}{Optional condition ID(s) for datasets.}
 
-\item{replacement}{Whether performance measures computed using replacement should be returned. Defaults to \code{FALSE}.}
+\item{replacement}{Whether replacement measures are selected; NULL downloads both variants.}
+
+\item{release}{Release identifier or catalog; NULL uses the package default.}
+
+\item{source}{"release" reads verified catalog-selected files; "local" reads
+unpublished computation files in resources_directory/DGM.}
 }
 \value{
-A data.frame
+A data frame of selected measures and Monte Carlo standard errors.
 }
 \description{
-This function returns pre-computed performance measures for a specified
-Data-Generating Mechanism (DGM). The pre-computed measures must be already stored
-locally. See \code{\link[=download_dgm_measures]{download_dgm_measures()}} function for more guidance.
-}
-\examples{
-\dontrun{
-  # get bias measures for all methods and conditions
-  retrieve_dgm_measures("no_bias", measure = "bias")
-
-  # get all measures for RMA method
-  retrieve_dgm_measures("no_bias", method = "RMA")
-
-  # get MSE measures for PET method in condition 1
-  retrieve_dgm_measures("no_bias", measure = "mse", method = "PET", condition_id = 1)
-}
-
+Read measures stored separately for each DGM, method and setting.
+Pairwise comparisons are only read when measure = "pairwise" is requested.
 }

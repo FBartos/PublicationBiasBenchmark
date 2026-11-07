@@ -1,0 +1,72 @@
+---
+title: "Benchmark Releases"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Benchmark Releases}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, eval=FALSE}
+library(PublicationBiasBenchmark)
+```
+
+The simulated datasets, raw results, and performance measures of the benchmark are stored on [Zenodo](https://zenodo.org/communities/publicationbiasbenchmark/) and published in releases.
+A release is a fixed snapshot of the whole benchmark: once published, it never changes.
+When new methods are added or an error is corrected, a new release is published and the older ones remain available.
+Any analysis based on a given release can therefore be reproduced exactly.
+
+## Which Release Am I Using?
+
+Each version of the package uses a default release, usually the latest one at the time the package version was released.
+All download and retrieve functions use this default unless you select another release.
+You can list the available releases with [`list_benchmark_releases()`](../reference/benchmark_catalog.html):
+
+```{r, eval=FALSE}
+list_benchmark_releases()
+```
+
+## Using a Specific Release
+
+To keep working with the same data after a package update, select the release explicitly, either in each call:
+
+```{r, eval=FALSE}
+download_dgm_measures("Stanley2017", release = "2026.2")
+retrieve_dgm_measures("Stanley2017", release = "2026.2")
+```
+
+or once for the whole session:
+
+```{r, eval=FALSE}
+PublicationBiasBenchmark.options(benchmark_release = "2026.2")
+```
+
+Downloaded files are checked against the release and stored in your resources directory.
+Files that are the same in several releases are downloaded only once.
+To free disk space, [`prune_benchmark_archives()`](../reference/prune_benchmark_archives.html) removes downloaded ZIP files whose contents have already been extracted (run it with `dry_run = FALSE`).
+
+## Citing a Release
+
+Every release has its own DOI (the `doi` column of `list_benchmark_releases()`).
+Cite the DOI of the release you used, together with the package (`citation("PublicationBiasBenchmark")`).
+
+## Release History
+
+| Release | Changes |
+|---------|---------|
+| [2026.2](https://doi.org/10.5281/zenodo.23121978) | Corrects 11 replacement-measure tables (AK, MAN, MMPH, and RTMA) that contained missing values because of a bug in combining results. All other files are identical to 2026.1. |
+| [2026.1](https://doi.org/10.5281/zenodo.23070787) | The original benchmark, moved from OSF to Zenodo. |
+
+## How Are New Releases Made?
+
+New methods are contributed together with their computed results (see [Computing Method Results](Computing_Method_Results.html)).
+The package maintainers then compute the measures, publish a new release containing the new files, and make it the default in the next package version.
+Files that did not change are carried over unchanged, so results that are already published stay exactly the same.
+The maintainer workflow is described in [`RELEASING.md`](https://github.com/FBartos/PublicationBiasBenchmark/blob/master/.github/RELEASING.md) in the GitHub repository.

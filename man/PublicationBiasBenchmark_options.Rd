@@ -28,5 +28,6 @@ A placeholder object and functions for the PublicationBiasBenchmark package.
 \describe{
 \item{\code{"resources_directory"}}{Location where the benchmark data/results/measures are stored}
 \item{\code{"prompt_for_download"}}{Whether each file download should ask for explicit approval}
+\item{\code{"benchmark_release"}}{Release identifier or catalog. NULL selects the release pinned by this package version.}
 }
 }

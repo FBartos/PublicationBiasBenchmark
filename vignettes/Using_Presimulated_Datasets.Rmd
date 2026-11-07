@@ -81,6 +81,7 @@ download_dgm_datasets("Stanley2017")
 
 **Note**: Dataset files can be quite large as they contain all individual study data across many simulation repetitions. Each DGM may require several gigabytes of storage space.
 The datasets are downloaded to a local cache directory and are automatically available for subsequent analysis. You only need to download them once.
+See [Benchmark Releases](Benchmark_Releases.html) for how to use a specific version of the benchmark data.
 
 ## Retrieving Presimulated Datasets
 

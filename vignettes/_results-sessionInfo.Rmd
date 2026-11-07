@@ -14,6 +14,19 @@ if (!exists("dgm_names")) {
 
 ## Session Info
 
+```{r, include = FALSE}
+# The data release of this report (set up by _results-main.Rmd)
+data_statement <- local({
+  if (!exists("benchmark_release_id")) return("Data: no benchmark release was loaded.")
+  if (!isTRUE(benchmark_release_in_registry)) return(paste0("Data: custom benchmark catalog ", benchmark_release_id, "."))
+  releases <- list_benchmark_releases()
+  release  <- releases[releases$release == benchmark_release_id, ]
+  paste0("Data: benchmark release ", benchmark_release_id, " (DOI ", release$doi, ", catalog SHA-256 ", release$catalog_sha256, ").")
+})
+```
+
+`r data_statement`
+
 This report was compiled on `r paste0(format(Sys.time(), "%a %b %d %X %Y"), " (", Sys.timezone(), ")")` using the following computational environment
 
 ```{r}

@@ -1,0 +1,1115 @@
+## The community gate ------------------------------------------------------------
+
+test_that("the gate returns the UUID for an owner or manager and only reads", {
+  for (role in c("owner", "manager")) {
+    server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit(role))))
+    local_mocked_bindings(.zenodo_request = server$handler)
+    expect_identical(.require_community_maintainer("publicationbiasbenchmark", "secret-token", FALSE, c("owner", "manager")),
+                     "415b2de6-b6f9-444d-9109-d74752e20cd0")
+    expect_identical(server$paths(), c("communities/publicationbiasbenchmark",
+      "communities/415b2de6-b6f9-444d-9109-d74752e20cd0/members?size=100&page=1"))
+    expect_true(all(server$methods() == "GET"))
+    expect_true(all(vapply(server$log$requests, function(r) identical(r$token, "secret-token") && !r$sandbox, logical(1))))
+  }
+  expect_identical(.benchmark_community_id, "415b2de6-b6f9-444d-9109-d74752e20cd0")
+})
+
+test_that("the gate refuses roles outside the allowed set and odd role values", {
+  for (role in list("reader", "curator", NULL, 1L, c("owner", "reader"), NA_character_, "")) {
+    server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit(role))))
+    local_mocked_bindings(.zenodo_request = server$handler)
+    expect_error(.require_community_maintainer("c", "t", FALSE, c("owner", "manager")), "required")
+  }
+  # Community pages need the owner: a manager is refused there.
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("manager"))))
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), "role 'manager'")
+})
+
+test_that("the gate separates non-members from tokens that Zenodo does not accept", {
+  server <- community_server(.benchmark_community_id, user_communities = function() list(hits = list(hits = list())))
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), "not a member")
+  expect_identical(tail(server$paths(), 1L), "user/communities?size=1")
+  # An invalid, expired or other-environment token is treated as anonymous: both calls answer 403.
+  server <- community_server(.benchmark_community_id)
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"),
+               "token invalid, expired, or for the other environment (sandbox vs production)", fixed = TRUE)
+  # Any other status or shape fails closed.
+  for (status in c(400L, 404L, 429L, 500L)) {
+    server <- community_server(.benchmark_community_id, members = function(page) stop(zenodo_error(status)))
+    local_mocked_bindings(.zenodo_request = server$handler)
+    expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), paste0("HTTP ", status))
+  }
+  server <- community_server(.benchmark_community_id, user_communities = function() stop(zenodo_error(500L)))
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), "Cannot check the Zenodo token")
+  server <- community_server(.benchmark_community_id, members = function(page) list(hits = "odd"))
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), "Unexpected community membership response")
+})
+
+test_that("the gate refuses a production community other than the benchmark community before any member request", {
+  server <- community_server("another-community-uuid", members = function(page) members_page(list(member_hit("owner"))))
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("someone-else", "t", FALSE, "owner"),
+               "production publication is restricted to the PublicationBiasBenchmark community", fixed = TRUE)
+  expect_identical(server$paths(), "communities/someone-else")
+  # The sandbox accepts any community the token maintains.
+  expect_identical(.require_community_maintainer("someone-else", "t", TRUE, "owner"), "another-community-uuid")
+  # A failed lookup or a missing UUID stops as well.
+  local_mocked_bindings(.zenodo_request = function(...) stop(zenodo_error(404L)))
+  expect_error(.require_community_maintainer("c", "t", TRUE, "owner"), "Cannot verify the community")
+  local_mocked_bindings(.zenodo_request = function(...) list(slug = "no-id"))
+  expect_error(.require_community_maintainer("c", "t", TRUE, "owner"), "did not return a UUID")
+  expect_error(.require_community_maintainer(NULL, "t", TRUE, "owner"), "community slug or UUID")
+})
+
+test_that("the gate pages through the members up to a cap", {
+  pages <- integer()
+  server <- community_server(.benchmark_community_id, members = function(page) {
+    pages <<- c(pages, page)
+    if (page < 3L) members_page(list(member_hit("reader", FALSE)), more = TRUE) else members_page(list(member_hit("owner")))
+  })
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_identical(.require_community_maintainer("c", "t", FALSE, "owner"), .benchmark_community_id)
+  expect_identical(pages, 1:3)
+  pages <- integer()
+  server <- community_server(.benchmark_community_id, members = function(page) {
+    pages <<- c(pages, page); members_page(list(member_hit("reader", FALSE)), more = TRUE)
+  })
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), "more members than the gate can page")
+  expect_identical(pages, 1:50)
+  # The last page without the current user is not enough either.
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner", FALSE))))
+  local_mocked_bindings(.zenodo_request = server$handler)
+  expect_error(.require_community_maintainer("c", "t", FALSE, "owner"), "not found among the community members")
+})
+
+## The publication session ------------------------------------------------------
+
+# An archive plan of one file; the state directory lives in `root`.
+session_plan <- function(root, community = "publicationbiasbenchmark", sandbox = FALSE) {
+  a <- test_resource(root, "A.csv")
+  plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions,
+    metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = file.path(root, "archive"),
+    community = community, sandbox = sandbox)
+}
+
+# Record every request and upload; none of them may be a write when a session is refused.
+local_write_recorder <- function(handler, env = parent.frame()) {
+  writes <- new.env(); writes$log <- character()
+  testthat::local_mocked_bindings(
+    .zenodo_request = function(method, path, token, sandbox = FALSE, body = NULL) {
+      if (method != "GET") writes$log <- c(writes$log, paste(method, path))
+      handler(method, path, token, sandbox, body)
+    },
+    .zenodo_upload = function(path, record_id, filename, ...) writes$log <- c(writes$log, paste("UPLOAD", filename)),
+    .env = env)
+  writes
+}
+
+test_that("publishing needs the release identifier as confirm before anything else happens", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  for (confirm in list(NULL, "wrong", "test.2", NA_character_, "", c("test.1", "test.1"), 1, TRUE)) {
+    expect_error(publish_benchmark_release(plan, "t", confirm = confirm),
+                 "Publishing is irreversible: run PublicationBiasBenchmark:::verify_benchmark_release(plan) and re-run with confirm = \"test.1\"",
+                 fixed = TRUE)
+  }
+  expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+})
+
+test_that("a refused session issues no write: non-member, other environment, foreign production community", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  scenarios <- list(
+    non_member = list(server = community_server(.benchmark_community_id, user_communities = function() list(hits = list(hits = list()))),
+                      message = "not a member"),
+    other_environment = list(server = community_server(.benchmark_community_id), message = "other environment"),
+    foreign_community = list(server = community_server("foreign-uuid", members = function(page) members_page(list(member_hit("owner")))),
+                             message = "restricted to the PublicationBiasBenchmark community"),
+    reader = list(server = community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("reader")))),
+                  message = "required"))
+  for (name in names(scenarios)) {
+    scenario <- scenarios[[name]]
+    writes <- local_write_recorder(scenario$server$handler)
+    expect_error(stage_benchmark_release(plan, "t"), scenario$message, info = name)
+    expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), scenario$message, info = name)
+    expect_length(writes$log, 0L)
+    expect_true(all(scenario$server$methods() == "GET"), info = name)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = name)
+  }
+})
+
+# Any request fails the test and is counted.
+local_no_requests <- function(env = parent.frame()) {
+  seen <- new.env(); seen$count <- 0L
+  testthat::local_mocked_bindings(.zenodo_request = function(...) {
+    seen$count <- seen$count + 1L; stop("A request was issued")
+  }, .env = env)
+  seen
+}
+
+test_that("the session checks the lock and the plan's state before the gate", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate()
+  # A lock held by another session stops it before any network action.
+  lock <- file.path(plan$state_directory, ".lock"); dir.create(lock)
+  expect_error(stage_benchmark_release(plan, "t"), "is locked")
+  expect_length(gate$calls, 0L); expect_true(dir.exists(lock))
+  unlink(lock, recursive = TRUE)
+  # A plan from an earlier package version has no identity; one without a community cannot be gated.
+  old <- plan; old$identity <- NULL
+  expect_error(stage_benchmark_release(old, "t"), "earlier package version; re-plan in a new state directory")
+  nameless <- plan; nameless$community <- NULL
+  expect_error(stage_benchmark_release(nameless, "t"), "has no community; re-plan with this package version")
+  expect_length(gate$calls, 0L)
+  expect_false(dir.exists(lock))
+  # A state written for another plan blocks the session.
+  other <- plan; other$identity$fingerprint <- strrep("0", 64)
+  .update_publication_state(other, function(state) { state$groups[["1"]] <- list(record_id = "1"); state })
+  expect_error(stage_benchmark_release(plan, "t"), "belongs to a different plan")
+  expect_length(gate$calls, 0L)
+})
+
+test_that("a session on a plan whose state directory is gone stops before any request and creates nothing", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate(); requests <- local_no_requests()
+  unlink(plan$state_directory, recursive = TRUE)
+  expect_false(dir.exists(plan$state_directory))
+  message <- "The publication state directory .* does not exist. A plan stores absolute paths.*Nothing was changed online."
+  expect_error(stage_benchmark_release(plan, "t"), message)
+  expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), message)
+  expect_error(.publication_session(plan, "t", "owner", fn = function(token, community_id) "worked"), message)
+  expect_error(stage_benchmark_release(plan, "t"), plan$state_directory, fixed = TRUE)
+  expect_false(dir.exists(plan$state_directory))
+  expect_length(gate$calls, 0L); expect_identical(requests$count, 0L)
+})
+
+test_that("a session on a plan whose upload files are gone stops before the state and any request", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate(); requests <- local_no_requests()
+  upload <- plan$groups[[1]][[1]]$local_path
+  backup <- withr::local_tempfile(); expect_true(file.copy(upload, backup)); unlink(upload)
+  message <- "Files that this plan uploads do not exist: .*A plan stores absolute paths.*Nothing was changed online."
+  expect_error(stage_benchmark_release(plan, "t"), message)
+  expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), message)
+  expect_error(stage_benchmark_release(plan, "t"), basename(upload), fixed = TRUE)
+  # Nothing is read or written: no state file, no lock left behind, no gate, no request.
+  expect_false(file.exists(file.path(plan$state_directory, "state.json")))
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  expect_length(gate$calls, 0L); expect_identical(requests$count, 0L)
+  # With the file back, the session runs.
+  expect_true(file.copy(backup, upload))
+  expect_identical(.publication_session(plan, "t", "owner", fn = function(token, community_id) "worked"), "worked")
+  expect_length(gate$calls, 1L)
+})
+
+test_that("a session passes the token and the gate's UUID on, with the roles of its operation", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate(community_id = "resolved-uuid")
+  seen <- NULL
+  expect_identical(.publication_session(plan, "explicit-token", c("owner"), fn = function(token, community_id) {
+    seen <<- list(token = token, community_id = community_id, held = dir.exists(file.path(plan$state_directory, ".lock")))
+    "result"
+  }), "result")
+  expect_identical(seen, list(token = "explicit-token", community_id = "resolved-uuid", held = TRUE))
+  expect_identical(gate$calls[[1]]$roles, "owner"); expect_identical(gate$calls[[1]]$community, "publicationbiasbenchmark")
+  expect_false(gate$calls[[1]]$sandbox)
+  # The lock is released when the work fails.
+  expect_error(.publication_session(plan, "t", "owner", fn = function(token, community_id) stop("work failed")), "work failed")
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  # The token comes from the environment of the plan's side when not given.
+  withr::local_envvar(ZENODO_TOKEN = "from-environment")
+  expect_identical(.publication_session(plan, NULL, "owner", fn = function(token, community_id) token), "from-environment")
+  withr::local_envvar(ZENODO_TOKEN = "")
+  expect_error(.publication_session(plan, NULL, "owner", fn = function(token, community_id) token), "token is not configured")
+})
+
+test_that("staging and publishing use the release roles", {
+  skip_if_not_installed("zip")
+  expect_identical(.release_roles, c("owner", "manager"))
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate()
+  local_mocked_bindings(.stage_archive_release = function(plan, token, community_id) "staged",
+                        .publish_archive_release = function(plan, token, community_id) "published")
+  expect_identical(stage_benchmark_release(plan, "t"), "staged")
+  expect_identical(publish_benchmark_release(plan, "t", confirm = "test.1"), "published")
+  expect_identical(gate$calls[[1]]$roles, c("owner", "manager")); expect_identical(gate$calls[[2]]$roles, c("owner", "manager"))
+})
+
+test_that("a plan of the removed direct-file publisher is refused by every entry point before anything else", {
+  root <- withr::local_tempdir()
+  plan <- list(catalog = list(schema_version = 1L, release = "test.1"), state_directory = root, sandbox = FALSE,
+               community = "publicationbiasbenchmark", groups = list(), identity = list(version = 2L))
+  gate <- local_mock_gate(); requests <- local_no_requests()
+  withr::local_envvar(ZENODO_TOKEN = "")   # a token would be needed by any later step
+  message <- "This plan was made for the removed direct-file publisher; re-plan with this package version."
+  expect_error(stage_benchmark_release(plan), message, fixed = TRUE)
+  expect_error(verify_benchmark_release(plan), message, fixed = TRUE)
+  expect_error(publish_benchmark_release(plan), message, fixed = TRUE)   # not even the confirmation is asked for
+  expect_error(publish_benchmark_release(plan, "t", confirm = "test.1"), message, fixed = TRUE)
+  expect_length(gate$calls, 0L); expect_identical(requests$count, 0L)
+  expect_identical(list.files(root, all.files = TRUE, no.. = TRUE), character())   # no lock, no state
+  expect_error(stage_benchmark_release(list(catalog = list()), "t"), message, fixed = TRUE)
+})
+
+## The publication lock -----------------------------------------------------------
+
+test_that("the lock is atomic, names its owner, and is released only with the matching nonce", {
+  directory <- file.path(withr::local_tempdir(), "nested", "state")
+  .acquire_publication_lock(directory, create = TRUE)
+  lock <- file.path(directory, ".lock")
+  owner <- jsonlite::read_json(file.path(lock, "owner.json"))
+  expect_setequal(names(owner), c("pid", "host", "started", "nonce"))
+  expect_equal(owner$pid, Sys.getpid()); expect_match(owner$nonce, "^[a-f0-9]{64}$")
+  expect_match(owner$started, "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]{8}Z$")
+  expect_error(.acquire_publication_lock(directory), "is locked")
+  expect_error(.acquire_publication_lock(directory), normalizePath(lock, winslash = "/"), fixed = TRUE)
+  expect_error(.acquire_publication_lock(directory), paste0("pid ", Sys.getpid()), fixed = TRUE)
+  expect_true(.release_publication_lock(directory))
+  expect_false(dir.exists(lock))
+  # Another session's lock, or a lock whose owner file was replaced, is not removed.
+  .acquire_publication_lock(directory)
+  jsonlite::write_json(list(pid = 1L, host = "other", started = .utc_now(), nonce = "foreign"), file.path(lock, "owner.json"),
+                       auto_unbox = TRUE)
+  expect_warning(.release_publication_lock(directory), "no longer belongs to this session")
+  expect_true(dir.exists(lock))
+  expect_false(.release_publication_lock(directory))   # nothing is held any more
+  unlink(lock, recursive = TRUE)
+})
+
+test_that("a stale lock is reported with its owner and age but never removed automatically", {
+  directory <- withr::local_tempdir(); lock <- file.path(directory, ".lock"); dir.create(lock)
+  started <- format(Sys.time() - 3 * 3600, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+  jsonlite::write_json(list(pid = 4242L, host = "maintainer-pc", started = started, nonce = "n"), file.path(lock, "owner.json"),
+                       auto_unbox = TRUE)
+  expect_error(.acquire_publication_lock(directory), "pid 4242 on maintainer-pc")
+  expect_error(.acquire_publication_lock(directory), "1(79|8[0-2]) minutes ago")
+  expect_error(.acquire_publication_lock(directory), "only if that session is not running")
+  expect_error(.acquire_publication_lock(directory), normalizePath(lock, winslash = "/"), fixed = TRUE)
+  expect_true(dir.exists(lock))
+  unlink(file.path(lock, "owner.json"))
+  expect_error(.acquire_publication_lock(directory), "owner unknown")
+  # A lock that cannot be created is a different failure.
+  blocker <- withr::local_tempfile(); writeLines("a file", blocker)
+  expect_error(.acquire_publication_lock(file.path(blocker, "state"), create = TRUE), "Cannot create the lock")
+})
+
+test_that("a missing state directory is refused, not created, unless the caller plans", {
+  root <- withr::local_tempdir(); directory <- file.path(root, "nested", "state")
+  message <- paste0("The publication state directory ", directory, " does not exist. A plan stores absolute paths (its state ",
+                    "directory and the archives it uploads); if the folder was moved, move it back or re-plan in the new ",
+                    "location. Nothing was changed online.")
+  expect_error(.acquire_publication_lock(directory), message, fixed = TRUE)
+  ran <- FALSE
+  expect_error(.with_publication_lock(directory, function() ran <<- TRUE), message, fixed = TRUE)
+  expect_false(ran); expect_false(dir.exists(file.path(root, "nested")))
+  expect_error(.acquire_publication_lock(NULL), "state directory is required")
+  # Creating is explicit: the lock is taken, held while the work runs and released after it.
+  held <- .with_publication_lock(directory, function() dir.exists(file.path(directory, ".lock")), create = TRUE)
+  expect_true(held); expect_true(dir.exists(directory)); expect_false(dir.exists(file.path(directory, ".lock")))
+  # An existing directory needs no flag.
+  expect_true(.with_publication_lock(directory, function() TRUE))
+})
+
+test_that("a failed lock release warns and the lock never leaks into the next session", {
+  skip_if_not(.Platform$OS.type == "windows", "an open file only blocks removal on Windows")
+  directory <- withr::local_tempdir()
+  .acquire_publication_lock(directory)
+  connection <- file(file.path(directory, ".lock", "busy.txt"), "w")
+  expect_warning(.release_publication_lock(directory), "Could not remove the publication lock")
+  close(connection)
+  unlink(file.path(directory, ".lock"), recursive = TRUE)
+})
+
+test_that("planning takes the lock and creates a new state directory", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
+  conditions <- test_catalog(list(a))$conditions
+  state <- file.path(root, "state"); dir.create(file.path(state, ".lock"), recursive = TRUE)
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = state,
+    community = "test-community"), "is locked")
+  expect_false(file.exists(file.path(state, "plan.rds")))
+  unlink(file.path(state, ".lock"), recursive = TRUE)
+  plan <- plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = state,
+    community = "test-community")
+  expect_true(file.exists(file.path(state, "plan.rds"))); expect_false(dir.exists(file.path(state, ".lock")))
+  expect_identical(plan$community, "test-community")
+  # Planning, unlike a session, creates a state directory that does not exist yet.
+  fresh <- file.path(root, "new", "nested", "state")
+  expect_false(dir.exists(fresh))
+  plan <- plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(), state_directory = fresh,
+    community = "test-community")
+  expect_true(file.exists(file.path(fresh, "plan.rds"))); expect_false(dir.exists(file.path(fresh, ".lock")))
+  expect_identical(plan$state_directory, normalizePath(fresh, winslash = "/"))
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = conditions, metadata = list(),
+    state_directory = file.path(root, "none"), community = NULL), "community")
+  expect_false(dir.exists(file.path(root, "none")))
+})
+
+## Plan identity and publication state -------------------------------------------
+
+test_that("plan identity binds the state to the release, community, environment, contents and limits", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir()
+  a <- test_resource(root, "A.csv"); b <- test_resource(root, "B.csv", method = "B")
+  conditions <- test_catalog(list(a))$conditions
+  make <- function(files = list(a), dir = withr::local_tempdir(), ...) {
+    args <- list(release = "test.1", files = files, conditions = conditions, metadata = list(), state_directory = dir,
+                 community = "c")
+    do.call(plan_benchmark_release, modifyList(args, list(...)))
+  }
+  plan <- make()
+  identity <- plan$identity
+  expect_setequal(names(identity), c("version", "release", "sandbox", "community", "fingerprint"))
+  expect_identical(identity$version, 2L); expect_identical(identity$release, "test.1")
+  expect_false(identity$sandbox); expect_identical(identity$community, "c")
+  expect_match(identity$fingerprint, "^[a-f0-9]{64}$")
+  # The state directory is not part of the identity; everything else is. (ZIP bytes carry their build
+  # time, so the identities of two separate builds differ: edits are compared on one built plan.)
+  moved <- plan; moved$state_directory <- file.path(root, "elsewhere")
+  expect_true(.identity_equal(.plan_identity(moved), identity))
+  differs <- function(change) !.identity_equal(.plan_identity(change(plan)), identity)
+  expect_true(differs(function(p) { p$max_files <- 10L; p }))
+  expect_true(differs(function(p) { p$max_bytes <- 1e6; p }))
+  expect_true(differs(function(p) { p$max_archive_bytes <- 1e6; p }))
+  expect_true(differs(function(p) { p$metadata$rights <- list(list(id = "mit")); p }))
+  expect_true(differs(function(p) { p$community <- "d"; p }))
+  expect_true(differs(function(p) { p$sandbox <- TRUE; p }))
+  expect_true(differs(function(p) { p$catalog$release <- "test.2"; p }))
+  expect_false(identical(make(list(a, b))$identity$fingerprint, identity$fingerprint))
+  expect_false(identical(make(community = "d")$identity$community, identity$community))
+  expect_true(make(sandbox = TRUE)$identity$sandbox)
+  expect_identical(make(release = "test.2")$identity$release, "test.2")
+  expect_true(.identity_equal(identity, jsonlite::fromJSON(.canonical_json(identity), simplifyVector = FALSE)))
+  # The fingerprint is canonical JSON, not R serialization.
+  expect_identical(.canonical_fingerprint(list(a = 1, b = "x")), digest::digest('{"a":1,"b":"x"}', algo = "sha256", serialize = FALSE))
+  # A saved plan from the same inputs is recognised; changed inputs are not.
+  directory <- withr::local_tempdir()
+  saved_plan <- make(dir = directory)
+  expect_identical(make(dir = directory)$identity, saved_plan$identity)
+  expect_error(make(list(a, b), dir = directory), "belongs to a different plan")
+  expect_error(make(dir = directory, community = "other"), "belongs to a different plan")
+  saved <- readRDS(file.path(directory, "plan.rds")); saved$identity <- NULL
+  saveRDS(saved, file.path(directory, "plan.rds"))
+  expect_error(make(dir = directory), "earlier package version; re-plan in a new state directory")
+})
+
+test_that("an archive plan's resume fingerprint is canonical and its state identity follows the membership", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); originals <- withr::local_tempdir()
+  a <- test_resource(originals, "A.csv"); b <- test_resource(originals, "B.csv", method = "B")
+  conditions <- test_catalog(list(a))$conditions
+  make <- function(files, dir, ...) do.call(plan_benchmark_release, modifyList(list(release = "test.1", files = files,
+    conditions = conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = dir, community = "c"),
+    list(...)))
+  plan <- make(list(a, b), file.path(root, "one"))
+  expect_match(plan$fingerprint, "^[a-f0-9]{64}$")
+  expect_identical(make(list(a, b), file.path(root, "two"))$fingerprint, plan$fingerprint)
+  expect_identical(make(list(a, b), file.path(root, "one"))$identity, plan$identity)
+  expect_false(identical(make(list(a), file.path(root, "three"))$fingerprint, plan$fingerprint))
+  expect_false(identical(make(list(a, b), file.path(root, "four"), community = "d")$fingerprint, plan$fingerprint))
+  expect_false(identical(make(list(a, b), file.path(root, "five"), max_archive_bytes = 1e6)$fingerprint, plan$fingerprint))
+  expect_false(identical(make(list(a, b), file.path(root, "six"), max_files = 50L)$fingerprint, plan$fingerprint))
+  expect_error(make(list(a), file.path(root, "one")), "belongs to a different plan")
+  saved <- readRDS(file.path(root, "one", "plan.rds")); saved$identity <- NULL
+  saveRDS(saved, file.path(root, "one", "plan.rds"))
+  expect_error(make(list(a, b), file.path(root, "one")), "earlier package version; re-plan in a new state directory")
+})
+
+test_that("the identity of an archive plan is the one computed before the direct-file publisher was removed", {
+  # Hand-built plans with fixed descriptors (no ZIP bytes), so that the values do not depend on the zip
+  # implementation. The fingerprints were computed with the code at 04ae532; the identity of existing
+  # archive plans, such as the published 2026.2 plan, must not change.
+  fixture <- function(previous) {
+    member <- list(id = "no_bias/results/A", filename = "A.csv", size = 100, sha256 = strrep("1", 64), md5 = strrep("2", 32))
+    archive <- list(id = "no_bias/results", dgm = "no_bias", unit = "no_bias/results", filename = "no_bias__results__test.2.zip",
+                    size = 120, sha256 = strrep("3", 64), md5 = strrep("4", 32), record_id = "0", members = list(member))
+    upload <- c(archive, list(local_path = "C:/elsewhere/no_bias__results__test.2.zip"))
+    asset <- c(member, list(dgm = "no_bias", kind = "results", record_id = "0", archive_id = archive$id,
+                            local_path = "C:/elsewhere/A.csv"))
+    list(catalog = list(schema_version = 2L, release = "test.2", sandbox = FALSE, previous_release = if (previous) "test.1",
+           package_version = "0.4.0", conditions = list(no_bias = data.frame(condition_id = 1:2, mean_effect = 0)),
+           assets = list(asset), archives = list(upload)),
+         previous = if (previous) list(schema_version = 2L, release = "test.1",
+           archives = list(list(id = "no_bias/results", dgm = "no_bias", record_id = "55"))),
+         groups = list(no_bias = list(upload)), changed_dgms = "no_bias",
+         metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = "C:/elsewhere/state",
+         sandbox = FALSE, community = "publicationbiasbenchmark", max_files = 100L, max_bytes = 50e9,
+         catalog_record_id = if (previous) "123", catalog_concept_doi = if (previous) "10.5281/zenodo.900",
+         max_archive_bytes = 2e9)
+  }
+  expect_identical(.plan_identity(fixture(FALSE))$fingerprint, "8194a5a27707f3b7c657ce6a7b9d9aec21a9f977e8a24b038267816eac24e1e5")
+  expect_identical(.plan_identity(fixture(TRUE))$fingerprint, "b1307fbdd732bef1face8b24915cc5e0435bac50434f28bc86c38810806ff75b")
+  expect_identical(.plan_identity(fixture(TRUE))[c("version", "release", "sandbox", "community")],
+                   list(version = 2L, release = "test.2", sandbox = FALSE, community = "publicationbiasbenchmark"))
+})
+
+test_that("state belongs to its plan: writes need the identity, read-only checks tolerate its absence", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  expect_identical(.publication_state(plan, "write"), list(groups = list(), catalog_record = NULL))
+  .update_publication_state(plan, function(state) { state$groups[["1"]] <- list(record_id = "7"); state })
+  state <- .publication_state(plan)
+  expect_true(.identity_equal(state$identity, plan$identity))
+  expect_identical(state$groups[["1"]]$record_id, "7")
+  other <- plan; other$identity$release <- "test.9"
+  expect_error(.publication_state(other, "write"), "belongs to a different plan")
+  expect_error(.publication_state(other, "read"), "belongs to a different plan")
+  expect_error(.update_publication_state(other, function(state) state), "belongs to a different plan")
+  # State written by an earlier package version has no identity.
+  path <- file.path(plan$state_directory, "state.json")
+  earlier_state <- jsonlite::read_json(path); earlier_state$identity <- NULL
+  jsonlite::write_json(earlier_state, path, auto_unbox = TRUE)
+  expect_error(.publication_state(plan, "write"), "written by an earlier package version; re-plan in a new state directory")
+  expect_error(.update_publication_state(plan, function(state) state), "earlier package version")
+  expect_message(restored <- .publication_state(plan, "read"), "no plan identity")
+  expect_identical(restored$groups[["1"]]$record_id, "7")
+})
+
+test_that("state structure is validated for the known fields only", {
+  root <- withr::local_tempdir(); plan <- list(state_directory = root, sandbox = TRUE)
+  path <- file.path(root, "state.json")
+  write_state <- function(text) writeLines(text, path)
+  write_state('{"groups":[],"versions":{},"inclusions":{},"initialized":[],"catalog_record":null,"future_field":{"a":1}}')
+  expect_silent(.publication_state(plan))
+  write_state('{"groups":{"1":{"record_id":"1"}},"catalog_record":{"record_id":"2"},"unknown":[1,2]}')
+  expect_silent(.publication_state(plan))
+  for (broken in c('{"groups":"x"}', '{"versions":[1,2]}', '{"inclusions":3}', '{"initialized":[{"a":1}]}',
+                   '{"catalog_record":"x"}', '[1,2,3]', '{broken', '')) {
+    write_state(broken)
+    expect_error(.publication_state(plan), "unreadable or has an invalid structure", info = broken)
+  }
+  # Unreadable state or a missing state with history names the newest history file; nothing is rewritten.
+  history <- file.path(root, "state-history"); dir.create(history)
+  writeLines("{}", file.path(history, "20260101T000000.000001-0001-state.json"))
+  writeLines("{}", file.path(history, "20260101T000000.000002-0002-state.json"))
+  write_state("{broken")
+  expect_error(.publication_state(plan), "20260101T000000.000002-0002-state.json")
+  expect_error(.publication_state(plan), "Nothing was changed online")
+  expect_identical(readLines(path), "{broken")
+  unlink(path)
+  expect_error(.publication_state(plan), "is missing although history exists")
+  expect_error(.publication_state(plan), "20260101T000000.000002-0002-state.json")
+  unlink(history, recursive = TRUE)
+  expect_identical(.publication_state(plan), list(groups = list(), catalog_record = NULL))
+  write_state("{broken")
+  expect_error(.publication_state(plan), "No state history exists")
+})
+
+test_that("state updates re-read the state, so no update is lost to a stale copy", {
+  root <- withr::local_tempdir(); plan <- list(state_directory = root, sandbox = TRUE)
+  stale <- .publication_state(plan)
+  .update_publication_state(plan, function(state) { state$groups[["1"]] <- list(record_id = "1"); state })
+  .update_publication_state(plan, function(state) { state$versions[["catalog"]] <- list(record_id = "9"); state })
+  .update_publication_state(plan, function(state) { state$groups[["2"]] <- list(record_id = "2"); state })
+  state <- .publication_state(plan)
+  expect_setequal(names(state$groups), c("1", "2")); expect_identical(state$versions$catalog$record_id, "9")
+  expect_error(.update_publication_state(plan, function(state) NULL), "must return the new state")
+  expect_length(list.files(file.path(root, "state-history")), 3L)
+  expect_false(any(grepl("[.]previous$|[.]tmp$", list.files(root, recursive = TRUE))))
+  expect_null(stale$versions)
+})
+
+## Verified writes -------------------------------------------------------------------
+
+test_that("a verified write is skipped when unchanged and keeps a numbered history of every version", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  expect_true(.write_json_verified(path, list(a = 1), history_dir = history))
+  expect_false(.write_json_verified(path, list(a = 1), history_dir = history))
+  expect_length(list.files(history), 1L)
+  expect_true(.write_json_verified(path, list(a = 2), history_dir = history))
+  expect_true(.write_json_verified(path, list(a = 3), history_dir = history))
+  entries <- list.files(history)
+  expect_length(entries, 3L)
+  expect_match(entries, "^[0-9]{8}T[0-9]{6}[.][0-9]{6}-000[123]-file[.]json$")
+  expect_identical(substr(entries, 24, 27), sprintf("%04d", 1:3))
+  expect_identical(entries, sort(entries))
+  content <- vapply(file.path(history, entries), function(f) rawToChar(readBin(f, "raw", file.info(f)$size)), character(1), USE.NAMES = FALSE)
+  expect_identical(content, c('{"a":1}\n', '{"a":2}\n', '{"a":3}\n'))
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":3}\n')
+  # Files are LF-terminated whatever the platform; no temporary file remains.
+  bytes <- .read_bytes(path)
+  expect_false(as.raw(13) %in% bytes); expect_identical(bytes[length(bytes)], as.raw(10))
+  expect_identical(list.files(root), c("file.json", "history"))
+})
+
+test_that("a file written by older code is added to the history before it is replaced", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  writeBin(charToRaw("{\"old\":true}\r\n"), path)
+  .write_json_verified(path, list(new = TRUE), history_dir = history)
+  entries <- list.files(history, full.names = TRUE)
+  expect_length(entries, 2L)
+  expect_identical(rawToChar(.read_bytes(entries[1])), "{\"old\":true}\r\n")
+  expect_identical(rawToChar(.read_bytes(entries[2])), "{\"new\":true}\n")
+  # An old file that already is the newest history entry is not added again.
+  .write_json_verified(path, list(newer = TRUE), history_dir = history)
+  expect_length(list.files(history), 3L)
+})
+
+test_that("history entries are verified copies and a failing copy stops before anything is replaced", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  .write_json_verified(path, list(a = 1), history_dir = history)
+  waits <- numeric(); attempts <- 0L
+  local_mocked_bindings(.file_retry_wait = function(seconds) waits <<- c(waits, seconds),
+    .file_copy = function(from, to) { attempts <<- attempts + 1L; if (attempts < 3L) FALSE else file.copy(from, to) })
+  expect_true(.write_json_verified(path, list(a = 2), history_dir = history))
+  expect_identical(attempts, 3L); expect_identical(waits, c(0.2, 0.2))
+  # The previous bytes of a file from older code are copied before anything is replaced; when that fails
+  # nothing is replaced.
+  writeBin(charToRaw('{"older":true}\n'), path)
+  local_mocked_bindings(.file_copy = function(from, to) FALSE)
+  waits <- numeric()
+  expect_error(.write_json_verified(path, list(a = 3), history_dir = history), "history copy of file.json.*nothing was replaced")
+  expect_length(waits, 4L)
+  expect_identical(rawToChar(.read_bytes(path)), '{"older":true}\n')
+  expect_length(list.files(history), 2L)
+})
+
+test_that("a failing rename keeps the old file, the complete new copy and the history", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  .write_json_verified(path, list(a = 1), history_dir = history)
+  renames <- 0L; waits <- numeric()
+  local_mocked_bindings(.file_rename = function(from, to) { renames <<- renames + 1L; FALSE },
+                        .file_retry_wait = function(seconds) waits <<- c(waits, seconds))
+  expect_error(.write_json_verified(path, list(a = 2), history_dir = history), "Cannot replace .*file.json")
+  expect_identical(renames, 5L); expect_identical(waits, rep(0.2, 4))
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":1}\n')
+  leftovers <- list.files(root, pattern = "[.]tmp$", full.names = TRUE)
+  expect_length(leftovers, 1L); expect_identical(rawToChar(.read_bytes(leftovers)), '{"a":2}\n')
+  # The history keeps installed versions: it holds the old bytes as its newest entry, not the new copy.
+  expect_length(list.files(history), 1L)
+  expect_identical(rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L))), '{"a":1}\n')
+})
+
+test_that("a failed verification restores the previous version, or removes a first version", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  expect_error(.write_json_verified(path, list(a = 1), history_dir = history, verify = function(p) FALSE),
+               "failed verification; the previous version was restored")
+  expect_false(file.exists(path))
+  .write_json_verified(path, list(a = 1), history_dir = history)
+  expect_error(.write_json_verified(path, list(a = 2), history_dir = history, verify = function(p) stop("does not validate")),
+               "failed verification \\(does not validate\\); the previous version was restored")
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":1}\n')
+  expect_false(any(grepl("[.]tmp$", list.files(root))))
+  # The rejected versions never reach the history: its newest entry is the previous (restored) version.
+  newest <- function() rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L)))
+  expect_length(list.files(history), 1L); expect_identical(newest(), '{"a":1}\n')
+  # Nothing is verified for a skipped write, and the verifier sees the installed path.
+  seen <- NULL
+  expect_true(.write_json_verified(path, list(a = 3), history_dir = history, verify = function(p) { seen <<- p; TRUE }))
+  expect_identical(seen, path)
+  expect_length(list.files(history), 2L); expect_identical(newest(), '{"a":3}\n')   # installed and verified
+  expect_false(.write_json_verified(path, list(a = 3), history_dir = history, verify = function(p) stop("not called")))
+  # Data that is not JSON never reaches the disk.
+  expect_error(.write_json_verified(path, list(a = new.env())))
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":3}\n')
+})
+
+test_that("a failed restore after a failed verification names the file that holds the previous bytes", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  .write_file_verified(path, charToRaw("old bytes"))
+  renames <- 0L
+  # The new file is installed; every later rename (the restore) fails.
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL,
+    .file_rename = function(from, to) { renames <<- renames + 1L; renames == 1L && file.rename(from, to) })
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE),
+                      error = conditionMessage)
+  expect_match(message, "failed verification; restoring the previous version failed", fixed = TRUE)
+  expect_match(message, paste0(path, " holds the unverified new bytes"), fixed = TRUE)
+  previous <- list.files(root, pattern = "^plan[.]rds-previous-.*[.]tmp$", full.names = TRUE)
+  expect_length(previous, 1L)
+  expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
+  expect_match(message, "the previous bytes are in ", fixed = TRUE)
+  expect_match(message, basename(previous), fixed = TRUE)
+  expect_false(grepl("history", message))
+  # With a history, the message also points to it.
+  history <- file.path(root, "history"); renames <- 0L
+  expect_true(.write_file_verified(file.path(root, "state.json"), charToRaw("{}"), history_dir = history))
+  renames <- 0L
+  expect_error(.write_file_verified(file.path(root, "state.json"), charToRaw("{\"a\":1}"), verify = function(p) FALSE,
+                                    history_dir = history), paste0("the history in ", history, " keeps every earlier version"), fixed = TRUE)
+  # The history holds the previous bytes; the unverified new bytes are not in it.
+  entries <- list.files(history, full.names = TRUE)
+  expect_length(entries, 1L); expect_identical(rawToChar(.read_bytes(entries)), "{}")
+})
+
+test_that("a failing history copy after a verified install warns, keeps the new file and is made up by the next write", {
+  root <- withr::local_tempdir(); path <- file.path(root, "file.json"); history <- file.path(root, "history")
+  newest <- function() rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L)))
+  .write_json_verified(path, list(a = 1), history_dir = history)
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL, .file_copy = function(from, to) FALSE)
+  expect_warning(installed <- .write_json_verified(path, list(a = 2), history_dir = history),
+                 "The new file.json is installed and verified, but its history copy could not be written; the next write adds it.",
+                 fixed = TRUE)
+  expect_true(installed)
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":2}\n')
+  expect_length(list.files(history), 1L); expect_identical(newest(), '{"a":1}\n')
+  expect_length(list.files(root, pattern = "[.]tmp$"), 0L)
+  # The next write finds the installed bytes missing from the history and adds them before replacing them.
+  local_mocked_bindings(.file_copy = function(from, to) file.copy(from, to, overwrite = FALSE))
+  expect_silent(.write_json_verified(path, list(a = 3), history_dir = history))
+  entries <- list.files(history, full.names = TRUE)
+  expect_length(entries, 3L)
+  expect_identical(vapply(entries, function(f) rawToChar(.read_bytes(f)), character(1), USE.NAMES = FALSE),
+                   c('{"a":1}\n', '{"a":2}\n', '{"a":3}\n'))
+  expect_identical(rawToChar(.read_bytes(path)), '{"a":3}\n')
+})
+
+test_that("a history copy is visible only after it is verified: partial or wrong bytes never become an entry", {
+  root <- withr::local_tempdir(); path <- file.path(root, "state.json"); history <- file.path(root, "state-history")
+  stray <- function() list.files(history, all.files = TRUE, no.. = TRUE)
+  entries <- function() .history_entries(history, "state.json")
+  newest <- function() rawToChar(.read_bytes(entries()[length(entries())]))
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL)
+  partial_then_fail <- function(from, to) { writeBin(.read_bytes(from)[1:3], to); FALSE }
+  wrong_bytes <- function(from, to) { writeBin(charToRaw("wrong bytes"), to); TRUE }
+  # Before the replacement: a file from older code is copied first; if that fails nothing is replaced.
+  for (copy in list(partial_then_fail, wrong_bytes)) {
+    unlink(c(path, history), recursive = TRUE)
+    writeBin(charToRaw('{"older":true}\n'), path)
+    local_mocked_bindings(.file_copy = copy)
+    expect_error(.write_json_verified(path, list(a = 1), history_dir = history), "history copy of state.json.*nothing was replaced")
+    expect_identical(rawToChar(.read_bytes(path)), '{"older":true}\n')
+    expect_length(entries(), 0L); expect_null(.state_backup(root)); expect_identical(stray(), character())
+  }
+  # After a verified installation: the new file stays, a warning is given, and the history keeps no partial entry.
+  for (copy in list(partial_then_fail, wrong_bytes)) {
+    unlink(c(path, history), recursive = TRUE)
+    local_mocked_bindings(.file_copy = function(from, to) file.copy(from, to, overwrite = FALSE))
+    .write_json_verified(path, list(a = 1), history_dir = history)
+    local_mocked_bindings(.file_copy = copy)
+    expect_warning(.write_json_verified(path, list(a = 2), history_dir = history), "its history copy could not be written")
+    expect_identical(rawToChar(.read_bytes(path)), '{"a":2}\n')
+    expect_length(entries(), 1L); expect_identical(newest(), '{"a":1}\n')
+    expect_identical(.state_backup(root), entries())   # recovery would copy back a complete earlier version
+    expect_identical(stray(), basename(entries()))
+    # The next write adds the missing version before replacing it.
+    local_mocked_bindings(.file_copy = function(from, to) file.copy(from, to, overwrite = FALSE))
+    expect_silent(.write_json_verified(path, list(a = 3), history_dir = history))
+    expect_identical(vapply(entries(), function(f) rawToChar(.read_bytes(f)), character(1), USE.NAMES = FALSE),
+                     c('{"a":1}\n', '{"a":2}\n', '{"a":3}\n'))
+    expect_identical(stray(), basename(entries()))
+  }
+})
+
+test_that("RDS files are written verified and unchanged files are skipped", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  object <- list(data = data.frame(x = 1:3), label = "plan")
+  expect_true(.write_rds_verified(path, object))
+  expect_false(.write_rds_verified(path, object))
+  expect_identical(readRDS(path), object)
+  expect_true(.write_rds_verified(path, c(object, list(more = TRUE))))
+  expect_identical(readRDS(path)$more, TRUE)
+  expect_identical(list.files(root), "plan.rds")
+})
+
+test_that("catalogs are verified by reading them back, with the publication block intact", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); a <- test_resource(root, "A.csv")
+  plan <- plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(),
+    state_directory = file.path(root, "state"), community = "c")
+  catalog <- .public_catalog(plan$catalog)
+  catalog$publication <- list(catalog_record_id = "5", catalog_concept_doi = "10.test/c", community_id = "uuid",
+                              storage_dois = list(no_bias = "10.test/1"))
+  path <- file.path(plan$state_directory, "release.json")
+  .write_release_catalog(plan, catalog)
+  written <- benchmark_catalog(path)
+  expect_identical(written$publication$storage_dois$no_bias, "10.test/1")
+  bytes <- .read_bytes(path)
+  expect_identical(bytes[length(bytes)], as.raw(10)); expect_false(as.raw(13) %in% bytes)
+  expect_length(list.files(file.path(plan$state_directory, "catalog-history")), 1L)
+  # A catalog that does not validate when read back, or whose publication block changed, is rolled back.
+  catalog$publication$catalog_record_id <- "6"
+  original <- .parse_json_bytes
+  local_mocked_bindings(.parse_json_bytes = function(bytes) {
+    parsed <- original(bytes); if (!is.null(parsed$publication)) parsed$publication$community_id <- "tampered"; parsed
+  })
+  expect_error(.write_release_catalog(plan, catalog), "failed verification.*restored")
+  expect_identical(benchmark_catalog(path)$publication$catalog_record_id, "5")
+  local_mocked_bindings(.parse_json_bytes = original, .validate_catalog = function(catalog) stop("invalid catalog"))
+  expect_error(.write_release_catalog(plan, catalog), "invalid catalog")
+})
+
+## Plan identity is recomputed by the session ------------------------------------------------
+
+test_that("a plan edited after planning is refused under the lock before the gate and any request", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate()
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  edits <- list(
+    release = function(p) { p$catalog$release <- "test.9"; p },
+    sandbox = function(p) { p$sandbox <- TRUE; p },
+    community = function(p) { p$community <- "someone-elses-community"; p },
+    group_membership = function(p) { p$groups <- lapply(p$groups, function(group) group[0]); p },
+    metadata = function(p) { p$metadata$rights <- list(list(id = "mit")); p },
+    packing_limit = function(p) { p$max_files <- 10L; p },
+    catalog_content = function(p) { p$catalog$assets[[1]]$sha256 <- strrep("0", 64); p },
+    catalog_family = function(p) { p$catalog_record_id <- "123"; p },
+    changed_dgms = function(p) { p$changed_dgms <- character(); p },
+    upload_selection = function(p) { p$groups <- list(); p },
+    # Every field of an upload entry decides what is uploaded.
+    entry_id = function(p) { p$groups[[1]][[1]]$id <- "no_bias/results/other"; p },
+    entry_filename = function(p) { p$groups[[1]][[1]]$filename <- "other.csv"; p },
+    entry_sha256 = function(p) { p$groups[[1]][[1]]$sha256 <- strrep("1", 64); p },
+    entry_md5 = function(p) { p$groups[[1]][[1]]$md5 <- strrep("2", 32); p },
+    entry_size = function(p) { p$groups[[1]][[1]]$size <- p$groups[[1]][[1]]$size + 1; p },
+    entry_dgm = function(p) { p$groups[[1]][[1]]$dgm <- "other_dgm"; p })
+  for (name in names(edits)) {
+    edited <- edits[[name]](plan)
+    expect_identical(edited$identity, plan$identity)   # the stored identity is untouched
+    expect_error(stage_benchmark_release(edited, "t"), "modified after it was planned", info = name)
+    expect_error(publish_benchmark_release(edited, "t", confirm = edited$catalog$release), "modified after it was planned",
+                 info = name)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = name)
+    expect_false(file.exists(file.path(plan$state_directory, "state.json")), info = name)
+  }
+  expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+  # The untouched plan, and a copy reloaded from plan.rds, recompute to their stored identity;
+  # the local file path of an upload is verified against its hashes when it is uploaded instead.
+  moved <- plan; moved$groups[[1]][[1]]$local_path <- file.path(tempdir(), "elsewhere.csv")
+  expect_true(.identity_equal(.plan_identity(moved), plan$identity))
+  expect_true(.identity_equal(.plan_identity(plan), plan$identity))
+  expect_true(.identity_equal(.plan_identity(readRDS(file.path(plan$state_directory, "plan.rds"))), plan$identity))
+})
+
+## Verification checks the state and the staged catalog first -------------------------------
+
+# A catalog staged for `plan`, with record IDs filled in like a staged release.json.
+staged_catalog <- function(plan) .public_catalog(plan$catalog)
+
+test_that("verification reads the state first and stops on bad state before any request", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  requests <- local_no_requests()
+  path <- file.path(plan$state_directory, "state.json")
+  # Unreadable state, and missing state with a history, name the newest history file.
+  writeLines("{broken", path)
+  expect_error(verify_benchmark_release(plan, "t"), "unreadable or has an invalid structure")
+  history <- file.path(plan$state_directory, "state-history"); dir.create(history, showWarnings = FALSE)
+  writeLines("{}", file.path(history, "20260101T000000.000001-0001-state.json"))
+  expect_error(verify_benchmark_release(plan, "t"), "20260101T000000.000001-0001-state.json")
+  unlink(path)
+  expect_error(verify_benchmark_release(plan, "t"), "is missing although history exists")
+  unlink(history, recursive = TRUE)
+  # State of another plan.
+  other <- plan; other$identity$fingerprint <- strrep("0", 64)
+  .update_publication_state(other, function(state) { state$versions[["x"]] <- list(record_id = "1"); state })
+  expect_error(verify_benchmark_release(plan, "t"), "belongs to a different plan")
+  # State without an identity: allowed to read, with a notice.
+  state <- jsonlite::read_json(path); state$identity <- NULL
+  jsonlite::write_json(state, path, auto_unbox = TRUE)
+  expect_message(expect_error(verify_benchmark_release(plan, "t"), "not been fully staged|A request was issued"),
+                 "no plan identity")
+  unlink(c(path, file.path(plan$state_directory, "state-history")), recursive = TRUE)
+  expect_identical(requests$count, 0L)
+})
+
+test_that("verification stops when the staged catalog belongs to another release or inventory", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  requests <- local_no_requests()
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- staged_catalog(plan)
+  # The plan's own staged catalog passes the check.
+  expect_true(.check_staged_catalog(plan, catalog))
+  other_release <- catalog; other_release$release <- "other.release"
+  .write_catalog_file(path, other_release)
+  expect_error(verify_benchmark_release(plan, "t"), "belongs to release 'other.release', not to this plan's release 'test.1'")
+  different <- catalog
+  different$archives[[1]]$filename <- "another-archive.zip"
+  .write_catalog_file(path, different)
+  expect_error(verify_benchmark_release(plan, "t"), "does not describe this plan")
+  members <- catalog; members$archives[[1]]$members[[1]]$sha256 <- strrep("d", 64)
+  expect_error(.check_staged_catalog(plan, members), "does not describe this plan")
+  # Record IDs are the one thing a staged catalog may change.
+  staged <- catalog
+  staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a })
+  expect_true(.check_staged_catalog(plan, staged))
+  expect_identical(requests$count, 0L)
+})
+
+## Rollback of a failed verification ---------------------------------------------------------
+
+test_that("a first version that cannot be removed is not reported as restored", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  local_mocked_bindings(.file_remove = function(path) 1L)
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE), error = conditionMessage)
+  expect_false(grepl("the previous version was restored", message, fixed = TRUE))
+  expect_match(message, paste0("restoring the previous version failed, so ", path, " holds the unverified new bytes"), fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "new bytes")
+  local_mocked_bindings(.file_remove = function(path) unlink(path))
+  expect_match(tryCatch(.write_file_verified(path, charToRaw("newer"), verify = function(p) FALSE), error = conditionMessage),
+               "the previous version was restored", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "new bytes")
+  unlink(path)
+  expect_match(tryCatch(.write_file_verified(path, charToRaw("first"), verify = function(p) FALSE), error = conditionMessage),
+               "the previous version was restored", fixed = TRUE)
+  expect_false(file.exists(path))
+})
+
+test_that("a restoration only counts when the destination then holds the previous bytes", {
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds")
+  .write_file_verified(path, charToRaw("old bytes"))
+  # The restore rename claims success but leaves the new bytes in place.
+  renames <- 0L
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL,
+    .file_rename = function(from, to) { renames <<- renames + 1L; if (renames == 1L) file.rename(from, to) else TRUE })
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE), error = conditionMessage)
+  expect_false(grepl("the previous version was restored", message, fixed = TRUE))
+  expect_match(message, paste0(path, " holds the unverified new bytes"), fixed = TRUE)
+  expect_match(message, "the previous bytes are in ", fixed = TRUE)
+  previous <- list.files(root, pattern = "^plan[.]rds-previous-.*[.]tmp$", full.names = TRUE)
+  expect_length(previous, 1L); expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
+  # The previous bytes cannot even be written next to the file: reported, nothing renamed.
+  unlink(previous)
+  local_mocked_bindings(.file_rename = function(from, to) file.rename(from, to))
+  .write_file_verified(path, charToRaw("old bytes"))
+  local_mocked_bindings(.read_bytes = function(path) {
+    if (grepl("-previous-", path, fixed = TRUE)) stop("cannot read back") else readBin(path, "raw", file.info(path)$size)
+  })
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = function(p) FALSE), error = conditionMessage)
+  expect_match(message, "restoring the previous version failed", fixed = TRUE)
+  expect_false(grepl("the previous bytes are in", message, fixed = TRUE))
+  expect_length(list.files(root, pattern = "-previous-"), 0L)
+})
+
+test_that("a failed verification with the installed file held open reports the file that remains (Windows)", {
+  skip_if_not(.Platform$OS.type == "windows", "an open file only blocks removal and replacement on Windows")
+  root <- withr::local_tempdir(); path <- file.path(root, "plan.rds"); history <- file.path(root, "history")
+  local_mocked_bindings(.file_retry_wait = function(seconds) NULL)
+  hold <- NULL
+  opener <- function(p) { hold <<- file(p, "rb"); FALSE }
+  # First version: the file cannot be deleted while it is open.
+  message <- tryCatch(.write_file_verified(path, charToRaw("first bytes"), verify = opener), error = conditionMessage)
+  close(hold)
+  expect_false(grepl("the previous version was restored", message, fixed = TRUE))
+  expect_match(message, paste0("restoring the previous version failed, so ", path, " holds the unverified new bytes"), fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "first bytes")
+  # Replacement: the previous bytes cannot be renamed over the open file and stay intact next to it.
+  .write_file_verified(path, charToRaw("old bytes"), history_dir = history)
+  message <- tryCatch(.write_file_verified(path, charToRaw("new bytes"), verify = opener, history_dir = history), error = conditionMessage)
+  close(hold)
+  expect_match(message, paste0(path, " holds the unverified new bytes"), fixed = TRUE)
+  previous <- list.files(root, pattern = "^plan[.]rds-previous-.*[.]tmp$", full.names = TRUE)
+  expect_length(previous, 1L)
+  expect_match(message, "the previous bytes are in ", fixed = TRUE)
+  expect_match(message, basename(previous), fixed = TRUE)
+  expect_match(message, "keeps every earlier version", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(tail(list.files(history, full.names = TRUE), 1L))), "old bytes")
+  expect_identical(rawToChar(.read_bytes(previous)), "old bytes")
+  expect_identical(rawToChar(.read_bytes(path)), "new bytes")
+  # Without an open handle the same failure is restored completely.
+  unlink(previous); .write_file_verified(path, charToRaw("old bytes"))
+  expect_match(tryCatch(.write_file_verified(path, charToRaw("newest"), verify = function(p) FALSE), error = conditionMessage),
+               "the previous version was restored", fixed = TRUE)
+  expect_identical(rawToChar(.read_bytes(path)), "old bytes")
+})
+
+## Storage base records and earlier versions -----------------------------------------------------------
+
+# A second archive release on top of a published first one: the changed DGM is imported into
+# a new version of the storage record "55".
+base_release_plan <- function(root) {
+  a <- test_resource(root, "A.csv"); b <- test_resource(root, "B.csv", method = "B")
+  metadata <- list(rights = list(list(id = "cc-by-4.0")))
+  first <- plan_benchmark_release("test.1", list(a, b), conditions = test_catalog(list(a))$conditions, metadata = metadata,
+    state_directory = file.path(root, "first"), community = "c")
+  base <- .public_catalog(first$catalog)
+  base$publication <- list(catalog_record_id = "123", catalog_concept_doi = "10.test/concept")
+  base$archives <- lapply(base$archives, function(x) { x$record_id <- "55"; x })
+  base$assets <- lapply(base$assets, function(x) { x$record_id <- "55"; x })
+  corrected <- test_resource(root, "A.csv", ids = 3:4)
+  plan_benchmark_release("test.2", list(corrected), previous = base, replace = a$id, metadata = metadata,
+    state_directory = file.path(root, "second"), community = "c")
+}
+
+test_that("the identity binds the storage base records and the earlier catalog's schema", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- base_release_plan(root)
+  expect_identical(plan$changed_dgms, "no_bias")
+  expect_identical(.storage_base_id(plan, "no_bias"), "55")
+  gate <- local_mock_gate()
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  edits <- list(
+    # Version 1 catalogs have no native storage version to import: execution would start a new family.
+    previous_schema = function(p) { p$previous$schema_version <- 1L; p },
+    base_record = function(p) { p$previous$archives <- lapply(p$previous$archives, function(a) { a$record_id <- "999"; a }); p },
+    no_previous = function(p) { p$previous <- NULL; p })
+  for (name in names(edits)) {
+    edited <- edits[[name]](plan)
+    expect_identical(edited$identity, plan$identity)
+    expect_error(stage_benchmark_release(edited, "t"), "modified after it was planned", info = name)
+    expect_error(publish_benchmark_release(edited, "t", confirm = "test.2"), "modified after it was planned", info = name)
+    expect_false(dir.exists(file.path(plan$state_directory, ".lock")), info = name)
+  }
+  expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+  expect_true(.identity_equal(.plan_identity(plan), plan$identity))
+  # The binding is what execution resolves, not a copy of the previous catalog.
+  edited <- edits$base_record(plan)
+  expect_identical(.storage_base_id(edited, "no_bias"), "999")
+  expect_false(.identity_equal(.plan_identity(edited), plan$identity))
+})
+
+## Identity format version ---------------------------------------------------------------------------
+
+test_that("a plan or state with an older or missing identity version must be re-planned", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  gate <- local_mock_gate()
+  server <- community_server(.benchmark_community_id, members = function(page) members_page(list(member_hit("owner"))))
+  writes <- local_write_recorder(server$handler)
+  message <- "This plan was created by an earlier package version; re-plan in a new state directory."
+  expect_identical(plan$identity$version, 2L)
+  older <- plan; older$identity$version <- 1L
+  missing <- plan; missing$identity$version <- NULL
+  empty <- plan; empty$identity <- list()
+  absent <- plan; absent["identity"] <- list(NULL)
+  for (candidate in list(older, missing, empty, absent))
+    for (call in list(function(p) stage_benchmark_release(p, "t"), function(p) publish_benchmark_release(p, "t", confirm = "test.1")))
+      expect_error(call(candidate), message, fixed = TRUE)
+  expect_false(dir.exists(file.path(plan$state_directory, ".lock")))
+  # Planning again in the directory of a plan saved with the older identity stops with the same message.
+  saved <- readRDS(file.path(plan$state_directory, "plan.rds"))
+  saved$identity$version <- 1L
+  saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
+  a <- test_resource(root, "A.csv")
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
+    state_directory = plan$state_directory, community = "publicationbiasbenchmark"),
+    message, fixed = TRUE)
+  saved$identity$version <- NULL
+  saveRDS(saved, file.path(plan$state_directory, "plan.rds"))
+  expect_error(plan_benchmark_release("test.1", list(a), conditions = test_catalog(list(a))$conditions, metadata = list(rights = list(list(id = "cc-by-4.0"))),
+    state_directory = plan$state_directory, community = "publicationbiasbenchmark"),
+    message, fixed = TRUE)
+  # State written with an older identity format is refused for writes and noted when read.
+  path <- file.path(plan$state_directory, "state.json")
+  jsonlite::write_json(list(groups = list(), identity = list(version = 1L, release = "test.1", sandbox = FALSE, community = "x", fingerprint = "f")),
+                       path, auto_unbox = TRUE)
+  expect_error(.publication_state(plan, "write"), "written by an earlier package version; re-plan in a new state directory")
+  expect_message(.publication_state(plan, "read"), "older plan identity")
+  unlink(path)
+  expect_length(gate$calls, 0L); expect_length(server$log$requests, 0L); expect_length(writes$log, 0L)
+})
+
+## Complete archive and member descriptors in the staged catalog -------------------------------------
+
+test_that("a valid staged catalog with a renamed or re-described member is not this plan's catalog", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  requests <- local_no_requests()
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- staged_catalog(plan)
+  expect_true(.check_staged_catalog(plan, catalog))
+  # Each alteration keeps member and asset consistent, so the catalog still validates; the member's
+  # descriptor (name, size, MD5) differs from the planned one although its id and SHA-256 agree.
+  alter <- list(
+    filename = function(x) { x$archives[[1]]$members[[1]]$filename <- "renamed.csv"; x$assets[[1]]$filename <- "renamed.csv"; x },
+    size = function(x) { x$archives[[1]]$members[[1]]$size <- x$archives[[1]]$members[[1]]$size + 1; x$assets[[1]]$size <- x$assets[[1]]$size + 1; x },
+    md5 = function(x) { x$archives[[1]]$members[[1]]$md5 <- strrep("a", 32); x$assets[[1]]$md5 <- strrep("a", 32); x })
+  for (name in names(alter)) {
+    altered <- alter[[name]](catalog)
+    .write_catalog_file(path, altered)   # validates: the alteration is a well-formed catalog
+    expect_error(verify_benchmark_release(plan, "t"), "does not describe this plan", info = name)
+    expect_error(.check_staged_catalog(plan, altered), "does not describe this plan", info = name)
+  }
+  # An archive-level descriptor is compared as well.
+  for (field in c("md5", "size", "filename")) {
+    altered <- catalog
+    altered$archives[[1]][[field]] <- switch(field, md5 = strrep("b", 32), size = altered$archives[[1]]$size + 1, filename = "renamed.zip")
+    expect_error(.check_staged_catalog(plan, altered), "does not describe this plan", info = field)
+  }
+  expect_identical(requests$count, 0L)
+})
+
+## The staged catalog is compared completely ------------------------------------------------------------
+
+# A plan with two results of one DGM, so that an asset can be removed and a catalog stays valid.
+two_asset_plan <- function(root) {
+  a <- test_resource(root, "A.csv"); b <- test_resource(root, "B.csv", method = "B")
+  plan_benchmark_release("test.1", list(a, b), conditions = test_catalog(list(a))$conditions,
+    metadata = list(rights = list(list(id = "cc-by-4.0"))), state_directory = file.path(root, "two"), community = "c")
+}
+
+test_that("a staged catalog with other conditions, a removed or an extra asset is not this plan's catalog", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- two_asset_plan(root)
+  requests <- local_no_requests()
+  path <- file.path(plan$state_directory, "release.json")
+  catalog <- staged_catalog(plan)
+  expect_true(.check_staged_catalog(plan, catalog))
+  message <- "The staged release.json does not describe this plan (conditions, assets or archives differ); re-stage it or use the state directory of this plan."
+  extra <- catalog$assets[[1]]; extra$id <- "no_bias/results/extra.csv"
+  alter <- list(
+    condition_value = function(x) { x$conditions$no_bias$mean_effect[1] <- 0.5; x },
+    condition_added_column = function(x) { x$conditions$no_bias$extra <- 1; x },
+    removed_asset = function(x) { x$assets <- x$assets[-1]; x },
+    extra_asset = function(x) { x$assets <- c(x$assets, list(extra)); x },
+    asset_field = function(x) { x$assets[[1]]$package_version <- "9.9.9"; x },
+    asset_coverage = function(x) { x$assets[[1]]$rows <- x$assets[[1]]$rows + 1; x },
+    top_level = function(x) { x$source_commit <- "someone-elses-commit"; x })
+  for (name in names(alter)) {
+    altered <- alter[[name]](catalog)
+    expect_error(.check_staged_catalog(plan, altered), message, fixed = TRUE, info = name)
+  }
+  # Written to disk (when it is a well-formed catalog), the verification stops before any request.
+  for (name in c("condition_value", "asset_field", "asset_coverage", "top_level")) {
+    .write_catalog_file(path, alter[[name]](catalog))
+    expect_error(verify_benchmark_release(plan, "t"), message, fixed = TRUE, info = name)
+  }
+  # What a staged catalog may differ in: local paths, build fingerprints, record IDs and the publication block.
+  staged <- catalog
+  staged$archives <- lapply(staged$archives, function(a) { a$record_id <- "777"; a$build_fingerprint <- "x"; a$local_path <- "elsewhere.zip"; a })
+  staged$assets <- lapply(staged$assets, function(a) { a$record_id <- "777"; a$local_path <- "elsewhere.csv"; a })
+  staged$publication <- list(catalog_record_id = "5", catalog_concept_doi = "10.test/c", community_id = "uuid")
+  expect_true(.check_staged_catalog(plan, staged))
+  # A catalog parsed from its JSON file is the plan's catalog as well.
+  .write_catalog_file(path, catalog)
+  expect_true(.check_staged_catalog(plan, benchmark_catalog(path)))
+  expect_identical(requests$count, 0L)
+})
+
+test_that("a staged catalog carries the record IDs of the state for changed DGMs and those of the plan for the others", {
+  skip_if_not_installed("zip")
+  root <- withr::local_tempdir(); plan <- session_plan(root)
+  requests <- local_no_requests()
+  catalog <- staged_catalog(plan)
+  with_record <- function(x, archive = "55", asset = archive) {
+    x$archives <- lapply(x$archives, function(a) { a$record_id <- archive; a })
+    x$assets <- lapply(x$assets, function(a) { a$record_id <- asset; a })
+    x
+  }
+  state <- function(record) list(versions = list(`storage--no_bias` = list(record_id = record, published = FALSE)))
+  # Changed DGM without a slot in the state: nothing to compare; with the slot, every record ID must match.
+  expect_identical(plan$changed_dgms, "no_bias")
+  expect_true(.check_staged_catalog(plan, with_record(catalog, "55")))
+  expect_true(.check_staged_catalog(plan, with_record(catalog, "55"), state("55")))
+  expect_error(.check_staged_catalog(plan, with_record(catalog, "56"), state("55")),
+               "carries record 56 for the archive 'no_bias--results.*' of DGM no_bias, but this plan expects record 55")
+  expect_error(.check_staged_catalog(plan, with_record(catalog, "55", asset = "56"), state("55")),
+               "carries record 56 for the asset 'no_bias/results/A.csv' of DGM no_bias, but this plan expects record 55", fixed = TRUE)
+  expect_true(.check_staged_catalog(plan, with_record(catalog, "55"), state(NULL)))
+  # A DGM the plan does not change keeps the plan's record IDs.
+  unchanged <- plan; unchanged$changed_dgms <- character()
+  expect_true(.check_staged_catalog(unchanged, with_record(catalog, "0")))
+  expect_error(.check_staged_catalog(unchanged, with_record(catalog, "55"), state("55")), "but this plan expects record 0")
+  # The same checks run in the verification, before any request.
+  .update_publication_state(plan, function(s) { s$versions[["storage--no_bias"]] <- list(record_id = "55", published = FALSE); s })
+  .write_catalog_file(file.path(plan$state_directory, "release.json"), with_record(catalog, "56"))
+  expect_error(verify_benchmark_release(plan, "t"), "but this plan expects record 55")
+  expect_identical(requests$count, 0L)
+})

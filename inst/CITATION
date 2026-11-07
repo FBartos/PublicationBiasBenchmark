@@ -1,3 +1,7 @@
+package_date <- meta$`Date/Publication`
+if (is.null(package_date)) package_date <- meta$Date
+package_year <- if (length(package_date) && nzchar(package_date)) substr(package_date, 1L, 4L) else format(Sys.Date(), "%Y")
+
 bibentry(
   bibtype  = "Unpublished",
   title    = "Living synthetic benchmarks: A neutral and cumulative framework for simulation studies",
@@ -17,11 +21,11 @@ bibentry(
   bibtype  = "Manual",
   title    = "PublicationBiasBenchmark: Benchmark for publication bias correction methods",
   author   = "Franti\\v{s}ek Barto\\v{s} and Samuel Pawel and Bj\\\"orn S. Siepe and Petr \\v{C}ala",
-  year     = sub("-.*", "", meta$Date),
+  year     = package_year,
   note     = sprintf("version %s", meta$Version),
   url      = "https://cran.r-project.org/package=PublicationBiasBenchmark",
   textVersion = paste(
-    "Bartoš, F., Pawel, S., Siepe, B. S., Čala, P. (2025).",
+    sprintf("Bartoš, F., Pawel, S., Siepe, B. S., & Čala, P. (%s).", package_year),
     sprintf("PublicationBiasBenchmark: Benchmark for publication bias correction methods (version %s).", meta$Version),
     "https://cran.r-project.org/package=PublicationBiasBenchmark"
   ),
