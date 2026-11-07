@@ -25,10 +25,11 @@ knitr::opts_chunk$set(
 
 # PublicationBiasBenchmark
 
-**PublicationBiasBenchmark** is an R package for benchmarking publication bias correction methods through simulation studies. It provides:  
-- Predefined data-generating mechanisms from the literature  
-- Functions for running meta-analytic methods on simulated data  
-- Pre-simulated datasets and pre-computed results for reproducible benchmarks  
+**PublicationBiasBenchmark** is an R package for benchmarking publication bias correction methods through simulation studies. It provides:
+
+- Predefined data-generating mechanisms from the literature
+- Functions for running meta-analytic methods on simulated data
+- Pre-simulated datasets and pre-computed results for reproducible benchmarks
 - Tools for visualizing and comparing method performance
 
 All datasets, results, and measures are hosted on Zenodo: <https://zenodo.org/communities/publicationbiasbenchmark/> (originally on OSF: <https://doi.org/10.17605/OSF.IO/EXF3M>).

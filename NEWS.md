@@ -1,4 +1,4 @@
-# PublicationBiasBenchmark 0.5.0.9000
+# PublicationBiasBenchmark 0.4.0
 ## Features
  - The benchmark data moved from OSF to [Zenodo](https://zenodo.org/communities/publicationbiasbenchmark/) and are published in versioned releases. Each package version uses a default release; `list_benchmark_releases()` lists the available releases and the `release` argument of the download and retrieve functions selects one. See the new "Releases" article.
  - The default release is [2026.2](https://doi.org/10.5281/zenodo.23121978). It corrects 11 replacement-measure tables of [2026.1](https://doi.org/10.5281/zenodo.23070787) (AK, MAN, MMPH and RTMA) whose values were missing because of the `safe_rbind()` bug fixed below; all other files are identical, and 2026.1 remains available.

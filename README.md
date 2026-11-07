@@ -19,11 +19,12 @@ status](https://www.r-pkg.org/badges/version/PublicationBiasBenchmark)](https://
 
 **PublicationBiasBenchmark** is an R package for benchmarking
 publication bias correction methods through simulation studies. It
-provides:\
-- Predefined data-generating mechanisms from the literature\
-- Functions for running meta-analytic methods on simulated data\
+provides:
+
+- Predefined data-generating mechanisms from the literature
+- Functions for running meta-analytic methods on simulated data
 - Pre-simulated datasets and pre-computed results for reproducible
-benchmarks\
+  benchmarks
 - Tools for visualizing and comparing method performance
 
 All datasets, results, and measures are hosted on Zenodo:
@@ -39,8 +40,7 @@ For the methodology of living synthetic benchmarks please cite:
 For the publication bias benchmark R package please cite:
 
 > Bartoš F, Pawel S, Siepe BS, Čala P (2026). *PublicationBiasBenchmark:
-> Benchmark for publication bias correction methods*. version
-> 0.5.0.9000,
+> Benchmark for publication bias correction methods*. version 0.4.0,
 > <https://cran.r-project.org/package=PublicationBiasBenchmark>.
 
 Overviews of the benchmark results are available as articles on the
