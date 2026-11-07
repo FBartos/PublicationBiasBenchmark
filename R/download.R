@@ -145,10 +145,17 @@ retrieve_dgm_dataset <- function(dgm_name, condition_id, repetition_id = NULL,
   if (!length(assets)) stop("No archived data for the selected conditions.", call. = FALSE)
   if (length(condition_id) != 1L) stop("Select one condition at a time when retrieving datasets.", call. = FALSE)
   .validate_plan_coverage(assets)
-  data <- .read_catalog_assets(assets)
-  if ("condition_id" %in% names(data)) data <- data[data$condition_id %in% condition_id, , drop = FALSE]
-  keys <- intersect(c("condition_id", "repetition_id", "study_id"), names(data))
-  if ("study_id" %in% keys) .reject_duplicate_keys(data, keys, "dataset")
+  paths <- .cached_asset_files(assets)
+  shards <- lapply(seq_along(assets), function(i) {
+    shard <- .read_catalog_asset(assets[[i]], paths[i])
+    if ("condition_id" %in% names(shard)) shard[shard$condition_id %in% condition_id, , drop = FALSE] else shard
+  })
+  # A study can contribute several estimates (Alinaghi2018 panel conditions), so rows are not
+  # unique by study: shards overlap only when two of them hold the same repetition.
+  repetitions <- unlist(lapply(shards, function(shard) unique(shard$repetition_id)))
+  if (anyNA(repetitions) || anyDuplicated(repetitions))
+    stop("Missing or overlapping dataset keys across the selected shards.", call. = FALSE)
+  data <- safe_rbind(shards)
   if (!is.null(repetition_id)) {
     if (length(setdiff(repetition_id, data$repetition_id))) stop("Requested repetitions are unavailable.", call. = FALSE)
     data <- data[data$repetition_id %in% repetition_id, , drop = FALSE]

@@ -62,6 +62,31 @@ test_that("overlaps and missing coverage cannot silently produce partial results
   expect_error(retrieve_dgm_results("no_bias", release = test_catalog(assets[1])), "Missing or unverified")
 })
 
+test_that("datasets keep several estimates per study and reject shards sharing a repetition", {
+  root <- withr::local_tempdir(); originals <- withr::local_tempdir()
+  local_mocked_bindings(.get_path = function() root)
+  panel_shard <- function(filename, ids) {
+    path <- file.path(originals, filename)
+    utils::write.csv(data.frame(yi = 1, sei = .1, study_id = rep(1:2, each = 3), repetition_id = rep(ids, each = 6)),
+                     path, row.names = FALSE)
+    asset <- benchmark_resource(path, "no_bias", "data", condition_ids = 1L, package_version = "0.4.0")
+    asset$record_id <- "12345"
+    cached <- .asset_cache_path(asset); dir.create(dirname(cached), recursive = TRUE, showWarnings = FALSE); file.copy(path, cached)
+    asset
+  }
+  first <- panel_shard("panel-1.csv", 1L); second <- panel_shard("panel-2.csv", 2L)
+  panel <- retrieve_dgm_dataset("no_bias", 1, release = test_catalog(list(first, second)))
+  expect_equal(nrow(panel), 12)
+  expect_equal(as.vector(table(panel$repetition_id, panel$study_id)), rep(3L, 4))
+  expect_equal(nrow(retrieve_dgm_dataset("no_bias", 1, 2, release = test_catalog(list(first, second)))), 6)
+  # Coverage declared by the catalog is checked first; data contradicting it is rejected too.
+  again <- panel_shard("panel-again.csv", 1L)
+  expect_error(retrieve_dgm_dataset("no_bias", 1, release = test_catalog(list(first, again))), "Overlapping data")
+  local_mocked_bindings(.validate_plan_coverage = function(assets) invisible(TRUE))
+  expect_error(retrieve_dgm_dataset("no_bias", 1, release = test_catalog(list(first, again))),
+               "Missing or overlapping dataset keys")
+})
+
 test_that("catalog serialization preserves frozen list columns and rejects unsafe references", {
   root <- withr::local_tempdir(); asset <- test_resource(root, "A.csv")
   catalog <- test_catalog(list(asset)); catalog$conditions$no_bias$sample_sizes <- list(c(10, 20), c(40, 80))
